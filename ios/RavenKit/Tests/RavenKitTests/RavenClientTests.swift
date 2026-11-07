@@ -60,54 +60,59 @@ final class TokenIssuer: Sendable {
     }
 }
 
+/// Every suite that talks through `StubProtocol` lives in here: they share its static state, so they must not run in parallel.
 @Suite(.serialized)
-struct RavenClientTests {
-    let client: RavenClient
+enum StubbedNetworkTests {}
 
-    init() {
-        client = Self.client(accessToken: { "t0k" })
-    }
+extension StubbedNetworkTests {
+    struct RavenClientTests {
+        let client: RavenClient
 
-    static func client(accessToken: @escaping AccessTokenProvider) -> RavenClient {
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.protocolClasses = [StubProtocol.self]
-        let session = URLSession(configuration: configuration)
-        return RavenClient(baseURL: URL(string: "https://api.test")!, accessToken: accessToken, session: session)
-    }
-
-    @Test func `sends the access token and decodes the profile`() async throws {
-        StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (200, #"{"profile":{"targetRoles":["Analyst"]}}"#) }
-        let profile = try await client.profile()
-        #expect(profile.targetRoles == ["Analyst"])
-        #expect(StubProtocol.lastAuthorization.withLock { $0 } == "Bearer t0k")
-    }
-
-    @Test func `asks for a fresh token on every request`() async throws {
-        StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (200, #"{"profile":{}}"#) }
-        let issuer = TokenIssuer()
-        let client = Self.client(accessToken: { issuer.next() })
-        _ = try await client.profile()
-        _ = try await client.profile()
-        #expect(StubProtocol.lastAuthorization.withLock { $0 } == "Bearer token-2")
-    }
-
-    @Test func `treats a missing session as unauthorized without calling the server`() async {
-        StubProtocol.lastAuthorization.withLock { $0 = "untouched" }
-        let client = Self.client(accessToken: { throw CancellationError() })
-        await #expect(throws: RavenError.unauthorized) { try await client.profile() }
-        #expect(StubProtocol.lastAuthorization.withLock { $0 } == "untouched")
-    }
-
-    @Test func `turns server refusals into readable errors`() async throws {
-        StubProtocol.routes.withLock { $0["POST /api/pairing/K7M2Q9XD/approve"] = (410, #"{"error":"that code expired"}"#) }
-        let code = try #require(PairingCode(typed: "K7M2Q9XD"))
-        await #expect(throws: RavenError.rejected(status: 410, message: "that code expired")) {
-            try await client.approveHeadset(code)
+        init() {
+            client = Self.client(accessToken: { "t0k" })
         }
-    }
 
-    @Test func `reports an expired session as unauthorized`() async {
-        StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (401, #"{"error":"unauthorized"}"#) }
-        await #expect(throws: RavenError.unauthorized) { try await client.profile() }
+        static func client(accessToken: @escaping AccessTokenProvider) -> RavenClient {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [StubProtocol.self]
+            let session = URLSession(configuration: configuration)
+            return RavenClient(baseURL: URL(string: "https://api.test")!, accessToken: accessToken, session: session)
+        }
+
+        @Test func `sends the access token and decodes the profile`() async throws {
+            StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (200, #"{"profile":{"targetRoles":["Analyst"]}}"#) }
+            let profile = try await client.profile()
+            #expect(profile.targetRoles == ["Analyst"])
+            #expect(StubProtocol.lastAuthorization.withLock { $0 } == "Bearer t0k")
+        }
+
+        @Test func `asks for a fresh token on every request`() async throws {
+            StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (200, #"{"profile":{}}"#) }
+            let issuer = TokenIssuer()
+            let client = Self.client(accessToken: { issuer.next() })
+            _ = try await client.profile()
+            _ = try await client.profile()
+            #expect(StubProtocol.lastAuthorization.withLock { $0 } == "Bearer token-2")
+        }
+
+        @Test func `treats a missing session as unauthorized without calling the server`() async {
+            StubProtocol.lastAuthorization.withLock { $0 = "untouched" }
+            let client = Self.client(accessToken: { throw CancellationError() })
+            await #expect(throws: RavenError.unauthorized) { try await client.profile() }
+            #expect(StubProtocol.lastAuthorization.withLock { $0 } == "untouched")
+        }
+
+        @Test func `turns server refusals into readable errors`() async throws {
+            StubProtocol.routes.withLock { $0["POST /api/pairing/K7M2Q9XD/approve"] = (410, #"{"error":"that code expired"}"#) }
+            let code = try #require(PairingCode(typed: "K7M2Q9XD"))
+            await #expect(throws: RavenError.rejected(status: 410, message: "that code expired")) {
+                try await client.approveHeadset(code)
+            }
+        }
+
+        @Test func `reports an expired session as unauthorized`() async {
+            StubProtocol.routes.withLock { $0["GET /api/me/profile"] = (401, #"{"error":"unauthorized"}"#) }
+            await #expect(throws: RavenError.unauthorized) { try await client.profile() }
+        }
     }
 }
