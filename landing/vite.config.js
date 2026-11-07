@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
 const PARTIALS = path.resolve(import.meta.dirname, 'src/partials');
 const INCLUDE = /^([ \t]*)<!--\s*@include\s+([\w./-]+)\s*-->/gm;
@@ -21,13 +21,16 @@ function expand(html, depth = 0) {
 const CONTENT = path.resolve(import.meta.dirname, 'src/content.json');
 const ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
+// where the product app lives; "Get my plan" and "Sign in" link into its sign-up / sign-in screens
+let APP_URL = 'http://localhost:5173';
+
 /** Replace {{ key.path }} (escaped) and {{{ key.path }}} (raw) with values from src/content.json. */
 function fill(html) {
   const content = JSON.parse(fs.readFileSync(CONTENT, 'utf8'));
   const lookup = (key) => {
     const value = key.split('.').reduce((obj, k) => obj?.[k], content);
     if (typeof value !== 'string') throw new Error(`content.json: no string at "${key}"`);
-    return value.replaceAll('{brand}', content.brand);
+    return value.replaceAll('{brand}', content.brand).replaceAll('{appUrl}', APP_URL.replace(/\/+$/, ''));
   };
   return html
     .replace(/\{\{\{\s*([\w.]+)\s*\}\}\}/g, (_, key) => lookup(key))
@@ -47,8 +50,11 @@ function htmlPartials() {
   };
 }
 
-export default defineConfig({
-  plugins: [htmlPartials()],
-  server: { port: 5180, strictPort: true },
-  preview: { port: 4173, strictPort: true },
+export default defineConfig(({ mode }) => {
+  APP_URL = loadEnv(mode, process.cwd(), '').APP_URL || APP_URL;
+  return {
+    plugins: [htmlPartials()],
+    server: { port: 5180, strictPort: true },
+    preview: { port: 4173, strictPort: true },
+  };
 });
