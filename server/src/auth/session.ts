@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import type { AppContext } from "../env";
+import { verifyAuth0Token } from "./auth0";
 
 const enc = new TextEncoder();
 
@@ -37,7 +38,8 @@ export async function verifySession(token: string, secret: string) {
 
 export const requireSession: MiddlewareHandler<AppContext> = async (c, next) => {
   const token = c.req.header("Authorization")?.replace(/^Bearer /, "") ?? "";
-  const id = await verifySession(token, c.env.SESSION_SECRET);
+  // people sign in with Auth0; paired headsets carry the server's own token for the same account
+  const id = (await verifyAuth0Token(c.env, token)) ?? (await verifySession(token, c.env.SESSION_SECRET));
   if (!id) return c.json({ error: "unauthorized" }, 401);
   c.set("sessionId", id);
   await next();

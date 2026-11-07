@@ -13,7 +13,7 @@ settings:
     SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     # set to your Apple team before archiving for TestFlight
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: 5J5P965Q99
 targets:
   Raven:
     type: application
