@@ -6,12 +6,24 @@ struct RavenApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(model)
-                .preferredColorScheme(.dark)
-                .tint(Theme.action)
-                .onOpenURL { model.handle($0) }
+            #if DEBUG
+                if let screen = DebugScreen.requested {
+                    screen.view.preferredColorScheme(.dark).tint(Theme.action)
+                } else {
+                    app
+                }
+            #else
+                app
+            #endif
         }
+    }
+
+    private var app: some View {
+        RootView()
+            .environment(model)
+            .preferredColorScheme(.dark)
+            .tint(Theme.action)
+            .onOpenURL { model.handle($0) }
     }
 }
 

@@ -3,7 +3,12 @@ import UniformTypeIdentifiers
 
 struct OnboardingFlow: View {
     @Environment(AppModel.self) private var app
-    @State private var model = OnboardingModel()
+    @State private var model: OnboardingModel
+
+    init(model: OnboardingModel = OnboardingModel()) {
+        _model = State(initialValue: model)
+    }
+
     @State private var isPickingFile = false
 
     var body: some View {

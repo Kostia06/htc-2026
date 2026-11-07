@@ -68,6 +68,13 @@ public extension Profile {
         public var program: String?
         public var year: String?
         public var expectedGraduation: String?
+
+        public init(school: String, program: String? = nil, year: String? = nil, expectedGraduation: String? = nil) {
+            self.school = school
+            self.program = program
+            self.year = year
+            self.expectedGraduation = expectedGraduation
+        }
     }
 
     struct Experience: Codable, Equatable, Hashable, Sendable {
@@ -76,11 +83,24 @@ public extension Profile {
         public var start: String?
         public var end: String?
         public var highlights: [String]?
+
+        public init(role: String, org: String, start: String? = nil, end: String? = nil, highlights: [String]? = nil) {
+            self.role = role
+            self.org = org
+            self.start = start
+            self.end = end
+            self.highlights = highlights
+        }
     }
 
     struct Project: Codable, Equatable, Hashable, Sendable {
         public var name: String
         public var summary: String?
+
+        public init(name: String, summary: String? = nil) {
+            self.name = name
+            self.summary = summary
+        }
     }
 }
 
