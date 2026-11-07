@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { runSkill } from "../../../../src/agents/core/harness";
+import { careerAgent } from "../../../../src/agents/career/agent";
 import { careerSnapshot } from "../../../../src/agents/career/skills/career-snapshot";
 import { call, fakeDeps, fakeMemory } from "../../fakes";
 
 const output = { targetRoles: ["Junior backend developer"], nextSteps: [{ step: "Build one API project", why: "You list Node but no projects." }] };
-const request = (input: unknown, platform: "app" | "vr" = "app") => ({ skill: careerSnapshot, platform, userId: "u1", input });
+const request = (input: unknown, platform: "app" | "vr" = "app") => ({ skill: careerSnapshot, tools: careerAgent.tools, platform, userId: "u1", input });
 
 describe("career-snapshot skill", () => {
   it("runs on the app only", async () => {

@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { RunRejected, startSkill } from "../agents/core/harness";
+import { RunRejected } from "../agents/core/harness";
+import { cards, findSkill } from "../agents/core/registry";
 import { findRun } from "../agents/core/runs";
 import { PLATFORMS, type AgentDeps, type Platform, type Skill } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
-import { skills } from "../agents/skills";
+import { dispatch } from "../agents/orchestrator";
 import type { AppContext, Env } from "../env";
 
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
@@ -13,16 +14,18 @@ const isBackgroundOnly = (skill: Skill) => skill.platforms.every((p) => p === "b
 export function agentRouter(makeDeps: MakeDeps) {
   const router = new Hono<AppContext>();
 
+  router.get("/cards", (c) => c.json(cards()));
+
   router.post("/:skill", async (c) => {
-    const skill = skills[c.req.param("skill")];
-    if (!skill) return c.json({ error: "unknown skill" }, 404);
+    const skillId = c.req.param("skill");
+    if (!findSkill(skillId)) return c.json({ error: "unknown skill" }, 404);
     const body = await c.req.json<{ platform?: unknown; input?: unknown }>().catch(() => null);
     if (!body || !PLATFORMS.includes(body.platform as Platform)) return c.json({ error: "platform must be app, vr or background" }, 400);
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
-    const request = { skill, platform: body.platform as Platform, userId: c.var.sessionId, input: body.input ?? {} };
+    const task = { skillId, platform: body.platform as Platform, userId: c.var.sessionId, input: body.input ?? {} };
     try {
-      const { runId, result } = await startSkill(makeDeps(c.env, waitUntil), request);
+      const { runId, skill, result } = await dispatch(makeDeps(c.env, waitUntil), task);
       if (isBackgroundOnly(skill)) {
         waitUntil(result);
         return c.json({ runId }, 202);

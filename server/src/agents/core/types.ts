@@ -90,7 +90,10 @@ export type Skill<Input = unknown> = {
   finalize?(output: SkillOutput, toolCalls: ToolCallRecord[]): SkillOutput;
 };
 
-export type RunRequest = { skill: Skill; platform: Platform; userId: string; input: unknown };
+// the tools one agent holds, keyed by name; a skill can only be bound to tools from its own agent's toolbox
+export type Toolbox = Record<string, ToolDefinition>;
+
+export type RunRequest = { skill: Skill; tools: Toolbox; platform: Platform; userId: string; input: unknown };
 
 export type RunResult =
   | { runId: string; status: "done"; output: SkillOutput; toolCalls: ToolCallRecord[] }

@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import { Hono } from "hono";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { AgentDeps } from "../../src/agents/core/types";
+import { cards } from "../../src/agents/core/registry";
 import { agentRouter } from "../../src/api/agent";
 import type { AppContext } from "../../src/env";
 import { call, fakeDeps, fakeServices } from "../agents/fakes";
@@ -30,6 +31,12 @@ function testApp(deps: AgentDeps) {
 describe("agent routes", () => {
   beforeEach(async () => {
     await env.DB.prepare("INSERT INTO companies (id, slug, name, website) VALUES ('c1', 'acme', 'Acme', 'https://acme.com')").run();
+  });
+
+  it("lists every agent's card", async () => {
+    const res = await testApp(fakeDeps().deps).get("/cards");
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual(cards());
   });
 
   it("404s an unknown skill", async () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runSkill } from "../../../../src/agents/core/harness";
+import { interviewAgent } from "../../../../src/agents/interview/agent";
 import { interviewDebrief } from "../../../../src/agents/interview/skills/interview-debrief";
 import { call, fakeDeps, fakeMemory } from "../../fakes";
 
@@ -7,7 +8,7 @@ const answers = [
   { question: "Tell me about yourself", answer: "I like code.", score: 4, feedback: "Too short" },
   { question: "How do you test?", answer: "I don't really.", score: 3 },
 ];
-const request = (input: unknown) => ({ skill: interviewDebrief, platform: "app" as const, userId: "u1", input });
+const request = (input: unknown) => ({ skill: interviewDebrief, tools: interviewAgent.tools, platform: "app" as const, userId: "u1", input });
 const finish = { summary: "Short answers held you back.", prepList: [{ step: "Practise STAR answers", why: "Both answers lacked detail." }] };
 
 describe("interview-debrief skill", () => {

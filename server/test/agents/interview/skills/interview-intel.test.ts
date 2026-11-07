@@ -1,10 +1,11 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runSkill } from "../../../../src/agents/core/harness";
+import { interviewAgent } from "../../../../src/agents/interview/agent";
 import { interviewIntel } from "../../../../src/agents/interview/skills/interview-intel";
 import { call, fakeDeps, fakeServices } from "../../fakes";
 
-const request = (input: unknown = { company: "acme" }) => ({ skill: interviewIntel, platform: "background" as const, userId: "background", input });
+const request = (input: unknown = { company: "acme" }) => ({ skill: interviewIntel, tools: interviewAgent.tools, platform: "background" as const, userId: "background", input });
 
 const story = {
   title: "How we hire at Acme",
