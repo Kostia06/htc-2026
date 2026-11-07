@@ -18,9 +18,10 @@ export type Env = {
   // optional: without them job_postings reports "not configured"
   ADZUNA_APP_ID?: string;
   ADZUNA_APP_KEY?: string;
-  // both set: Auth0 sign-in is on; either missing: only the server's own tokens work
-  AUTH0_DOMAIN?: string;
-  AUTH0_AUDIENCE?: string;
+  // set: Supabase sign-in is on; missing: only the server's own tokens work
+  SUPABASE_URL?: string;
+  // defaults to "authenticated", the audience Supabase puts on signed-in users' tokens
+  SUPABASE_JWT_AUDIENCE?: string;
   // comma-separated browser origins allowed to call /api/*; defaults to the local Vite dev server
   ALLOWED_ORIGINS?: string;
 };

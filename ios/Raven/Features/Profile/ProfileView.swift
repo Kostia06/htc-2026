@@ -4,6 +4,7 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(AppModel.self) private var app
     @State private var isRefreshing = false
+    @State private var isConfirmingSignOut = false
 
     var body: some View {
         NavigationStack {
@@ -30,10 +31,18 @@ struct ProfileView: View {
                 Section("Experience") {
                     ForEach(app.profile.experience, id: \.self) { LabeledContent($0.role, value: $0.org) }
                 }
+                Section {
+                    Button("Sign out", role: .destructive) { isConfirmingSignOut = true }
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Profile")
             .refreshable { await refresh() }
+            .confirmationDialog("Sign out of Raven?", isPresented: $isConfirmingSignOut, titleVisibility: .visible) {
+                Button("Sign out", role: .destructive) { Task { await app.signOut() } }
+            } message: {
+                Text("Your profile stays saved, and paired headsets stay signed in.")
+            }
         }
     }
 

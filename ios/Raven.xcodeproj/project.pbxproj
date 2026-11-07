@@ -10,10 +10,13 @@
 		03CAC08625A315A01279524E /* DraftReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24CF4743C4F931060411684C /* DraftReviewView.swift */; };
 		108AB9037AE375D65E60C110 /* RavenKit in Frameworks */ = {isa = PBXBuildFile; productRef = F0FE6486CF358F79CDE60065 /* RavenKit */; };
 		1A7BD70FC25091010A4D129F /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC8E9343418AFAA9E1F3BA1 /* QRScannerView.swift */; };
+		2721F53A417E3426187BCD67 /* EmailCodeForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75BCD0C638AA6CF8ABBC000 /* EmailCodeForm.swift */; };
 		28CC545065BBBC4F0A3A4B3C /* PairingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D3AD83F4C29B5FECF4301C /* PairingModel.swift */; };
 		28FB685D9FEFA8EB988846FA /* RoadmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B4E522EAA7A66B9FC912C9 /* RoadmapView.swift */; };
+		3D02DBD3FED6DEC1A1D1464C /* SignInModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCD941018ED32120A5B69A5 /* SignInModel.swift */; };
 		3D26C1D4F7221A9E4F9DA0A1 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81767F4472E5DBE4FB5A4C45 /* AppModel.swift */; };
 		7EED5812A692E4DE79AEADFF /* PairHeadsetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AC7984EFC40408CB45471D /* PairHeadsetView.swift */; };
+		8791C194D103DCCD7E951C4C /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98E02BB20641AC87CD9C677 /* SignInView.swift */; };
 		8FDA110F1B8BB6D06A097DE5 /* Skeleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B637648F387CCF0004BA92 /* Skeleton.swift */; };
 		916FD837C85C2CC2AB08DAAF /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E719756817CEE3D3BBC3AF /* OnboardingModel.swift */; };
 		993420658B57E577A89FCB56 /* RavenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603E2BC780FDC770983E8C05 /* RavenApp.swift */; };
@@ -25,6 +28,8 @@
 		C37AD57AE2AD27ADA52325BE /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04348238A713441A230661D7 /* OnboardingFlow.swift */; };
 		CAD056C4AB1F8CF32231B4FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD01354CB3E720485547090 /* Assets.xcassets */; };
 		DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 838BAF12B32A15EC0FE771C3 /* ForYouView.swift */; };
+		E55CCAB590C3B3CB23D6A2C5 /* Authenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F74C9197BD6F34C2B199F7D /* Authenticator.swift */; };
+		F42426519AD93AD755A81055 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 33F2834D50161C4525D77C5F /* Auth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +45,10 @@
 		7DC8E9343418AFAA9E1F3BA1 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		81767F4472E5DBE4FB5A4C45 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		838BAF12B32A15EC0FE771C3 /* ForYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForYouView.swift; sourceTree = "<group>"; };
+		8F74C9197BD6F34C2B199F7D /* Authenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
 		96B4E522EAA7A66B9FC912C9 /* RoadmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapView.swift; sourceTree = "<group>"; };
+		A98E02BB20641AC87CD9C677 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		B233627B3DDA4998DB448E3E /* Raven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raven.entitlements; sourceTree = "<group>"; };
 		C2846A2A228B892AD61A6E7B /* Raven.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Raven.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C367F1F41FFEE4F0094C3478 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E7AC7984EFC40408CB45471D /* PairHeadsetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairHeadsetView.swift; sourceTree = "<group>"; };
@@ -48,6 +56,8 @@
 		ECF97FD970F37C72DC6C3F0A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F16AAFA4869E167B1C3F0495 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		F4D3AD83F4C29B5FECF4301C /* PairingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingModel.swift; sourceTree = "<group>"; };
+		F75BCD0C638AA6CF8ABBC000 /* EmailCodeForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCodeForm.swift; sourceTree = "<group>"; };
+		FFCD941018ED32120A5B69A5 /* SignInModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,12 +66,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				108AB9037AE375D65E60C110 /* RavenKit in Frameworks */,
+				F42426519AD93AD755A81055 /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0562DB434BFD1012A7915C6B /* SignIn */ = {
+			isa = PBXGroup;
+			children = (
+				8F74C9197BD6F34C2B199F7D /* Authenticator.swift */,
+				F75BCD0C638AA6CF8ABBC000 /* EmailCodeForm.swift */,
+				FFCD941018ED32120A5B69A5 /* SignInModel.swift */,
+				A98E02BB20641AC87CD9C677 /* SignInView.swift */,
+			);
+			path = SignIn;
+			sourceTree = "<group>";
+		};
 		0565E794A3C21A09090083A0 = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +119,7 @@
 				362E49FDCF36393758906164 /* Pairing */,
 				25C429C02C4B902ACCCF4729 /* Profile */,
 				8E4DF6852FEC5FC62DDC11ED /* Roadmap */,
+				0562DB434BFD1012A7915C6B /* SignIn */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -106,6 +129,7 @@
 			children = (
 				EAD01354CB3E720485547090 /* Assets.xcassets */,
 				ECF97FD970F37C72DC6C3F0A /* Info.plist */,
+				B233627B3DDA4998DB448E3E /* Raven.entitlements */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -202,6 +226,7 @@
 			name = Raven;
 			packageProductDependencies = (
 				F0FE6486CF358F79CDE60065 /* RavenKit */,
+				33F2834D50161C4525D77C5F /* Auth */,
 			);
 			productName = Raven;
 			productReference = C2846A2A228B892AD61A6E7B /* Raven.app */;
@@ -231,6 +256,7 @@
 			mainGroup = 0565E794A3C21A09090083A0;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				AEBF501580B570E0EC6EA6BC /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				2284A19B612F249EA1D09DD6 /* XCLocalSwiftPackageReference "RavenKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -260,8 +286,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D26C1D4F7221A9E4F9DA0A1 /* AppModel.swift in Sources */,
+				E55CCAB590C3B3CB23D6A2C5 /* Authenticator.swift in Sources */,
 				B025C41C446F69A388FD0B07 /* DebugScreen.swift in Sources */,
 				03CAC08625A315A01279524E /* DraftReviewView.swift in Sources */,
+				2721F53A417E3426187BCD67 /* EmailCodeForm.swift in Sources */,
 				DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */,
 				AA512FF797B275C08E38CB20 /* MainTabView.swift in Sources */,
 				C37AD57AE2AD27ADA52325BE /* OnboardingFlow.swift in Sources */,
@@ -273,6 +301,8 @@
 				993420658B57E577A89FCB56 /* RavenApp.swift in Sources */,
 				28FB685D9FEFA8EB988846FA /* RoadmapView.swift in Sources */,
 				AA9242D5466CCE2C6214961E /* RootView.swift in Sources */,
+				3D02DBD3FED6DEC1A1D1464C /* SignInModel.swift in Sources */,
+				8791C194D103DCCD7E951C4C /* SignInView.swift in Sources */,
 				8FDA110F1B8BB6D06A097DE5 /* Skeleton.swift in Sources */,
 				A421E174A64F1D5327ED1678 /* Theme.swift in Sources */,
 			);
@@ -351,6 +381,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Raven/Resources/Raven.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = Raven/Resources/Info.plist;
@@ -363,6 +394,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raven.ios;
 				RAVEN_API_URL = "http://localhost:8799";
 				SDKROOT = iphoneos;
+				SUPABASE_PUBLISHABLE_KEY = "YOUR-PUBLISHABLE-KEY";
+				SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -430,6 +463,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Raven/Resources/Raven.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = Raven/Resources/Info.plist;
@@ -442,6 +476,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.raven.ios;
 				RAVEN_API_URL = "https://raven-api.ilnkostia-dev.workers.dev";
 				SDKROOT = iphoneos;
+				SUPABASE_PUBLISHABLE_KEY = "YOUR-PUBLISHABLE-KEY";
+				SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -476,7 +512,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		AEBF501580B570E0EC6EA6BC /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.55.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		33F2834D50161C4525D77C5F /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AEBF501580B570E0EC6EA6BC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
 		F0FE6486CF358F79CDE60065 /* RavenKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RavenKit;
