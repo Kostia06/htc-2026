@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { startSkill } from "../agents/core/harness";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
-import { onboardingPrefill } from "../agents/skills/onboarding-prefill";
+import { onboardingPrefill } from "../agents/resume/skills/onboarding-prefill";
 import { extractText, UnreadableDocument } from "../documents/extract";
 import { deleteDocument, saveDocument } from "../documents/store";
 import type { AppContext, Env } from "../env";
