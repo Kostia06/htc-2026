@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { researchTracked } from "./agents/research/agent";
+import { researchTracked } from "./agents/background";
+import { liveDeps } from "./agents/live";
 import { experiences } from "./api/experiences";
 import { memory } from "./api/memory";
 import { research } from "./api/research";
@@ -23,6 +24,6 @@ export default {
   fetch: app.fetch,
   request: app.request,
   scheduled: async (_event, env, ctx) => {
-    ctx.waitUntil(researchTracked(env));
+    ctx.waitUntil(researchTracked(liveDeps(env, (work) => ctx.waitUntil(work))));
   },
 } satisfies ExportedHandler<Env> & { request: typeof app.request };

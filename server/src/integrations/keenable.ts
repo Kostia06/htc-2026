@@ -1,5 +1,5 @@
 import type { Env } from "../env";
-import type { SearchResult } from "../agents/research/tools";
+import type { SearchResult } from "../agents/core/types";
 
 const API = "https://api.keenable.ai/v1";
 
