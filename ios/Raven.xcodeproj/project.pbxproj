@@ -21,6 +21,7 @@
 		A421E174A64F1D5327ED1678 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C367F1F41FFEE4F0094C3478 /* Theme.swift */; };
 		AA512FF797B275C08E38CB20 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C69EB42B2A0E56ED3B1078B /* MainTabView.swift */; };
 		AA9242D5466CCE2C6214961E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16AAFA4869E167B1C3F0495 /* RootView.swift */; };
+		B025C41C446F69A388FD0B07 /* DebugScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B93E147A53EEBECA34F350 /* DebugScreen.swift */; };
 		C37AD57AE2AD27ADA52325BE /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04348238A713441A230661D7 /* OnboardingFlow.swift */; };
 		CAD056C4AB1F8CF32231B4FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD01354CB3E720485547090 /* Assets.xcassets */; };
 		DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 838BAF12B32A15EC0FE771C3 /* ForYouView.swift */; };
@@ -34,6 +35,7 @@
 		24CF4743C4F931060411684C /* DraftReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftReviewView.swift; sourceTree = "<group>"; };
 		603E2BC780FDC770983E8C05 /* RavenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavenApp.swift; sourceTree = "<group>"; };
 		6B9B80C3D4DC323BDD952556 /* RavenKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RavenKit; path = RavenKit; sourceTree = SOURCE_ROOT; };
+		72B93E147A53EEBECA34F350 /* DebugScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugScreen.swift; sourceTree = "<group>"; };
 		75E719756817CEE3D3BBC3AF /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
 		7DC8E9343418AFAA9E1F3BA1 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		81767F4472E5DBE4FB5A4C45 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				81767F4472E5DBE4FB5A4C45 /* AppModel.swift */,
+				72B93E147A53EEBECA34F350 /* DebugScreen.swift */,
 				0C69EB42B2A0E56ED3B1078B /* MainTabView.swift */,
 				603E2BC780FDC770983E8C05 /* RavenApp.swift */,
 				F16AAFA4869E167B1C3F0495 /* RootView.swift */,
@@ -257,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D26C1D4F7221A9E4F9DA0A1 /* AppModel.swift in Sources */,
+				B025C41C446F69A388FD0B07 /* DebugScreen.swift in Sources */,
 				03CAC08625A315A01279524E /* DraftReviewView.swift in Sources */,
 				DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */,
 				AA512FF797B275C08E38CB20 /* MainTabView.swift in Sources */,

@@ -2,7 +2,11 @@ import SwiftUI
 
 struct MainTabView: View {
     @Environment(AppModel.self) private var model
-    @State private var selection: Section = .roadmap
+    @State private var selection: Section
+
+    init(selection: Section = .roadmap) {
+        _selection = State(initialValue: selection)
+    }
 
     enum Section: Hashable {
         case roadmap, forYou, practice, profile
