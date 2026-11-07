@@ -1,5 +1,5 @@
 // M14 – mobile burger: lines cross, the header grows to a full-screen dark menu.
-import { gsap } from './motion.js';
+import { gsap, EASE } from './motion.js';
 
 export function initBurger() {
   const burger = document.querySelector('.burger-wrap');
@@ -13,7 +13,7 @@ export function initBurger() {
 
   burger.addEventListener('click', () => {
     open = !open;
-    const ease = 'power1.inOut';
+    const ease = EASE.ease;
     if (open) {
       gsap.to(second, { rotation: -45, x: '-0.5rem', y: '-0.3rem', duration: 0.5, ease });
       gsap.to(first, { rotation: 45, x: '-0.5rem', y: '0.3rem', duration: 0.5, ease });
