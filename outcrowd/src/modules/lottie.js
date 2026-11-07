@@ -1,0 +1,44 @@
+// Lottie players for every [data-lottie] element.
+//   data-lottie="/lottie/x.json"   animation file
+//   data-lottie-autoplay           play on load
+//   data-lottie-loop               loop
+// Animations without autoplay are driven by other modules through getLottie(el).
+import lottie from 'lottie-web';
+
+const players = new Map();
+
+export function initLotties(root = document) {
+  for (const el of root.querySelectorAll('[data-lottie]')) {
+    if (players.has(el)) continue;
+    const anim = lottie.loadAnimation({
+      container: el,
+      path: el.dataset.lottie,
+      renderer: 'svg',
+      loop: el.hasAttribute('data-lottie-loop'),
+      autoplay: el.hasAttribute('data-lottie-autoplay'),
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet' },
+    });
+    players.set(el, anim);
+  }
+  // exposed for the screenshot tooling (tools/lib/capture.mjs freezes every player)
+  window.lottie = lottie;
+}
+
+export function getLottie(el) {
+  return el ? players.get(el) : undefined;
+}
+
+/** Resolves once the animation data is loaded (totalFrames known). */
+export function whenLoaded(anim) {
+  return new Promise((resolve) => {
+    if (!anim) return;
+    if (anim.isLoaded) resolve(anim);
+    else anim.addEventListener('DOMLoaded', () => resolve(anim));
+  });
+}
+
+/** Show a given progress (0..1) of a paused animation. */
+export function setProgress(anim, p) {
+  if (!anim || !anim.isLoaded) return;
+  anim.goToAndStop(p * (anim.totalFrames - 1), true);
+}

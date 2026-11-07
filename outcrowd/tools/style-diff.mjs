@@ -4,7 +4,7 @@
 // per section by "tag.classes" + occurrence index (Webflow-only classes ignored), so wrapper
 // elements that only existed for Webflow embeds do not break the pairing.
 //
-// usage: node tools/style-diff.mjs [--url=http://localhost:5173/] [--width=1440]
+// usage: node tools/style-diff.mjs [--url=http://localhost:5180/] [--width=1440]
 //                                  [--section=hero,cards] [--props=all|layout] [--max=40]
 
 import path from 'node:path';
@@ -109,7 +109,7 @@ async function main() {
   try {
     const ref = await openReference(browser, WIDTH);
     await settleReference(ref.page);
-    const cand = await openCandidate(browser, WIDTH, { url: args.url || 'http://localhost:5173/' });
+    const cand = await openCandidate(browser, WIDTH, { url: args.url || 'http://localhost:5180/' });
     await settleReference(cand.page);
     const [A, B] = await Promise.all([grab(ref.page), grab(cand.page)]);
     let total = 0;

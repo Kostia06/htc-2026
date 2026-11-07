@@ -1,0 +1,84 @@
+/* "Light travelling along the border": a radial blob (.stats-card-gradient) sits behind a card
+   that is inset by ~1px inside an overflow:hidden wrapper; JS/GSAP moves the blob around. */
+
+.stats-card-gradient {
+  position: absolute;
+  inset: -10% auto auto -27%;
+  width: 110%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.4), var(--bg) 58%);
+}
+
+.stats-card-gradient.services {
+  top: -39%;
+  width: 115%;
+  aspect-ratio: 2 / 3;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.6), var(--bg) 62%);
+}
+
+.services {
+  order: -1;
+  margin-bottom: 0.4rem;
+  color: var(--text-soft);
+  font-size: 1.111rem;
+  line-height: 140%;
+}
+
+/* pill tag with a glowing border ("Digital brand design agency", "Complex solution") */
+.hero-tag-wrap {
+  position: relative;
+  width: 20.5rem;
+  height: 2.57rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.1rem;
+  overflow: hidden;
+  border-radius: 2.4rem;
+}
+
+.hero-tag {
+  position: absolute;
+  inset: 0.07rem;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.2rem;
+  border-radius: 2.4rem;
+  background: radial-gradient(185.4% 106.06% at 66.51% 82.61%, #131111 0%, #262222 100%);
+}
+
+.tag-text {
+  color: var(--white);
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 767px) {
+  .services {
+    font-size: 1rem;
+  }
+
+  .hero-tag {
+    border-radius: 3.13rem;
+  }
+
+  .hero-tag-wrap {
+    width: 15.69rem;
+    height: 2.25rem;
+    border-radius: 3.13rem;
+  }
+
+  .tag-text {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .stats-card-gradient {
+    top: -67%;
+    width: 143%;
+    height: 200%;
+    aspect-ratio: auto;
+  }
+}

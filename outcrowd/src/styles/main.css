@@ -3,3 +3,14 @@
 @import './fonts.css';
 @import './base.css';
 @import './layout.css';
+
+@import './components/typography.css';
+@import './components/buttons.css';
+@import './components/glow.css';
+@import './components/shadow.css';
+@import './components/social.css';
+@import './components/flip-link.css';
+@import './components/bg-video.css';
+
+@import './sections/preloader.css';
+@import './sections/header.css';
