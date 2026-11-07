@@ -125,3 +125,54 @@
 
 .account__card p { margin: 0; color: #b3b3b3; }
 .account__card code { color: #fff; }
+
+.account__answers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+
+.account__answers div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.account__answers dt { color: #a3a3a3; }
+.account__answers dd { margin: 0; color: #fff; }
+
+.auth__link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #b3b3b3;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.auth__link:hover { color: #fff; }
+
+.account__card h1 {
+  margin: 0 0 4px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.account__card code {
+  padding: 0;
+  background: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+}
