@@ -1,3 +1,4 @@
+export { agentDirectory } from "./agent-directory";
 export { wellKnownCard } from "./card";
 export type { AgentCard, AgentDirectory, AgentSkillCard, DirectoryRun } from "./directory";
 export { a2aRouter } from "./router";
