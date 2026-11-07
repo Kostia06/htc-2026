@@ -1,56 +1,54 @@
 import RavenKit
 import SwiftUI
 
-/// Signs a Meta Quest into this account: the headset shows a QR, this phone scans it and approves.
+/// Signs a Meta Quest into this account: the headset shows a QR, this phone scans it and approves. Pushed from Practice.
 struct PairHeadsetView: View {
     @Environment(AppModel.self) private var app
     @State private var model = PairingModel()
     @State private var isScanning = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Practice in VR")
-                        .font(.largeTitle.bold())
-                    Text("""
-                    Open Raven in the Quest browser. It shows a code: scan it here and the headset joins your account, \
-                    with your profile and interview plans.
-                    """)
-                    .foregroundStyle(.secondary)
-                    statusCard
-                    Button {
-                        isScanning = true
-                    } label: {
-                        Label("Scan the headset's code", systemImage: "qrcode.viewfinder")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .controlSize(.large)
-                    .disabled(!QRScannerView.isAvailable)
-                    typedCodeField
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Practice in VR")
+                    .font(.largeTitle.bold())
+                Text("""
+                Open Raven in the Quest browser. It shows a code: scan it here and the headset joins your account, \
+                with your profile and interview plans.
+                """)
+                .foregroundStyle(.secondary)
+                statusCard
+                Button {
+                    isScanning = true
+                } label: {
+                    Label("Scan the headset's code", systemImage: "qrcode.viewfinder")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
                 }
-                .padding(24)
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
+                .disabled(!QRScannerView.isAvailable)
+                typedCodeField
             }
-            .sheet(isPresented: $isScanning) {
-                QRScannerView { code in
-                    isScanning = false
-                    model.found(code)
-                }
-                .ignoresSafeArea()
-                .presentationDetents([.large])
-            }
-            .confirmationDialog("Sign this headset in to your account?", isPresented: isConfirming, titleVisibility: .visible) {
-                Button("Sign in headset") { approvePending() }
-                Button("Cancel", role: .cancel) { model.reset() }
-            } message: {
-                Text("Only approve a code shown on your own headset.")
-            }
-            .sensoryFeedback(.success, trigger: model.state == .paired)
-            .onAppear(perform: takePendingLink)
-            .onChange(of: app.pendingPairing) { _, _ in takePendingLink() }
+            .padding(24)
         }
+        .sheet(isPresented: $isScanning) {
+            QRScannerView { code in
+                isScanning = false
+                model.found(code)
+            }
+            .ignoresSafeArea()
+            .presentationDetents([.large])
+        }
+        .confirmationDialog("Sign this headset in to your account?", isPresented: isConfirming, titleVisibility: .visible) {
+            Button("Sign in headset") { approvePending() }
+            Button("Cancel", role: .cancel) { model.reset() }
+        } message: {
+            Text("Only approve a code shown on your own headset.")
+        }
+        .sensoryFeedback(.success, trigger: model.state == .paired)
+        .onAppear(perform: takePendingLink)
+        .onChange(of: app.pendingPairing) { _, _ in takePendingLink() }
     }
 
     @ViewBuilder private var statusCard: some View {
@@ -74,7 +72,7 @@ struct PairHeadsetView: View {
 
     private var typedCodeField: some View {
         HStack {
-            TextField("Or type the 8-character code", text: $model.typedCode)
+            TextField("Or type the code", text: $model.typedCode)
                 .textInputAutocapitalization(.characters)
                 .autocorrectionDisabled()
                 .font(.body.monospaced())

@@ -21,7 +21,7 @@ struct MainTabView: View {
                 ForYouView()
             }
             Tab("Practice", systemImage: "visionpro", value: .practice) {
-                PairHeadsetView()
+                PracticeView()
             }
             Tab("Profile", systemImage: "person.crop.circle", value: .profile) {
                 ProfileView()

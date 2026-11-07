@@ -43,7 +43,7 @@ public struct RavenClient: Sendable {
         _ = try await responseData(for: authorized("DELETE", "api/me/profile"))
     }
 
-    private func authorized(
+    func authorized(
         _ method: String,
         _ path: String,
         json: (some Encodable)? = Never?.none,
@@ -63,7 +63,7 @@ public struct RavenClient: Sendable {
         return request
     }
 
-    private func send<Response: Decodable>(_ request: URLRequest) async throws(RavenError) -> Response {
+    func send<Response: Decodable>(_ request: URLRequest) async throws(RavenError) -> Response {
         let data = try await responseData(for: request)
         do {
             return try JSONDecoder().decode(Response.self, from: data)
