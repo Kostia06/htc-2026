@@ -27,7 +27,7 @@
     "items": [
       { "label": "How it works", "href": "#how" },
       { "label": "Actions", "href": "#actions" },
-      { "label": "Why not just apply", "href": "#why" },
+      { "label": "Why Raven", "href": "#why" },
       { "label": "FAQ", "href": "#faq" }
     ],
     "primary": "Get my plan",
