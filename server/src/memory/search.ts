@@ -1,8 +1,8 @@
 import { embed } from "../integrations/workers-ai";
-import type { MemoryHit } from "../agents/research/tools";
+import type { CompanyFactHit } from "../agents/core/types";
 import type { Env } from "../env";
 
-export async function memorySearch(env: Env, companyId: string, query: string): Promise<MemoryHit[]> {
+export async function memorySearch(env: Env, companyId: string, query: string): Promise<CompanyFactHit[]> {
   const { matches } = await env.VECTORS.query(await embed(env, query), {
     topK: 8,
     filter: { company_id: companyId, kind: "fact" },

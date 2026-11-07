@@ -1,0 +1,88 @@
+import type { Env } from "../../env";
+import type { JsonSchema } from "../../lib/json-schema";
+import type { NewFact } from "../../memory/facts";
+import type { getCompanyInsights } from "../../memory/insights";
+import type { Model, ToolCallRecord } from "./loop";
+
+export type Platform = "app" | "vr" | "background";
+export const PLATFORMS: readonly Platform[] = ["app", "vr", "background"];
+
+import type { MemoryKind, PrivateMemory } from "../../memory/private/store";
+
+export type { MemoryKind, PrivateMemory };
+export type PrivateMemoryPort = {
+  recall(opts?: { query?: string; kinds?: MemoryKind[]; limit?: number }): Promise<PrivateMemory[]>;
+  remember(item: { kind: MemoryKind; text: string }): Promise<PrivateMemory>;
+};
+export const MEMORY_KINDS: readonly MemoryKind[] = ["goal", "skill", "weakness", "preference", "note"];
+
+export type SearchResult = { title: string; url: string; snippet: string };
+export type CompanyFactHit = { kind: string; text: string; source_url?: string; score: number };
+export type CompanyInsights = NonNullable<Awaited<ReturnType<typeof getCompanyInsights>>>;
+export type CompanyRef = { id: string; slug: string; name: string; website: string | null };
+
+// everything outside the Worker a tool can reach; tests swap in fakes
+export type Services = {
+  search(query: string): Promise<SearchResult[]>;
+  fetchPage(url: string): Promise<string>;
+  fetchRobots(origin: string): Promise<string | null>;
+  companyFacts(companyId: string, query: string): Promise<CompanyFactHit[]>;
+  saveFact(companyId: string, fact: NewFact): Promise<{ saved: boolean; reason?: string }>;
+  companyInsights(slug: string, role?: string): Promise<CompanyInsights | null>;
+  claimResearch(slug: string): Promise<boolean>;
+  // returns once the run is recorded, false while on cooldown; the research itself continues in the background
+  startResearch(slug: string): Promise<boolean>;
+};
+
+export type ToolContext = {
+  env: Env;
+  userId: string;
+  company?: CompanyRef;
+  platform: Platform;
+  fetchedPages: Set<string>;
+  triedPages: Set<string>;
+  memory: PrivateMemoryPort;
+  services: Services;
+};
+
+export type ToolDefinition = {
+  name: string;
+  description: string;
+  parameters: JsonSchema;
+  terminal?: boolean;
+  run(args: Record<string, unknown>, ctx: ToolContext): Promise<unknown>;
+};
+
+export type SkillOutput = Record<string, unknown>;
+
+export type Skill<Input = unknown> = {
+  name: string;
+  description: string;
+  platforms: Platform[];
+  // false keeps private memory out of the prompt and the tools, e.g. for research that writes global facts
+  personal: boolean;
+  tools: string[];
+  maxSteps: number;
+  instructions: string;
+  // when the input has a `company` slug, the harness resolves it into ctx.company before the run
+  inputSchema: JsonSchema;
+  outputSchema: JsonSchema;
+  buildGoal(input: Input, ctx: ToolContext): string;
+  // checked on every entry path before a run is recorded; false means "ran recently, not again yet"
+  claim?(input: Input, services: Services): Promise<boolean>;
+  // replaces model-reported fields with ones derived from what the tools actually did
+  finalize?(output: SkillOutput, toolCalls: ToolCallRecord[]): SkillOutput;
+};
+
+export type RunRequest = { skill: Skill; platform: Platform; userId: string; input: unknown };
+
+export type RunResult =
+  | { runId: string; status: "done"; output: SkillOutput; toolCalls: ToolCallRecord[] }
+  | { runId: string; status: "failed"; error: string; toolCalls: ToolCallRecord[] };
+
+export type AgentDeps = {
+  env: Env;
+  model(systemPrompt: string): Model;
+  memoryFor(userId: string): PrivateMemoryPort;
+  services: Services;
+};

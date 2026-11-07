@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { GeminiContent } from "../../src/integrations/gemini";
-import { runAgent, type Tool } from "../../src/agents/core/loop";
+import type { GeminiContent } from "../../../src/integrations/gemini";
+import { runAgent, type Tool } from "../../../src/agents/core/loop";
 
 function scripted(replies: GeminiContent[]) {
   const seen: GeminiContent[][] = [];
@@ -56,5 +56,42 @@ describe("runAgent", () => {
     const responses = seen[1].at(-1)!.parts;
     expect(responses).toHaveLength(6);
     expect(responses[5].functionResponse?.response).toEqual({ error: "too many tool calls in one step, max 4" });
+  });
+});
+
+describe("runAgent with a terminal tool", () => {
+  const finish: Tool = {
+    declaration: { name: "finish", description: "finish", parameters: { type: "object", properties: {} } },
+    terminal: true,
+    run: async (args) => (args.ok ? { accepted: true } : { error: "missing ok" }),
+  };
+
+  it("ends the run when the terminal tool accepts, and returns its args as the output", async () => {
+    const replies: GeminiContent[] = [
+      { role: "model", parts: [{ functionCall: { name: "finish", args: { ok: true } } }, { functionCall: { name: "echo", args: { v: "late" } } }] },
+    ];
+    const run = vi.fn(async () => ({}));
+    const { model } = scripted(replies);
+    const result = await runAgent({ model, tools: { echo: { ...echo, run }, finish }, goal: "x", maxSteps: 5 });
+    expect(result.output).toEqual({ ok: true });
+    expect(result.stoppedEarly).toBe(false);
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it("feeds a rejected terminal call back so the model can fix it", async () => {
+    const replies: GeminiContent[] = [
+      { role: "model", parts: [{ functionCall: { name: "finish", args: {} } }] },
+      { role: "model", parts: [{ functionCall: { name: "finish", args: { ok: true } } }] },
+    ];
+    const { model, seen } = scripted(replies);
+    const result = await runAgent({ model, tools: { finish }, goal: "x", maxSteps: 5 });
+    expect(seen[1].at(-1)?.parts[0].functionResponse?.response).toEqual({ error: "missing ok" });
+    expect(result.output).toEqual({ ok: true });
+  });
+
+  it("has no output when the model answers in text instead", async () => {
+    const { model } = scripted([{ role: "model", parts: [{ text: "hi" }] }]);
+    const result = await runAgent({ model, tools: { finish }, goal: "x", maxSteps: 5 });
+    expect(result.output).toBeUndefined();
   });
 });

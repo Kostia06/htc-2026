@@ -3,6 +3,7 @@ export type Env = {
   VECTORS: VectorizeIndex;
   AI: Ai;
   SESSION_SECRET: string;
+  MEMORY_SECRET: string;
   GEMINI_API_KEY: string;
   GEMINI_MODEL: string;
   KEENABLE_API_KEY: string;
