@@ -56,6 +56,7 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so it can tell when you've finished and respond.
         NSCameraUsageDescription: Raven uses the camera to scan the code on your headset so it can join your account.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true

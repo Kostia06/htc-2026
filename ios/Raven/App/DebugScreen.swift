@@ -4,7 +4,7 @@
 
     /// Opens one screen with sample data: launch with `-RavenScreen review` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, reading, review, roadmap, forYou, practice, profile
+        case signIn, reading, review, roadmap, forYou, practice, voice, summary, profile
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -23,6 +23,8 @@
             case .roadmap: tabs(.roadmap)
             case .forYou: tabs(.forYou)
             case .practice: tabs(.practice)
+            case .voice: DebugVoiceSession()
+            case .summary: SessionSummaryView(summary: .offline, onDone: {})
             case .profile: tabs(.profile)
             }
         }
@@ -32,6 +34,22 @@
         }
 
         private static let sampleQuestions = ["Which role do you want next?", "Any projects you'd like to show?"]
+    }
+
+    /// Holds its model in state so a re-render doesn't start a second session.
+    private struct DebugVoiceSession: View {
+        @State private var model = VoiceSessionModel(
+            request: VoiceSessionRequest(mode: .interview),
+            service: OfflineVoicePractice(
+                questions: [PracticeQuestion(text: "Why do you want to work on our lending team?", source: .reported)],
+                company: "ATB Financial",
+            ),
+            engine: DemoVoiceEngine(),
+        )
+
+        var body: some View {
+            VoiceSessionView(model: model)
+        }
     }
 
     extension Profile {

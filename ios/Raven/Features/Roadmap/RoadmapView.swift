@@ -18,7 +18,8 @@ struct RoadmapView: View {
                     VStack(spacing: 28) {
                         ForEach(0 ..< 5, id: \.self) { index in
                             Circle()
-                                .fill(index == 0 ? Theme.action : Color(white: 0.16))
+                                .fill(index == 0 ? Theme.action : Color(white: 0.22))
+                                .overlay(Circle().strokeBorder(Theme.hairline, lineWidth: 1))
                                 .frame(width: 64, height: 64)
                                 .offset(x: [0, 48, 72, 48, 0][index])
                         }
