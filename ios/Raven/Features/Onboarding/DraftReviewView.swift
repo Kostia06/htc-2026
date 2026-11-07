@@ -65,6 +65,13 @@ struct DraftReviewView: View {
             .controlSize(.large)
             .disabled(!model.canConfirm)
             .padding(.horizontal, 24)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+            // Without this the list shows through the glass button and reads as overlapping rows.
+            .background(alignment: .top) {
+                LinearGradient(colors: [Theme.ground.opacity(0), Theme.ground], startPoint: .top, endPoint: .center)
+                    .ignoresSafeArea()
+            }
         }
     }
 
