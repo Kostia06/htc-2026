@@ -1,4 +1,5 @@
 import type { Env } from "../env";
+import { deleteExpiredDocuments } from "../documents/store";
 
 const DAY_MS = 86_400_000;
 const MEMORY_IDLE_DAYS = 30;
@@ -41,5 +42,6 @@ export async function collectGarbage(env: Env, now = new Date()) {
     privateDeleted: await deleteIdleMemories(env, now),
     factsDeleted: await deleteStaleFacts(env, now),
     cacheDeleted: await deleteExpiredCache(env, now),
+    documentsDeleted: await deleteExpiredDocuments(env, now),
   };
 }
