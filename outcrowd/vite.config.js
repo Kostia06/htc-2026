@@ -18,12 +18,28 @@ function expand(html, depth = 0) {
   });
 }
 
+const CONTENT = path.resolve(import.meta.dirname, 'src/content.json');
+const ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+/** Replace {{ key.path }} (escaped) and {{{ key.path }}} (raw) with values from src/content.json. */
+function fill(html) {
+  const content = JSON.parse(fs.readFileSync(CONTENT, 'utf8'));
+  const lookup = (key) => {
+    const value = key.split('.').reduce((obj, k) => obj?.[k], content);
+    if (typeof value !== 'string') throw new Error(`content.json: no string at "${key}"`);
+    return value.replaceAll('{brand}', content.brand);
+  };
+  return html
+    .replace(/\{\{\{\s*([\w.]+)\s*\}\}\}/g, (_, key) => lookup(key))
+    .replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, key) => lookup(key).replace(/[&<>"']/g, (c) => ESCAPE[c]));
+}
+
 function htmlPartials() {
   return {
     name: 'html-partials',
-    transformIndexHtml: { order: 'pre', handler: (html) => expand(html) },
+    transformIndexHtml: { order: 'pre', handler: (html) => fill(expand(html)) },
     handleHotUpdate({ file, server }) {
-      if (file.startsWith(PARTIALS)) {
+      if (file.startsWith(PARTIALS) || file === CONTENT) {
         server.ws.send({ type: 'full-reload' });
         return [];
       }
