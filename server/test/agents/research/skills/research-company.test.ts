@@ -1,10 +1,11 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runSkill } from "../../../../src/agents/core/harness";
+import { researchAgent } from "../../../../src/agents/research/agent";
 import { researchCompany } from "../../../../src/agents/research/skills/research-company";
 import { call, fakeDeps, fakeServices } from "../../fakes";
 
-const request = { skill: researchCompany, platform: "background" as const, userId: "background", input: { company: "acme" } };
+const request = { skill: researchCompany, tools: researchAgent.tools, platform: "background" as const, userId: "background", input: { company: "acme" } };
 
 describe("research-company skill", () => {
   beforeEach(async () => {

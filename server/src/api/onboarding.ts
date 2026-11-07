@@ -1,8 +1,7 @@
 import { Hono } from "hono";
-import { startSkill } from "../agents/core/harness";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
-import { onboardingPrefill } from "../agents/resume/skills/onboarding-prefill";
+import { orchestrate } from "../agents/orchestrator";
 import { extractText, UnreadableDocument } from "../documents/extract";
 import { deleteDocument, saveDocument } from "../documents/store";
 import type { AppContext, Env } from "../env";
@@ -34,8 +33,7 @@ export function onboardingRouter(makeDeps: MakeDeps) {
     }
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
-    const { result } = await startSkill(makeDeps(c.env, waitUntil), { skill: onboardingPrefill, platform: "app", userId, input: { documentId } });
-    const run = await result;
+    const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "onboarding-prefill", platform: "app", userId, input: { documentId } });
     if (run.status === "failed") return c.json({ documentId, error: "the resume was read but the draft could not be made, fill it in by hand" }, 502);
     return c.json({ documentId, ...run.output });
   });
