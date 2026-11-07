@@ -894,80 +894,6 @@ button:focus-visible,
   }
 }
 
-/* --- built to respect you ----------------------------------------------- */
-.awards-list-item.r-respect-item {
-  grid-template-columns: 1fr 1.6fr;
-  place-items: center start;
-  gap: 2rem;
-}
-
-.r-respect-item .awards-desc-2.r-respect-body {
-  margin-right: 0;
-  color: var(--text-soft);
-}
-
-.awards-list-item-wrap:has(.r-respect-item) {
-  cursor: default;
-}
-
-@media screen and (max-width: 767px) {
-  .awards-list-item.r-respect-item {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
-  }
-}
-
-/* --- guides ------------------------------------------------------------- */
-.r-soon {
-  display: inline-block;
-  margin-bottom: 0.8rem;
-  padding: 0.45rem 0.8rem 0.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 2rem;
-  color: var(--text-soft);
-  font-size: 0.8rem;
-}
-
-.haeding-blog {
-  margin: 0;
-  font-weight: inherit;
-}
-
-.blog-feature-link {
-  cursor: default;
-}
-
-.r-guide-art {
-  position: relative;
-  overflow: hidden;
-}
-
-.r-guide-art span {
-  position: absolute;
-  border-radius: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(16, 16, 16, 0.75);
-}
-
-.r-guide-art--1 span:nth-child(1) { inset: 18% 14% auto 14%; height: 18%; }
-.r-guide-art--1 span:nth-child(2) { inset: 42% 26% auto 14%; height: 12%; }
-.r-guide-art--1 span:nth-child(3) { inset: 60% 14% auto 38%; height: 22%; background: rgba(254, 74, 35, 0.75); }
-
-.blog-news-home-img.r-guide-art {
-  display: block;
-  aspect-ratio: 1.45;
-  border-radius: 1.2rem;
-  background: radial-gradient(70% 70% at 70% 20%, rgba(138, 92, 255, 0.45), transparent 70%), var(--surface-2);
-}
-
-.r-guide-art--3 {
-  background: radial-gradient(70% 70% at 30% 80%, rgba(254, 74, 35, 0.4), transparent 70%), var(--surface-2) !important;
-}
-
-.r-guide-art--2 span:nth-child(1) { inset: 22% 18% auto 18%; height: 22%; }
-.r-guide-art--2 span:nth-child(2) { inset: 52% 34% auto 18%; height: 16%; }
-.r-guide-art--3 span { inset: 26% 22%; border-radius: 50%; }
-
 /* --- FAQ ---------------------------------------------------------------- */
 h3.faq-question-label {
   margin: 0;
@@ -1171,33 +1097,9 @@ h3.faq-question-label {
   background: var(--orange);
 }
 
-.awards-list-item.r-respect-item > .heading-5 {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  color: var(--white);
-}
-
-.awards-list-item.r-respect-item > .awards-desc-2 {
-  justify-self: start;
-  text-align: left;
-}
-
 /* headings re-tagged for a correct outline keep their previous look */
 .swiper-slide .heading-5 {
   color: inherit;
-}
-
-.awards-list-item.r-respect-item > .heading-5 {
-  font-size: 2.222rem;
-  line-height: 2.375rem;
-}
-
-@media screen and (max-width: 767px) {
-  .awards-list-item.r-respect-item > .heading-5 {
-    font-size: 1.5rem;
-    line-height: 1.2;
-  }
 }
 
 /* closing CTA heading is longer than the old two-word one */
