@@ -3,9 +3,9 @@
   "brand": "Raven",
   "wordmark": "raven",
   "links": {
-    "_note": "app: where 'Get my plan' goes. Set to the real app URL once it exists. login: the sign-in route.",
-    "app": "#cta",
-    "login": "/login",
+    "_note": "app / login: the product app's sign-up and sign-in screens. {appUrl} comes from APP_URL (landing/.env.local), default http://localhost:5173.",
+    "app": "{appUrl}/?mode=signup",
+    "login": "{appUrl}/?mode=signin",
     "how": "#how",
     "actions": "#actions",
     "why": "#why",
