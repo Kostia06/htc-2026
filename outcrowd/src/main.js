@@ -18,6 +18,8 @@ import { initTestimonial } from './modules/testimonial.js';
 import { initAwards } from './modules/awards.js';
 import { initBlog } from './modules/blog.js';
 import { initFaq } from './modules/faq.js';
+import { initCta } from './modules/cta.js';
+import { initCalendly } from './modules/calendly.js';
 
 initLotties();
 initPreloader();
@@ -37,3 +39,5 @@ initTestimonial();
 initAwards();
 initBlog();
 initFaq();
+initCta();
+initCalendly();
