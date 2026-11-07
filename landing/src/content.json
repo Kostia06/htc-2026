@@ -53,31 +53,58 @@
     "widgets": [
       {
         "label": "This week",
-        "value": "3 actions"
+        "value": "3 actions",
+        "tone": "orange"
       },
       {
-        "label": "Follow up",
-        "value": "within 24h"
+        "label": "Shortlist",
+        "value": "See which jobs to apply to",
+        "tone": "violet"
       },
       {
         "label": "Event",
-        "value": "Thu · Meetup"
+        "value": "Thu · JS Meetup",
+        "tone": "blue"
       },
       {
-        "label": "Funding news",
-        "value": "New raise"
+        "label": "Draft",
+        "value": "Brainstorm your opener",
+        "tone": "violet"
       },
       {
         "label": "Talking points",
-        "value": "5 ready"
+        "value": "5 ready",
+        "tone": "orange"
       },
       {
         "label": "Practice",
-        "value": "10 min"
+        "value": "10-minute mock interview",
+        "tone": "green"
+      },
+      {
+        "label": "Follow up",
+        "value": "Within 24 hours",
+        "tone": "orange"
+      },
+      {
+        "label": "Funding news",
+        "value": "A local startup just raised",
+        "tone": "green"
+      },
+      {
+        "label": "Research",
+        "value": "Read their latest launch",
+        "tone": "blue"
       },
       {
         "label": "Next move",
-        "value": "Say hello"
+        "value": "Say hello to the speaker",
+        "tone": "violet"
+      },
+      {
+        "label": "Reminder",
+        "value": "Send your thank-you note",
+        "tone": "blue"
       }
     ]
   },
