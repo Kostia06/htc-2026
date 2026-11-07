@@ -1,0 +1,558 @@
+/* Services: big "Services" heading revealed by a mask, a glowing vertical line, and six cards
+   (lotties, logo cross-fade, taxi app video) with glowing borders and a mouse spotlight. */
+
+.section.is-cases {
+  margin-top: -5rem;
+  padding-top: 18.3rem;
+  padding-bottom: 13.33rem;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+/* --- heading --- */
+.section-heading-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-name {
+  padding-top: 1.3rem;
+  color: var(--white);
+  text-align: center;
+  font-size: 9.72222rem;
+  line-height: 8.75rem;
+}
+
+.shadow.vertical.small {
+  width: 100%;
+  height: 300%;
+  background-image: linear-gradient(transparent, var(--bg) 43%, var(--bg));
+}
+
+.b1.serv-sub {
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.b1.serv-sub.max-w-40 {
+  max-width: 40rem;
+  margin-top: 2.08rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.38889rem;
+}
+
+.b1.serv-sub.second {
+  max-width: 33.47rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--white);
+  font-size: 1.80556rem;
+}
+
+.hero-tag-wrap.serv {
+  width: 13.55rem;
+  height: 3.125rem;
+  margin-top: 1.94rem;
+  padding: 0.07rem;
+}
+
+.stats-card-gradient.serv {
+  top: -124%;
+  left: -46%;
+  width: 165%;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2), var(--bg) 58%);
+}
+
+.stats-card-gradient.services.serv {
+  top: -195%;
+  left: -33%;
+  width: 100%;
+  margin-bottom: 0;
+  aspect-ratio: 3 / 2;
+}
+
+.section-subheading-serv-home {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+/* thin line with a light travelling down it */
+.verticle-line {
+  position: relative;
+  width: 0.12rem;
+  height: 17.7rem;
+  margin: 2.29rem auto;
+  overflow: hidden;
+}
+
+.stats-card-gradient.services.line {
+  top: -15%;
+  left: 19%;
+  width: 7rem;
+  margin-bottom: 0;
+  aspect-ratio: 2 / 7;
+  pointer-events: none;
+  transform: translate(-50%);
+}
+
+.custom-cursor {
+  position: fixed;
+  z-index: 9999;
+  display: none;
+  width: 194px;
+  height: 194px;
+  pointer-events: none;
+  background: url('/images/6603cbcc4ba3de9a362cc967_cursor-service.svg') center / cover;
+  transform: translate(-50%, -50%);
+}
+
+/* --- cards: two-column masonry --- */
+.service-card-wrap {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.22rem;
+  margin-top: 5.5rem;
+}
+
+.card-glow {
+  position: relative;
+  padding: 0.1rem;
+  overflow: hidden;
+  border-radius: 1.88vw;
+}
+
+.card-glow.set-4 {
+  margin-top: -6.78vw;
+}
+
+.card-glow.set-6 {
+  margin-top: -5.5vw;
+}
+
+.stats-card-gradient.services.set-1 {
+  width: 113%;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.35), var(--bg) 62%);
+}
+
+.stats-card-gradient.services.set-2,
+.stats-card-gradient.services.set-3 {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.35), var(--bg) 62%);
+}
+
+.service-card {
+  position: relative;
+  z-index: 2;
+  width: 34.5833rem;
+  max-width: 34.5833rem;
+  padding-top: 4.5rem;
+  overflow: hidden;
+  border-radius: 1.87792rem;
+  background-color: var(--surface-1);
+}
+
+.service-card.set-1 {
+  height: 41.7361rem;
+  border-radius: 1.88vw;
+}
+
+.service-card.set-2 {
+  height: 36.1111rem;
+}
+
+.service-card.set-3 {
+  height: 40.4167rem;
+}
+
+.service-card.set-4 {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 4.44rem;
+  height: 35.0694rem;
+  padding-top: 5rem;
+}
+
+.service-card.set-5 {
+  height: 37.6389rem;
+}
+
+.service-card.set-6 {
+  height: 45.5556rem;
+  border-radius: 1.88rem;
+}
+
+/* M38: spotlight following the mouse (custom properties set by modules/services.js) */
+.service-card::before,
+.service-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 500ms;
+}
+
+.service-card::before {
+  z-index: 3;
+  background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.06), transparent 20%);
+}
+
+.service-card::after {
+  z-index: 1;
+  background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.08), transparent 20%);
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.service-card-title {
+  max-width: 25.125rem;
+  margin: 0 auto;
+  color: var(--white);
+  text-align: center;
+  font-size: 3.19444rem;
+  font-weight: 500;
+  line-height: 3.5rem;
+}
+
+.service-card-desc {
+  position: relative;
+  z-index: 3;
+  max-width: 22.9167rem;
+  margin: 0.75rem auto 0;
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 1.111rem;
+  line-height: 150%;
+}
+
+.service-card-desc.big {
+  max-width: 29.44rem;
+}
+
+.service-card-desc._3 {
+  max-width: 27.9167rem;
+}
+
+.service-card-desc._4 {
+  max-width: 23.333rem;
+}
+
+.service-card-desc._5 {
+  max-width: 24.86rem;
+}
+
+/* card artwork */
+.brand-lottie {
+  position: absolute;
+  inset: 0% 0% -20%;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  transform: scale(0.8);
+}
+
+.platform-lottie {
+  position: absolute;
+  inset: 0%;
+  width: auto;
+  pointer-events: none;
+}
+
+.web-lottie {
+  position: absolute;
+  inset: 0%;
+}
+
+/* Brand Visual: 2 rows of logo tiles, coloured versions cross-fade on top (M40) */
+.service-card-anim-block {
+  display: flex;
+  flex-flow: column;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+  margin-top: 0;
+  transform: translateY(1.5rem);
+}
+
+.first-line-brand {
+  position: relative;
+  display: flex;
+  gap: 0.6rem;
+  height: auto;
+}
+
+.brand-item {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.brand-item.first {
+  margin-left: 0.6rem;
+}
+
+.brand-item-img {
+  position: static;
+  width: 8.2rem;
+}
+
+.brand-item-img.abs {
+  position: absolute;
+  inset: 0%;
+}
+
+/* Mobile Apps: taxi app video */
+.video-apptaxi {
+  position: absolute;
+  inset: 0%;
+  pointer-events: none;
+}
+
+.app-serv {
+  position: absolute;
+  inset: auto 0% -33%;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  border-radius: 1.38889vw;
+  object-fit: contain;
+}
+
+.taxi-video {
+  position: relative;
+  width: 100%;
+  height: 70%;
+  overflow: hidden;
+}
+
+.taxi-video > video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media screen and (min-width: 1920px) {
+  .service-card-wrap {
+    gap: 2.22vw;
+  }
+
+  .service-card.set-2,
+  .service-card.set-3,
+  .service-card.set-4,
+  .service-card.set-5 {
+    border-radius: 1.87792vw;
+  }
+
+  .service-card.set-6 {
+    border-radius: 1.88vw;
+  }
+
+  .card-glow.set-4 {
+    margin-top: -5.7vw;
+  }
+
+  .card-glow.set-6 {
+    margin-top: -4.3vw;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .section.is-cases {
+    padding: 5rem 1.25rem 6.38rem;
+  }
+
+  .section-name {
+    font-size: 4.875rem;
+    line-height: 5rem;
+  }
+
+  .b1.serv-sub.max-w-40 {
+    margin-top: 1rem;
+    font-size: 1.1259rem;
+  }
+
+  .b1.serv-sub.second {
+    font-size: 1.256rem;
+  }
+
+  .hero-tag-wrap.serv {
+    width: 10.1255rem;
+    height: 2.25rem;
+  }
+
+  .verticle-line {
+    height: 11.25rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .service-card-wrap {
+    gap: 1.25rem;
+    max-width: 100%;
+    margin-top: 4rem;
+  }
+
+  .card-glow {
+    width: 100%;
+    border-radius: 1.25rem;
+  }
+
+  .card-glow.set-4,
+  .card-glow.set-6 {
+    margin-top: 0;
+  }
+
+  .service-card.set-1,
+  .service-card.set-2,
+  .service-card.set-3,
+  .service-card.set-4,
+  .service-card.set-5,
+  .service-card.set-6 {
+    width: 100%;
+    max-width: none;
+    padding-top: 4rem;
+    border-radius: 1.25rem;
+  }
+
+  .service-card.set-1 {
+    height: 30.125rem;
+  }
+
+  .service-card.set-2 {
+    height: 28rem;
+  }
+
+  .service-card.set-3,
+  .service-card.set-5,
+  .service-card.set-6 {
+    height: 31.0625rem;
+  }
+
+  .service-card.set-4 {
+    gap: 2rem;
+    height: 28.875rem;
+  }
+
+  .service-card-title {
+    font-size: 1.75rem;
+    line-height: 114%;
+  }
+
+  .service-card-desc {
+    font-size: 1.125rem;
+    line-height: 155%;
+  }
+
+  .brand-lottie {
+    transform: scale(0.7);
+  }
+
+  .brand-lottie._2 {
+    z-index: 2;
+    bottom: -18%;
+    object-fit: cover;
+  }
+
+  .service-card-anim-block,
+  .first-line-brand {
+    gap: 0.34rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .section.is-cases {
+    margin-top: 0;
+  }
+
+  .service-card.set-1,
+  .service-card.set-2,
+  .service-card.set-3,
+  .service-card.set-4,
+  .service-card.set-5,
+  .service-card.set-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .service-card.set-1 {
+    height: 32rem;
+  }
+
+  .service-card.set-2 {
+    height: 29rem;
+  }
+
+  .service-card.set-4 {
+    height: 30rem;
+  }
+
+  .service-card.set-6 {
+    height: 35.4rem;
+  }
+
+  .service-card-desc {
+    max-width: 85%;
+  }
+
+  .service-card-desc._3 {
+    max-width: 100%;
+  }
+
+  .brand-lottie {
+    inset: auto 0% -16%;
+    z-index: 2;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(0.8);
+  }
+
+  .brand-lottie._2 {
+    bottom: -9%;
+    object-fit: cover;
+    transform: none;
+  }
+
+  .platform-lottie {
+    inset: auto 0% 3%;
+    transform: scale(1.12);
+  }
+
+  .web-lottie {
+    inset: auto 0% 0%;
+  }
+
+  .service-card-anim-block {
+    transform: none;
+  }
+
+  .card-glow,
+  .card-glow.set-6,
+  .hero-tag-wrap.serv {
+    padding: 0.05rem;
+  }
+
+  .verticle-line {
+    width: 0.1rem;
+    border-radius: 1px;
+  }
+
+  .brand-item-img,
+  .brand-item-img.abs.set-1 {
+    width: 5.3815rem;
+  }
+
+  .video-apptaxi {
+    bottom: -10%;
+  }
+}

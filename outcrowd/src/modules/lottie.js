@@ -42,3 +42,18 @@ export function setProgress(anim, p) {
   if (!anim || !anim.isLoaded) return;
   anim.goToAndStop(p * (anim.totalFrames - 1), true);
 }
+
+/**
+ * Endless sequence of lottie progress tweens (the original "lottie loop" interactions).
+ * steps: [[progressPercent, durationSeconds, delaySeconds?], ...]
+ */
+export function lottieLoop(anim, steps, gsap) {
+  const state = { p: 0 };
+  const render = () => setProgress(anim, state.p / 100);
+  const tl = gsap.timeline({ repeat: -1, paused: true, defaults: { ease: 'none', onUpdate: render } });
+  for (const [p, duration, delay = 0] of steps) {
+    if (duration) tl.to(state, { p, duration, delay });
+    else tl.set(state, { p, onComplete: render }, `+=${delay}`);
+  }
+  return tl;
+}
