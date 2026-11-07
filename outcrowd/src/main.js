@@ -9,6 +9,8 @@ import { initBurger } from './modules/burger.js';
 import { initExplode } from './modules/explode.js';
 import { initMagnetic } from './modules/magnetic.js';
 import { initHero } from './modules/hero.js';
+import { initSplitReveal } from './modules/split-reveal.js';
+import { initCards } from './modules/cards.js';
 
 initLotties();
 initPreloader();
@@ -19,3 +21,5 @@ initBurger();
 initExplode();
 initMagnetic();
 initHero();
+initSplitReveal();
+initCards();
