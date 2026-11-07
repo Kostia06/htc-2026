@@ -1,10 +1,11 @@
 import type { Env } from "../../env";
+import { recall, remember } from "../../memory/private/store";
 import type { PrivateMemoryPort } from "./types";
 
-// the encrypted per-user store is built separately; its port is bound to one user so no tool can reach another's memory
-export function memoryFor(_env: Env, _userId: string): PrivateMemoryPort {
-  const notWired = async (): Promise<never> => {
-    throw new Error("private memory not wired");
+// bound to one user up front, so no tool can ever pass in someone else's id
+export function memoryFor(env: Env, userId: string): PrivateMemoryPort {
+  return {
+    recall: (opts) => recall(env, userId, opts),
+    remember: (item) => remember(env, userId, item),
   };
-  return { recall: notWired, remember: notWired };
 }

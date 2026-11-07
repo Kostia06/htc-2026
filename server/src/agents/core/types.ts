@@ -7,8 +7,9 @@ import type { Model, ToolCallRecord } from "./loop";
 export type Platform = "app" | "vr" | "background";
 export const PLATFORMS: readonly Platform[] = ["app", "vr", "background"];
 
-export type MemoryKind = "goal" | "skill" | "weakness" | "preference" | "note";
-export type PrivateMemory = { id: string; kind: MemoryKind; text: string; createdAt: string; lastUsedAt: string; uses: number };
+import type { MemoryKind, PrivateMemory } from "../../memory/private/store";
+
+export type { MemoryKind, PrivateMemory };
 export type PrivateMemoryPort = {
   recall(opts?: { query?: string; kinds?: MemoryKind[]; limit?: number }): Promise<PrivateMemory[]>;
   remember(item: { kind: MemoryKind; text: string }): Promise<PrivateMemory>;
