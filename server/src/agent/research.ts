@@ -41,6 +41,17 @@ function liveTools(env: Env): ToolDeps {
 
 export const deps = { model: geminiModel, tools: liveTools };
 
+// atomic: two requests racing for the same company can't both get through the cooldown
+export async function claimResearch(env: Env, slug: string) {
+  const now = new Date();
+  const row = await env.DB.prepare(
+    "UPDATE companies SET last_researched_at = ? WHERE slug = ? AND (last_researched_at IS NULL OR last_researched_at < ?) RETURNING id",
+  )
+    .bind(now.toISOString(), slug, new Date(now.getTime() - COOLDOWN_MS).toISOString())
+    .first<{ id: string }>();
+  return row !== null;
+}
+
 export async function researchCompany(env: Env, slug: string) {
   const company = await env.DB.prepare("SELECT id, name, website FROM companies WHERE slug = ?")
     .bind(slug)
@@ -51,14 +62,14 @@ export async function researchCompany(env: Env, slug: string) {
   const goal = `Research ${company.name}${company.website ? ` (${company.website})` : ""} for people applying to entry-level and junior roles in Calgary.`;
   const run = await runAgent({ model: deps.model(env), tools, goal, maxSteps: MAX_STEPS });
 
-  await env.DB.prepare("UPDATE companies SET last_researched_at = ? WHERE id = ?").bind(new Date().toISOString(), company.id).run();
-  const saves = run.toolCalls.filter((c) => c.name === "save_fact").length;
-  return { added: saves, summary: run.answer, steps: run.toolCalls.length, stoppedEarly: run.stoppedEarly };
+  const added = run.toolCalls.filter((c) => c.name === "save_fact" && (c.result as { saved?: boolean })?.saved).length;
+  return { added, summary: run.answer, toolCalls: run.toolCalls.length, stoppedEarly: run.stoppedEarly };
 }
 
 export async function researchTracked(env: Env) {
   const { results } = await env.DB.prepare("SELECT slug FROM companies WHERE tracked = 1").all<{ slug: string }>();
   for (const { slug } of results) {
+    if (!(await claimResearch(env, slug))) continue;
     await researchCompany(env, slug).catch((e) => console.error("research failed", slug, (e as Error).message));
   }
 }
@@ -66,12 +77,9 @@ export async function researchTracked(env: Env) {
 export const research = new Hono<AppContext>();
 
 research.post("/:slug", async (c) => {
-  const row = await c.env.DB.prepare("SELECT last_researched_at FROM companies WHERE slug = ?")
-    .bind(c.req.param("slug"))
-    .first<{ last_researched_at: string | null }>();
-  if (!row) return c.json({ error: "unknown company" }, 404);
-  if (row.last_researched_at && Date.now() - Date.parse(row.last_researched_at) < COOLDOWN_MS) {
-    return c.json({ error: "researched recently, try again later" }, 429);
-  }
-  return c.json(await researchCompany(c.env, c.req.param("slug")));
+  const slug = c.req.param("slug");
+  const exists = await c.env.DB.prepare("SELECT 1 FROM companies WHERE slug = ?").bind(slug).first();
+  if (!exists) return c.json({ error: "unknown company" }, 404);
+  if (!(await claimResearch(c.env, slug))) return c.json({ error: "researched recently, try again later" }, 429);
+  return c.json(await researchCompany(c.env, slug));
 });

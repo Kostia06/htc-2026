@@ -1,11 +1,25 @@
 import { Hono } from "hono";
 import type { AppContext, Env } from "../env";
 
-// one person's report must never be identifiable, so nothing from experiences shows below this
+// one person's report must never be identifiable, so real reports stay hidden below this count
 export const MIN_REPORTS = 3;
 
 type Fact = { kind: string; text: string; source_url: string; fetched_at: string };
-type ExpRow = { role: string; questions_json: string; format: string | null; tips: string | null; is_seeded: number };
+type ExpRow = { questions_json: string; is_seeded: number };
+type Question = { text: string; count: number; example: boolean };
+
+function tally(rows: ExpRow[], example: boolean): Question[] {
+  const counts = new Map<string, Question>();
+  for (const row of rows) {
+    for (const q of JSON.parse(row.questions_json) as string[]) {
+      const key = q.trim().toLowerCase();
+      const entry = counts.get(key) ?? { text: q.trim(), count: 0, example };
+      entry.count++;
+      counts.set(key, entry);
+    }
+  }
+  return [...counts.values()];
+}
 
 export async function getCompanyInsights(env: Env, slug: string, role?: string) {
   const company = await env.DB.prepare("SELECT id, slug, name, website, last_researched_at FROM companies WHERE slug = ?")
@@ -20,30 +34,17 @@ export async function getCompanyInsights(env: Env, slug: string, role?: string) 
     .all<Fact>();
 
   const roleFilter = role ? " AND lower(role) = lower(?)" : "";
-  const stmt = env.DB.prepare(`SELECT role, questions_json, format, tips, is_seeded FROM experiences WHERE company_id = ?${roleFilter}`);
+  const stmt = env.DB.prepare(`SELECT questions_json, is_seeded FROM experiences WHERE company_id = ?${roleFilter}`);
   const { results: rows } = await (role ? stmt.bind(company.id, role) : stmt.bind(company.id)).all<ExpRow>();
 
-  const reportCount = rows.length;
-  if (reportCount < MIN_REPORTS) {
-    return { company, facts, reportCount, questions: [], formats: [], tips: [] };
-  }
+  const real = rows.filter((r) => !r.is_seeded);
+  const seeded = rows.filter((r) => r.is_seeded);
+  // free-text tips and formats are never returned: they're one person's words, easy to recognise
+  const questions = [...(real.length >= MIN_REPORTS ? tally(real, false) : []), ...tally(seeded, true)].sort(
+    (a, b) => Number(a.example) - Number(b.example) || b.count - a.count,
+  );
 
-  const tally = new Map<string, { text: string; count: number; real: number }>();
-  for (const row of rows) {
-    for (const q of JSON.parse(row.questions_json) as string[]) {
-      const key = q.trim().toLowerCase();
-      const entry = tally.get(key) ?? { text: q.trim(), count: 0, real: 0 };
-      entry.count++;
-      if (!row.is_seeded) entry.real++;
-      tally.set(key, entry);
-    }
-  }
-  const questions = [...tally.values()]
-    .sort((a, b) => b.count - a.count)
-    .map((q) => ({ text: q.text, count: q.count, example: q.real === 0 }));
-  const unique = (xs: (string | null)[]) => [...new Set(xs.filter((x): x is string => !!x?.trim()))];
-
-  return { company, facts, reportCount, questions, formats: unique(rows.map((r) => r.format)), tips: unique(rows.map((r) => r.tips)) };
+  return { company, facts, reportCount: real.length, questions };
 }
 
 export const memory = new Hono<AppContext>();

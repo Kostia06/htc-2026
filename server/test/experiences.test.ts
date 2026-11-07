@@ -54,4 +54,17 @@ describe("POST /api/experiences", () => {
     for (let i = 0; i < 5; i++) expect((await post(token)).status).toBe(201);
     expect((await post(token)).status).toBe(429);
   });
+
+  it("anonymizes the role too", async () => {
+    await post(await issueSession(env.SESSION_SECRET), { ...body, role: "Kostia's team lead" });
+    const row = await env.DB.prepare("SELECT role FROM experiences").first<{ role: string }>();
+    expect(row?.role).toBe("[name]'s team lead");
+  });
+
+  it("returns 400 instead of crashing on malformed input", async () => {
+    const token = await issueSession(env.SESSION_SECRET);
+    expect((await post(token, { ...body, questions: "not a list" })).status).toBe(400);
+    expect((await post(token, { ...body, role: 42 })).status).toBe(400);
+    expect((await post(token, { ...body, questions: Array(30).fill("q") })).status).toBe(400);
+  });
 });

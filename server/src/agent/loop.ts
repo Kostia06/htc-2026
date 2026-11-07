@@ -4,10 +4,12 @@ export type Declaration = { name: string; description: string; parameters: Recor
 export type Tool = { declaration: Declaration; run: (args: Record<string, unknown>) => Promise<unknown> };
 export type Model = (contents: GeminiContent[], declarations: Declaration[]) => Promise<GeminiContent>;
 
+export const MAX_CALLS_PER_STEP = 4;
+
 export async function runAgent(opts: { model: Model; tools: Record<string, Tool>; goal: string; maxSteps: number }) {
   const declarations = Object.values(opts.tools).map((t) => t.declaration);
   const contents: GeminiContent[] = [{ role: "user", parts: [{ text: opts.goal }] }];
-  const toolCalls: { name: string; args: Record<string, unknown> }[] = [];
+  const toolCalls: { name: string; args: Record<string, unknown>; result: unknown }[] = [];
 
   for (let step = 0; step < opts.maxSteps; step++) {
     const reply = await opts.model(contents, declarations);
@@ -17,12 +19,15 @@ export async function runAgent(opts: { model: Model; tools: Record<string, Tool>
       return { answer: reply.parts.map((p) => p.text ?? "").join("").trim(), toolCalls, stoppedEarly: false };
     }
     const responses: GeminiPart[] = [];
-    for (const call of calls) {
-      toolCalls.push(call);
+    for (const [i, call] of calls.entries()) {
       const tool = opts.tools[call.name];
-      const response = tool
-        ? await tool.run(call.args ?? {}).catch((e: Error) => ({ error: e.message }))
-        : { error: `unknown tool ${call.name}` };
+      const response =
+        i >= MAX_CALLS_PER_STEP
+          ? { error: `too many tool calls in one step, max ${MAX_CALLS_PER_STEP}` }
+          : tool
+            ? await tool.run(call.args ?? {}).catch((e: Error) => ({ error: e.message }))
+            : { error: `unknown tool ${call.name}` };
+      if (i < MAX_CALLS_PER_STEP) toolCalls.push({ ...call, result: response });
       responses.push({ functionResponse: { name: call.name, response } });
     }
     contents.push({ role: "user", parts: responses });
