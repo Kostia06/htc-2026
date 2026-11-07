@@ -37,8 +37,8 @@ targets:
         SUPABASE_URL: "https://pgltmzicvpvcyhbrwqxz.supabase.co"
         SUPABASE_PUBLISHABLE_KEY: "sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1"
         PRODUCT_BUNDLE_IDENTIFIER: com.kostiailn.raven
-        MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "3"
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -51,6 +51,8 @@ targets:
       path: Raven/Resources/Info.plist
       properties:
         CFBundleDisplayName: Raven
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         RavenAPIURL: $(RAVEN_API_URL)
         SupabaseURL: $(SUPABASE_URL)
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
