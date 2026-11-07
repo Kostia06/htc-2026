@@ -10,6 +10,6 @@
   "vectorize": [{ "binding": "VECTORS", "index_name": "htc-mentor-vectors" }],
   "ai": { "binding": "AI" },
   "triggers": { "crons": ["0 */6 * * *"] },
-  "vars": { "GEMINI_MODEL": "gemini-2.5-flash" },
+  "vars": { "GEMINI_MODEL": "gemini-3.8-flash" },
   "observability": { "enabled": true }
 }
