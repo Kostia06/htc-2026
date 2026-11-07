@@ -7,6 +7,8 @@ import Testing
 final class StubProtocol: URLProtocol {
     static let routes = Mutex<[String: (Int, String)]>([:])
     static let lastAuthorization = Mutex<String?>(nil)
+    /// Request bodies by route, so suites running in parallel don't read each other's.
+    static let bodies = Mutex<[String: Data]>([:])
 
     override static func canInit(with _: URLRequest) -> Bool {
         true
@@ -19,6 +21,8 @@ final class StubProtocol: URLProtocol {
     override func startLoading() {
         let key = "\(request.httpMethod ?? "") \(request.url?.path() ?? "")"
         Self.lastAuthorization.withLock { $0 = request.value(forHTTPHeaderField: "Authorization") }
+        let sentBody = request.httpBody ?? request.httpBodyStream.map(Self.readAll)
+        Self.bodies.withLock { $0[key] = sentBody }
         let (status, body) = Self.routes.withLock { $0[key] } ?? (404, #"{"error":"no route"}"#)
         let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -27,6 +31,20 @@ final class StubProtocol: URLProtocol {
     }
 
     override func stopLoading() {}
+
+    /// URLSession hands URLProtocol the body as a stream, not as httpBody
+    private static func readAll(_ stream: InputStream) -> Data {
+        stream.open()
+        defer { stream.close() }
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while stream.hasBytesAvailable {
+            let count = stream.read(&buffer, maxLength: buffer.count)
+            guard count > 0 else { break }
+            data.append(buffer, count: count)
+        }
+        return data
+    }
 }
 
 /// Hands out a new token each time, like a session that refreshes between requests.
