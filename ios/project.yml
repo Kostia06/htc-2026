@@ -34,8 +34,8 @@ targets:
     settings:
       base:
         # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
-        SUPABASE_URL: "https://YOUR-PROJECT.supabase.co"
-        SUPABASE_PUBLISHABLE_KEY: "YOUR-PUBLISHABLE-KEY"
+        SUPABASE_URL: "https://pgltmzicvpvcyhbrwqxz.supabase.co"
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1"
         PRODUCT_BUNDLE_IDENTIFIER: com.raven.ios
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
@@ -46,7 +46,7 @@ targets:
         Debug:
           RAVEN_API_URL: "http://localhost:8799"
         Release:
-          RAVEN_API_URL: "https://raven-api.ilnkostia-dev.workers.dev"
+          RAVEN_API_URL: "https://htc-mentor.ilnkostia-dev.workers.dev"
     info:
       path: Raven/Resources/Info.plist
       properties:
