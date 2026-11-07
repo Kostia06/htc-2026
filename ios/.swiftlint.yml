@@ -1,0 +1,8 @@
+included: [Raven, RavenKit]
+excluded: [RavenKit/.build]
+disabled_rules:
+  # swiftformat adds trailing commas; the two tools would fight over them
+  - trailing_comma
+line_length:
+  warning: 140
+  ignores_comments: true

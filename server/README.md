@@ -16,7 +16,7 @@ src/
   integrations/   one file per outside service: gemini, keenable, workers-ai (embeddings), adzuna, hacker-news, devto, robots-txt
   memory/         storage logic: company facts, insights (k = 3 rule), vector search, cache, cleanup
     private/      per-person memory, AES-GCM encrypted per user, never embedded or shared
-  auth/           anonymous session tokens (HMAC)
+  auth/           Supabase sign-in, plus HMAC tokens for paired headsets
   lib/            small pure helpers: anonymize, robots.txt, source policy, hashing
 test/             same folders as src/
 migrations/       D1 schema, applied with `pnpm db:migrate:remote`

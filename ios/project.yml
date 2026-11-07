@@ -1,0 +1,66 @@
+name: Raven
+options:
+  bundleIdPrefix: com.raven
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+packages:
+  RavenKit:
+    path: RavenKit
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.55.6
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    # set to your Apple team before archiving for TestFlight
+    DEVELOPMENT_TEAM: 5J5P965Q99
+targets:
+  Raven:
+    type: application
+    platform: iOS
+    sources: [Raven]
+    dependencies:
+      - package: RavenKit
+      # Auth alone: the app never talks to Postgres, Storage or Realtime directly
+      - package: Supabase
+        product: Auth
+    entitlements:
+      path: Raven/Resources/Raven.entitlements
+      properties:
+        com.apple.developer.applesignin: [Default]
+    settings:
+      base:
+        # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
+        SUPABASE_URL: "https://YOUR-PROJECT.supabase.co"
+        SUPABASE_PUBLISHABLE_KEY: "YOUR-PUBLISHABLE-KEY"
+        PRODUCT_BUNDLE_IDENTIFIER: com.raven.ios
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      configs:
+        Debug:
+          RAVEN_API_URL: "http://localhost:8799"
+        Release:
+          RAVEN_API_URL: "https://raven-api.ilnkostia-dev.workers.dev"
+    info:
+      path: Raven/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Raven
+        RavenAPIURL: $(RAVEN_API_URL)
+        SupabaseURL: $(SUPABASE_URL)
+        SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so it can tell when you've finished and respond.
+        NSCameraUsageDescription: Raven uses the camera to scan the code on your headset so it can join your account.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        CFBundleURLTypes:
+          - CFBundleURLName: app.raven.pairing
+            CFBundleURLSchemes: [raven]
+        ITSAppUsesNonExemptEncryption: false
