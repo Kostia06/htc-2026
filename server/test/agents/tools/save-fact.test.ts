@@ -39,6 +39,21 @@ describe("save_fact", () => {
     expect(await saveFact.run({ kind: "about", text: "x", source_url: "https://acme.com/about" }, ctx)).toMatchObject({ saved: false });
   });
 
+  it("accepts interview_process facts from a page read in this run", async () => {
+    const ctx = toolContext();
+    await fetchPage.run({ url: "https://acme.com/how-we-hire" }, ctx);
+    const fact = { kind: "interview_process", text: "Phone screen, then a take-home.", source_url: "https://acme.com/how-we-hire" };
+    expect(await saveFact.run(fact, ctx)).toMatchObject({ saved: true });
+  });
+
+  it("never saves a Reddit thread as a fact", async () => {
+    const ctx = toolContext();
+    const url = "https://www.reddit.com/r/calgary/comments/1/acme/";
+    await fetchPage.run({ url }, ctx);
+    expect(await saveFact.run({ kind: "interview_process", text: "Three rounds", source_url: url }, ctx)).toMatchObject({ saved: false });
+    expect(ctx.services.saveFact).not.toHaveBeenCalled();
+  });
+
   it("needs a company in the run", async () => {
     const ctx = toolContext({ company: undefined });
     expect(await saveFact.run({ kind: "about", text: "x", source_url: "https://acme.com" }, ctx)).toMatchObject({ saved: false });

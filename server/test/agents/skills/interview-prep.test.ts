@@ -10,8 +10,8 @@ const insights: CompanyInsights = {
   facts: [],
   reportCount: 3,
   questions: [
-    { text: "Tell me about a bug you fixed", count: 3, example: false },
-    { text: "Why Acme?", count: 1, example: true },
+    { text: "Tell me about a bug you fixed", count: 3, example: false, last_reported_at: "2026-11" },
+    { text: "Why Acme?", count: 1, example: true, last_reported_at: null },
   ],
 };
 
@@ -53,6 +53,37 @@ describe("interview-prep skill", () => {
     expect(questions.map((q) => q.reported)).toEqual([true, false, false, false, false]);
     expect(result.output.focus).toEqual(["testing"]);
     expect(prompts[0]).toContain("[weakness] Vague about testing");
+  });
+
+  it("puts reported questions first, in the order company_insights ranked them (most recent first)", async () => {
+    const ranked: CompanyInsights = {
+      ...insights,
+      questions: [
+        { text: "Walk me through your last project", count: 1, example: false, last_reported_at: "2026-11" },
+        { text: "Tell me about a bug you fixed", count: 3, example: false, last_reported_at: "2026-05" },
+      ],
+    };
+    const handedIn = [
+      question("How do you test your code?", false),
+      question("Tell me about a bug you fixed", true),
+      question("Describe a conflict in a team", false),
+      question("walk me through your last project", true),
+      question("Why Acme?", false),
+    ];
+    const { deps } = fakeDeps({
+      services: fakeServices({ companyInsights: vi.fn(async () => ranked) }),
+      replies: [call("company_insights", {}), call("finish", { questions: handedIn, focus: [] })],
+    });
+    const result = await runSkill(deps, request({ company: "acme" }));
+    if (result.status !== "done") throw new Error(result.error);
+    const texts = (result.output.questions as { text: string }[]).map((q) => q.text);
+    expect(texts).toEqual([
+      "walk me through your last project",
+      "Tell me about a bug you fixed",
+      "How do you test your code?",
+      "Describe a conflict in a team",
+      "Why Acme?",
+    ]);
   });
 
   it("makes the model try again when it hands in fewer than five questions", async () => {

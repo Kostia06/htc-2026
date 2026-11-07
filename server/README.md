@@ -13,11 +13,11 @@ src/
     skills/       one skill per file: allowed platforms, tool allowlist, instructions, input and output schema
     background.ts research runs outside a request: cooldown claim, cron over tracked companies
     live.ts       real dependencies (Gemini, Keenable, D1, Vectorize) wired for a request or the cron
-  integrations/   one file per outside service: gemini, keenable, workers-ai (embeddings)
+  integrations/   one file per outside service: gemini, keenable, workers-ai (embeddings), adzuna, hacker-news, devto, robots-txt
   memory/         storage logic: company facts, insights (k = 3 rule), vector search, cache, cleanup
     private/      per-person memory, AES-GCM encrypted per user, never embedded or shared
   auth/           anonymous session tokens (HMAC)
-  lib/            small pure helpers: anonymize, robots.txt, hashing
+  lib/            small pure helpers: anonymize, robots.txt, source policy, hashing
 test/             same folders as src/
 migrations/       D1 schema, applied with `pnpm db:migrate:remote`
 ```
@@ -28,6 +28,12 @@ the person's private memory to the prompt, caps each run (6 page fetches, 25 too
 the output and records every run in `agent_runs`.
 
 Skills: `research-company` (background), `interview-prep` (app, vr), `interview-debrief` (app, vr), `career-snapshot` (app).
+Keenable's `/fetch` ignores the target site's robots.txt, so `fetch_page` decides for itself. `lib/source-policy.ts` never
+fetches Reddit, jointaro, Job Bank, Adzuna pages, Glassdoor, LinkedIn or Indeed. Everything else needs a readable
+robots.txt (cached 6 h) that allows the page for us and for `*`, and the site's Crawl-delay must have passed. Reddit only
+shows up as short search snippets labelled `anecdote` and is never saved as a fact. Job listings come only from the Adzuna
+API (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`), each one labelled "Jobs by Adzuna".
+
 Routes in `api/agent.ts`: `POST /:skill` with `{ platform, input }`, and `GET /runs/:id` for the run's owner.
 
 ```bash

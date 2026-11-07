@@ -7,14 +7,23 @@ type Question = { text: string; why: string; reported: boolean };
 
 const normalise = (text: string) => text.trim().toLowerCase();
 
-// "reported" must mean real candidates asked it, so it is checked against what company_insights returned
-function reportedQuestions(toolCalls: ToolCallRecord[]) {
-  const reported = new Set<string>();
+// "reported" must mean real candidates asked it, so it is checked against what company_insights returned;
+// the rank is company_insights' order, which puts the most recently reported first
+function reportedRanks(toolCalls: ToolCallRecord[]) {
+  const ranks = new Map<string, number>();
   for (const call of toolCalls.filter((c) => c.name === "company_insights")) {
     const questions = (call.result as { questions?: { text: string; example: boolean }[] }).questions ?? [];
-    for (const q of questions.filter((q) => !q.example)) reported.add(normalise(q.text));
+    for (const q of questions.filter((q) => !q.example)) {
+      if (!ranks.has(normalise(q.text))) ranks.set(normalise(q.text), ranks.size);
+    }
   }
-  return reported;
+  return ranks;
+}
+
+// the VR interviewer asks in this order, so it opens with what candidates are being asked right now
+function reportedFirst(questions: Question[], ranks: Map<string, number>) {
+  const rank = (q: Question) => ranks.get(normalise(q.text)) ?? ranks.size;
+  return questions.map((q) => ({ ...q, reported: ranks.has(normalise(q.text)) })).sort((a, b) => rank(a) - rank(b));
 }
 
 export const interviewPrep: Skill<{ company: string; role?: string }> = {
@@ -25,7 +34,8 @@ export const interviewPrep: Skill<{ company: string; role?: string }> = {
   tools: ["company_insights", "recall", "company_facts", "queue_research"],
   maxSteps: 8,
   instructions: `Pick exactly ${QUESTION_COUNT} interview questions this person should practise for the company and role in the goal.
-1. Call company_insights. Questions with example: false were reported by real candidates. Use those first, copied word for word.
+1. Call company_insights. Questions with example: false were reported by real candidates, most recent first
+   (last_reported_at is the month of the latest report). Use those first, copied word for word, starting from the top.
 2. Call recall for this person's weaknesses and goals. Choose the remaining questions to work on their weak spots.
 3. If the company has few facts or no reported questions, call queue_research so there is more next time,
    then fill the gaps with questions typical for the role.
@@ -59,8 +69,6 @@ Set "reported" to true only for questions copied from company_insights reports.
   },
   buildGoal: (input, { company }) => `Prepare interview questions for the ${input.role ?? "entry-level"} role at ${company?.name ?? input.company}.`,
   finalize: (output, toolCalls): SkillOutput => {
-    const reported = reportedQuestions(toolCalls);
-    const questions = (output.questions as Question[]).map((q) => ({ ...q, reported: reported.has(normalise(q.text)) }));
-    return { ...output, questions };
+    return { ...output, questions: reportedFirst(output.questions as Question[], reportedRanks(toolCalls)) };
   },
 };

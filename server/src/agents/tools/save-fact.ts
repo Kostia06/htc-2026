@@ -1,9 +1,8 @@
-import type { FactKind } from "../../memory/facts";
+import { FACT_KINDS as KINDS, type FactKind } from "../../memory/facts";
 import type { ToolDefinition } from "../core/types";
 import { text } from "./args";
 import { pageKey } from "./fetch-page";
 
-const KINDS: FactKind[] = ["about", "hiring", "interview", "tech", "news"];
 const MAX_LENGTH = 500;
 
 export const saveFact: ToolDefinition = {

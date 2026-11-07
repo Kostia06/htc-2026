@@ -1,4 +1,7 @@
 import type { Env } from "../../env";
+import type { JobPosting, JobQuery } from "../../integrations/adzuna";
+import type { DevtoArticle } from "../../integrations/devto";
+import type { HackerNewsHit } from "../../integrations/hacker-news";
 import type { JsonSchema } from "../../lib/json-schema";
 import type { NewFact } from "../../memory/facts";
 import type { getCompanyInsights } from "../../memory/insights";
@@ -28,7 +31,14 @@ export type CompanyRef = { id: string; slug: string; name: string; website: stri
 export type Services = {
   search(query: string): Promise<SearchResult[]>;
   fetchPage(url: string): Promise<string>;
+  // null when robots.txt could not be read, which counts as "not allowed"
   fetchRobots(origin: string): Promise<string | null>;
+  // false while the host's Crawl-delay since our last fetch from it has not passed
+  claimFetchSlot(host: string, delaySeconds: number): Promise<boolean>;
+  claimCooldown(scope: string, key: string, cooldownMs: number): Promise<boolean>;
+  jobPostings(query: JobQuery): Promise<JobPosting[]>;
+  hackerNews(query: string): Promise<HackerNewsHit[]>;
+  devtoArticles(tag: string): Promise<DevtoArticle[]>;
   companyFacts(companyId: string, query: string): Promise<CompanyFactHit[]>;
   saveFact(companyId: string, fact: NewFact): Promise<{ saved: boolean; reason?: string }>;
   companyInsights(slug: string, role?: string): Promise<CompanyInsights | null>;

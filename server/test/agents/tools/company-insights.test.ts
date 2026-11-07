@@ -7,7 +7,7 @@ const insights: CompanyInsights = {
   company: { ...ACME, last_researched_at: null },
   facts: [{ kind: "interview", text: "Two rounds", source_url: "https://acme.com/careers", fetched_at: "2026-11-01" }],
   reportCount: 3,
-  questions: [{ text: "Tell me about a bug you fixed", count: 3, example: false }],
+  questions: [{ text: "Tell me about a bug you fixed", count: 3, example: false, last_reported_at: "2026-10" }],
 };
 
 describe("company_insights", () => {
@@ -19,7 +19,7 @@ describe("company_insights", () => {
       company: "Acme",
       reportCount: 3,
       facts: [{ kind: "interview", text: "Two rounds", source_url: "https://acme.com/careers" }],
-      questions: [{ text: "Tell me about a bug you fixed", count: 3, example: false }],
+      questions: [{ text: "Tell me about a bug you fixed", count: 3, example: false, last_reported_at: "2026-10" }],
     });
   });
 
