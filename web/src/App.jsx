@@ -18,6 +18,7 @@ function Account({ session }) {
     <main className="account">
       <div className="account__card">
         <h1>You're signed in</h1>
+        <p>Name: <code>{session.user.user_metadata?.full_name || '(not set)'}</code></p>
         <p>Email: <code>{session.user.email}</code></p>
         <p>Server: <code>{server}</code></p>
         <button className="auth__submit" type="button" onClick={() => supabase.auth.signOut()}>Sign out</button>
