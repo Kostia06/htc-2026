@@ -16,16 +16,16 @@ struct RoadmapView: View {
                             .font(.largeTitle.bold())
                     }
                     VStack(spacing: 28) {
-                        ForEach(0 ..< 5, id: \.self) { index in
-                            Circle()
-                                .fill(index == 0 ? Theme.action : Color(white: 0.22))
-                                .overlay(Circle().strokeBorder(Theme.hairline, lineWidth: 1))
-                                .frame(width: 64, height: 64)
-                                .offset(x: [0, 48, 72, 48, 0][index])
+                        node(Theme.action)
+                        VStack(spacing: 28) {
+                            ForEach(1 ..< 5, id: \.self) { index in
+                                node(Color(white: 0.22))
+                                    .offset(x: [0, 48, 72, 48, 0][index])
+                            }
                         }
+                        .shimmering()
                     }
                     .frame(maxWidth: .infinity)
-                    .shimmering()
                     Text("Raven is building your first steps from your profile.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -34,5 +34,12 @@ struct RoadmapView: View {
                 .padding(24)
             }
         }
+    }
+
+    private func node(_ color: Color) -> some View {
+        Circle()
+            .fill(color)
+            .overlay(Circle().strokeBorder(Theme.hairline, lineWidth: 1))
+            .frame(width: 64, height: 64)
     }
 }
