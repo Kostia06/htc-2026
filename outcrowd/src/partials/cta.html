@@ -1,27 +1,33 @@
-<section class="section is-cta" data-section="cta" data-section-color="black">
+<section class="section is-cta" id="cta" data-section="cta" data-section-color="black">
   <div class="container is-cta">
     <div class="cta-wrap">
       <div class="cta-card-wrapper">
         <div class="cta-card">
           <div class="cta-left">
-            <h2 class="cta-heading">Innovate with us</h2>
-            <div class="b1 grey text-ailng-left max-w-29">Our creative solutions have helped clients raise $100+ mln and expand their reach.</div>
+            <h2 class="cta-heading">{{ cta.heading }}</h2>
+            <div class="b1 grey text-ailng-left max-w-29">{{ cta.body }}</div>
             <div class="cta-btn-wrap">
-              <a class="nav_link-cta orange" internal-link href="/contact-us">
+              <a class="nav_link-cta orange" href="{{ links.app }}">
                 <div class="bg-btn">
-                  <div class="btn-text">Write us</div>
+                  <div class="btn-text">{{ cta.primary }}</div>
                 </div>
                 <div class="explode violet"></div>
               </a>
-              <div class="nav_link-cta violet">
-                <div class="btn-text">Book a call</div>
+              <a class="nav_link-cta violet" href="{{ links.how }}">
+                <div class="btn-text">{{ cta.secondary }}</div>
                 <div class="explode violet"></div>
-                <a class="book_a_call" href="" data-calendly="https://calendly.com/outcrowd-digital-agency/introduction?hide_gdpr_banner=1"></a>
-              </div>
+              </a>
             </div>
           </div>
           <div class="cta-right">
-            <img class="cta-img" src="/images/66bf047f8e12e9868e4c8f45_dashboard-cta.svg" loading="lazy" alt="">
+            <div class="cta-img r-next" role="img" aria-label="{{ cta.screen.title }}">
+              <div class="r-next__head"><span class="r-next__title">{{ cta.screen.title }}</span><span class="r-next__week">{{ cta.screen.week }}</span></div>
+              <ol class="r-next__list">
+                <li class="r-move"><span class="r-move__n">1</span><span class="r-move__tag">{{ cta.screen.moves.0.tag }}</span><span class="r-move__text">{{ cta.screen.moves.0.text }}</span></li>
+                <li class="r-move"><span class="r-move__n">2</span><span class="r-move__tag">{{ cta.screen.moves.1.tag }}</span><span class="r-move__text">{{ cta.screen.moves.1.text }}</span></li>
+                <li class="r-move"><span class="r-move__n">3</span><span class="r-move__tag">{{ cta.screen.moves.2.tag }}</span><span class="r-move__text">{{ cta.screen.moves.2.text }}</span></li>
+              </ol>
+            </div>
           </div>
         </div>
         <div class="stats-card-gradient _2"></div>

@@ -1,128 +1,129 @@
-<section class="section is-clients" id="clients" data-section="clients" data-section-color="white">
+<section class="section is-clients" id="sources" data-section="clients" data-section-color="white">
   <div class="container is-about client">
     <div class="big-brands-bloick">
       <div class="section-heading white">
-        <h3 class="brands-heading">Our design thinking is recognised by enterprises we cooperated with</h3>
+        <h2 class="brands-heading">{{{ sources.line }}}</h2>
         <div class="shadow white vert"></div>
       </div>
       <div class="big-brands-wrap">
         <div class="big-brands-top-grid">
           <div class="big-brand-card">
-            <img class="brand-image" src="/images/66f4fafa6da01e9c086c507e_brand-5.svg" loading="lazy" alt="">
+            <span class="r-source">{{ sources.labels.0 }}</span>
           </div>
           <div class="big-brand-card">
-            <img class="brand-image" src="/images/66f4fafae2de07e06d1f1bb1_brand-4.svg" loading="lazy" alt="">
+            <span class="r-source">{{ sources.labels.1 }}</span>
           </div>
         </div>
         <div class="big-brands-down-grid">
           <div class="big-brand-card">
-            <img class="brand-image" src="/images/66f4fafa8f80679c4ae3e71c_brand-1.svg" loading="lazy" alt="">
+            <span class="r-source">{{ sources.labels.2 }}</span>
           </div>
           <div class="big-brand-card">
-            <img class="brand-image" src="/images/66f4fafa294921d7ae181afc_brand-2.svg" loading="lazy" alt="">
+            <span class="r-source">{{ sources.labels.3 }}</span>
           </div>
           <div class="big-brand-card">
-            <img class="brand-image" src="/images/66f4fb01c905e0766236e231_brand-3.svg" loading="lazy" alt="">
+            <span class="r-source">{{ sources.labels.4 }}</span>
           </div>
         </div>
       </div>
     </div>
     <div class="startups">
-      <h3 class="heading-3 max-w-82 color-black" data-split-reveal>We think about the big picture and focus primarily on your product’s funding &amp; business success.<br>‍<br><span class="text-color-dark m">We research deeply, validate thoroughly, and launch confidently.</span></h3>
+      <div class="r-label">{{ week.label }}</div>
+      <h2 class="heading-3 max-w-82 color-black" data-split-reveal>{{ week.heading }}<br><span class="text-color-dark m">{{ week.intro }} {{ week.introMuted }}</span></h2>
       <div class="startup-list home">
         <div class="startup-list-item">
-          <div class="startup-name">Brainforest</div>
+          <div class="startup-name">{{ week.cards.0.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">Outcrowd partnered with Brainforest, an AI-powered productivity platform for students. Our comprehensive brand identity work and intuitive UX/UI design transformed the platform, significantly improving user retention and attracting new investments.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://www.brainforest.io/" target="_blank">
+          <div class="startup-desc">{{ week.cards.0.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.0.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.0.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.0.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>
         <div class="startup-list-item">
-          <div class="startup-name">Fitonist</div>
+          <div class="startup-name">{{ week.cards.1.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">Our team assisted Fitonist, a gym workout mobile app, with a cohesive brand identity and an intuitive design across their website and mobile application. Our strategic approach enhanced user engagement and significant growth in new sign-ups.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://fitonist-app.webflow.io/" target="_blank">
+          <div class="startup-desc">{{ week.cards.1.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.1.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.1.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.1.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>
         <div class="startup-list-item">
-          <div class="startup-name">Cybervergent</div>
+          <div class="startup-name">{{ week.cards.2.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">Cybervergent's strategic website redesign simplified offerings, showcased their full range of products, and positioned them as a leading cybersecurity solutions provider, resulting in increased digital trust and market expansion.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://www.cybervergent.com/" target="_blank">
+          <div class="startup-desc">{{ week.cards.2.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.2.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.2.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.2.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>
         <div class="startup-list-item">
-          <div class="startup-name">Nopan</div>
+          <div class="startup-name">{{ week.cards.3.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">We created a full branding package for Nopan, including a logo, brand guide, and an investor-focused pitch deck, along with a dynamic landing page to highlight their innovative account-to-account payment offer.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://nopan.webflow.io/" target="_blank">
+          <div class="startup-desc">{{ week.cards.3.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.3.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.3.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.3.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>
         <div class="startup-list-item">
-          <div class="startup-name">Financeable</div>
+          <div class="startup-name">{{ week.cards.4.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">Outcrowd transformed Finance|able into a user-centric learning platform, driving significant growth in student enrollment through intuitive design and engaging content.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://finance-able.com/" target="_blank">
+          <div class="startup-desc">{{ week.cards.4.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.4.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.4.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.4.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>
         <div class="startup-list-item">
-          <div class="startup-name">Stable0x</div>
+          <div class="startup-name">{{ week.cards.5.title }}</div>
           <div class="line-startup"></div>
-          <div class="startup-desc">Outcrowd has partnered with Stable0x, a cross-chain stablecoin startup. Our branding and website design helped them quickly establish credibility in competitive DeFi, attracting early adopters and setting the stage for rapid growth.</div>
-          <img class="client-logo-hover" src="/images/66a0bd8c99476e28af3ad594_client-logo.svg" loading="lazy" alt="">
-          <a class="btn-secondary m-2-3" href="https://stable0x.com/" target="_blank">
+          <div class="startup-desc">{{ week.cards.5.body }}</div>
+          <span class="client-logo-hover r-day" aria-hidden="true">{{ week.cards.5.day }}</span>
+          <a class="btn-secondary m-2-3" href="{{ links.app }}">
             <div class="btn-text-wrap">
-              <div class="btn-text-secondary first-txt">Case study</div>
-              <div class="btn-text-secondary second-txt">Case study</div>
+              <div class="btn-text-secondary first-txt">{{ week.cards.5.link }}</div>
+              <div class="btn-text-secondary second-txt" aria-hidden="true">{{ week.cards.5.link }}</div>
             </div>
             <div class="btn-icon-wrap">
-              <img class="icon-btn-secondary first-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
-              <img class="icon-btn-secondary second-icon" src="/images/66b3422ed53279d232bcc13f_arrow-btn.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary first-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
+              <img class="icon-btn-secondary second-icon" src="/icons/arrow-dark.svg" loading="lazy" alt="">
             </div>
           </a>
         </div>

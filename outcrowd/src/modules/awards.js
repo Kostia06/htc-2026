@@ -1,11 +1,9 @@
 // Awards:
 //   M50 heading + list fade in while scrolling (desktop)
 //   M51 heading mask on mobile
-//   M15 click sound when hovering a row (the CSS handles the hover visuals, M52)
+//   (the CSS handles the row hover visuals, M52)
 import { gsap, scrollKeyframes, MQ } from './motion.js';
 import { maskOnView } from './reveal-mask.js';
-
-const CLICK = '/audio/click_min.mp3';
 
 export function initAwards() {
   const section = document.querySelector('.section.is-awwards');
@@ -24,11 +22,4 @@ export function initAwards() {
   mm.add(MQ.mobile, () => {
     maskOnView(section, section.querySelector('.shadow.vertical'), { from: -40, to: 30, duration: 1 });
   });
-
-  // browsers only allow this after the first user interaction; failures are ignored
-  const click = new Audio(CLICK);
-  for (const row of section.querySelectorAll('.awards-list-item')) {
-    const sound = click.cloneNode();
-    row.addEventListener('mouseenter', () => sound.play().catch(() => {}));
-  }
 }

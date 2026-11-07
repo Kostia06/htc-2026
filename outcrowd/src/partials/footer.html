@@ -4,152 +4,90 @@
       <div class="nav-block">
         <div class="footer-col">
           <div class="footer-secondary-link-list">
-            <a class="footer-link main" internal-link href="/cases">
+            <div class="footer-link main r-static">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link white">Cases</div>
-                <div class="footer-nav-link hover">Cases</div>
+                <div class="footer-nav-link white">{{ footer.product }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.product }}</div>
+              </div>
+            </div>
+            <a class="footer-link" href="{{ nav.items.0.href }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ nav.items.0.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.0.label }}</div>
               </div>
             </a>
-            <a class="footer-link" internal-link href="https://fitonist-app.webflow.io/" target="_blank">
+            <a class="footer-link" href="{{ nav.items.1.href }}">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Fitonist</div>
-                <div class="footer-nav-link hover">Fitonist</div>
+                <div class="footer-nav-link">{{ nav.items.1.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.1.label }}</div>
               </div>
             </a>
-            <a class="footer-link" internal-link href="https://www.brainforest.io/" target="_blank">
+            <a class="footer-link" href="{{ nav.items.2.href }}">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Brainforest</div>
-                <div class="footer-nav-link hover">Brainforest</div>
+                <div class="footer-nav-link">{{ nav.items.2.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.2.label }}</div>
               </div>
             </a>
-            <a class="footer-link" internal-link href="https://www.cybervergent.com/" target="_blank">
+            <a class="footer-link" href="{{ nav.items.3.href }}">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Cybervergent</div>
-                <div class="footer-nav-link hover">Cybervergent</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="https://nopan.webflow.io/" target="_blank">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Nopan</div>
-                <div class="footer-nav-link hover">Nopan</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="https://ramos-app.webflow.io/" target="_blank">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Ramos</div>
-                <div class="footer-nav-link hover">Ramos</div>
+                <div class="footer-nav-link">{{ nav.items.3.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.3.label }}</div>
               </div>
             </a>
           </div>
         </div>
         <div class="footer-col">
           <div class="footer-secondary-link-list">
-            <a class="footer-link main" internal-link href="/services">
+            <div class="footer-link main r-static">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link white">Services</div>
-                <div class="footer-nav-link hover">Services</div>
+                <div class="footer-nav-link white">{{ footer.project }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.project }}</div>
               </div>
-            </a>
-            <a class="footer-link" internal-link href="#">
+            </div>
+            <div class="footer-link r-static">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Complex solution</div>
-                <div class="footer-nav-link hover">Complex solution</div>
+                <div class="footer-nav-link">{{ footer.projectLinks.hackathon }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.hackathon }}</div>
               </div>
-            </a>
-            <a class="footer-link" internal-link href="/branding-page">
+            </div>
+            <div class="footer-link r-static">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Branding</div>
-                <div class="footer-nav-link hover">Branding</div>
+                <div class="footer-nav-link">{{ footer.projectLinks.team }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.team }}</div>
               </div>
-            </a>
-            <a class="footer-link" internal-link href="/design-page">
+            </div>
+            <a class="footer-link" href="{{ links.repo }}" target="_blank" rel="noopener">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Design</div>
-                <div class="footer-nav-link hover">Design</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="/development-page">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Development</div>
-                <div class="footer-nav-link hover">Development</div>
+                <div class="footer-nav-link">{{ footer.projectLinks.repo }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.repo }}</div>
               </div>
             </a>
           </div>
         </div>
         <div class="footer-col">
           <div class="footer-secondary-link-list">
-            <a class="footer-link main" internal-link href="/about-us">
+            <div class="footer-link main r-static">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link white">About us</div>
-                <div class="footer-nav-link hover">About us</div>
+                <div class="footer-nav-link white">{{ footer.contact }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.contact }}</div>
               </div>
-            </a>
-            <a class="footer-link" internal-link href="/about-us#numbers">
+            </div>
+            <a class="footer-link" href="mailto:{{ links.email }}">
               <div class="footer-flip-hover">
-                <div class="footer-nav-link">Numbers</div>
-                <div class="footer-nav-link hover">Numbers</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="/about-us#mission">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Mission</div>
-                <div class="footer-nav-link hover">Mission</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="/about-us#values">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Values</div>
-                <div class="footer-nav-link hover">Values</div>
-              </div>
-            </a>
-            <a class="footer-link" internal-link href="/about-us#clients">
-              <div class="footer-flip-hover">
-                <div class="footer-nav-link">Clients</div>
-                <div class="footer-nav-link hover">Clients</div>
+                <div class="footer-nav-link">{{ links.email }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ links.email }}</div>
               </div>
             </a>
           </div>
         </div>
       </div>
       <div class="links-block">
-        <a class="email-link" href="mailto:hello@outcrowd.io">hello@outcrowd.io</a>
-        <div class="social-link-list is-footer">
-          <a class="social-footer-wrap" href="https://dribbble.com/outcrowd" target="_blank">
-            <div class="social-footer">
-              <img class="icon-footer set-1" src="/images/66a6043f15171cfef875605c_dribbble-icon%201.svg" loading="lazy" alt="">
-              <div class="explode _400"></div>
-            </div>
-          </a>
-          <a class="social-footer-wrap" href="https://www.behance.net/outcrowd" target="_blank">
-            <div class="social-footer">
-              <img class="icon-footer set-2" src="/images/66a60440bb21735987e1a061_Vector.svg" loading="lazy" alt="">
-              <div class="explode _400"></div>
-            </div>
-          </a>
-          <a class="social-footer-wrap" href="https://www.instagram.com/outcrowdstudio/" target="_blank">
-            <div class="social-footer">
-              <img class="icon-footer set-2" src="/images/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg" loading="lazy" alt="">
-              <div class="explode _400"></div>
-            </div>
-          </a>
-          <a class="social-footer-wrap" href="https://x.com/outcrowdstudio" target="_blank">
-            <div class="social-footer">
-              <img class="icon-footer set-1" src="/images/66a6043f6f3bdb0490b33e85_Social%20Icons.svg" loading="lazy" alt="">
-              <div class="explode _400"></div>
-            </div>
-          </a>
-          <a class="social-footer-wrap" href="https://www.linkedin.com/company/outcrowd-network/?originalSubdomain=ua" target="_blank">
-            <div class="social-footer">
-              <img class="icon-footer set-3" src="/images/66a6043f8b939a6f0fde8e05_Vector-1.svg" loading="lazy" alt="">
-              <div class="explode _400"></div>
-            </div>
-          </a>
-        </div>
+        <a class="email-link" href="mailto:{{ links.email }}">{{ links.email }}</a>
       </div>
     </div>
     <div class="footer-bot">
-      <div class="copy max-w-14">Copyright © 2025 Outcrowd Inc. All rights reserved.</div>
-      <div class="copy">Lewes - USA</div>
+      <div class="copy max-w-14">{{ footer.legal }}</div>
+      <div class="copy">{{ footer.place }}</div>
     </div>
   </div>
 </footer>

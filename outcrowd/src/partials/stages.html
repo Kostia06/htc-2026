@@ -1,19 +1,19 @@
-<div class="case--new-heading-wrap" data-section="cases-heading" data-section-color="black">
+<div class="case--new-heading-wrap" id="how" data-section="cases-heading" data-section-color="black">
   <div class="case--new-heading">
-    <h2 class="case-heading set-1">Stages of startup development</h2>
+    <h2 class="case-heading set-1">{{ stages.heading }}</h2>
     <div class="case-heading-new-botr">
-      <div class="b1 max-w-37-5">Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.</div>
+      <div class="b1 max-w-37-5">{{ stages.intro }}</div>
     </div>
   </div>
 </div>
 <section class="section is-cases-new" data-section="cases-new" data-section-color="black">
   <div class="height-cases" data-section-color="black">
     <div class="cases-sticky-wrap">
-      <div class="case--new-heading-wrap _2">
+      <div class="case--new-heading-wrap _2" aria-hidden="true">
         <div class="case--new-heading">
-          <h2 class="case-heading set-1">Stages of startup development</h2>
+          <div class="case-heading set-1">{{ stages.heading }}</div>
           <div class="case-heading-new-botr">
-            <div class="b1 max-w-37-5">Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.</div>
+            <div class="b1 max-w-37-5">{{ stages.intro }}</div>
           </div>
         </div>
       </div>
@@ -21,35 +21,32 @@
         <div class="cards-cases-left">
           <div class="cards-cases-left-wrap">
             <div class="cases-cards-left-item first">
-              <h3 class="cases-cards-left-item-heading">Pre-seed Bootstrapped</h3>
+              <h3 class="cases-cards-left-item-heading">{{ stages.cards.0.title }}</h3>
               <div class="cases-cards-left-item-text-wrap">
-                <div class="cases-cards-left-item-text">This is POC stage. You have a hypothetical product idea, you want it done &amp; tested properly to know whether it’s worth the time and resources.</div>
-                <div class="cases-cards-left-item-text"><span class="text-color-white">More than 40%</span> of our clients on this stage get initial investment for MVPs</div>
+                <div class="cases-cards-left-item-text">{{ stages.cards.0.body }}</div>
               </div>
-              <a class="nav_link-c contact grey _2 hide" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <a class="nav_link-c contact grey _2 hide" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.0.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>
             <div class="cases-cards-left-item second">
-              <h3 class="cases-cards-left-item-heading">Seed</h3>
+              <h3 class="cases-cards-left-item-heading">{{ stages.cards.1.title }}</h3>
               <div class="cases-cards-left-item-text-wrap">
-                <div class="cases-cards-left-item-text">This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.</div>
-                <div class="cases-cards-left-item-text"><span class="text-color-white">More than 25%</span> of our clients get Series A investments to build full-scale product and start marketing</div>
+                <div class="cases-cards-left-item-text">{{ stages.cards.1.body }}</div>
               </div>
-              <a class="nav_link-c contact grey _2 hide" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <a class="nav_link-c contact grey _2 hide" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.1.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>
             <div class="cases-cards-left-item">
-              <h3 class="cases-cards-left-item-heading">Series A</h3>
+              <h3 class="cases-cards-left-item-heading">{{ stages.cards.2.title }}</h3>
               <div class="cases-cards-left-item-text-wrap">
-                <div class="cases-cards-left-item-text">This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.</div>
-                <div class="cases-cards-left-item-text">We’ve helped <span class="text-color-white">every start-up</span> we worked with at this stage to cut costs and improve user experience</div>
+                <div class="cases-cards-left-item-text">{{ stages.cards.2.body }}</div>
               </div>
-              <a class="nav_link-c contact grey _2 hide" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <a class="nav_link-c contact grey _2 hide" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.2.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>
@@ -62,13 +59,31 @@
             <div class="rotate-ellipse-2">
               <div class="rotate-card-2 card-1"></div>
               <div class="rotate-card-2 card-2">
-                <img class="case-rotate-img set-1" src="/images/66c46332f4c126638f4aab2e_startup-1.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332f4c126638f4aab2e_startup-1-p-500.webp 500w, /images/66c46332f4c126638f4aab2e_startup-1-p-800.webp 800w, /images/66c46332f4c126638f4aab2e_startup-1-p-1080.webp 1080w, /images/66c46332f4c126638f4aab2e_startup-1.webp 1400w" alt="">
+                <div class="case-rotate-img set-1 r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.0.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.0.rows.0 }}</li>
+<li>{{ stages.cards.0.rows.1 }}</li>
+<li>{{ stages.cards.0.rows.2 }}</li></ul>
+                </div>
               </div>
               <div class="rotate-card-2 card-3">
-                <img class="case-rotate-img set-2" src="/images/66c46332e77197f7d0a36ead_startup-2.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332e77197f7d0a36ead_startup-2-p-500.webp 500w, /images/66c46332e77197f7d0a36ead_startup-2-p-800.webp 800w, /images/66c46332e77197f7d0a36ead_startup-2-p-1080.webp 1080w, /images/66c46332e77197f7d0a36ead_startup-2.webp 1400w" alt="">
+                <div class="case-rotate-img set-2 r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.1.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.1.rows.0 }}</li>
+<li>{{ stages.cards.1.rows.1 }}</li>
+<li>{{ stages.cards.1.rows.2 }}</li></ul>
+                </div>
               </div>
               <div class="rotate-card-2 card-4">
-                <img class="case-rotate-img set-3" src="/images/66c46332a94d7b4ba339bb39_startup-3.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332a94d7b4ba339bb39_startup-3-p-500.webp 500w, /images/66c46332a94d7b4ba339bb39_startup-3-p-800.webp 800w, /images/66c46332a94d7b4ba339bb39_startup-3-p-1080.webp 1080w, /images/66c46332a94d7b4ba339bb39_startup-3.webp 1400w" alt="">
+                <div class="case-rotate-img set-3 r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.2.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.2.rows.0 }}</li>
+<li>{{ stages.cards.2.rows.1 }}</li>
+<li>{{ stages.cards.2.rows.2 }}</li></ul>
+                </div>
               </div>
               <div class="rotate-card-2 card-5"></div>
             </div>
@@ -77,39 +92,57 @@
         <div class="case-mob-wrap">
           <div class="case-mob-home">
             <div class="case-mob-home-img-block">
-              <img class="mob-case-home-img" src="/images/66c46332f4c126638f4aab2e_startup-1.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332f4c126638f4aab2e_startup-1-p-500.webp 500w, /images/66c46332f4c126638f4aab2e_startup-1-p-800.webp 800w, /images/66c46332f4c126638f4aab2e_startup-1-p-1080.webp 1080w, /images/66c46332f4c126638f4aab2e_startup-1.webp 1400w" alt="">
+              <div class="mob-case-home-img r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.0.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.0.rows.0 }}</li>
+<li>{{ stages.cards.0.rows.1 }}</li>
+<li>{{ stages.cards.0.rows.2 }}</li></ul>
+                </div>
             </div>
             <div class="card-case-bot-item">
-              <div class="card-case-bot-item-heading">Pre-seed Bootstrapped</div>
-              <div class="card-case-bot-item-text">This is POC stage. You got hypothetical product idea, you want it done &amp; tested properly to know whether it’s worth time and resources.<br><br><span class="text-color-white">More than 40%</span> of our clients on this stage get initial investment for MVPs</div>
-              <a class="nav_link-c contact grey _2" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <div class="card-case-bot-item-heading">{{ stages.cards.0.title }}</div>
+              <div class="card-case-bot-item-text">{{ stages.cards.0.body }}</div>
+              <a class="nav_link-c contact grey _2" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.0.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>
           </div>
           <div class="case-mob-home">
             <div class="case-mob-home-img-block">
-              <img class="mob-case-home-img" src="/images/66c46332e77197f7d0a36ead_startup-2.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332e77197f7d0a36ead_startup-2-p-500.webp 500w, /images/66c46332e77197f7d0a36ead_startup-2-p-800.webp 800w, /images/66c46332e77197f7d0a36ead_startup-2-p-1080.webp 1080w, /images/66c46332e77197f7d0a36ead_startup-2.webp 1400w" alt="">
+              <div class="mob-case-home-img r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.1.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.1.rows.0 }}</li>
+<li>{{ stages.cards.1.rows.1 }}</li>
+<li>{{ stages.cards.1.rows.2 }}</li></ul>
+                </div>
             </div>
             <div class="card-case-bot-item">
-              <div class="card-case-bot-item-heading">Seed</div>
-              <div class="card-case-bot-item-text">This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.<br><br><span class="text-color-white">More than 25%</span> of our clients get Series A investment to build full-scale product and start marketing</div>
-              <a class="nav_link-c contact grey _2" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <div class="card-case-bot-item-heading">{{ stages.cards.1.title }}</div>
+              <div class="card-case-bot-item-text">{{ stages.cards.1.body }}</div>
+              <a class="nav_link-c contact grey _2" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.1.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>
           </div>
           <div class="case-mob-home">
             <div class="case-mob-home-img-block">
-              <img class="mob-case-home-img" src="/images/66c46332a94d7b4ba339bb39_startup-3.webp" loading="lazy" sizes="100vw" srcset="/images/66c46332a94d7b4ba339bb39_startup-3-p-500.webp 500w, /images/66c46332a94d7b4ba339bb39_startup-3-p-800.webp 800w, /images/66c46332a94d7b4ba339bb39_startup-3-p-1080.webp 1080w, /images/66c46332a94d7b4ba339bb39_startup-3.webp 1400w" alt="">
+              <div class="mob-case-home-img r-screen" aria-hidden="true">
+                  <div class="r-screen__bar"><span></span><span></span><span></span></div>
+                  <div class="r-screen__title">{{ stages.cards.2.screen }}</div>
+                  <ul class="r-screen__rows"><li>{{ stages.cards.2.rows.0 }}</li>
+<li>{{ stages.cards.2.rows.1 }}</li>
+<li>{{ stages.cards.2.rows.2 }}</li></ul>
+                </div>
             </div>
             <div class="card-case-bot-item">
-              <div class="card-case-bot-item-heading">Series A</div>
-              <div class="card-case-bot-item-text">This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.<br><br>We’ve helped each and <span class="text-color-white">every start-up</span> we worked with at this stage to cut costs and improve user experience</div>
-              <a class="nav_link-c contact grey _2" href="#">
-                <div class="btn-text opacity-90">View detais</div>
+              <div class="card-case-bot-item-heading">{{ stages.cards.2.title }}</div>
+              <div class="card-case-bot-item-text">{{ stages.cards.2.body }}</div>
+              <a class="nav_link-c contact grey _2" href="{{ links.app }}">
+                <div class="btn-text opacity-90">{{ stages.cards.2.link }}</div>
                 <div class="explode violet"></div>
               </a>
             </div>

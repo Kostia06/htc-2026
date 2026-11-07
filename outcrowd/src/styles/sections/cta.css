@@ -41,7 +41,7 @@
   border: 1px rgba(255, 255, 255, 0.1);
   border-radius: 1.885rem;
   background-color: var(--surface-1);
-  background-image: url('/images/66b371a597474618710d0c03_Group.svg'), url('/images/66b9f592b7ac617f6fb0e755_Ellipse%20119%20(1).svg');
+  background-image: linear-gradient(118deg, transparent 52%, rgba(255, 255, 255, 0.045) 58%, transparent 64%, transparent 68%, rgba(255, 255, 255, 0.04) 73%, transparent 79%), radial-gradient(closest-side, rgba(255, 255, 255, 0.05), transparent);
   background-position: 75% center, 100% center;
   background-repeat: no-repeat, no-repeat;
   background-size: cover, contain;
@@ -256,7 +256,7 @@
     height: auto;
     padding-top: 3rem;
     padding-bottom: 0;
-    background-image: url('/images/66b371a597474618710d0c03_Group.svg');
+    background-image: linear-gradient(118deg, transparent 52%, rgba(255, 255, 255, 0.045) 58%, transparent 64%, transparent 68%, rgba(255, 255, 255, 0.04) 73%, transparent 79%);
     background-position: 50% 0;
     background-repeat: no-repeat;
     background-size: cover;

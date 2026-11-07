@@ -99,7 +99,7 @@
   margin-right: auto;
   overflow: hidden;
   border-radius: 1.2vw;
-  background: url('/images/69b2d1afcd2d92cb64e108a5_videoframe_5896.png') 50% / cover no-repeat;
+  background: var(--surface-1);
 }
 
 .stats-card-gradient.hero-gradient {

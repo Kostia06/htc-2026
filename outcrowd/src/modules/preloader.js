@@ -1,7 +1,6 @@
-// M1 + M2 – white curtain with the drawing logo on fresh loads, then a quick page fade-in.
+// M1 + M2 – white curtain where the wordmark wipes in on fresh loads, then a quick page fade-in.
 // The curtain is skipped when arriving through an internal link (sessionStorage flag).
 import { gsap } from './motion.js';
-import { getLottie, whenLoaded } from './lottie.js';
 
 const KEY = 'preloaderClicked';
 
@@ -40,22 +39,13 @@ export function initPreloader() {
   const home = preloader.querySelector('.preloader-home');
   const frame = preloader.querySelector('.preloader-frame');
   const hero = document.querySelector('.hero.home .container.is-big.full');
-  const logo = getLottie(preloader.querySelector('[data-lottie]'));
-  const draw = { p: 0 };
+  const logo = preloader.querySelector('.wordmark');
 
   const tl = gsap.timeline();
   tl.set(frame, { height: '100%' })
     .set(hero, { y: '-20vh' }, 0.2)
-    .to(draw, {
-      p: 0.79,
-      duration: 1.58,
-      ease: 'none',
-      onUpdate: () => logo?.isLoaded && logo.goToAndStop(draw.p * logo.totalFrames, true),
-    }, 0.2)
+    .fromTo(logo, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'power2.inOut' }, 0.2)
     .to(hero, { y: '0vh', duration: 1, ease: 'expo.out' }, 1.8)
     .to(frame, { height: '0%', duration: 1, ease: 'expo.out' }, 1.85)
     .set(home, { display: 'none' }, 2.2);
-
-  // keep the first frame visible while the json loads
-  whenLoaded(logo).then((a) => a.goToAndStop(draw.p * a.totalFrames, true));
 }

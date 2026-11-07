@@ -103,7 +103,7 @@
   width: 194px;
   height: 194px;
   pointer-events: none;
-  background: url('/images/6603cbcc4ba3de9a362cc967_cursor-service.svg') center / cover;
+  background: none;
   transform: translate(-50%, -50%);
 }
 
