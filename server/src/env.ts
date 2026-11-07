@@ -21,6 +21,8 @@ export type Env = {
   // both set: Auth0 sign-in is on; either missing: only the server's own tokens work
   AUTH0_DOMAIN?: string;
   AUTH0_AUDIENCE?: string;
+  // comma-separated browser origins allowed to call /api/*; defaults to the local Vite dev server
+  ALLOWED_ORIGINS?: string;
 };
 
 export type AppContext = { Bindings: Env; Variables: { sessionId: string } };
