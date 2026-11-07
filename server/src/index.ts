@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { AppContext, Env } from "./env";
+import { experiences } from "./memory/experiences";
 import { issueSession, requireSession } from "./session";
 
 const app = new Hono<AppContext>();
@@ -10,6 +11,8 @@ app.use("/api/*", async (c, next) => {
   if (c.req.path === "/api/session") return next();
   return requireSession(c, next);
 });
+
+app.route("/api/experiences", experiences);
 
 export default {
   fetch: app.fetch,
