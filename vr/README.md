@@ -8,3 +8,7 @@ Raven in the Meta Quest Browser: QR sign-in with the phone app, then practice sc
 - Tunnel the API too (`cloudflared tunnel --url http://localhost:8799`), set `VITE_RAVEN_API_URL` to that URL, and add the page's tunnel URL to `ALLOWED_ORIGINS` in `server/.dev.vars`.
 - `vite.config.ts` already accepts `*.trycloudflare.com` hosts; add a named tunnel's host there if you use one.
 - Open the tunnel URL in the Quest Browser, scan the QR with the Raven app on your phone.
+
+## Deploy
+
+`pnpm deploy` builds and uploads the static site to https://raven-vr.ilnkostia-dev.workers.dev. The API address comes from `.env.production`; the API only accepts browser calls from origins listed in `ALLOWED_ORIGINS` in `server/wrangler.jsonc`.
