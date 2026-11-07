@@ -8,6 +8,7 @@ export default defineConfig({
       miniflare: {
         bindings: {
           SESSION_SECRET: "test-secret",
+          MEMORY_SECRET: "test-memory-secret",
           TEST_MIGRATIONS: await readD1Migrations("./migrations"),
         },
       },
