@@ -6,3 +6,4 @@
 ## Log
 
 - **Supabase sign-in on the web** (Claude Code): added email/password and magic-link sign-in to `web/` with `@supabase/supabase-js`; requests to the Worker carry the Supabase access token, which the server's existing Supabase check verifies. Checked: web build and lint, and a wrong-password sign-in against the live project.
+- **Web onboarding questions** (Claude Code): wrote the post-sign-in questions (stage, school, target roles, search so far, skills, location, weekly time) in `web/src/onboarding/`; answers are kept on the device and sent to the existing `PATCH /api/me/profile`. Checked: web build and lint, and a click-through of every step in the browser.
