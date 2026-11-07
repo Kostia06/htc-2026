@@ -207,69 +207,127 @@ button:focus-visible,
   }
 }
 
-/* floating widgets around the hero */
-.r-widget {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  background: rgba(25, 25, 25, 0.85);
-  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(8px);
+/* --- hero messages ------------------------------------------------------
+   Three layers so the animations never fight over one transform:
+   .r-w       position + scroll rise (modules/hero.js)
+   .r-w__pop  pop-in on load (modules/hero.js)
+   .r-w__card idle float (CSS) */
+.r-widgets {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
 }
 
-.r-widget__label {
+.r-w {
+  position: absolute;
+}
+
+.r-w__pop {
+  opacity: 0;
+  transform: scale(0.6);
+  transform-origin: 50% 100%;
+}
+
+.r-w__card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1rem 0.65rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.9rem;
+  background: rgba(25, 25, 25, 0.88);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  animation: r-float 6s ease-in-out infinite;
+}
+
+.r-w:nth-child(2n) .r-w__card { animation-duration: 7s; animation-delay: -2s; }
+.r-w:nth-child(3n) .r-w__card { animation-duration: 8s; animation-delay: -4s; }
+.r-w:nth-child(5n) .r-w__card { animation-duration: 6.5s; animation-delay: -1s; }
+
+@keyframes r-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.45rem); }
+}
+
+.r-w__dot {
+  flex: 0 0 auto;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--tone) 22%, transparent);
+}
+
+.r-w__card--orange { --tone: var(--orange); }
+.r-w__card--violet { --tone: var(--violet); }
+.r-w__card--blue { --tone: #3b82f6; }
+.r-w__card--green { --tone: #22c55e; }
+
+.r-w__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.r-w__label {
   color: var(--text-soft);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   line-height: 1.2;
 }
 
-.r-widget__value {
+.r-w__value {
   color: var(--white);
-  font-size: 1.15rem;
+  font-size: 1rem;
   line-height: 1.2;
   white-space: nowrap;
 }
 
-.hero-paralax.set-2.r-widget,
-.hero-paralax.set-5.r-widget {
-  width: auto;
+/* desktop: two loose columns each side of the heading, clear of the screen frame */
+.r-w--1 { top: 0.5vw; left: 5vw; }
+.r-w--2 { top: 6.5vw; left: 13vw; }
+.r-w--3 { top: 13vw; left: 3.5vw; }
+.r-w--4 { top: 19.5vw; left: 11vw; }
+.r-w--5 { top: 26vw; left: 4vw; }
+.r-w--6 { top: 32.5vw; left: 9vw; }
+.r-w--7 { top: 1.5vw; right: 5vw; }
+.r-w--8 { top: 8vw; right: 11vw; }
+.r-w--9 { top: 14.5vw; right: 3.5vw; }
+.r-w--10 { top: 21vw; right: 10vw; }
+.r-w--11 { top: 28vw; right: 4vw; }
+
+@media (prefers-reduced-motion: reduce) {
+  .r-w__card {
+    animation: none;
+  }
 }
 
-.hero-paralax.set-5.r-widget .r-widget__value {
-  color: var(--orange);
-}
-
-.hero-paralax.set-1.r-widget {
-  top: auto;
-  bottom: auto;
-  inset: 4.5vw 3.2vw auto auto;
-}
-
+/* phones: four messages in a zig-zag between the buttons and the screen frame */
 @media screen and (max-width: 767px) {
-  .r-widget {
-    gap: 0.2rem;
-    padding: 0.55rem 0.65rem;
+  /* top is set from the buttons' position by modules/hero.js (placeMobileMessages) */
+  .r-widgets {
+    inset: 0 0 auto;
+    height: 15rem;
+  }
+
+  .r-w--3, .r-w--5, .r-w--6, .r-w--8, .r-w--9, .r-w--10, .r-w--11 {
+    display: none;
+  }
+
+  .r-w--1 { top: 0; left: 1rem; right: auto; }
+  .r-w--2 { top: 3.6rem; right: 1rem; left: auto; }
+  .r-w--4 { top: 7.2rem; left: 1.6rem; right: auto; }
+  .r-w--7 { top: 10.8rem; right: 1.6rem; left: auto; }
+
+  .r-w__card {
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem 0.5rem 0.6rem;
     border-radius: 0.7rem;
   }
 
-  .r-widget__label {
-    font-size: 0.65rem;
-  }
-
-  .r-widget__value {
-    font-size: 0.8rem;
-  }
-
-  .hero-paralax.r-widget {
-    width: auto;
-  }
-
-  .hero-paralax.set-1.r-widget {
-    inset: 0 3.5rem auto auto;
-  }
+  .r-w__label { font-size: 0.65rem; }
+  .r-w__value { font-size: 0.8rem; }
 }
 
 /* --- stats cards -------------------------------------------------------- */
@@ -894,80 +952,6 @@ button:focus-visible,
   }
 }
 
-/* --- built to respect you ----------------------------------------------- */
-.awards-list-item.r-respect-item {
-  grid-template-columns: 1fr 1.6fr;
-  place-items: center start;
-  gap: 2rem;
-}
-
-.r-respect-item .awards-desc-2.r-respect-body {
-  margin-right: 0;
-  color: var(--text-soft);
-}
-
-.awards-list-item-wrap:has(.r-respect-item) {
-  cursor: default;
-}
-
-@media screen and (max-width: 767px) {
-  .awards-list-item.r-respect-item {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
-  }
-}
-
-/* --- guides ------------------------------------------------------------- */
-.r-soon {
-  display: inline-block;
-  margin-bottom: 0.8rem;
-  padding: 0.45rem 0.8rem 0.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 2rem;
-  color: var(--text-soft);
-  font-size: 0.8rem;
-}
-
-.haeding-blog {
-  margin: 0;
-  font-weight: inherit;
-}
-
-.blog-feature-link {
-  cursor: default;
-}
-
-.r-guide-art {
-  position: relative;
-  overflow: hidden;
-}
-
-.r-guide-art span {
-  position: absolute;
-  border-radius: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(16, 16, 16, 0.75);
-}
-
-.r-guide-art--1 span:nth-child(1) { inset: 18% 14% auto 14%; height: 18%; }
-.r-guide-art--1 span:nth-child(2) { inset: 42% 26% auto 14%; height: 12%; }
-.r-guide-art--1 span:nth-child(3) { inset: 60% 14% auto 38%; height: 22%; background: rgba(254, 74, 35, 0.75); }
-
-.blog-news-home-img.r-guide-art {
-  display: block;
-  aspect-ratio: 1.45;
-  border-radius: 1.2rem;
-  background: radial-gradient(70% 70% at 70% 20%, rgba(138, 92, 255, 0.45), transparent 70%), var(--surface-2);
-}
-
-.r-guide-art--3 {
-  background: radial-gradient(70% 70% at 30% 80%, rgba(254, 74, 35, 0.4), transparent 70%), var(--surface-2) !important;
-}
-
-.r-guide-art--2 span:nth-child(1) { inset: 22% 18% auto 18%; height: 22%; }
-.r-guide-art--2 span:nth-child(2) { inset: 52% 34% auto 18%; height: 16%; }
-.r-guide-art--3 span { inset: 26% 22%; border-radius: 50%; }
-
 /* --- FAQ ---------------------------------------------------------------- */
 h3.faq-question-label {
   margin: 0;
@@ -1109,13 +1093,6 @@ h3.faq-question-label {
   }
 }
 
-/* widgets size to their content (the old artwork set fixed widths and stretched insets) */
-.hero-paralax.r-widget {
-  bottom: auto;
-  width: auto;
-  height: auto;
-}
-
 /* action card: left-aligned and compact enough to leave room for the caption */
 .r-action-card {
   width: 15.5rem;
@@ -1171,33 +1148,9 @@ h3.faq-question-label {
   background: var(--orange);
 }
 
-.awards-list-item.r-respect-item > .heading-5 {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  color: var(--white);
-}
-
-.awards-list-item.r-respect-item > .awards-desc-2 {
-  justify-self: start;
-  text-align: left;
-}
-
 /* headings re-tagged for a correct outline keep their previous look */
 .swiper-slide .heading-5 {
   color: inherit;
-}
-
-.awards-list-item.r-respect-item > .heading-5 {
-  font-size: 2.222rem;
-  line-height: 2.375rem;
-}
-
-@media screen and (max-width: 767px) {
-  .awards-list-item.r-respect-item > .heading-5 {
-    font-size: 1.5rem;
-    line-height: 1.2;
-  }
 }
 
 /* closing CTA heading is longer than the old two-word one */

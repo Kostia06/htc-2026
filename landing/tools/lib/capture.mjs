@@ -35,8 +35,6 @@ export const SECTIONS = [
   ['06-services', 'section.is-cases'],
   ['07-clients', 'section.is-clients'],
   ['08-testimonial', 'section.is-testimonial'],
-  ['09-awards', 'section.is-awwards'],
-  ['10-blog', 'section.is-blog'],
   ['11-faq', 'section.is-faq'],
   ['12-cta', 'section.is-cta'],
   ['13-footer', 'footer.footer'],
@@ -62,7 +60,7 @@ export const PINS = [
 export const FIXED = '.nav-wrap, .contact-book-a-call';
 
 // Elements removed from captures entirely (third-party cookie banner).
-export const HIDE = ['.cookies', '.fs-cc-banner_component'];
+export const HIDE = ['.cookies'];
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
