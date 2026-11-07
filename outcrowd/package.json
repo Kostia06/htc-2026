@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "reference": "node tools/reference.mjs",
+    "candidate": "node tools/candidate.mjs",
+    "style-diff": "node tools/style-diff.mjs",
     "text-diff": "node tools/text-diff.mjs",
     "spec:extract": "node tools/extract-spec.mjs && node tools/copy-assets.mjs",
     "spec:probe": "node tools/probe-computed.mjs"
@@ -23,6 +25,6 @@
     "lenis": "^1.3.27",
     "lottie-web": "^5.13.0",
     "split-type": "^0.3.4",
-    "swiper": "^14.4.0"
+    "swiper": "^8.4.7"
   }
 }

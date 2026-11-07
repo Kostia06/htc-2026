@@ -1,0 +1,5 @@
+/* Stylesheet entry. Order matters: tokens → base → shared components → sections in page order. */
+@import './tokens.css';
+@import './fonts.css';
+@import './base.css';
+@import './layout.css';
