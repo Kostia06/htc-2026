@@ -44,3 +44,22 @@ agent-browser-chrome-*/
 
 # team-only design notes, shared through the hub instead
 docs/design/
+
+# iOS build output
+ios/build/
+ios/RavenKit/.build/
+ios/RavenKit/.swiftpm/
+*.xcuserstate
+xcuserdata/
+
+# tool droppings from sandboxed builds
+TemporaryDirectory.*/
+_Users_*.lock
+node-compile-cache/
+update-check/
+.claude/worktrees/
+_private_tmp_*.lock
+_tmp_*.lock
+swift-generated-sources/
+# landing uses npm; a pnpm lockfile there is a local install artefact
+landing/pnpm-lock.yaml

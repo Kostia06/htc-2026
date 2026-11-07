@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import type { AppContext } from "../env";
+import { verifySupabaseToken } from "./supabase";
 
 const enc = new TextEncoder();
 
@@ -16,8 +17,12 @@ async function sign(id: string, secret: string) {
 }
 
 export async function issueSession(secret: string) {
-  const id = crypto.randomUUID();
-  return `${id}.${await sign(id, secret)}`;
+  return issueSessionFor(secret, crypto.randomUUID());
+}
+
+// a second device on the same account gets its own token for the same id
+export async function issueSessionFor(secret: string, userId: string) {
+  return `${userId}.${await sign(userId, secret)}`;
 }
 
 export async function verifySession(token: string, secret: string) {
@@ -33,7 +38,8 @@ export async function verifySession(token: string, secret: string) {
 
 export const requireSession: MiddlewareHandler<AppContext> = async (c, next) => {
   const token = c.req.header("Authorization")?.replace(/^Bearer /, "") ?? "";
-  const id = await verifySession(token, c.env.SESSION_SECRET);
+  // people sign in with Supabase; paired headsets carry the server's own token for the same account
+  const id = (await verifySupabaseToken(c.env, token)) ?? (await verifySession(token, c.env.SESSION_SECRET));
   if (!id) return c.json({ error: "unauthorized" }, 401);
   c.set("sessionId", id);
   await next();
