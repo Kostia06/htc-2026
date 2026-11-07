@@ -7,6 +7,9 @@ options:
 packages:
   RavenKit:
     path: RavenKit
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.55.6
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -21,8 +24,18 @@ targets:
     sources: [Raven]
     dependencies:
       - package: RavenKit
+      # Auth alone: the app never talks to Postgres, Storage or Realtime directly
+      - package: Supabase
+        product: Auth
+    entitlements:
+      path: Raven/Resources/Raven.entitlements
+      properties:
+        com.apple.developer.applesignin: [Default]
     settings:
       base:
+        # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
+        SUPABASE_URL: "https://YOUR-PROJECT.supabase.co"
+        SUPABASE_PUBLISHABLE_KEY: "YOUR-PUBLISHABLE-KEY"
         PRODUCT_BUNDLE_IDENTIFIER: com.raven.ios
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
@@ -39,6 +52,8 @@ targets:
       properties:
         CFBundleDisplayName: Raven
         RavenAPIURL: $(RAVEN_API_URL)
+        SupabaseURL: $(SUPABASE_URL)
+        SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSCameraUsageDescription: Raven uses the camera to scan the code on your headset so it can join your account.

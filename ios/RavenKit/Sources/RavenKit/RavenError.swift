@@ -9,7 +9,7 @@ public enum RavenError: Error, Equatable, Sendable {
 
     public var message: String {
         switch self {
-        case .unauthorized: "Your session ended. Open the app again to start a new one."
+        case .unauthorized: "You were signed out. Sign in again to continue."
         case .offline: "You're offline. Check your connection and try again."
         case let .rejected(_, message): message
         case .unreadableResponse: "Something went wrong on our side. Try again in a moment."

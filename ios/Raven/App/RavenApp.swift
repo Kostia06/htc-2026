@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct RavenApp: App {
-    @State private var model = AppModel(baseURL: AppConfiguration.apiBaseURL)
+    @State private var model = AppModel(baseURL: AppConfiguration.apiBaseURL, authenticator: .fromInfoPlist())
 
     var body: some Scene {
         WindowGroup {

@@ -9,6 +9,9 @@ struct RootView: View {
             switch model.phase {
             case .starting:
                 ProgressView().controlSize(.large)
+            case .signedOut:
+                SignInView()
+                    .transition(.opacity)
             case .onboarding:
                 OnboardingFlow()
                     .transition(.opacity)
