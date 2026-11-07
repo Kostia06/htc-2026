@@ -1,0 +1,28 @@
+/* Muted looping background video that fills its box (hero showreel, taxi app). */
+
+.bg-video {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--white);
+}
+
+.bg-video > video {
+  position: absolute;
+  inset: -100%;
+  z-index: -100;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  object-fit: cover;
+}
+
+.bg-video.contain > video {
+  object-fit: contain;
+}
+
+.bg-video > video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  appearance: none;
+}

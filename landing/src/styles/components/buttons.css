@@ -1,0 +1,186 @@
+/* Pill buttons with the "explode" fill (see modules/explode.js), and the secondary text+arrow button. */
+
+/* --- pill buttons (nav, hero and stage-card links) --- */
+.nav_link-c {
+  display: block;
+  flex: 0 0 auto;
+  padding: 1.81rem 1.5rem 1.5rem;
+  border-radius: var(--radius-btn);
+  color: var(--dark-black-400);
+  font-size: 0.97222rem;
+}
+
+.nav_link-c.contact {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-left: 0;
+  padding: 1.01rem 1.46rem 0.8rem;
+  overflow: hidden;
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+.nav_link-c.contact.grey {
+  width: 8.33rem;
+  opacity: 0;
+  background-color: var(--grey-btn);
+  transform: scale(0.6);
+  transition: background-color 0.3s;
+}
+
+.btn-text {
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+  font-weight: 500;
+  transition: color 0.6s;
+}
+
+.btn-text.opacity-90 {
+  opacity: 0.9;
+  white-space: nowrap;
+  line-height: 100%;
+}
+
+/* the dot that scales up under the cursor */
+.explode {
+  position: absolute;
+  inset: auto auto 0% 0%;
+  width: 0.5vw;
+  height: 0.5vw;
+  pointer-events: none;
+  border-radius: 50%;
+  background-color: var(--orange);
+  transform: scale(0.1);
+  transition: opacity 10ms, transform 0.6s var(--ease-explode);
+}
+
+.explode.violet {
+  inset: 0%;
+  flex: 0 0 auto;
+  margin: -3px;
+  background-color: var(--purple);
+}
+
+.explode._400 {
+  transition-duration: 0.6s;
+}
+
+/* link stretched over its button */
+.book_a_call {
+  position: absolute;
+  inset: 0%;
+}
+
+/* --- secondary button: text that rolls up + arrow in a circle --- */
+.btn-secondary {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.11rem;
+  width: auto;
+  max-width: 10.1rem;
+  font-size: 1.11rem;
+  line-height: 100%;
+}
+
+.btn-text-wrap {
+  height: 1.2rem;
+  margin-top: 3px;
+  padding-top: 2px;
+  overflow: hidden;
+}
+
+.btn-text-secondary.second-txt {
+  margin-top: 0.1rem;
+}
+
+.btn-icon-wrap {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  width: 2.78rem;
+  height: 2.78rem;
+  overflow: hidden;
+  border: 1px solid var(--light-2);
+  border-radius: 50%;
+}
+
+.icon-btn-secondary {
+  flex: 0 0 auto;
+  width: 1.6667rem;
+}
+
+.icon-btn-secondary.second-icon {
+  position: absolute;
+}
+
+@media screen and (max-width: 767px) {
+  .btn-text {
+    font-size: 1.125rem;
+  }
+
+  .btn-text.opacity-90 {
+    font-size: 0.875rem;
+  }
+
+  .nav_link-c.contact {
+    height: auto;
+    padding-top: 1rem;
+    padding-bottom: 0.75rem;
+    border-radius: 0.5rem;
+  }
+
+  .btn-text-secondary.first-txt,
+  .btn-text-secondary.second-txt {
+    font-size: 0.875rem;
+  }
+
+  .icon-btn-secondary.first-icon,
+  .icon-btn-secondary.second-icon {
+    width: 1.5rem;
+  }
+
+  .btn-icon-wrap {
+    width: 2.5rem;
+    height: 2.58rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .btn-text {
+    font-size: 1.125rem;
+  }
+}
+
+/* M47 – secondary button hover: the label rolls up, the arrow leaves top-right and a copy enters */
+.btn-text-secondary,
+.icon-btn-secondary {
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.icon-btn-secondary.second-icon {
+  transform: translate(-1.5rem, 1.5rem);
+}
+
+.btn-secondary:hover .btn-text-secondary.first-txt {
+  transform: translateY(-1.3rem);
+}
+
+.btn-secondary:hover .btn-text-secondary.second-txt {
+  transform: translateY(-1.17rem);
+}
+
+.btn-secondary:hover .icon-btn-secondary.first-icon {
+  transform: translate(1.5rem, -1.5rem);
+}
+
+.btn-secondary:hover .icon-btn-secondary.second-icon {
+  transform: translate(0, 0);
+}
