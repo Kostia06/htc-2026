@@ -8,6 +8,7 @@ import { initNavCollapse } from './modules/nav-collapse.js';
 import { initBurger } from './modules/burger.js';
 import { initExplode } from './modules/explode.js';
 import { initMagnetic } from './modules/magnetic.js';
+import { initHero } from './modules/hero.js';
 
 initLotties();
 initPreloader();
@@ -17,3 +18,4 @@ initNavCollapse();
 initBurger();
 initExplode();
 initMagnetic();
+initHero();
