@@ -36,9 +36,9 @@ targets:
         # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
         SUPABASE_URL: "https://pgltmzicvpvcyhbrwqxz.supabase.co"
         SUPABASE_PUBLISHABLE_KEY: "sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1"
-        PRODUCT_BUNDLE_IDENTIFIER: com.raven.ios
+        PRODUCT_BUNDLE_IDENTIFIER: com.kostiailn.raven
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "2"
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
