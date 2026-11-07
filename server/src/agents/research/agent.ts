@@ -1,10 +1,9 @@
-import { Hono } from "hono";
-import { generate, type GeminiContent } from "../ai/gemini";
-import type { AppContext, Env } from "../env";
-import { saveFact } from "../memory/facts";
-import { memorySearch } from "../memory/search";
-import { keenableFetch, keenableSearch } from "./keenable";
-import { runAgent, type Declaration, type Model } from "./loop";
+import { generate, type GeminiContent } from "../../integrations/gemini";
+import type { Env } from "../../env";
+import { saveFact } from "../../memory/facts";
+import { memorySearch } from "../../memory/search";
+import { keenableFetch, keenableSearch } from "../../integrations/keenable";
+import { runAgent, type Declaration, type Model } from "../core/loop";
 import { makeTools, USER_AGENT, type ToolDeps } from "./tools";
 
 const MAX_STEPS = 12;
@@ -73,13 +72,3 @@ export async function researchTracked(env: Env) {
     await researchCompany(env, slug).catch((e) => console.error("research failed", slug, (e as Error).message));
   }
 }
-
-export const research = new Hono<AppContext>();
-
-research.post("/:slug", async (c) => {
-  const slug = c.req.param("slug");
-  const exists = await c.env.DB.prepare("SELECT 1 FROM companies WHERE slug = ?").bind(slug).first();
-  if (!exists) return c.json({ error: "unknown company" }, 404);
-  if (!(await claimResearch(c.env, slug))) return c.json({ error: "researched recently, try again later" }, 429);
-  return c.json(await researchCompany(c.env, slug));
-});

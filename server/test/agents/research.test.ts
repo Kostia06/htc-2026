@@ -1,9 +1,9 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { GeminiContent } from "../src/ai/gemini";
-import { claimResearch, deps as researchDeps, researchCompany } from "../src/agent/research";
-import app from "../src/index";
-import { issueSession } from "../src/session";
+import type { GeminiContent } from "../../src/integrations/gemini";
+import { claimResearch, deps as researchDeps, researchCompany } from "../../src/agents/research/agent";
+import app from "../../src/index";
+import { issueSession } from "../../src/auth/session";
 
 describe("researchCompany", () => {
   beforeEach(async () => {

@@ -1,8 +1,8 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it } from "vitest";
-import app from "../src/index";
-import { getCompanyInsights } from "../src/memory/insights";
-import { issueSession } from "../src/session";
+import app from "../../src/index";
+import { getCompanyInsights } from "../../src/memory/insights";
+import { issueSession } from "../../src/auth/session";
 
 async function addExperience(i: number, seeded = 0) {
   await env.DB.prepare(

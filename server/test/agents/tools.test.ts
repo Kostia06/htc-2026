@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { makeTools, type ToolDeps } from "../src/agent/tools";
+import { makeTools, type ToolDeps } from "../../src/agents/research/tools";
 
 function fakeDeps(over: Partial<ToolDeps> = {}): ToolDeps {
   return {

@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { scrubNames } from "../ai/gemini";
+import { scrubNames } from "../integrations/gemini";
 import type { AppContext } from "../env";
 import { anonymize } from "../lib/anonymize";
-import { upsertVector } from "./vectors";
+import { upsertVector } from "../memory/vectors";
 
 const HOURLY_LIMIT = 5;
 const MAX_QUESTIONS = 15;

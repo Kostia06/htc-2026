@@ -1,6 +1,6 @@
-import { isAllowed, isBlockedHost } from "../lib/robots";
-import type { FactKind, NewFact } from "../memory/facts";
-import type { Tool } from "./loop";
+import { isAllowed, isBlockedHost } from "../../lib/robots";
+import type { FactKind, NewFact } from "../../memory/facts";
+import type { Tool } from "../core/loop";
 
 export const USER_AGENT = "HTCMentorBot/1.0 (+https://github.com/Kostia06/htc-2026)";
 const PAGE_LIMIT = 8000;

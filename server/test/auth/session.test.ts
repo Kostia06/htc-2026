@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
-import app from "../src/index";
-import { issueSession, verifySession } from "../src/session";
+import app from "../../src/index";
+import { issueSession, verifySession } from "../../src/auth/session";
 
 describe("sessions", () => {
   it("verifies a token it issued back to the same id", async () => {

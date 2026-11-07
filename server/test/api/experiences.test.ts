@@ -1,9 +1,9 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import app from "../src/index";
-import { deps } from "../src/memory/experiences";
-import { issueSession } from "../src/session";
+import app from "../../src/index";
+import { deps } from "../../src/api/experiences";
+import { issueSession } from "../../src/auth/session";
 
 const body = {
   companySlug: "acme",
