@@ -24,4 +24,16 @@ describe("saveFact", () => {
     const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM company_facts").first<{ n: number }>();
     expect(n?.n).toBe(1);
   });
+
+  it("refreshes the fetch time when a fact is seen again", async () => {
+    const fact = { kind: "hiring" as const, text: "Hiring juniors", source_url: "https://acme.com/careers" };
+    await saveFact(env, "c1", fact);
+    await env.DB.prepare("UPDATE company_facts SET fetched_at = '2020-01-01T00:00:00.000Z'").run();
+
+    await saveFact(env, "c1", fact);
+
+    const row = await env.DB.prepare("SELECT fetched_at FROM company_facts").first<{ fetched_at: string }>();
+    expect(row!.fetched_at > "2020-01-01T00:00:00.000Z").toBe(true);
+    expect(deps.upsertVector).toHaveBeenCalledTimes(1);
+  });
 });
