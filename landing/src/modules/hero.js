@@ -1,9 +1,56 @@
 // Hero interactions:
 //   M17 glowing border loop on the "Digital brand design agency" tag
-//   M18 desktop scroll choreography (heading + widgets fly up, showreel frame dissolves)
-//   M19 showreel grows from 48% to full width while scrolling
-//   M20 mobile widget parallax
+//   M18 desktop scroll choreography (heading + messages fly up, screen frame dissolves)
+//   M19 screen frame grows from 48% to full width while scrolling
+//   M20 mobile message parallax
+//   pop-in of the floating messages once the preloader has lifted
 import { gsap, scrollKeyframes, loop, onceInView, vw, rem, MQ } from './motion.js';
+
+// how far each message rises while the hero scrolls away (vw, desktop / mobile), varied for depth
+const RISE = [-52, -63, -58, -66, -55, -70, -54, -62, -59, -68, -57];
+const RISE_MOB = [-20, -25, -15, -22, -26, -19, -24, -18, -23, -21, -25];
+
+function popIn(section) {
+  const pops = section.querySelectorAll('.r-w__pop');
+  if (!pops.length) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const play = () =>
+    reduce
+      ? gsap.set(pops, { opacity: 1, scale: 1 })
+      : gsap.to(pops, { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(2.2)', stagger: { each: 0.09, from: 'random' } });
+  if (window.__preloaderDone) play();
+  else document.addEventListener('preloader:done', play, { once: true });
+}
+
+
+/** Phones: start the message band just under the hero buttons (heading height varies with width). */
+function placeMobileMessages(section) {
+  const band = section.querySelector('.r-widgets');
+  const btns = section.querySelector('.r-hero-btns');
+  const box = section.querySelector('.container.is-big.full');
+  if (!band || !btns || !box) return;
+  const place = () => {
+    if (window.innerWidth > 767) {
+      band.style.top = '';
+      return;
+    }
+    const gap = 12;
+    band.style.top = `${btns.offsetTop + btns.offsetHeight + gap + offsetWithin(btns.offsetParent, box)}px`;
+  };
+  place();
+  window.addEventListener('resize', place);
+  document.fonts?.ready.then(place);
+}
+
+/** Vertical offset of el's top inside ancestor, summed over offsetParents. */
+function offsetWithin(el, ancestor) {
+  let y = 0;
+  while (el && el !== ancestor) {
+    y += el.offsetTop;
+    el = el.offsetParent;
+  }
+  return y;
+}
 
 export function initHero() {
   const section = document.querySelector('.section.hero.home');
@@ -20,14 +67,16 @@ export function initHero() {
   ]);
   onceInView(tagWrap, () => tagGlow.play());
 
-  const set = (n) => `.hero-paralax.set-${n}`;
+  popIn(section);
+  placeMobileMessages(section);
+
+  const msgs = [...section.querySelectorAll('.r-w')];
   const mm = gsap.matchMedia();
 
   // M18
   mm.add(MQ.desktop, () => {
-    const start = [1, 2, 3, 4, 5, 6, 7].map((n) => [set(n), 29, { y: vw(0) }]);
     scrollKeyframes(section, [
-      ...start,
+      ...msgs.map((m) => [m, 29, { y: vw(0) }]),
       ['.hero-heading', 29, { y: vw(0) }],
       ['.show-wrap', 29, { y: rem(0) }],
       ['.show-real-video', 43, { width: '97.5%', height: '97.5%' }],
@@ -36,22 +85,15 @@ export function initHero() {
       ['.lap-top-bg', 45.5, { opacity: 0 }],
       ['.hero-heading', 50, { y: vw(-30) }],
       ['.show-wrap', 50, { y: rem(-34.5) }],
-      [set(1), 53, { y: vw(-51) }],
-      [set(2), 53, { y: vw(-63) }],
-      [set(3), 53, { y: vw(-62) }],
-      [set(7), 54, { y: vw(-70) }],
-      [set(4), 54, { y: vw(-57) }],
-      [set(6), 54, { y: vw(-60) }],
-      [set(5), 54, { y: vw(-59) }],
+      ...msgs.map((m, i) => [m, 53 + (i % 2), { y: vw(RISE[i % RISE.length]) }]),
     ]);
   });
 
   // M20
   mm.add(MQ.mobile, () => {
-    const end = { 1: -20, 2: -25, 3: -15, 7: -25, 4: -25, 6: -26, 5: -19 };
     scrollKeyframes(section, [
-      ...Object.keys(end).map((n) => [set(n), 53, { y: vw(0) }]),
-      ...Object.entries(end).map(([n, v]) => [set(n), 85, { y: vw(v) }]),
+      ...msgs.map((m) => [m, 53, { y: vw(0) }]),
+      ...msgs.map((m, i) => [m, 85, { y: vw(RISE_MOB[i % RISE_MOB.length]) }]),
     ]);
   });
 
