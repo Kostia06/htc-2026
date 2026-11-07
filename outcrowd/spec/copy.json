@@ -1,0 +1,2766 @@
+{
+  "_about": {
+    "source": "Saved homepage snapshot of https://www.outcrowd.io (Webflow, last published Wed Jul 08 2026): /Users/kartikmiital/Downloads/assets/127.0.0.1_8081/dl/ua=Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2017_2_1%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Version%2F17.2%20Mobile%2F15E148%20Safari%2F604.1&mobile=true&url=https%3A%2F%2Fwww.outc.html",
+    "generated": "2026-11-07",
+    "conventions": [
+      "All strings are verbatim from the snapshot DOM (entities decoded). Typos, straight vs curly quotes and trailing spaces are kept on purpose.",
+      "Special characters appear as real characters; U+00A0 (no-break space) and U+200D (zero-width joiner) are written as \\u00a0 / \\u200d escapes so they are visible.",
+      "A value of {text, html} means the element contains markup (<br>, <span>, <a>): \"html\" is the exact innerHTML to reproduce, \"text\" its text with each forced <br> written as \"\\n\".",
+      "Asset URLs are given as live URLs (the snapshot mirrors them under /Users/kartikmiital/Downloads/assets/<host>/<path>). Video URLs are as mirrored by the saver (query string folded into the file name).",
+      "All <img> elements on the page have alt=\"\" (decorative). No element in <body> has aria-label or title; the only ARIA attribute is aria-current=\"page\" on the logo link, plus role=\"list\"/\"listitem\" on the blog CMS lists.",
+      "\"strings\" is the flat per-section list compared by tools/text-diff.mjs (DOM order, whitespace collapsed, <br> = space). \"hiddenAt\" lists strings that are in the DOM but not rendered at that viewport (desktop 1440x900, tablet 991x900, mobile 390x844).",
+      "Mark rebuilt sections with data-section=\"<key>\" (keys below) so text-diff can map them even if class names change."
+    ],
+    "typosToKeep": [
+      "\"View detais\" (cases buttons)",
+      "\"in it's core\" (cards heading, straight apostrophe)",
+      "\"Finance|able\" (Financeable description)",
+      "\"How long it will take to get an estimate from you?\" (FAQ)",
+      "\"the more accurate will our estimates be\" (FAQ)",
+      "trailing space: \"Crypto product design in the AI era: How to build trust before users connect a wallet \""
+    ],
+    "counts": {
+      "preloader": 1,
+      "header": 16,
+      "hero": 2,
+      "cards": 9,
+      "cases-heading": 2,
+      "cases-new": 23,
+      "services": 16,
+      "clients": 26,
+      "testimonial": 30,
+      "awards": 33,
+      "blog": 6,
+      "faq": 23,
+      "cta": 4,
+      "book-call": 1,
+      "footer": 35,
+      "cookies": 3,
+      "total": 230
+    }
+  },
+  "sectionOrder": [
+    {
+      "key": "preloader",
+      "referenceSelector": "#preloader",
+      "candidateSelector": "[data-section=\"preloader\"]"
+    },
+    {
+      "key": "header",
+      "referenceSelector": "header.header-new",
+      "candidateSelector": "[data-section=\"header\"]"
+    },
+    {
+      "key": "hero",
+      "referenceSelector": "section.hero.home",
+      "candidateSelector": "[data-section=\"hero\"]"
+    },
+    {
+      "key": "cards",
+      "referenceSelector": "section.bg-dark.cards",
+      "candidateSelector": "[data-section=\"cards\"]"
+    },
+    {
+      "key": "cases-heading",
+      "referenceSelector": ".case--new-heading-wrap:not(._2)",
+      "candidateSelector": "[data-section=\"cases-heading\"]"
+    },
+    {
+      "key": "cases-new",
+      "referenceSelector": "section.is-cases-new",
+      "candidateSelector": "[data-section=\"cases-new\"]"
+    },
+    {
+      "key": "services",
+      "referenceSelector": "section.is-cases",
+      "candidateSelector": "[data-section=\"services\"]"
+    },
+    {
+      "key": "clients",
+      "referenceSelector": "section.is-clients",
+      "candidateSelector": "[data-section=\"clients\"]"
+    },
+    {
+      "key": "testimonial",
+      "referenceSelector": "section.is-testimonial",
+      "candidateSelector": "[data-section=\"testimonial\"]"
+    },
+    {
+      "key": "awards",
+      "referenceSelector": "section.is-awwards",
+      "candidateSelector": "[data-section=\"awards\"]"
+    },
+    {
+      "key": "blog",
+      "referenceSelector": "section.is-blog",
+      "candidateSelector": "[data-section=\"blog\"]"
+    },
+    {
+      "key": "faq",
+      "referenceSelector": "section.is-faq",
+      "candidateSelector": "[data-section=\"faq\"]"
+    },
+    {
+      "key": "cta",
+      "referenceSelector": "section.is-cta",
+      "candidateSelector": "[data-section=\"cta\"]"
+    },
+    {
+      "key": "book-call",
+      "referenceSelector": ".contact-book-a-call",
+      "candidateSelector": "[data-section=\"book-call\"]"
+    },
+    {
+      "key": "footer",
+      "referenceSelector": "footer.footer",
+      "candidateSelector": "[data-section=\"footer\"]"
+    },
+    {
+      "key": "cookies",
+      "referenceSelector": ".cookies",
+      "candidateSelector": "[data-section=\"cookies\"]"
+    }
+  ],
+  "head": {
+    "lang": "en",
+    "title": "Creative branding agency for startups ✪ Outcrowd ✪ Creative branding, web design & development agency",
+    "description": "Outcrowd is a ➠ digital creative agency for startups that designs and develops great digital products ☑ We are creating branding, websites and mobile applications to deliver a great experience ✓",
+    "og": {
+      "title": "Creative branding agency for startups ✪ Outcrowd ✪ Creative branding, web design & development agency",
+      "description": "Outcrowd is a ➠ digital creative agency for startups that designs and develops great digital products ☑ We are creating branding, websites and mobile applications to deliver a great experience ✓",
+      "image": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5fa54f279c1be13cb813e_Opengraph.png",
+      "type": "website"
+    },
+    "twitter": {
+      "title": "Creative branding agency for startups ✪ Outcrowd ✪ Creative branding, web design & development agency",
+      "description": "Outcrowd is a ➠ digital creative agency for startups that designs and develops great digital products ☑ We are creating branding, websites and mobile applications to deliver a great experience ✓",
+      "image": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5fa54f279c1be13cb813e_Opengraph.png",
+      "card": "summary_large_image"
+    },
+    "viewport": "width=device-width, initial-scale=1",
+    "canonical": "https://www.outcrowd.io",
+    "favicon": {
+      "href": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c8868efa543e643672fbac_favicon-logo.webp",
+      "rel": "shortcut icon",
+      "type": "image/x-icon"
+    },
+    "appleTouchIcon": {
+      "href": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c88694a996450fa3340232_webclip-logo.webp",
+      "rel": "apple-touch-icon"
+    },
+    "webfonts": {
+      "loader": "webfont.js 1.6.26 (ajax.googleapis.com)",
+      "googleFamilies": [
+        "Lora:300,400,500,600,700"
+      ]
+    },
+    "selfHostedFonts": "ITC Avant Garde Std (Md, MdCn, Bk, BkCn, XLtObl) via the Webflow CSS"
+  },
+  "sections": {
+    "preloader": {
+      "button": {
+        "id": "startPreloader",
+        "label": "Button Text",
+        "note": "Webflow placeholder label; element is not meant to be seen (preloader-button)."
+      },
+      "lottie": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdf91fdd174c6bcc01dcce_logo%20dark.json",
+          "class": "",
+          "loading": "eager"
+        }
+      ]
+    },
+    "header": {
+      "logo": {
+        "href": "/",
+        "ariaCurrent": "page",
+        "class": "w--current",
+        "lottie": [
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdefa0a9bf14b3cb560686_logo%20white.json",
+            "class": "logo-white",
+            "loading": "eager"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdf91fdd174c6bcc01dcce_logo%20dark.json",
+            "class": "logo-black",
+            "loading": "eager"
+          }
+        ]
+      },
+      "navLinks": [
+        {
+          "href": "/cases",
+          "label": "Cases",
+          "hoverLabel": "Cases"
+        },
+        {
+          "href": "/services",
+          "label": "Service",
+          "hoverLabel": "Service"
+        },
+        {
+          "href": "/blog",
+          "label": "Blog",
+          "hoverLabel": "Blog"
+        },
+        {
+          "href": "/about-us",
+          "label": "About us",
+          "hoverLabel": "About us"
+        }
+      ],
+      "navLinksNote": "Each nav link renders the label twice (\".nav\" + \".hover\") for the vertical flip-on-hover animation.",
+      "buttons": [
+        {
+          "label": "Book a call",
+          "type": "div (not a link) with an invisible Calendly anchor on top",
+          "calendly": {
+            "anchor": {
+              "id": "callButton",
+              "href": "",
+              "onclick": "Calendly.initPopupWidget({url: 'https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1'});return false;"
+            },
+            "url": "https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1"
+          }
+        },
+        {
+          "href": "/contact-us",
+          "label": "Contact"
+        }
+      ],
+      "mobileMenu": {
+        "links": [
+          {
+            "href": "/cases",
+            "label": "Cases"
+          },
+          {
+            "href": "/services",
+            "label": "Service"
+          },
+          {
+            "href": "/blog",
+            "label": "Blog"
+          },
+          {
+            "href": "/about-us",
+            "label": "About us"
+          }
+        ],
+        "email": {
+          "href": "mailto:hello@outcrowd.io",
+          "label": "hello@outcrowd.io"
+        },
+        "socials": [
+          {
+            "href": "#",
+            "icon": {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f15171cfef875605c_dribbble-icon%201.svg",
+              "alt": "",
+              "class": "icon-footer set-1"
+            }
+          },
+          {
+            "href": "#",
+            "icon": {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a60440bb21735987e1a061_Vector.svg",
+              "alt": "",
+              "class": "icon-footer set-2"
+            }
+          },
+          {
+            "href": "#",
+            "icon": {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg",
+              "alt": "",
+              "class": "icon-footer set-2"
+            }
+          },
+          {
+            "href": "#",
+            "icon": {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f6f3bdb0490b33e85_Social%20Icons.svg",
+              "alt": "",
+              "class": "icon-footer set-1"
+            }
+          },
+          {
+            "href": "#",
+            "icon": {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f8b939a6f0fde8e05_Vector-1.svg",
+              "alt": "",
+              "class": "icon-footer set-3"
+            }
+          }
+        ],
+        "socialsNote": "In the mobile menu all 5 social icons link to \"#\" (footer has the real URLs).",
+        "contact": {
+          "href": "/contact-us",
+          "label": "Contact"
+        }
+      },
+      "pageBackgroundImage": {
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5abcb1c03eb30625c251c_Group.webp",
+        "alt": "",
+        "class": "light"
+      }
+    },
+    "hero": {
+      "tag": "Digital brand design agency",
+      "h1": {
+        "text": "Design & Brand Acceleration for\u00a0SaaS Startups",
+        "html": "Design &amp; Brand Acceleration for&nbsp;SaaS Startups",
+        "note": "Non-breaking space between \"for\" and \"SaaS\" (&nbsp;)."
+      },
+      "video": {
+        "id": "video",
+        "attrs": "playsinline loop muted autoplay",
+        "src": "https://dl.dropboxusercontent.com/scl/fi/ok2coppn7h6oszgfy30y4/showreel-home_rlkey%3Dk7sd1apdwi6fyy3wxhk6dz87v%26st%3Dam36ikxc%26dl%3D0.mp4"
+      },
+      "parallaxImages": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b9b7b8ea25bbf68fbc72ee_hero-home-parallax.svg",
+          "alt": "",
+          "class": "hero-paralax set-2"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0a6898bcd8285ba40cc_hero-paralax-3.1.svg",
+          "alt": "",
+          "class": "hero-paralax set-3"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0c1603ea7019475e9ae_hero-paralax-5.svg",
+          "alt": "",
+          "class": "hero-paralax set-5"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8ec38aff5a2579c7cb771_hero-paralax-set-6.svg",
+          "alt": "",
+          "class": "hero-paralax set-6 hide-laptop"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0b2aadf7c2841ba04a2_hero-paralax-4.svg",
+          "alt": "",
+          "class": "hero-paralax set-4 hide-laptop"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0da2e8d3fa142f7b939_Frame%20427320036.svg",
+          "alt": "",
+          "class": "hero-paralax set-7 hide-laptop"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8dff469352b6206d9477a_hero-paralax-1.svg",
+          "alt": "",
+          "class": "hero-paralax set-1 hide-laptop"
+        }
+      ],
+      "parallaxLottie": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c977900d76e30fe8ecc3_vidget%2010.json",
+          "class": "hero-paralax set-6 hide-mob",
+          "loading": "eager"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978a3d27cd1602dbf7e_vidget%2012.json",
+          "class": "hero-paralax set-4 hide-mob",
+          "loading": "eager"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c9781b2505e59242128c_vidget%2011.json",
+          "class": "hero-paralax set-7 hide-mob",
+          "loading": "eager"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978fc17bce93c65a9b6_vidget%209.json",
+          "class": "hero-paralax set-1 hide-mob",
+          "loading": "eager"
+        }
+      ]
+    },
+    "cards": {
+      "heading": {
+        "tag": "h2",
+        "text": "We prove, design, implement, and market your idea with absolute transparency and efficiency in it's core",
+        "attr": "animate",
+        "note": "Split by SplitType (lines, words, chars; tagName span) at >=767px and chars fade in on scroll (scrub). Keep the original string; note \"it's\" (straight apostrophe, sic)."
+      },
+      "stats": [
+        {
+          "value": "$300m",
+          "description": "In funding clients raised owing to our design work",
+          "images": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c83397d4e9225b89268b44_chat%20popup.webp",
+              "alt": "",
+              "class": "card-hero-img"
+            }
+          ],
+          "lottie": []
+        },
+        {
+          "value": "60+",
+          "description": "World’s biggest international design awards won",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978a3d27cd1602dbf83_vidget%2013.json",
+              "class": "card-hero-img set-2",
+              "loading": "eager"
+            }
+          ]
+        },
+        {
+          "value": "100M",
+          "description": "Active users experiencing our design every day via products we made",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c97780a7b9ca43accca2_vidget%2014.json",
+              "class": "card-hero-img set-3",
+              "loading": "eager"
+            }
+          ]
+        },
+        {
+          "value": "24%",
+          "description": "Of total marketing budgets converted into sales with our branding & materials",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c977eb0e529c9b631be6_vidget%2015.json",
+              "class": "card-hero-img set-4",
+              "loading": "eager"
+            }
+          ]
+        }
+      ]
+    },
+    "cases-heading": {
+      "heading": {
+        "tag": "h2",
+        "id": "movingText1",
+        "text": "Stages of startup development"
+      },
+      "text": {
+        "id": "movingText3",
+        "text": "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle."
+      },
+      "note": "This block appears twice: once before section.is-cases-new and again inside .cases-sticky-wrap (identical text, duplicate ids movingText1/movingText3). Scroll-driven horizontal movement (inline script)."
+    },
+    "cases-new": {
+      "stickyHeading": {
+        "heading": "Stages of startup development",
+        "text": "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle."
+      },
+      "desktopCards": [
+        {
+          "title": "Pre-seed Bootstrapped",
+          "paragraphs": [
+            "This is POC stage. You have a hypothetical product idea, you want it done & tested properly to know whether it’s worth the time and resources.",
+            {
+              "text": "More than 40% of our clients on this stage get initial investment for MVPs",
+              "html": "<span class=\"text-color-white\">More than 40%</span> of our clients on this stage get initial investment for MVPs"
+            }
+          ],
+          "button": {
+            "href": "#",
+            "label": "View detais",
+            "hidden": true,
+            "note": "class \"hide\" → display:none; label \"View detais\" is a typo on the live site — keep verbatim."
+          }
+        },
+        {
+          "title": "Seed",
+          "paragraphs": [
+            "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.",
+            {
+              "text": "More than 25% of our clients get Series A investments to build full-scale product and start marketing",
+              "html": "<span class=\"text-color-white\">More than 25%</span> of our clients get Series A investments to build full-scale product and start marketing"
+            }
+          ],
+          "button": {
+            "href": "#",
+            "label": "View detais",
+            "hidden": true,
+            "note": "class \"hide\" → display:none; label \"View detais\" is a typo on the live site — keep verbatim."
+          }
+        },
+        {
+          "title": "Series A",
+          "paragraphs": [
+            "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.",
+            {
+              "text": "We’ve helped every start-up we worked with at this stage to cut costs and improve user experience",
+              "html": "We’ve helped <span class=\"text-color-white\">every start-up</span> we worked with at this stage to cut costs and improve user experience"
+            }
+          ],
+          "button": {
+            "href": "#",
+            "label": "View detais",
+            "hidden": true,
+            "note": "class \"hide\" → display:none; label \"View detais\" is a typo on the live site — keep verbatim."
+          }
+        }
+      ],
+      "rotatingImages": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332f4c126638f4aab2e_startup-1.webp",
+          "alt": "",
+          "class": "case-rotate-img set-1"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332e77197f7d0a36ead_startup-2.webp",
+          "alt": "",
+          "class": "case-rotate-img set-2"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332a94d7b4ba339bb39_startup-3.webp",
+          "alt": "",
+          "class": "case-rotate-img set-3"
+        }
+      ],
+      "mobileCards": [
+        {
+          "title": "Pre-seed Bootstrapped",
+          "text": {
+            "text": "This is POC stage. You got hypothetical product idea, you want it done & tested properly to know whether it’s worth time and resources.\n\nMore than 40% of our clients on this stage get initial investment for MVPs",
+            "html": "This is POC stage. You got hypothetical product idea, you want it done &amp; tested properly to know whether it’s worth time and resources.<br><br><span class=\"text-color-white\">More than 40%</span> of our clients on this stage get initial investment for MVPs"
+          },
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332f4c126638f4aab2e_startup-1.webp",
+            "alt": "",
+            "class": "mob-case-home-img"
+          },
+          "button": {
+            "href": "#",
+            "label": "View detais"
+          }
+        },
+        {
+          "title": "Seed",
+          "text": {
+            "text": "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.\n\nMore than 25% of our clients get Series A investment to build full-scale product and start marketing",
+            "html": "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.<br><br><span class=\"text-color-white\">More than 25%</span> of our clients get Series A investment to build full-scale product and start marketing"
+          },
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332e77197f7d0a36ead_startup-2.webp",
+            "alt": "",
+            "class": "mob-case-home-img"
+          },
+          "button": {
+            "href": "#",
+            "label": "View detais"
+          }
+        },
+        {
+          "title": "Series A",
+          "text": {
+            "text": "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.\n\nWe’ve helped each and every start-up we worked with at this stage to cut costs and improve user experience",
+            "html": "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.<br><br>We’ve helped each and <span class=\"text-color-white\">every start-up</span> we worked with at this stage to cut costs and improve user experience"
+          },
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332a94d7b4ba339bb39_startup-3.webp",
+            "alt": "",
+            "class": "mob-case-home-img"
+          },
+          "button": {
+            "href": "#",
+            "label": "View detais"
+          }
+        }
+      ],
+      "variantNote": "Mobile cards (.case-mob-wrap) are NOT identical to the desktop cards: card 1 says \"You got hypothetical product idea … worth time and resources.\" (desktop: \"You have a hypothetical product idea … worth the time and resources.\"), card 2 says \"Series A investment\" (desktop: \"investments\"), card 3 says \"We’ve helped each and every start-up\" (desktop: \"We’ve helped every start-up\"). Mobile text joins the two paragraphs with <br><br>. Keep both variants verbatim."
+    },
+    "services": {
+      "heading": "Services",
+      "subheading": "Whether you need a full-scale IT partner to define the roadmap or a vendor for particular tasks, we got you",
+      "tag": "Complex solution",
+      "text": "Instead of a request which sounds like “I need a website”, we embrace - “I want to market my product to get first organic users”, where we can suggest what to do, and execute the approved plan from A to Z.",
+      "cards": [
+        {
+          "title": "Brand Strategy",
+          "description": "We establish comprehensive product-market fit hypotheses, validate them, and visualise in the most creative ways.",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5f3ef1571f03e6a8ea9bd_BrandStrategy%20ver2%206.json",
+              "class": "brand-lottie",
+              "loading": "eager"
+            }
+          ]
+        },
+        {
+          "title": "Brand Visual",
+          "description": "We create brand materials that speak of your values non-verbally and complement your offering to the market.",
+          "images": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d4f2bec93cba5a3d384_brand-line-2-1.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4f4bec20016bbe1124_brand-line-1-color.svg",
+              "alt": "",
+              "class": "brand-item-img abs set-1"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c366f7d9ef5f478c9202b1_Group%20427320477.webp",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d4f0961f661081c4f87_brand-line-2-3.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c366f712b8e5005065e2f7_Group%20427320478.webp",
+              "alt": "",
+              "class": "brand-item-img abs set-2"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07dc410edead2c1e14b9f_Group%20427320476.webp",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c441fc462e761d231_brand-line-1-3.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c8064490bd29b4efa_brand-line-1-2.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4f2ced01bc0bfbd3f8_brand-line-1-color3.svg",
+              "alt": "",
+              "class": "brand-item-img abs set-2"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c423eba907f44c5c8_brand-line-1-1.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c8d9dac749b2813a9_brand-line-1-4.svg",
+              "alt": "",
+              "class": "brand-item-img"
+            },
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4fbba83b5f8b2c5ac2_brand-line-1-color4.svg",
+              "alt": "",
+              "class": "brand-item-img abs set-1"
+            }
+          ],
+          "lottie": []
+        },
+        {
+          "title": "Platforms",
+          "description": "We think about the big picture and focus primarily on your app's business success. We research deeply, validate thoroughly, and launch confidently.",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f87_Platform.json",
+              "class": "platform-lottie",
+              "loading": "eager"
+            }
+          ]
+        },
+        {
+          "title": "Website",
+          "description": "We don’t just design websites. We build reliable sales & marketing tools that drive predictably good metrics.",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f85_Webst.json",
+              "class": "web-lottie",
+              "loading": "eager"
+            }
+          ]
+        },
+        {
+          "title": "Mobile Apps",
+          "description": "We're masters of UX gamification and user engagement. In a world where any app competes with Instagram we make usable products that attract and retain.",
+          "images": [],
+          "lottie": [],
+          "video": {
+            "id": "video-2",
+            "attrs": "playsinline loop muted autoplay",
+            "src": "https://dl.dropboxusercontent.com/scl/fi/jy5cqifucxea6mo5tx2id/taxi-app-main-v2_XdXjXRKv_rlkey%3D7ibn8inbyq804uxjjmhhml5q4%26st%3Dtlh7klec%26dl%3D0.mp4"
+          }
+        },
+        {
+          "title": "Development",
+          "description": "We can take care of your product’s implementation, assuring the most efficient usage of time & resources in every decision & each line of code while maintaining seamless operation.",
+          "images": [],
+          "lottie": [
+            {
+              "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66ab8b10eaf1ec4297b4c7e2_Developmnt22.json",
+              "class": "brand-lottie _2",
+              "loading": "eager"
+            }
+          ]
+        }
+      ],
+      "cardsNote": "#cards container: mouse-follow glow on .card-glow (inline script). Order in DOM: Brand Strategy, Brand Visual, Platforms, Website, Mobile Apps, Development."
+    },
+    "clients": {
+      "heading": "Our design thinking is recognised by enterprises we cooperated with",
+      "brandLogos": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa6da01e9c086c507e_brand-5.svg",
+          "alt": "",
+          "class": "brand-image"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafae2de07e06d1f1bb1_brand-4.svg",
+          "alt": "",
+          "class": "brand-image"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa8f80679c4ae3e71c_brand-1.svg",
+          "alt": "",
+          "class": "brand-image"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa294921d7ae181afc_brand-2.svg",
+          "alt": "",
+          "class": "brand-image"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fb01c905e0766236e231_brand-3.svg",
+          "alt": "",
+          "class": "brand-image"
+        }
+      ],
+      "startupsHeading": {
+        "text": "We think about the big picture and focus primarily on your product’s funding & business success.\n\u200d\nWe research deeply, validate thoroughly, and launch confidently.",
+        "html": "We think about the big picture and focus primarily on your product’s funding &amp; business success.<br>\u200d<br><span class=\"text-color-dark m\">We research deeply, validate thoroughly, and launch confidently.</span>",
+        "attr": "animate-2",
+        "note": "Contains <br>, a U+200D zero-width joiner, <br>, then <span class=\"text-color-dark m\">. SplitType (lines, words, chars) at >=767px, scrubbed char fade."
+      },
+      "startups": [
+        {
+          "name": "Brainforest",
+          "description": "Outcrowd partnered with Brainforest, an AI-powered productivity platform for students. Our comprehensive brand identity work and intuitive UX/UI design transformed the platform, significantly improving user retention and attracting new investments.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://www.brainforest.io/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fitonist",
+          "description": "Our team assisted Fitonist, a gym workout mobile app, with a cohesive brand identity and an intuitive design across their website and mobile application. Our strategic approach enhanced user engagement and significant growth in new sign-ups.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://fitonist-app.webflow.io/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cybervergent",
+          "description": "Cybervergent's strategic website redesign simplified offerings, showcased their full range of products, and positioned them as a leading cybersecurity solutions provider, resulting in increased digital trust and market expansion.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://www.cybervergent.com/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Nopan",
+          "description": "We created a full branding package for Nopan, including a logo, brand guide, and an investor-focused pitch deck, along with a dynamic landing page to highlight their innovative account-to-account payment offer.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://nopan.webflow.io/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Financeable",
+          "description": "Outcrowd transformed Finance|able into a user-centric learning platform, driving significant growth in student enrollment through intuitive design and engaging content.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://finance-able.com/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Stable0x",
+          "description": "Outcrowd has partnered with Stable0x, a cross-chain stablecoin startup. Our branding and website design helped them quickly establish credibility in competitive DeFi, attracting early adopters and setting the stage for rapid growth.",
+          "hoverLogo": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+            "alt": "",
+            "class": "client-logo-hover"
+          },
+          "button": {
+            "href": "https://stable0x.com/",
+            "target": "_blank",
+            "label": "Case study",
+            "hoverLabel": "Case study",
+            "icons": [
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary first-icon"
+              },
+              {
+                "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+                "alt": "",
+                "class": "icon-btn-secondary second-icon"
+              }
+            ]
+          }
+        }
+      ],
+      "namesNote": "Section heading/client names: \"Financeable\" is the list name, while the description writes \"Finance|able\" (pipe, sic)."
+    },
+    "testimonial": {
+      "kicker": "70+ reviews",
+      "headingLines": [
+        "Clients speak out",
+        "about us",
+        "on"
+      ],
+      "headingNote": "Heading reads \"Clients speak out / about us on [Clutch logo]\" — three separate h2 elements followed by the Clutch icon (small + full SVG); a separate .clutch-mob image is used on mobile.",
+      "clutchImages": [
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f7e_icon-clutch-small.svg",
+          "alt": "",
+          "class": "icon-clutch-small"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f80_clutch-full-icon.svg",
+          "alt": "",
+          "class": "icon-clutch-full-icon"
+        },
+        {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f80_clutch-full-icon.svg",
+          "alt": "",
+          "class": "clutch-mob"
+        }
+      ],
+      "slides": [
+        {
+          "name": "Artem Khardin",
+          "role": "CEO",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "“We are really happy that our paths crossed with Outcrowd.”"
+        },
+        {
+          "name": "Jonathan Hughes",
+          "role": "CEO",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "“They became a valuable team member.”"
+        },
+        {
+          "name": "Angel Marinov",
+          "role": "CEO",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "\"We were pleased with their attention to detail.\""
+        },
+        {
+          "name": "Magnus Sigurbjornsson",
+          "role": "COO",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "\"The company was very professional.\""
+        },
+        {
+          "name": "Perry Skoutelas",
+          "role": "CEO & Co-Founder",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "\"We enjoyed working with the team, liked their approach and designs.\""
+        },
+        {
+          "name": "Andrew Gross",
+          "role": "CEO & Co-Founder",
+          "rating": "5.0",
+          "starsImage": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+            "alt": "",
+            "class": "rate"
+          },
+          "quote": "\"I was really impressed with their speed and how quickly things moved.\""
+        }
+      ],
+      "quotesNote": "Quote marks are inconsistent on purpose: slides 1–2 use curly “…”, slides 3–6 use straight \"…\". Keep verbatim.",
+      "button": {
+        "href": "https://clutch.co/profile/outcrowd#highlights",
+        "target": "_blank",
+        "label": "View more on Clutch",
+        "hoverLabel": "View more on Clutch",
+        "icons": [
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+            "alt": "",
+            "class": "icon-btn-secondary first-icon"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+            "alt": "",
+            "class": "icon-btn-secondary second-icon"
+          }
+        ]
+      }
+    },
+    "awards": {
+      "heading": "Awards for digital innovation",
+      "items": [
+        {
+          "platform": "Awwwards",
+          "project": "Fitonist",
+          "award": "Site of the Day",
+          "date": "Aug 25, 2024",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d6faa2963f467f6f335e32_2544e904898d400486be5930400d3149.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "TheFWA",
+          "project": "Fitonist",
+          "award": "FWA of the Day",
+          "date": "Jul 23, 2024",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd4cd6a3ee4e33d1d59_Fitonist%20FOTD.webp",
+            "alt": "",
+            "class": "awards-img"
+          },
+          "hidden": true
+        },
+        {
+          "platform": "Awwwards",
+          "project": "FinanceAble",
+          "award": "Honorable Mention",
+          "date": "Mar 06, 2024",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd56c4164cbdc412b3c_certificate-finance-able-hm.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "TheFWA",
+          "project": "Deed Delivery",
+          "award": "FWA of the Day",
+          "date": "Dec 30, 2023",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd56f46a2e8ccd27fe3_FOTD%20Deed.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "CssDA",
+          "project": "EventBeds",
+          "award": "Website of the Day",
+          "date": "Dec 29, 2023",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5bc25c2a233ae8e23_Eventbeds%20cssda-wotd.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "Awwwards",
+          "project": "Mota",
+          "award": "Honorable Mention",
+          "date": "Nov 30, 2023",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd55ee55250318c8ddb_certificate-mota-remote-platform-hm.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "CssDA",
+          "project": "Dstafin",
+          "award": "Website of the Day",
+          "date": "Aug 18, 2023",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5ca25cc45810b2e1b_DSTAFIN-cssda-wotd.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        },
+        {
+          "platform": "CssDA",
+          "project": "KMBCH",
+          "award": "Website of the Day",
+          "date": "Feb 25, 2023",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5fda0ce5d67566799_KMBCH-cssda-wotd.webp",
+            "alt": "",
+            "class": "awards-img"
+          }
+        }
+      ],
+      "note": "The TheFWA / Fitonist / FWA of the Day (Jul 23, 2024) item has class \"hide\" (display:none) but is in the DOM."
+    },
+    "blog": {
+      "heading": "Our News",
+      "featured": {
+        "href": "/blog/from-confusing-ux-to-market-traction-redesigning-a-complex-b2b-saas",
+        "title": "From Confusing UX to Market Traction: Redesigning a Complex B2B SaaS",
+        "image": {
+          "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6abb90753969c5085e0ce8ab_356.jpg",
+          "alt": "",
+          "class": "feature-img"
+        },
+        "decorations": [
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3d96b96e522cdb98a9_Vector-1.png",
+            "alt": "",
+            "class": "vect-comp set-1"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3d95ec6731adbd5730_Vector.png",
+            "alt": "",
+            "class": "vect-comp set-2"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3dfd258b577fde1307_Vector-3.png",
+            "alt": "",
+            "class": "vect-comp2 set-3"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3de970c405be3684db_Vector-2.png",
+            "alt": "",
+            "class": "vect-comp2 set-4"
+          }
+        ],
+        "attr": "transition-link"
+      },
+      "posts": [
+        {
+          "href": "/blog/how-to-make-your-b2b-saas-brand-visually-recognizable",
+          "title": "How to Make Your B2B SaaS Brand Visually Recognizable",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6ab77404af1c61b16dc35c9f_1_46hKGhht6pljgKrlQfhLHQ.webp",
+            "alt": "",
+            "class": "blog-news-home-img"
+          },
+          "attr": "transition-link"
+        },
+        {
+          "href": "/blog/crypto-product-design-in-the-ai-era-how-to-build-trust-before-users-connect-a-wallet",
+          "title": "Crypto product design in the AI era: How to build trust before users connect a wallet ",
+          "image": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6a6864514d34e986c096facf_7344.png",
+            "alt": "",
+            "class": "blog-news-home-img"
+          },
+          "attr": "transition-link"
+        }
+      ],
+      "postsNote": "No dates, tags or excerpts are rendered on the homepage (\".desc-blog\" is empty: w-dyn-bind-empty). The third title ends with a trailing space in the source (\"…connect a wallet \").",
+      "button": {
+        "href": "/blog",
+        "label": "View more",
+        "hoverLabel": "View more",
+        "icons": [
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b36eb23d44b15d3fa93420_arrow-white.svg",
+            "alt": "",
+            "class": "icon-btn-secondary first-icon"
+          },
+          {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b36eb23d44b15d3fa93420_arrow-white.svg",
+            "alt": "",
+            "class": "icon-btn-secondary second-icon"
+          }
+        ]
+      }
+    },
+    "faq": {
+      "heading": "Questions and Answers",
+      "items": [
+        {
+          "question": "How long does it take to get started?",
+          "answer": "Our turnaround is lightning-fast. Just one week from signing off and we’re there with the kick-off meeting to get it rolling."
+        },
+        {
+          "question": "What is your typical working process?",
+          "answer": "It all starts with grabbing a cup of coffee, chilling with mates, and some quality time at the PlayStation (just kidding!). We always start a project with analysis, learning the requirements, and making estimates that will be shared in the price proposal. Then it’s off to signing off, kicking off, and getting your business to the next level with a pinch of our design magic."
+        },
+        {
+          "question": "Do you work on a fixed-price basis or time and material?",
+          "answer": "Flexibility is the key of success in this crazy world, so we try to suggest an appropriate solution for each specific case we deal with. The more clear and detailed the requirements are, the more accurate will our estimates be. This is the closest we get to the fixed-price model."
+        },
+        {
+          "question": "How do you usually start new collaborations?",
+          "answer": {
+            "text": "Each new engagement starts with an introduction call and filling out the design/branding brief. If you have a cool project in mind, feel free to get in touch at hello@outcrowd.io",
+            "html": "Each new engagement starts with an introduction call and filling out the design/branding brief. If you have a cool project in mind, feel free to get in touch at <a href=\"mailto:hello@outcrowd.io\" class=\"faq-link\">hello@outcrowd.io</a>"
+          }
+        },
+        {
+          "question": "Do you guys work with big companies only? We’re an early-stage startup.",
+          "answer": {
+            "text": "We’re all for building a borderless world, so we are open to working with any project we come across. By the way, we do believe in startups, and one of those we helped develop from scratch has been sold to businesswire.com",
+            "html": "We’re all for building a borderless world, so we are open to working with any project we come across. By the way, we do believe in startups, and one of those we helped develop from scratch has been sold to <a target=\"_blank\" href=\"https://www.businesswire.com/news/home/20210310005166/en/%C2%A0Entercom-Acquires-Podcast-Influencers-Marketplace-Podcorn\" class=\"faq-link\">businesswire.com</a>"
+          }
+        },
+        {
+          "question": "How long it will take to get an estimate from you?",
+          "answer": "We hate to keep you waiting. Setting up a team, making preliminary research and analysis, and getting back to you with the contract will take up to 24 hours from the moment we learn what’s needed. Efficiency is one of Outcrowd’s key values."
+        },
+        {
+          "question": "Do you have a minimum engagement?",
+          "answer": "We set no entry thresholds for people who want to work with us. But we still believe that a product that needs to be designed can’t be made within a couple of days. After all, we need some time to research, analyze and come up with a strategy. So we’ve set a minimum project duration as 30 hours and we’re waiting for you!"
+        },
+        {
+          "question": "What’s the average project duration?",
+          "answer": "Our team works full-time on every project, so the overall duration will highly depend on the initial estimate. On average, our projects last from 2 weeks to 5 months."
+        },
+        {
+          "question": "Can we start the design without wireframes?",
+          "answer": "Wireframes help to build UX without distractions. The wireframe is an essential part of the design process and we would not recommend eliminating it. Having everything polished at the wireframing stage, we can avoid many amendments and revisions at the design stage, which saves both time and money."
+        },
+        {
+          "question": "What templates does Outcrowd use to create design?",
+          "answer": "We don’t use pre-built templates or kits because there’s just no soul in them. We’re committed to building fully customized and product-based solutions that will meet the expectations of the target users. Each pixel and line is designed with love and passion by our creative minds."
+        },
+        {
+          "question": "Where should I start with my business if I have an idea?",
+          "answer": "Hey, you’ve come to the right place! Please get in touch and we’ll help you with the ideation, design, and development. Full cycle on us, no hassle for you. Easy, right?"
+        }
+      ],
+      "note": "These 11 Webflow w-dropdown accordions are the \"11 dropdown menus\" — the nav itself has no dropdowns. Container ids: #faq-row-1."
+    },
+    "cta": {
+      "heading": "Innovate with us",
+      "text": "Our creative solutions have helped clients raise $100+ mln and expand their reach.",
+      "buttons": [
+        {
+          "href": "/contact-us",
+          "label": "Write us"
+        },
+        {
+          "label": "Book a call",
+          "type": "div with invisible Calendly anchor",
+          "calendly": {
+            "anchor": {
+              "id": "callButton",
+              "href": "",
+              "onclick": "Calendly.initPopupWidget({url: 'https://calendly.com/outcrowd-digital-agency/introduction?hide_gdpr_banner=1'});return false;"
+            },
+            "url": "https://calendly.com/outcrowd-digital-agency/introduction?hide_gdpr_banner=1"
+          }
+        }
+      ],
+      "image": {
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf047f8e12e9868e4c8f45_dashboard-cta.svg",
+        "alt": "",
+        "class": "cta-img"
+      }
+    },
+    "book-call": {
+      "label": "Book a call",
+      "arrow": {
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3fbd_arrow-white.svg",
+        "alt": "",
+        "class": "arrow"
+      },
+      "calendly": {
+        "anchor": {
+          "id": "callButton",
+          "href": "",
+          "onclick": "Calendly.initPopupWidget({url: 'https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1'});return false;"
+        },
+        "url": "https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1"
+      },
+      "note": "Floating \"Book a call\" pill (.contact-book-a-call.home) after section.is-cta, inside <main>."
+    },
+    "footer": {
+      "columns": [
+        {
+          "heading": {
+            "href": "/cases",
+            "label": "Cases",
+            "hoverLabel": "Cases"
+          },
+          "links": [
+            {
+              "href": "https://fitonist-app.webflow.io/",
+              "target": "_blank",
+              "label": "Fitonist",
+              "hoverLabel": "Fitonist"
+            },
+            {
+              "href": "https://www.brainforest.io/",
+              "target": "_blank",
+              "label": "Brainforest",
+              "hoverLabel": "Brainforest"
+            },
+            {
+              "href": "https://www.cybervergent.com/",
+              "target": "_blank",
+              "label": "Cybervergent",
+              "hoverLabel": "Cybervergent"
+            },
+            {
+              "href": "https://nopan.webflow.io/",
+              "target": "_blank",
+              "label": "Nopan",
+              "hoverLabel": "Nopan"
+            },
+            {
+              "href": "https://ramos-app.webflow.io/",
+              "target": "_blank",
+              "label": "Ramos",
+              "hoverLabel": "Ramos"
+            }
+          ]
+        },
+        {
+          "heading": {
+            "href": "/services",
+            "label": "Services",
+            "hoverLabel": "Services"
+          },
+          "links": [
+            {
+              "href": "#",
+              "label": "Complex solution",
+              "hoverLabel": "Complex solution"
+            },
+            {
+              "href": "/branding-page",
+              "label": "Branding",
+              "hoverLabel": "Branding"
+            },
+            {
+              "href": "/design-page",
+              "label": "Design",
+              "hoverLabel": "Design"
+            },
+            {
+              "href": "/development-page",
+              "label": "Development",
+              "hoverLabel": "Development"
+            }
+          ]
+        },
+        {
+          "heading": {
+            "href": "/about-us",
+            "label": "About us",
+            "hoverLabel": "About us"
+          },
+          "links": [
+            {
+              "href": "/about-us#numbers",
+              "label": "Numbers",
+              "hoverLabel": "Numbers"
+            },
+            {
+              "href": "/about-us#mission",
+              "label": "Mission",
+              "hoverLabel": "Mission"
+            },
+            {
+              "href": "/about-us#values",
+              "label": "Values",
+              "hoverLabel": "Values"
+            },
+            {
+              "href": "/about-us#clients",
+              "label": "Clients",
+              "hoverLabel": "Clients"
+            }
+          ]
+        }
+      ],
+      "email": {
+        "href": "mailto:hello@outcrowd.io",
+        "label": "hello@outcrowd.io"
+      },
+      "socials": [
+        {
+          "href": "https://dribbble.com/outcrowd",
+          "target": "_blank",
+          "icon": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f15171cfef875605c_dribbble-icon%201.svg",
+            "alt": "",
+            "class": "icon-footer set-1"
+          }
+        },
+        {
+          "href": "https://www.behance.net/outcrowd",
+          "target": "_blank",
+          "icon": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a60440bb21735987e1a061_Vector.svg",
+            "alt": "",
+            "class": "icon-footer set-2"
+          }
+        },
+        {
+          "href": "https://www.instagram.com/outcrowdstudio/",
+          "target": "_blank",
+          "icon": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg",
+            "alt": "",
+            "class": "icon-footer set-2"
+          }
+        },
+        {
+          "href": "https://x.com/outcrowdstudio",
+          "target": "_blank",
+          "icon": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f6f3bdb0490b33e85_Social%20Icons.svg",
+            "alt": "",
+            "class": "icon-footer set-1"
+          }
+        },
+        {
+          "href": "https://www.linkedin.com/company/outcrowd-network/?originalSubdomain=ua",
+          "target": "_blank",
+          "icon": {
+            "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f8b939a6f0fde8e05_Vector-1.svg",
+            "alt": "",
+            "class": "icon-footer set-3"
+          }
+        }
+      ],
+      "socialsOrder": "Dribbble, Behance, Instagram, X, LinkedIn (icons have empty alt and no aria-label).",
+      "copyright": "Copyright © 2025 Outcrowd Inc. All rights reserved.",
+      "location": "Lewes - USA",
+      "note": "Every footer link renders its label twice (flip hover). Footer case links are external (target=_blank) even though they carry the internal-link attribute. \"Complex solution\" links to \"#\"."
+    },
+    "cookies": {
+      "text": "By clicking “Accept All Cookies”, you agree to the storing of cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts.",
+      "buttons": [
+        {
+          "href": "#",
+          "label": "Deny all",
+          "fs-cc": "deny"
+        },
+        {
+          "href": "#",
+          "label": "Accept",
+          "fs-cc": "allow"
+        }
+      ],
+      "note": "Finsweet cookie consent banner (fs-cc, opt-in mode)."
+    }
+  },
+  "strings": {
+    "preloader": [
+      "Button Text"
+    ],
+    "header": [
+      "Cases",
+      "Cases",
+      "Service",
+      "Service",
+      "Blog",
+      "Blog",
+      "About us",
+      "About us",
+      "Book a call",
+      "Contact",
+      "Cases",
+      "Service",
+      "Blog",
+      "About us",
+      "hello@outcrowd.io",
+      "Contact"
+    ],
+    "hero": [
+      "Digital brand design agency",
+      "Design & Brand Acceleration for\u00a0SaaS Startups"
+    ],
+    "cards": [
+      "We prove, design, implement, and market your idea with absolute transparency and efficiency in it's core",
+      "$300m",
+      "In funding clients raised owing to our design work",
+      "60+",
+      "World’s biggest international design awards won",
+      "100M",
+      "Active users experiencing our design every day via products we made",
+      "24%",
+      "Of total marketing budgets converted into sales with our branding & materials"
+    ],
+    "cases-heading": [
+      "Stages of startup development",
+      "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle."
+    ],
+    "cases-new": [
+      "Stages of startup development",
+      "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.",
+      "Pre-seed Bootstrapped",
+      "This is POC stage. You have a hypothetical product idea, you want it done & tested properly to know whether it’s worth the time and resources.",
+      "More than 40% of our clients on this stage get initial investment for MVPs",
+      "View detais",
+      "Seed",
+      "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.",
+      "More than 25% of our clients get Series A investments to build full-scale product and start marketing",
+      "View detais",
+      "Series A",
+      "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.",
+      "We’ve helped every start-up we worked with at this stage to cut costs and improve user experience",
+      "View detais",
+      "Pre-seed Bootstrapped",
+      "This is POC stage. You got hypothetical product idea, you want it done & tested properly to know whether it’s worth time and resources. More than 40% of our clients on this stage get initial investment for MVPs",
+      "View detais",
+      "Seed",
+      "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts. More than 25% of our clients get Series A investment to build full-scale product and start marketing",
+      "View detais",
+      "Series A",
+      "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further. We’ve helped each and every start-up we worked with at this stage to cut costs and improve user experience",
+      "View detais"
+    ],
+    "services": [
+      "Services",
+      "Whether you need a full-scale IT partner to define the roadmap or a vendor for particular tasks, we got you",
+      "Complex solution",
+      "Instead of a request which sounds like “I need a website”, we embrace - “I want to market my product to get first organic users”, where we can suggest what to do, and execute the approved plan from A to Z.",
+      "Brand Strategy",
+      "We establish comprehensive product-market fit hypotheses, validate them, and visualise in the most creative ways.",
+      "Brand Visual",
+      "We create brand materials that speak of your values non-verbally and complement your offering to the market.",
+      "Platforms",
+      "We think about the big picture and focus primarily on your app's business success. We research deeply, validate thoroughly, and launch confidently.",
+      "Website",
+      "We don’t just design websites. We build reliable sales & marketing tools that drive predictably good metrics.",
+      "Mobile Apps",
+      "We're masters of UX gamification and user engagement. In a world where any app competes with Instagram we make usable products that attract and retain.",
+      "Development",
+      "We can take care of your product’s implementation, assuring the most efficient usage of time & resources in every decision & each line of code while maintaining seamless operation."
+    ],
+    "clients": [
+      "Our design thinking is recognised by enterprises we cooperated with",
+      "We think about the big picture and focus primarily on your product’s funding & business success. \u200d We research deeply, validate thoroughly, and launch confidently.",
+      "Brainforest",
+      "Outcrowd partnered with Brainforest, an AI-powered productivity platform for students. Our comprehensive brand identity work and intuitive UX/UI design transformed the platform, significantly improving user retention and attracting new investments.",
+      "Case study",
+      "Case study",
+      "Fitonist",
+      "Our team assisted Fitonist, a gym workout mobile app, with a cohesive brand identity and an intuitive design across their website and mobile application. Our strategic approach enhanced user engagement and significant growth in new sign-ups.",
+      "Case study",
+      "Case study",
+      "Cybervergent",
+      "Cybervergent's strategic website redesign simplified offerings, showcased their full range of products, and positioned them as a leading cybersecurity solutions provider, resulting in increased digital trust and market expansion.",
+      "Case study",
+      "Case study",
+      "Nopan",
+      "We created a full branding package for Nopan, including a logo, brand guide, and an investor-focused pitch deck, along with a dynamic landing page to highlight their innovative account-to-account payment offer.",
+      "Case study",
+      "Case study",
+      "Financeable",
+      "Outcrowd transformed Finance|able into a user-centric learning platform, driving significant growth in student enrollment through intuitive design and engaging content.",
+      "Case study",
+      "Case study",
+      "Stable0x",
+      "Outcrowd has partnered with Stable0x, a cross-chain stablecoin startup. Our branding and website design helped them quickly establish credibility in competitive DeFi, attracting early adopters and setting the stage for rapid growth.",
+      "Case study",
+      "Case study"
+    ],
+    "testimonial": [
+      "70+ reviews",
+      "Clients speak out",
+      "about us",
+      "on",
+      "Artem Khardin",
+      "CEO",
+      "5.0",
+      "“We are really happy that our paths crossed with Outcrowd.”",
+      "Jonathan Hughes",
+      "CEO",
+      "5.0",
+      "“They became a valuable team member.”",
+      "Angel Marinov",
+      "CEO",
+      "5.0",
+      "\"We were pleased with their attention to detail.\"",
+      "Magnus Sigurbjornsson",
+      "COO",
+      "5.0",
+      "\"The company was very professional.\"",
+      "Perry Skoutelas",
+      "CEO & Co-Founder",
+      "5.0",
+      "\"We enjoyed working with the team, liked their approach and designs.\"",
+      "Andrew Gross",
+      "CEO & Co-Founder",
+      "5.0",
+      "\"I was really impressed with their speed and how quickly things moved.\"",
+      "View more on Clutch",
+      "View more on Clutch"
+    ],
+    "awards": [
+      "Awards for digital innovation",
+      "Awwwards",
+      "Fitonist",
+      "Site of the Day",
+      "Aug 25, 2024",
+      "TheFWA",
+      "Fitonist",
+      "FWA of the Day",
+      "Jul 23, 2024",
+      "Awwwards",
+      "FinanceAble",
+      "Honorable Mention",
+      "Mar 06, 2024",
+      "TheFWA",
+      "Deed Delivery",
+      "FWA of the Day",
+      "Dec 30, 2023",
+      "CssDA",
+      "EventBeds",
+      "Website of the Day",
+      "Dec 29, 2023",
+      "Awwwards",
+      "Mota",
+      "Honorable Mention",
+      "Nov 30, 2023",
+      "CssDA",
+      "Dstafin",
+      "Website of the Day",
+      "Aug 18, 2023",
+      "CssDA",
+      "KMBCH",
+      "Website of the Day",
+      "Feb 25, 2023"
+    ],
+    "blog": [
+      "Our News",
+      "From Confusing UX to Market Traction: Redesigning a Complex B2B SaaS",
+      "How to Make Your B2B SaaS Brand Visually Recognizable",
+      "Crypto product design in the AI era: How to build trust before users connect a wallet",
+      "View more",
+      "View more"
+    ],
+    "faq": [
+      "Questions and Answers",
+      "How long does it take to get started?",
+      "Our turnaround is lightning-fast. Just one week from signing off and we’re there with the kick-off meeting to get it rolling.",
+      "What is your typical working process?",
+      "It all starts with grabbing a cup of coffee, chilling with mates, and some quality time at the PlayStation (just kidding!). We always start a project with analysis, learning the requirements, and making estimates that will be shared in the price proposal. Then it’s off to signing off, kicking off, and getting your business to the next level with a pinch of our design magic.",
+      "Do you work on a fixed-price basis or time and material?",
+      "Flexibility is the key of success in this crazy world, so we try to suggest an appropriate solution for each specific case we deal with. The more clear and detailed the requirements are, the more accurate will our estimates be. This is the closest we get to the fixed-price model.",
+      "How do you usually start new collaborations?",
+      "Each new engagement starts with an introduction call and filling out the design/branding brief. If you have a cool project in mind, feel free to get in touch at hello@outcrowd.io",
+      "Do you guys work with big companies only? We’re an early-stage startup.",
+      "We’re all for building a borderless world, so we are open to working with any project we come across. By the way, we do believe in startups, and one of those we helped develop from scratch has been sold to businesswire.com",
+      "How long it will take to get an estimate from you?",
+      "We hate to keep you waiting. Setting up a team, making preliminary research and analysis, and getting back to you with the contract will take up to 24 hours from the moment we learn what’s needed. Efficiency is one of Outcrowd’s key values.",
+      "Do you have a minimum engagement?",
+      "We set no entry thresholds for people who want to work with us. But we still believe that a product that needs to be designed can’t be made within a couple of days. After all, we need some time to research, analyze and come up with a strategy. So we’ve set a minimum project duration as 30 hours and we’re waiting for you!",
+      "What’s the average project duration?",
+      "Our team works full-time on every project, so the overall duration will highly depend on the initial estimate. On average, our projects last from 2 weeks to 5 months.",
+      "Can we start the design without wireframes?",
+      "Wireframes help to build UX without distractions. The wireframe is an essential part of the design process and we would not recommend eliminating it. Having everything polished at the wireframing stage, we can avoid many amendments and revisions at the design stage, which saves both time and money.",
+      "What templates does Outcrowd use to create design?",
+      "We don’t use pre-built templates or kits because there’s just no soul in them. We’re committed to building fully customized and product-based solutions that will meet the expectations of the target users. Each pixel and line is designed with love and passion by our creative minds.",
+      "Where should I start with my business if I have an idea?",
+      "Hey, you’ve come to the right place! Please get in touch and we’ll help you with the ideation, design, and development. Full cycle on us, no hassle for you. Easy, right?"
+    ],
+    "cta": [
+      "Innovate with us",
+      "Our creative solutions have helped clients raise $100+ mln and expand their reach.",
+      "Write us",
+      "Book a call"
+    ],
+    "book-call": [
+      "Book a call"
+    ],
+    "footer": [
+      "Cases",
+      "Cases",
+      "Fitonist",
+      "Fitonist",
+      "Brainforest",
+      "Brainforest",
+      "Cybervergent",
+      "Cybervergent",
+      "Nopan",
+      "Nopan",
+      "Ramos",
+      "Ramos",
+      "Services",
+      "Services",
+      "Complex solution",
+      "Complex solution",
+      "Branding",
+      "Branding",
+      "Design",
+      "Design",
+      "Development",
+      "Development",
+      "About us",
+      "About us",
+      "Numbers",
+      "Numbers",
+      "Mission",
+      "Mission",
+      "Values",
+      "Values",
+      "Clients",
+      "Clients",
+      "hello@outcrowd.io",
+      "Copyright © 2025 Outcrowd Inc. All rights reserved.",
+      "Lewes - USA"
+    ],
+    "cookies": [
+      "By clicking “Accept All Cookies”, you agree to the storing of cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts.",
+      "Deny all",
+      "Accept"
+    ]
+  },
+  "hiddenAt": {
+    "preloader": {
+      "desktop": [
+        "Button Text"
+      ],
+      "tablet": [
+        "Button Text"
+      ],
+      "mobile": [
+        "Button Text"
+      ]
+    },
+    "header": {
+      "desktop": [
+        "Cases",
+        "Service",
+        "Blog",
+        "About us",
+        "hello@outcrowd.io",
+        "Contact"
+      ],
+      "tablet": [
+        "Cases",
+        "Service",
+        "Blog",
+        "About us",
+        "hello@outcrowd.io",
+        "Contact"
+      ],
+      "mobile": [
+        "Cases",
+        "Service",
+        "Blog",
+        "About us",
+        "Book a call",
+        "Contact",
+        "Cases",
+        "Service",
+        "Blog",
+        "About us"
+      ]
+    },
+    "cases-new": {
+      "desktop": [
+        "Stages of startup development",
+        "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.",
+        "View detais",
+        "View detais",
+        "View detais"
+      ],
+      "tablet": [
+        "Stages of startup development",
+        "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.",
+        "View detais",
+        "View detais",
+        "View detais"
+      ],
+      "mobile": [
+        "Stages of startup development",
+        "Examples of our most common engagement models into early-stage start-ups on different stages of the lifecycle.",
+        "This is POC stage. You have a hypothetical product idea, you want it done & tested properly to know whether it’s worth the time and resources.",
+        "More than 40% of our clients on this stage get initial investment for MVPs",
+        "View detais",
+        "Seed",
+        "This is an MVP stage. You approved a product-market fit and want to start working with real users, and start initial marketing efforts.",
+        "More than 25% of our clients get Series A investments to build full-scale product and start marketing",
+        "View detais",
+        "Series A",
+        "This is a product optimisation stage. You raised the investment and faced burn-rates while expanding further.",
+        "We’ve helped every start-up we worked with at this stage to cut costs and improve user experience",
+        "View detais",
+        "Pre-seed Bootstrapped"
+      ]
+    },
+    "awards": {
+      "desktop": [
+        "TheFWA",
+        "Fitonist",
+        "FWA of the Day",
+        "Jul 23, 2024"
+      ],
+      "tablet": [
+        "TheFWA",
+        "Fitonist",
+        "FWA of the Day",
+        "Jul 23, 2024"
+      ],
+      "mobile": [
+        "TheFWA",
+        "Fitonist",
+        "FWA of the Day",
+        "Jul 23, 2024"
+      ]
+    }
+  },
+  "index": {
+    "hrefs": [
+      {
+        "href": "/",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "header"
+        ]
+      },
+      {
+        "href": "/cases",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "footer"
+        ]
+      },
+      {
+        "href": "/services",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "footer"
+        ]
+      },
+      {
+        "href": "/blog",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "blog"
+        ]
+      },
+      {
+        "href": "/about-us",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "footer"
+        ]
+      },
+      {
+        "href": "",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "cta",
+          "book-call"
+        ]
+      },
+      {
+        "href": "/contact-us",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "cta"
+        ]
+      },
+      {
+        "href": "mailto:hello@outcrowd.io",
+        "count": 3,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "faq",
+          "footer"
+        ]
+      },
+      {
+        "href": "#",
+        "count": 14,
+        "blankCount": 0,
+        "sections": [
+          "header",
+          "cases-new",
+          "footer",
+          "cookies"
+        ]
+      },
+      {
+        "href": "https://www.brainforest.io/",
+        "count": 2,
+        "blankCount": 2,
+        "sections": [
+          "clients",
+          "footer"
+        ]
+      },
+      {
+        "href": "https://fitonist-app.webflow.io/",
+        "count": 2,
+        "blankCount": 2,
+        "sections": [
+          "clients",
+          "footer"
+        ]
+      },
+      {
+        "href": "https://www.cybervergent.com/",
+        "count": 2,
+        "blankCount": 2,
+        "sections": [
+          "clients",
+          "footer"
+        ]
+      },
+      {
+        "href": "https://nopan.webflow.io/",
+        "count": 2,
+        "blankCount": 2,
+        "sections": [
+          "clients",
+          "footer"
+        ]
+      },
+      {
+        "href": "https://finance-able.com/",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "clients"
+        ]
+      },
+      {
+        "href": "https://stable0x.com/",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "clients"
+        ]
+      },
+      {
+        "href": "https://clutch.co/profile/outcrowd#highlights",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "testimonial"
+        ]
+      },
+      {
+        "href": "/blog/from-confusing-ux-to-market-traction-redesigning-a-complex-b2b-saas",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "blog"
+        ]
+      },
+      {
+        "href": "/blog/how-to-make-your-b2b-saas-brand-visually-recognizable",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "blog"
+        ]
+      },
+      {
+        "href": "/blog/crypto-product-design-in-the-ai-era-how-to-build-trust-before-users-connect-a-wallet",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "blog"
+        ]
+      },
+      {
+        "href": "https://www.businesswire.com/news/home/20210310005166/en/%C2%A0Entercom-Acquires-Podcast-Influencers-Marketplace-Podcorn",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "faq"
+        ]
+      },
+      {
+        "href": "https://ramos-app.webflow.io/",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/branding-page",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/design-page",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/development-page",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/about-us#numbers",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/about-us#mission",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/about-us#values",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "/about-us#clients",
+        "count": 1,
+        "blankCount": 0,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "https://dribbble.com/outcrowd",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "https://www.behance.net/outcrowd",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "https://www.instagram.com/outcrowdstudio/",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "https://x.com/outcrowdstudio",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      },
+      {
+        "href": "https://www.linkedin.com/company/outcrowd-network/?originalSubdomain=ua",
+        "count": 1,
+        "blankCount": 1,
+        "sections": [
+          "footer"
+        ]
+      }
+    ],
+    "alts": [],
+    "ariaLabels": [],
+    "titles": [],
+    "urls": [
+      "https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1",
+      "https://calendly.com/outcrowd-digital-agency/introduction?hide_gdpr_banner=1"
+    ]
+  },
+  "assets": {
+    "images": [
+      {
+        "section": "other",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5abcb1c03eb30625c251c_Group.webp",
+        "alt": "",
+        "class": "light"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f15171cfef875605c_dribbble-icon%201.svg",
+        "alt": "",
+        "class": "icon-footer set-1"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a60440bb21735987e1a061_Vector.svg",
+        "alt": "",
+        "class": "icon-footer set-2"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg",
+        "alt": "",
+        "class": "icon-footer set-2"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f6f3bdb0490b33e85_Social%20Icons.svg",
+        "alt": "",
+        "class": "icon-footer set-1"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f8b939a6f0fde8e05_Vector-1.svg",
+        "alt": "",
+        "class": "icon-footer set-3"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b9b7b8ea25bbf68fbc72ee_hero-home-parallax.svg",
+        "alt": "",
+        "class": "hero-paralax set-2"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0a6898bcd8285ba40cc_hero-paralax-3.1.svg",
+        "alt": "",
+        "class": "hero-paralax set-3"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0c1603ea7019475e9ae_hero-paralax-5.svg",
+        "alt": "",
+        "class": "hero-paralax set-5"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8ec38aff5a2579c7cb771_hero-paralax-set-6.svg",
+        "alt": "",
+        "class": "hero-paralax set-6 hide-laptop"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0b2aadf7c2841ba04a2_hero-paralax-4.svg",
+        "alt": "",
+        "class": "hero-paralax set-4 hide-laptop"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8e0da2e8d3fa142f7b939_Frame%20427320036.svg",
+        "alt": "",
+        "class": "hero-paralax set-7 hide-laptop"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a8dff469352b6206d9477a_hero-paralax-1.svg",
+        "alt": "",
+        "class": "hero-paralax set-1 hide-laptop"
+      },
+      {
+        "section": "cards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c83397d4e9225b89268b44_chat%20popup.webp",
+        "alt": "",
+        "class": "card-hero-img"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332f4c126638f4aab2e_startup-1.webp",
+        "alt": "",
+        "class": "case-rotate-img set-1"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332e77197f7d0a36ead_startup-2.webp",
+        "alt": "",
+        "class": "case-rotate-img set-2"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332a94d7b4ba339bb39_startup-3.webp",
+        "alt": "",
+        "class": "case-rotate-img set-3"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332f4c126638f4aab2e_startup-1.webp",
+        "alt": "",
+        "class": "mob-case-home-img"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332e77197f7d0a36ead_startup-2.webp",
+        "alt": "",
+        "class": "mob-case-home-img"
+      },
+      {
+        "section": "cases-new",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c46332a94d7b4ba339bb39_startup-3.webp",
+        "alt": "",
+        "class": "mob-case-home-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d4f2bec93cba5a3d384_brand-line-2-1.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4f4bec20016bbe1124_brand-line-1-color.svg",
+        "alt": "",
+        "class": "brand-item-img abs set-1"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c366f7d9ef5f478c9202b1_Group%20427320477.webp",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d4f0961f661081c4f87_brand-line-2-3.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c366f712b8e5005065e2f7_Group%20427320478.webp",
+        "alt": "",
+        "class": "brand-item-img abs set-2"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07dc410edead2c1e14b9f_Group%20427320476.webp",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c441fc462e761d231_brand-line-1-3.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c8064490bd29b4efa_brand-line-1-2.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4f2ced01bc0bfbd3f8_brand-line-1-color3.svg",
+        "alt": "",
+        "class": "brand-item-img abs set-2"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c423eba907f44c5c8_brand-line-1-1.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07d1c8d9dac749b2813a9_brand-line-1-4.svg",
+        "alt": "",
+        "class": "brand-item-img"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b07e4fbba83b5f8b2c5ac2_brand-line-1-color4.svg",
+        "alt": "",
+        "class": "brand-item-img abs set-1"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa6da01e9c086c507e_brand-5.svg",
+        "alt": "",
+        "class": "brand-image"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafae2de07e06d1f1bb1_brand-4.svg",
+        "alt": "",
+        "class": "brand-image"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa8f80679c4ae3e71c_brand-1.svg",
+        "alt": "",
+        "class": "brand-image"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fafa294921d7ae181afc_brand-2.svg",
+        "alt": "",
+        "class": "brand-image"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66f4fb01c905e0766236e231_brand-3.svg",
+        "alt": "",
+        "class": "brand-image"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a0bd8c99476e28af3ad594_client-logo.svg",
+        "alt": "",
+        "class": "client-logo-hover"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "clients",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f7e_icon-clutch-small.svg",
+        "alt": "",
+        "class": "icon-clutch-small"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f80_clutch-full-icon.svg",
+        "alt": "",
+        "class": "icon-clutch-full-icon"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f80_clutch-full-icon.svg",
+        "alt": "",
+        "class": "clutch-mob"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667d7493097816a7e1c772a3_stars.svg",
+        "alt": "",
+        "class": "rate"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "testimonial",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b3422ed53279d232bcc13f_arrow-btn.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d6faa2963f467f6f335e32_2544e904898d400486be5930400d3149.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd4cd6a3ee4e33d1d59_Fitonist%20FOTD.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd56c4164cbdc412b3c_certificate-finance-able-hm.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd56f46a2e8ccd27fe3_FOTD%20Deed.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5bc25c2a233ae8e23_Eventbeds%20cssda-wotd.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd55ee55250318c8ddb_certificate-mota-remote-platform-hm.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5ca25cc45810b2e1b_DSTAFIN-cssda-wotd.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "awards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf1bd5fda0ce5d67566799_KMBCH-cssda-wotd.webp",
+        "alt": "",
+        "class": "awards-img"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6abb90753969c5085e0ce8ab_356.jpg",
+        "alt": "",
+        "class": "feature-img"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3d96b96e522cdb98a9_Vector-1.png",
+        "alt": "",
+        "class": "vect-comp set-1"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3d95ec6731adbd5730_Vector.png",
+        "alt": "",
+        "class": "vect-comp set-2"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3dfd258b577fde1307_Vector-3.png",
+        "alt": "",
+        "class": "vect-comp2 set-3"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66d85b3de970c405be3684db_Vector-2.png",
+        "alt": "",
+        "class": "vect-comp2 set-4"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6ab77404af1c61b16dc35c9f_1_46hKGhht6pljgKrlQfhLHQ.webp",
+        "alt": "",
+        "class": "blog-news-home-img"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f3d/6a6864514d34e986c096facf_7344.png",
+        "alt": "",
+        "class": "blog-news-home-img"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b36eb23d44b15d3fa93420_arrow-white.svg",
+        "alt": "",
+        "class": "icon-btn-secondary first-icon"
+      },
+      {
+        "section": "blog",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b36eb23d44b15d3fa93420_arrow-white.svg",
+        "alt": "",
+        "class": "icon-btn-secondary second-icon"
+      },
+      {
+        "section": "cta",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bf047f8e12e9868e4c8f45_dashboard-cta.svg",
+        "alt": "",
+        "class": "cta-img"
+      },
+      {
+        "section": "book-call",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3fbd_arrow-white.svg",
+        "alt": "",
+        "class": "arrow"
+      },
+      {
+        "section": "footer",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f15171cfef875605c_dribbble-icon%201.svg",
+        "alt": "",
+        "class": "icon-footer set-1"
+      },
+      {
+        "section": "footer",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a60440bb21735987e1a061_Vector.svg",
+        "alt": "",
+        "class": "icon-footer set-2"
+      },
+      {
+        "section": "footer",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg",
+        "alt": "",
+        "class": "icon-footer set-2"
+      },
+      {
+        "section": "footer",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f6f3bdb0490b33e85_Social%20Icons.svg",
+        "alt": "",
+        "class": "icon-footer set-1"
+      },
+      {
+        "section": "footer",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66a6043f8b939a6f0fde8e05_Vector-1.svg",
+        "alt": "",
+        "class": "icon-footer set-3"
+      },
+      {
+        "section": "other",
+        "src": "https://px.ads.linkedin.com/collect/?pid=4907385&fmt=gif",
+        "alt": "",
+        "class": ""
+      }
+    ],
+    "lottie": [
+      {
+        "section": "preloader",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdf91fdd174c6bcc01dcce_logo%20dark.json",
+        "class": "",
+        "loading": "eager"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdefa0a9bf14b3cb560686_logo%20white.json",
+        "class": "logo-white",
+        "loading": "eager"
+      },
+      {
+        "section": "header",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66bdf91fdd174c6bcc01dcce_logo%20dark.json",
+        "class": "logo-black",
+        "loading": "eager"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c977900d76e30fe8ecc3_vidget%2010.json",
+        "class": "hero-paralax set-6 hide-mob",
+        "loading": "eager"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978a3d27cd1602dbf7e_vidget%2012.json",
+        "class": "hero-paralax set-4 hide-mob",
+        "loading": "eager"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c9781b2505e59242128c_vidget%2011.json",
+        "class": "hero-paralax set-7 hide-mob",
+        "loading": "eager"
+      },
+      {
+        "section": "hero",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978fc17bce93c65a9b6_vidget%209.json",
+        "class": "hero-paralax set-1 hide-mob",
+        "loading": "eager"
+      },
+      {
+        "section": "cards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c978a3d27cd1602dbf83_vidget%2013.json",
+        "class": "card-hero-img set-2",
+        "loading": "eager"
+      },
+      {
+        "section": "cards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c97780a7b9ca43accca2_vidget%2014.json",
+        "class": "card-hero-img set-3",
+        "loading": "eager"
+      },
+      {
+        "section": "cards",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66b4c977eb0e529c9b631be6_vidget%2015.json",
+        "class": "card-hero-img set-4",
+        "loading": "eager"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66c5f3ef1571f03e6a8ea9bd_BrandStrategy%20ver2%206.json",
+        "class": "brand-lottie",
+        "loading": "eager"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f87_Platform.json",
+        "class": "platform-lottie",
+        "loading": "eager"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/667a7576e7e7ef3ba89b3f85_Webst.json",
+        "class": "web-lottie",
+        "loading": "eager"
+      },
+      {
+        "section": "services",
+        "src": "https://cdn.prod.website-files.com/667a7576e7e7ef3ba89b3f2a/66ab8b10eaf1ec4297b4c7e2_Developmnt22.json",
+        "class": "brand-lottie _2",
+        "loading": "eager"
+      }
+    ],
+    "videos": [
+      {
+        "section": "hero",
+        "id": "video",
+        "src": "https://dl.dropboxusercontent.com/scl/fi/ok2coppn7h6oszgfy30y4/showreel-home_rlkey%3Dk7sd1apdwi6fyy3wxhk6dz87v%26st%3Dam36ikxc%26dl%3D0.mp4"
+      },
+      {
+        "section": "services",
+        "id": "video-2",
+        "src": "https://dl.dropboxusercontent.com/scl/fi/jy5cqifucxea6mo5tx2id/taxi-app-main-v2_XdXjXRKv_rlkey%3D7ibn8inbyq804uxjjmhhml5q4%26st%3Dtlh7klec%26dl%3D0.mp4"
+      }
+    ]
+  }
+}
