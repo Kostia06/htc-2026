@@ -1,7 +1,7 @@
 import type { Env } from "../env";
 import { RunRejected, startSkill } from "./core/harness";
 import type { AgentDeps, RunResult } from "./core/types";
-import { researchCompany as researchCompanySkill } from "./skills/research-company";
+import { researchCompany as researchCompanySkill } from "./research/skills/research-company";
 
 // background runs act for nobody in particular; this id never matches a real session
 const BACKGROUND_USER = "background";

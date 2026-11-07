@@ -1,5 +1,5 @@
 import type { ToolCallRecord } from "../agents/core/loop";
-import { pageKey } from "../agents/tools/fetch-page";
+import { pageKey } from "../agents/shared-tools/fetch-page";
 
 // the text of every page fetch_page actually returned in this run, keyed so URL spelling differences still match
 export function fetchedPages(toolCalls: ToolCallRecord[]) {

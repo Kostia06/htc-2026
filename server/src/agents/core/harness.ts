@@ -2,7 +2,7 @@ import type { Env } from "../../env";
 import { schemaError } from "../../lib/json-schema";
 import { scrubStrings } from "../../lib/scrub";
 import { tools as registry } from "../tools";
-import { finishTool } from "../tools/finish";
+import { finishTool } from "../shared-tools/finish";
 import { withBudget } from "./budget";
 import { runAgent, type Tool, type ToolCallRecord } from "./loop";
 import { systemPrompt } from "./prompt";
