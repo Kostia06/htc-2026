@@ -8,8 +8,12 @@ const MODES = {
   link: { title: 'Email me a sign-in link', submit: 'Send link' },
 }
 
+// landing page links: ?mode=signup ("Get my plan"), ?mode=signin ("Sign in"), ?mode=link
+const FROM_URL = { signup: 'signUp', signin: 'signIn', link: 'link' }
+const initialMode = () => FROM_URL[new URLSearchParams(window.location.search).get('mode')] ?? 'signIn'
+
 export default function AuthForm() {
-  const [mode, setMode] = useState('signIn')
+  const [mode, setMode] = useState(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
