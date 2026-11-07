@@ -1,4 +1,4 @@
-// Pixel comparison of two PNG files (reference vs candidate) with pixelmatch.
+// Pixel comparison of two PNG files (earlier capture vs new capture) with pixelmatch.
 // Images of different size are compared on their common top-left area; the size
 // difference is reported separately.
 import fs from 'node:fs';
