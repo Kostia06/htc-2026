@@ -12,6 +12,7 @@ import { initHero } from './modules/hero.js';
 import { initSplitReveal } from './modules/split-reveal.js';
 import { initCards } from './modules/cards.js';
 import { initStages } from './modules/stages.js';
+import { initServices } from './modules/services.js';
 
 initLotties();
 initPreloader();
@@ -25,3 +26,4 @@ initHero();
 initSplitReveal();
 initCards();
 initStages();
+initServices();
