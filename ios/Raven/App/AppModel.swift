@@ -25,6 +25,16 @@ final class AppModel {
         self.baseURL = baseURL
     }
 
+    #if DEBUG
+        /// A signed-in looking model for screenshots; it has no client, so nothing reaches the server.
+        static func preview(profile: Profile) -> AppModel {
+            let model = AppModel(baseURL: URL(filePath: "/"))
+            model.profile = profile
+            model.phase = .ready
+            return model
+        }
+    #endif
+
     func start() async {
         do {
             let client = try await signedInClient()

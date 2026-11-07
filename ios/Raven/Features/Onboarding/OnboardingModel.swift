@@ -18,6 +18,17 @@ final class OnboardingModel {
     var errorMessage: String?
     private var documentId: String?
 
+    #if DEBUG
+        static func preview(step: Step, draft: Profile, missing: [String]) -> OnboardingModel {
+            let model = OnboardingModel()
+            model.step = step
+            model.profile = draft
+            model.missing = missing
+            model.droppedClaims = 1
+            return model
+        }
+    #endif
+
     var canConfirm: Bool {
         !profile.isEmpty && step == .reviewing
     }
