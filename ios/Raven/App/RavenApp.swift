@@ -1,0 +1,26 @@
+import SwiftUI
+
+@main
+struct RavenApp: App {
+    @State private var model = AppModel(baseURL: AppConfiguration.apiBaseURL)
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environment(model)
+                .preferredColorScheme(.dark)
+                .tint(Theme.action)
+                .onOpenURL { model.handle($0) }
+        }
+    }
+}
+
+enum AppConfiguration {
+    /// Set per build configuration in project.yml; Debug points at the local Worker.
+    static let apiBaseURL: URL = {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "RavenAPIURL") as? String, let url = URL(string: value) else {
+            preconditionFailure("RavenAPIURL is missing from Info.plist")
+        }
+        return url
+    }()
+}
