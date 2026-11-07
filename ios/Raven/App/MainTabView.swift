@@ -24,7 +24,7 @@ struct MainTabView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .onChange(of: model.pendingPairing) { _, code in
+        .onChange(of: model.pendingPairing, initial: true) { _, code in
             if code != nil {
                 selection = .practice
             }
