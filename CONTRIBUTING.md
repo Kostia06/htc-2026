@@ -7,12 +7,12 @@ Hack the Change 2026. Read this before your first commit.
 | Folder | What lives there | Language |
 |---|---|---|
 | `server/` | Cloudflare Worker: API, research agent, memory, interview scoring | TypeScript |
-| `src/`, `public/` (repo root) | React app (Vite): roadmap map, company pages, voice interview, VR scene | JavaScript/TypeScript |
+| `web/` | React app (Vite): roadmap map, company pages, voice interview, VR scene | JavaScript/TypeScript |
 | `ios/` | iPhone app | Swift |
 | `scripts/` | One-off data ingest and seeding | TypeScript |
 | `docs/` | Design, plan, AI usage log | Markdown |
 
-Stay inside your folder. The web app sits at the repo root for now; if it moves into its own folder later, do it in one PR so nobody's branch breaks.
+Stay inside your folder. Changing something another folder depends on (an API route, a shared type)? Say so in the team chat first.
 
 ## Branches
 
@@ -37,5 +37,5 @@ Stay inside your folder. The web app sits at the repo root for now; if it moves 
 
 - Few comments. Only write one when the *why* isn't obvious.
 - No boilerplate docstrings, no "// Initialize the X".
-- Tests next to the code they cover (`*.test.ts`). Server: `cd server && pnpm test`.
+- Tests next to the code they cover (`*.test.ts`). Server: `cd server && pnpm test`. Web: `cd web && npm run build`.
 - Accessibility is part of done: keyboard, focus, captions, reduced motion.
