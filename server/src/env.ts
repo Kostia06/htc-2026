@@ -6,6 +6,7 @@ export type Env = {
   MEMORY_SECRET: string;
   GEMINI_API_KEY: string;
   GEMINI_MODEL: string;
+  GEMINI_FALLBACK_MODEL?: string;
   KEENABLE_API_KEY: string;
 };
 

@@ -8,7 +8,7 @@ describe("tool registry", () => {
 
   it("has the shared tools, and finish is not one of them", () => {
     expect(Object.keys(tools).sort()).toEqual(
-      ["company_facts", "company_insights", "fetch_page", "queue_research", "recall", "remember", "save_fact", "web_search"],
+      ["company_facts", "company_insights", "fetch_page", "profile", "queue_research", "recall", "remember", "save_fact", "update_profile", "web_search"],
     );
   });
 });

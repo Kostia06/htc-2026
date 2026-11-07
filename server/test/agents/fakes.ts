@@ -3,6 +3,7 @@ import { vi } from "vitest";
 import type { Declaration } from "../../src/agents/core/loop";
 import type { AgentDeps, PrivateMemory, PrivateMemoryPort, Services, ToolContext } from "../../src/agents/core/types";
 import type { GeminiContent } from "../../src/integrations/gemini";
+import { applyPatch, emptyProfile } from "../../src/memory/profile/patch";
 
 export const ACME = { id: "c1", slug: "acme", name: "Acme", website: "https://acme.com" };
 
@@ -27,8 +28,11 @@ export type FakeMemory = PrivateMemoryPort & { items: PrivateMemory[] };
 
 export function fakeMemory(seed: Pick<PrivateMemory, "kind" | "text">[] = []): FakeMemory {
   const items: PrivateMemory[] = [];
+  let profile = emptyProfile();
   const memory: FakeMemory = {
     items,
+    profile: vi.fn(async () => profile),
+    updateProfile: vi.fn(async (patch) => (profile = applyPatch(profile, patch))),
     recall: vi.fn(async (opts = {}) =>
       items
         .filter((m) => !opts.kinds || opts.kinds.includes(m.kind))

@@ -20,11 +20,15 @@ export class RunRejected extends Error {
   }
 }
 
+const noPrivateAccess = async (): Promise<never> => {
+  throw new Error("this skill has no access to private memory");
+};
+
 const NO_MEMORY: PrivateMemoryPort = {
   recall: async () => [],
-  remember: async () => {
-    throw new Error("this skill has no access to private memory");
-  },
+  remember: noPrivateAccess,
+  profile: noPrivateAccess,
+  updateProfile: noPrivateAccess,
 };
 
 // validates and records the run, then hands back its result as a promise so callers can wait or not
@@ -58,6 +62,7 @@ async function execute(deps: AgentDeps, request: RunRequest, runId: string, comp
       triedPages: new Set(),
       memory,
       services: deps.services,
+      groundingText: skill.groundingText?.(input),
     };
 
     const run = await runAgent({
