@@ -6,6 +6,7 @@ import { experiences } from "./api/experiences";
 import { memories } from "./api/memories";
 import { memory } from "./api/memory";
 import { onboarding } from "./api/onboarding";
+import { pairing } from "./api/pairing";
 import { profile } from "./api/profile";
 import { research } from "./api/research";
 import { session } from "./api/session";
@@ -16,7 +17,8 @@ import { collectGarbage } from "./memory/gc";
 const app = new Hono<AppContext>();
 
 app.use("/api/*", async (c, next) => {
-  if (c.req.path === "/api/session") return next();
+  // pairing checks its own session: the headset asking for a code has none yet
+  if (c.req.path === "/api/session" || c.req.path.startsWith("/api/pairing")) return next();
   return requireSession(c, next);
 });
 
@@ -27,6 +29,7 @@ app.route("/api/research", research);
 app.route("/api/me/memories", memories);
 app.route("/api/me/profile", profile);
 app.route("/api/onboarding", onboarding);
+app.route("/api/pairing", pairing);
 app.route("/api/agent", agent);
 
 export default {
