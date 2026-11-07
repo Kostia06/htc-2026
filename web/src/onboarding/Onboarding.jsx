@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { visibleQuestions } from './questions'
-import { saveAnswers, syncProfile } from './store'
+import { draftToAnswers, RESUME_ACCEPT, saveAnswers, syncProfile, uploadResume } from './store'
 import './onboarding.css'
 
 function Chips({ question, value, onChange }) {
@@ -81,9 +81,63 @@ function TextFields({ question, value = {}, onChange, onSubmit }) {
   )
 }
 
+function ResumeStep({ value, onUploaded, onSkip }) {
+  const input = useRef(null)
+  const [state, setState] = useState(value?.fileName ? 'done' : 'idle') // idle | reading | done | error
+  const [error, setError] = useState('')
+  const [dragging, setDragging] = useState(false)
+
+  async function read(file) {
+    if (!file) return
+    setState('reading')
+    setError('')
+    try {
+      const result = await uploadResume(file)
+      setState('done')
+      onUploaded({ ...result, fileName: file.name })
+    } catch (e) {
+      setState('error')
+      setError(e.message)
+    }
+  }
+
+  if (state === 'reading') {
+    return (
+      <div className="ob__resume ob__resume--busy" role="status">
+        <span className="ob__spinner" aria-hidden="true" />
+        <p>Reading your resume… this takes a few seconds.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="ob__resume">
+      <input ref={input} type="file" accept={RESUME_ACCEPT} hidden onChange={(e) => read(e.target.files?.[0])} />
+      <button
+        type="button"
+        className={`ob__drop${dragging ? ' is-over' : ''}`}
+        onClick={() => input.current?.click()}
+        onDragOver={(e) => (e.preventDefault(), setDragging(true))}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => (e.preventDefault(), setDragging(false), read(e.dataTransfer.files?.[0]))}
+      >
+        <strong>{state === 'done' ? `Uploaded ${value.fileName}` : 'Yes, upload my resume'}</strong>
+        <span>{state === 'done' ? 'Upload a different file' : 'PDF, Word or a photo · drop it here or click'}</span>
+      </button>
+      {state === 'error' && (
+        <p className="ob__error" role="alert">Couldn't use that file: {error}. Try another, or answer the questions instead.</p>
+      )}
+      <button type="button" className="ob__chip ob__no-resume" onClick={onSkip}>
+        {state === 'done' ? 'Continue' : "No, I'll answer a few questions"}
+      </button>
+    </div>
+  )
+}
+
 export default function Onboarding({ session, onDone }) {
   const name = session.user.user_metadata?.full_name?.split(' ')[0]
   const [answers, setAnswers] = useState({})
+  const [prefilled, setPrefilled] = useState([])
   const [step, setStep] = useState(0)
   const [saving, setSaving] = useState(false)
   const heading = useRef(null)
@@ -93,11 +147,19 @@ export default function Onboarding({ session, onDone }) {
   const last = step >= questions.length - 1
   const value = answers[q.id]
   const answered = Array.isArray(value) ? value.length > 0 : q.type === 'text' ? true : Boolean(value)
+  const fromResume = prefilled.includes(q.id)
 
   // move focus to the new question so keyboard and screen-reader users follow along
   useEffect(() => heading.current?.focus(), [step])
 
   const set = (v) => setAnswers((a) => ({ ...a, [q.id]: v }))
+
+  const onUploaded = (result) => {
+    const filled = draftToAnswers(result.draft)
+    setPrefilled(Object.keys(filled))
+    setAnswers((a) => ({ ...a, ...filled, resume: { documentId: result.documentId, draft: result.draft, fileName: result.fileName } }))
+    setTimeout(() => setStep(1), 600)
+  }
 
   async function finish(final) {
     setSaving(true)
@@ -139,20 +201,23 @@ export default function Onboarding({ session, onDone }) {
         <div className="ob__q" key={q.id}>
           <h1 className="ob__title" tabIndex={-1} ref={heading}>{q.title}</h1>
           <p className="ob__hint">{q.hint}</p>
-          {q.type === 'text' ? (
+          {fromResume && <p className="ob__from-resume">Filled in from your resume. Change anything that's off.</p>}
+          {q.type === 'resume' ? (
+            <ResumeStep value={value} onUploaded={onUploaded} onSkip={() => setStep(1)} />
+          ) : q.type === 'text' ? (
             <TextFields question={q} value={value} onChange={set} onSubmit={() => next()} />
           ) : (
             <Chips question={q} value={value} onChange={pick} />
           )}
         </div>
 
-        <div className="ob__nav">
+        <div className="ob__nav" hidden={q.type === 'resume'}>
           <button type="button" className="ob__back" onClick={() => setStep((s) => s - 1)} disabled={step === 0}>Back</button>
           <div className="ob__nav-right">
             {!answered || q.type === 'text' ? (
               <button type="button" className="ob__skip" onClick={() => next()}>Skip</button>
             ) : null}
-            {(q.type !== 'single' || last) && (
+            {(q.type !== 'single' || last || answered) && (
               <button type="button" className="ob__next" onClick={() => next()} disabled={!answered && q.type !== 'text'}>
                 {last ? 'Finish' : 'Continue'}
               </button>
