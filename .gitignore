@@ -41,3 +41,6 @@ update-check/
 docs/superpowers/
 .superpowers/
 agent-browser-chrome-*/
+
+# team-only design notes, shared through the hub instead
+docs/design/
