@@ -5,4 +5,4 @@
 
 ## Log
 
-- **Supabase sign-in** (Claude Code): added email/password and magic-link sign-in to `web/` with `@supabase/supabase-js`, and taught the Worker's auth middleware (`server/src/auth/`) to accept Supabase access tokens, verified against the project's JWKS with `jose`. Anonymous session tokens still work. Checked: server typecheck, token checks (valid, wrong issuer, wrong audience, expired, wrong key) and a wrong-password sign-in against the live project.
+- **Supabase sign-in on the web** (Claude Code): added email/password and magic-link sign-in to `web/` with `@supabase/supabase-js`; requests to the Worker carry the Supabase access token, which the server's existing Supabase check verifies. Checked: web build and lint, and a wrong-password sign-in against the live project.
