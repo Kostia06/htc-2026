@@ -14,6 +14,7 @@ const initialMode = () => FROM_URL[new URLSearchParams(window.location.search).g
 
 export default function AuthForm() {
   const [mode, setMode] = useState(initialMode)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -28,7 +29,7 @@ export default function AuthForm() {
       mode === 'signIn'
         ? await supabase.auth.signInWithPassword({ email, password })
         : mode === 'signUp'
-          ? await supabase.auth.signUp({ email, password, options: redirect })
+          ? await supabase.auth.signUp({ email, password, options: { ...redirect, data: { full_name: name.trim() } } })
           : await supabase.auth.signInWithOtp({ email, options: redirect })
     setBusy(false)
     if (error) return setMessage({ type: 'error', text: error.message })
@@ -45,6 +46,13 @@ export default function AuthForm() {
     <main className="auth">
       <form className="auth__card" onSubmit={onSubmit} noValidate>
         <h1 className="auth__title">{MODES[mode].title}</h1>
+
+        {mode === 'signUp' && (
+          <label className="auth__field">
+            <span>Name</span>
+            <input type="text" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
+          </label>
+        )}
 
         <label className="auth__field">
           <span>Email</span>
@@ -65,7 +73,7 @@ export default function AuthForm() {
           </label>
         )}
 
-        <button className="auth__submit" type="submit" disabled={busy || !email || (mode !== 'link' && !password)}>
+        <button className="auth__submit" type="submit" disabled={busy || !email || (mode !== 'link' && !password) || (mode === 'signUp' && !name.trim())}>
           {busy ? 'Please wait…' : MODES[mode].submit}
         </button>
 
