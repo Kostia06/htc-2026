@@ -59,7 +59,11 @@ export function scrollKeyframes(trigger, frames, { scrub = 0.15, start = 'top bo
   for (const [el, m] of tracks) {
     for (const [prop, keys] of m) {
       keys.sort((a, b) => a.p - b.p);
-      tl.set(el, { [prop]: keys[0].v }, 0);
+      // hold the first value from 0 to the first keyframe (a real tween, so scrolling back to
+      // the very top renders it instead of reverting to the CSS value)
+      const first = keys[0];
+      gsap.set(el, { [prop]: first.v });
+      tl.fromTo(el, { [prop]: first.v }, { [prop]: first.v, duration: Math.max(first.p, 0.001), immediateRender: false }, 0);
       for (let i = 1; i < keys.length; i++) {
         const a = keys[i - 1], b = keys[i];
         tl.fromTo(el, { [prop]: a.v }, { [prop]: b.v, duration: b.p - a.p, ease: b.ease || 'none', immediateRender: false }, a.p);
