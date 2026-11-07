@@ -17,6 +17,7 @@ import { initClients } from './modules/clients.js';
 import { initTestimonial } from './modules/testimonial.js';
 import { initAwards } from './modules/awards.js';
 import { initBlog } from './modules/blog.js';
+import { initFaq } from './modules/faq.js';
 
 initLotties();
 initPreloader();
@@ -35,3 +36,4 @@ initClients();
 initTestimonial();
 initAwards();
 initBlog();
+initFaq();
