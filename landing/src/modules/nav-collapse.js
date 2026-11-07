@@ -12,13 +12,13 @@ export function initNavCollapse() {
 
   const apply = (down) => {
     btnWrap.style.transition = `width ${EASE}`;
-    btnWrap.style.width = down ? '16rem' : '7rem';
+    btnWrap.style.width = down ? '18rem' : '9rem';
     links.style.transition = `transform ${EASE}, width ${EASE}, opacity ${EASE}`;
     links.style.transform = down ? 'scale(0.6)' : 'scale(1)';
-    links.style.width = down ? '0rem' : '20rem';
+    links.style.width = down ? '0rem' : '23rem';
     links.style.opacity = down ? '0' : '1';
     nav.style.transition = `width ${EASE}`;
-    nav.style.width = down ? '24rem' : '41rem';
+    nav.style.width = down ? '26rem' : '44rem';
     book.style.transition = `transform ${EASE}, opacity ${EASE}`;
     book.style.transform = down ? 'scale(1)' : 'scale(0.6)';
     book.style.opacity = down ? '1' : '0';
