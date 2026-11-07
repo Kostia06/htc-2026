@@ -19,8 +19,18 @@ export function initPreloader() {
   // M2: everything marked [data-fade-in] switches to visible 100ms after start
   gsap.set(faded, { opacity: 1, delay: 0.1 });
 
-  if (!preloader) return;
-  const hide = () => (preloader.style.display = 'none');
+  // tells other modules (hero message pop-in) that the page is uncovered
+  const done = () => {
+    if (window.__preloaderDone) return;
+    window.__preloaderDone = true;
+    document.dispatchEvent(new Event('preloader:done'));
+  };
+
+  if (!preloader) return done();
+  const hide = () => {
+    preloader.style.display = 'none';
+    done();
+  };
 
   window.addEventListener('beforeunload', () => {
     if (!document.activeElement?.hasAttribute('internal-link')) storage((s) => s.setItem(KEY, 'false'));
@@ -31,7 +41,9 @@ export function initPreloader() {
 
   const seen = storage((s) => s.getItem(KEY), null);
   if (seen && seen !== 'false') {
-    hide();
+    preloader.style.display = 'none';
+    // let the first paint happen before the messages pop
+    setTimeout(done, 350);
     return;
   }
   storage((s) => s.setItem(KEY, 'true'));
@@ -47,5 +59,6 @@ export function initPreloader() {
     .fromTo(logo, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'power2.inOut' }, 0.2)
     .to(hero, { y: '0vh', duration: 1, ease: 'expo.out' }, 1.8)
     .to(frame, { height: '0%', duration: 1, ease: 'expo.out' }, 1.85)
+    .call(done, null, 1.7)
     .set(home, { display: 'none' }, 2.2);
 }
