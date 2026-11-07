@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 
-const PARTIALS = path.resolve(__dirname, 'src/partials');
+const PARTIALS = path.resolve(import.meta.dirname, 'src/partials');
 const INCLUDE = /^([ \t]*)<!--\s*@include\s+([\w./-]+)\s*-->/gm;
 
 /** Inline `<!-- @include name.html -->` from src/partials (recursively), keeping indentation. */
