@@ -1,6 +1,7 @@
 import type { Env } from "../env";
 import { deleteExpiredPairings } from "../auth/pairing";
 import { deleteExpiredDocuments } from "../documents/store";
+import { deleteOldSessions } from "../voice/store";
 
 const DAY_MS = 86_400_000;
 const MEMORY_IDLE_DAYS = 30;
@@ -45,5 +46,6 @@ export async function collectGarbage(env: Env, now = new Date()) {
     cacheDeleted: await deleteExpiredCache(env, now),
     documentsDeleted: await deleteExpiredDocuments(env, now),
     pairingsDeleted: await deleteExpiredPairings(env, now),
+    voiceSessionsDeleted: await deleteOldSessions(env, now),
   };
 }

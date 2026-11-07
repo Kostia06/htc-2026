@@ -7,6 +7,7 @@ import { memories } from "./api/memories";
 import { memory } from "./api/memory";
 import { onboarding } from "./api/onboarding";
 import { pairing } from "./api/pairing";
+import { voice } from "./api/voice";
 import { profile } from "./api/profile";
 import { research } from "./api/research";
 import { session } from "./api/session";
@@ -30,6 +31,7 @@ app.route("/api/me/memories", memories);
 app.route("/api/me/profile", profile);
 app.route("/api/onboarding", onboarding);
 app.route("/api/pairing", pairing);
+app.route("/api/voice", voice);
 app.route("/api/agent", agent);
 
 export default {
