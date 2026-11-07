@@ -1,16 +1,39 @@
-# React + Vite
+# AI Mentor (working name)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hack the Change 2026, Prompt 2: helping people build in-demand skills and networks in a changing job market.
 
-Currently, two official plugins are available:
+Practice the interview before the interview. A VR interviewer on Meta Quest asks you the questions people were actually asked at a Calgary company, scores every answer and shows you what a stronger one sounds like. Around it: a roadmap map built from real Calgary labour data, and an anonymous interview memory that an AI research agent keeps up to date.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Layout
 
-## React Compiler
+- `server/`: Cloudflare Worker (TypeScript): API, research agent with memory and tools
+- `src/`, `public/`: React web app (Vite) and WebXR scene, at the repo root
+- `ios/`: SwiftUI app
+- `scripts/`: data ingest and seeding
+- `docs/`: design, plan, AI usage
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+See `CONTRIBUTING.md` for branches and rules.
 
-## Expanding the ESLint configuration
+## Running the server locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+cd server
+pnpm install
+cp ../.env.example .dev.vars   # fill in keys
+pnpm dev
+```
+
+## Data sources
+
+Job Bank open data and 3-year outlooks (Government of Canada, Open Government Licence), Statistics Canada WDS, Alberta occupational outlook, Adzuna, Keenable search.
+
+## AI usage
+
+See `docs/ai-usage.md`.
+
+## Running the web app
+
+```bash
+npm install
+npm run dev
+```
