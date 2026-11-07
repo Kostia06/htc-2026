@@ -3,7 +3,8 @@
 //   data-lottie-autoplay           play on load
 //   data-lottie-loop               loop
 // Animations without autoplay are driven by other modules through getLottie(el).
-import lottie from 'lottie-web';
+// light build: SVG renderer without the expressions engine (none of the animations use expressions)
+import lottie from 'lottie-web/build/player/lottie_light';
 
 const players = new Map();
 
