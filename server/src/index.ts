@@ -5,6 +5,7 @@ import { agent } from "./api/agent";
 import { experiences } from "./api/experiences";
 import { memories } from "./api/memories";
 import { memory } from "./api/memory";
+import { onboarding } from "./api/onboarding";
 import { profile } from "./api/profile";
 import { research } from "./api/research";
 import { session } from "./api/session";
@@ -25,6 +26,7 @@ app.route("/api/memory", memory);
 app.route("/api/research", research);
 app.route("/api/me/memories", memories);
 app.route("/api/me/profile", profile);
+app.route("/api/onboarding", onboarding);
 app.route("/api/agent", agent);
 
 export default {

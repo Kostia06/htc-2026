@@ -10,7 +10,7 @@ describe("tool registry", () => {
     expect(Object.keys(tools).sort()).toEqual(
       [
         "company_facts", "company_insights", "devto_search", "fetch_page", "hn_search", "job_postings", "profile",
-        "queue_research", "recall", "remember", "save_fact", "update_profile", "web_search",
+        "queue_research", "read_document", "recall", "remember", "save_fact", "update_profile", "web_search",
       ],
     );
   });
