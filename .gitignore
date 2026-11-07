@@ -44,3 +44,10 @@ agent-browser-chrome-*/
 
 # team-only design notes, shared through the hub instead
 docs/design/
+
+# iOS build output
+ios/build/
+ios/RavenKit/.build/
+ios/RavenKit/.swiftpm/
+*.xcuserstate
+xcuserdata/
