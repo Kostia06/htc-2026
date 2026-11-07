@@ -7,7 +7,8 @@ Practice the interview before the interview. A VR interviewer on Meta Quest asks
 ## Layout
 
 - `server/`: Cloudflare Worker (TypeScript): API, research agent with memory and tools
-- `web/`: React web app (Vite) and WebXR scene
+- `web/`: React web app (Vite)
+- `vr/`: WebXR interview scene for Meta Quest 3
 - `ios/`: SwiftUI app
 - `scripts/`: data ingest and seeding
 - `docs/`: design, plan, AI usage
