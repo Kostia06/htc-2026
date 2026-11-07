@@ -1,8 +1,13 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 
-// /api goes to the Worker (`cd server && pnpm dev`, port 8787) so the browser stays same-origin.
-export default defineConfig({
-  plugins: [react()],
-  server: { proxy: { '/api': 'http://localhost:8787' } },
+// /api is proxied so the browser stays same-origin. API_PROXY_TARGET (web/.env.local) picks the Worker:
+// the deployed one, or a local `cd server && pnpm dev` on port 8787 (the default).
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const target = env.API_PROXY_TARGET || 'http://localhost:8787'
+  return {
+    plugins: [react()],
+    server: { proxy: { '/api': { target, changeOrigin: true, secure: true } } },
+  }
 })
