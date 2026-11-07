@@ -4,6 +4,7 @@ export type Env = {
   AI: Ai;
   SESSION_SECRET: string;
   GEMINI_API_KEY: string;
+  GEMINI_MODEL: string;
   KEENABLE_API_KEY: string;
 };
 
