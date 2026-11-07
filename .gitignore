@@ -63,3 +63,4 @@ _tmp_*.lock
 swift-generated-sources/
 # landing uses npm; a pnpm lockfile there is a local install artefact
 landing/pnpm-lock.yaml
+.env
