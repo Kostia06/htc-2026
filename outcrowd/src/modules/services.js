@@ -8,6 +8,7 @@
 import { gsap, scrollKeyframes, onceInView, MQ, EASE } from './motion.js';
 import { getLottie, lottieLoop } from './lottie.js';
 import { borderLoop } from './glow-loop.js';
+import { maskOnView } from './reveal-mask.js';
 
 const LOTTIE_LOOPS = [
   // [card selector, lottie selector, steps]
@@ -40,9 +41,7 @@ export function initServices() {
 
   // M36
   mm.add(MQ.mobile, () => {
-    const mask = section.querySelector('.shadow.vertical.small');
-    gsap.set(mask, { yPercent: -50 });
-    onceInView(section, () => gsap.to(mask, { yPercent: 100, duration: 2, ease: 'none' }), 20);
+    maskOnView(section, section.querySelector('.shadow.vertical.small'), { from: -50, to: 100, duration: 2, offset: 20 });
   });
 
   // M37

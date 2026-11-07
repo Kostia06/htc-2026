@@ -4,6 +4,7 @@
 //   M44 heading mask on mobile
 //   M45 statement fade on mobile (the char reveal itself is modules/split-reveal.js)
 import { gsap, scrollKeyframes, onceInView, MQ, EASE } from './motion.js';
+import { maskOnView } from './reveal-mask.js';
 
 export function initClients() {
   const section = document.querySelector('.section.is-clients');
@@ -33,9 +34,7 @@ export function initClients() {
   });
 
   mm.add(MQ.mobile, () => {
-    const mask = section.querySelector('.shadow.white.vert');
-    gsap.set(mask, { yPercent: -60 });
-    onceInView(section, () => gsap.to(mask, { yPercent: 100, duration: 2, ease: 'none' }), 30);
+    maskOnView(section, section.querySelector('.shadow.white.vert'), { from: -60, to: 100, duration: 2, offset: 30 });
 
     const startups = section.querySelector('.startups');
     const statement = startups.querySelector('.heading-3.max-w-82.color-black');
