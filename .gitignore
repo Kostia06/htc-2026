@@ -1,0 +1,10 @@
+context.md
+CLAUDE.md
+.playwright-mcp/
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+.DS_Store
