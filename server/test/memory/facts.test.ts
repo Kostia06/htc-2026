@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { deps, saveFact } from "../src/memory/facts";
+import { deps, saveFact } from "../../src/memory/facts";
 
 describe("saveFact", () => {
   beforeEach(async () => {

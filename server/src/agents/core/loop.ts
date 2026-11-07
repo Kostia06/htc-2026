@@ -1,4 +1,4 @@
-import type { GeminiContent, GeminiPart } from "../ai/gemini";
+import type { GeminiContent, GeminiPart } from "../../integrations/gemini";
 
 export type Declaration = { name: string; description: string; parameters: Record<string, unknown> };
 export type Tool = { declaration: Declaration; run: (args: Record<string, unknown>) => Promise<unknown> };

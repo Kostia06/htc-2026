@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "hono";
-import type { AppContext } from "./env";
+import type { AppContext } from "../env";
 
 const enc = new TextEncoder();
 

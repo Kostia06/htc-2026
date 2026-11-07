@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { anonymize } from "../src/lib/anonymize";
+import { anonymize } from "../../src/lib/anonymize";
 
 describe("anonymize", () => {
   it("removes emails and phone numbers", () => {

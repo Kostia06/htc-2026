@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { keenableFetch, keenableSearch } from "../src/agent/keenable";
+import { keenableFetch, keenableSearch } from "../../src/integrations/keenable";
 
 afterEach(() => vi.restoreAllMocks());
 

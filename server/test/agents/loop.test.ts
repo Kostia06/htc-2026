@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { GeminiContent } from "../src/ai/gemini";
-import { runAgent, type Tool } from "../src/agent/loop";
+import type { GeminiContent } from "../../src/integrations/gemini";
+import { runAgent, type Tool } from "../../src/agents/core/loop";
 
 function scripted(replies: GeminiContent[]) {
   const seen: GeminiContent[][] = [];

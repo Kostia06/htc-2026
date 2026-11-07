@@ -1,5 +1,4 @@
-import { Hono } from "hono";
-import type { AppContext, Env } from "../env";
+import type { Env } from "../env";
 
 // one person's report must never be identifiable, so real reports stay hidden below this count
 export const MIN_REPORTS = 3;
@@ -46,10 +45,3 @@ export async function getCompanyInsights(env: Env, slug: string, role?: string) 
 
   return { company, facts, reportCount: real.length, questions };
 }
-
-export const memory = new Hono<AppContext>();
-
-memory.get("/:slug", async (c) => {
-  const insights = await getCompanyInsights(c.env, c.req.param("slug"), c.req.query("role"));
-  return insights ? c.json(insights) : c.json({ error: "unknown company" }, 404);
-});

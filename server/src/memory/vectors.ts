@@ -1,4 +1,4 @@
-import { embed } from "../ai/embed";
+import { embed } from "../integrations/workers-ai";
 import type { Env } from "../env";
 
 export type VectorMeta = { company_id: string; kind: "fact" | "exp" };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isAllowed, isBlockedHost } from "../src/lib/robots";
+import { isAllowed, isBlockedHost } from "../../src/lib/robots";
 
 describe("robots", () => {
   it("disallows a path under a Disallow rule", () => {

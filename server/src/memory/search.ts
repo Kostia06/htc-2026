@@ -1,5 +1,5 @@
-import { embed } from "../ai/embed";
-import type { MemoryHit } from "../agent/tools";
+import { embed } from "../integrations/workers-ai";
+import type { MemoryHit } from "../agents/research/tools";
 import type { Env } from "../env";
 
 export async function memorySearch(env: Env, companyId: string, query: string): Promise<MemoryHit[]> {
