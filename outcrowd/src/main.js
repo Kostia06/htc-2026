@@ -15,6 +15,8 @@ import { initStages } from './modules/stages.js';
 import { initServices } from './modules/services.js';
 import { initClients } from './modules/clients.js';
 import { initTestimonial } from './modules/testimonial.js';
+import { initAwards } from './modules/awards.js';
+import { initBlog } from './modules/blog.js';
 
 initLotties();
 initPreloader();
@@ -31,3 +33,5 @@ initStages();
 initServices();
 initClients();
 initTestimonial();
+initAwards();
+initBlog();
