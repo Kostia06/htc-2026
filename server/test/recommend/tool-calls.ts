@@ -1,5 +1,5 @@
 import type { ToolCallRecord } from "../../src/agents/core/loop";
-import { UNTRUSTED_NOTE, wrapUntrusted } from "../../src/agents/tools/untrusted";
+import { UNTRUSTED_NOTE, wrapUntrusted } from "../../src/agents/shared-tools/untrusted";
 
 export const fetched = (url: string, text: string): ToolCallRecord => ({
   name: "fetch_page",
