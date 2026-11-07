@@ -7,6 +7,13 @@ export type Env = {
   GEMINI_API_KEY: string;
   GEMINI_MODEL: string;
   GEMINI_FALLBACK_MODEL?: string;
+  GEMINI_LIVE_MODEL: string;
+  // optional: without it, live scoring falls back to delivery numbers only
+  JEV_API_KEY?: string;
+  // "gemini" (default) or "elevenlabs"; ElevenLabs also needs its key and agent id
+  VOICE_PROVIDER?: string;
+  ELEVENLABS_API_KEY?: string;
+  ELEVENLABS_AGENT_ID?: string;
   KEENABLE_API_KEY: string;
   // optional: without them job_postings reports "not configured"
   ADZUNA_APP_ID?: string;
