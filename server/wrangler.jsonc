@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "htc-mentor",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "htc_mentor", "database_id": "3d50f23d-80a2-4817-9196-0f1b02152da1", "migrations_dir": "migrations" }
+  ],
+  "vectorize": [{ "binding": "VECTORS", "index_name": "htc-mentor-vectors" }],
+  "ai": { "binding": "AI" },
+  "triggers": { "crons": ["0 */6 * * *"] },
+  "observability": { "enabled": true }
+}
