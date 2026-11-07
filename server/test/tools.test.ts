@@ -53,7 +53,39 @@ describe("agent tools", () => {
 
   it("save_fact passes a good fact through to memory", async () => {
     const deps = fakeDeps();
-    await makeTools(deps, "c1").save_fact.run({ kind: "interview", text: "Two rounds", source_url: "https://acme.com/careers" });
+    const tools = makeTools(deps, "c1");
+    await tools.fetch_page.run({ url: "https://acme.com/careers" });
+    await tools.save_fact.run({ kind: "interview", text: "Two rounds", source_url: "https://acme.com/careers" });
     expect(deps.saveFact).toHaveBeenCalledWith("c1", { kind: "interview", text: "Two rounds", source_url: "https://acme.com/careers" });
+  });
+
+  it("save_fact only accepts a source the agent fetched in this run", async () => {
+    const deps = fakeDeps();
+    const tools = makeTools(deps, "c1");
+    const fact = { kind: "hiring", text: "Two rounds", source_url: "https://acme.com/careers" };
+    expect(await tools.save_fact.run(fact)).toMatchObject({ saved: false });
+    await tools.fetch_page.run({ url: "https://acme.com/careers" });
+    expect(await tools.save_fact.run(fact)).toMatchObject({ saved: true });
+  });
+
+  it("save_fact rejects a source whose fetch was skipped", async () => {
+    const deps = fakeDeps({ fetchPage: vi.fn(async () => { throw new Error("HTTP 403"); }) });
+    const tools = makeTools(deps, "c1");
+    await tools.fetch_page.run({ url: "https://acme.com/about" });
+    expect(await tools.save_fact.run({ kind: "about", text: "x", source_url: "https://acme.com/about" })).toMatchObject({ saved: false });
+  });
+
+  it("fetch_page never tries the same page twice in a run, even with a trailing slash or www", async () => {
+    const deps = fakeDeps({ fetchPage: vi.fn(async () => { throw new Error("HTTP 403"); }) });
+    const tools = makeTools(deps, "c1");
+    await tools.fetch_page.run({ url: "https://acme.com/about" });
+    expect(await tools.fetch_page.run({ url: "https://www.acme.com/about/" })).toMatchObject({ skipped: true });
+    expect(deps.fetchPage).toHaveBeenCalledTimes(1);
+  });
+
+  it("fetch_page also obeys the * group when robots.txt names our bot", async () => {
+    const deps = fakeDeps({ fetchRobots: vi.fn(async () => "User-agent: *\nDisallow: /jobs\n\nUser-agent: HTCMentorBot\nAllow: /") });
+    const out = await makeTools(deps, "c1").fetch_page.run({ url: "https://acme.com/jobs/1" });
+    expect(out).toMatchObject({ skipped: true });
   });
 });

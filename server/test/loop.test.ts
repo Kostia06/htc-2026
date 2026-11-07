@@ -45,4 +45,16 @@ describe("runAgent", () => {
     await runAgent({ model, tools: { echo }, goal: "x", maxSteps: 5 });
     expect(seen[1].at(-1)?.parts[0].functionResponse?.response).toEqual({ error: "unknown tool nope" });
   });
+
+  it("runs at most 4 tool calls per model reply", async () => {
+    const many = Array.from({ length: 6 }, () => ({ functionCall: { name: "echo", args: { v: "x" } } }));
+    const replies: GeminiContent[] = [{ role: "model", parts: many }, { role: "model", parts: [{ text: "ok" }] }];
+    const run = vi.fn(async () => ({}));
+    const { model, seen } = scripted(replies);
+    await runAgent({ model, tools: { echo: { ...echo, run } }, goal: "x", maxSteps: 5 });
+    expect(run).toHaveBeenCalledTimes(4);
+    const responses = seen[1].at(-1)!.parts;
+    expect(responses).toHaveLength(6);
+    expect(responses[5].functionResponse?.response).toEqual({ error: "too many tool calls in one step, max 4" });
+  });
 });

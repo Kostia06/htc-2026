@@ -32,4 +32,10 @@ describe("sessions", () => {
     const { token } = await res.json<{ token: string }>();
     expect(await verifySession(token, env.SESSION_SECRET)).not.toBeNull();
   });
+
+  it("limits new sessions to 10 per hour per IP", async () => {
+    const mint = () => app.request("/api/session", { method: "POST", headers: { "CF-Connecting-IP": "203.0.113.9" } }, env);
+    for (let i = 0; i < 10; i++) expect((await mint()).status).toBe(200);
+    expect((await mint()).status).toBe(429);
+  });
 });
