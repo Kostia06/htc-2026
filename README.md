@@ -7,7 +7,7 @@ Practice the interview before the interview. A VR interviewer on Meta Quest asks
 ## Layout
 
 - `server/`: Cloudflare Worker (TypeScript): API, research agent with memory and tools
-- `src/`, `public/`: React web app (Vite) and WebXR scene, at the repo root
+- `web/`: React web app (Vite) and WebXR scene
 - `ios/`: SwiftUI app
 - `scripts/`: data ingest and seeding
 - `docs/`: design, plan, AI usage
@@ -34,6 +34,7 @@ See `docs/ai-usage.md`.
 ## Running the web app
 
 ```bash
+cd web
 npm install
 npm run dev
 ```
