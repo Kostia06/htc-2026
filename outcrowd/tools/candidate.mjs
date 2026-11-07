@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-// Capture the rebuilt page exactly like tools/reference.mjs captures the snapshot, then
-// pixel-compare every section against .compare/reference/<width>/.
+// Capture the page (full page + one PNG per section) at each width, then compare every section
+// with an earlier capture in .compare/<ref>/<width>/ (default: baseline). Sizes show whether the
+// layout moved; the diff ratio shows how much of the content changed.
 //
 // usage: node tools/candidate.mjs [--url=http://localhost:5180/] [--widths=1440,991,390]
-//                                 [--only=02-hero,03-cards] [--no-full]
+//                                 [--only=02-hero,03-cards] [--no-full] [--ref=baseline]
 // output: .compare/candidate/<w>/{full.png,sections/*.png,meta.json}
 //         .compare/diff/<w>/{full.png,sections/*.png}  (red = differing pixels)
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { launch, preparePage, captureFullPage, captureSections, SECTIONS } from './lib/capture.mjs';
-import { settleReference } from './reference.mjs';
+import { launch, preparePage, captureFullPage, captureSections, scrollPass, stabilize, waitVisualSettle, sleep, SECTIONS } from './lib/capture.mjs';
 import { comparePng } from './lib/compare.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,6 +24,19 @@ const args = Object.fromEntries(
 const URL_ = args.url || 'http://localhost:5180/';
 const WIDTHS = String(args.widths || '1440,991,390').split(',').map(Number);
 const ONLY = args.only ? String(args.only).split(',') : null;
+const REF = String(args.ref || 'baseline');
+
+async function settle(page) {
+  // let the preloader finish, then trigger every scroll animation once and freeze loops
+  await sleep(3000);
+  await page.evaluate(() => {
+    const p = document.getElementById('preloader');
+    if (p) p.style.display = 'none';
+  });
+  await scrollPass(page);
+  await stabilize(page);
+  await waitVisualSettle(page);
+}
 
 export async function openCandidate(browser, width, { url = URL_, log = () => {} } = {}) {
   const { page, vp } = await preparePage(browser, width);
@@ -35,7 +48,7 @@ export async function openCandidate(browser, width, { url = URL_, log = () => {}
 
 async function run(width) {
   const outDir = path.join(ROOT, '.compare', 'candidate', String(width));
-  const refDir = path.join(ROOT, '.compare', 'reference', String(width));
+  const refDir = path.join(ROOT, '.compare', REF, String(width));
   const diffDir = path.join(ROOT, '.compare', 'diff', String(width));
   fs.mkdirSync(outDir, { recursive: true });
   const browser = await launch();
@@ -43,7 +56,7 @@ async function run(width) {
   const log = (...a) => logs.push(a.join(' '));
   try {
     const { page } = await openCandidate(browser, width, { log });
-    await settleReference(page);
+    await settle(page);
     const sections = SECTIONS.filter(([n]) => !ONLY || ONLY.some((o) => n.includes(o)));
     const res = [];
     if (!args['no-full']) {

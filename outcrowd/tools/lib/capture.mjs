@@ -1,4 +1,4 @@
-// Shared capture helpers for the reference (snapshot) and the rebuild.
+// Shared capture helpers: deterministic full-page and per-section screenshots of the site.
 // Both sides MUST be captured with these same helpers so screenshots are comparable.
 //
 // Contract the page under test has to honour (the rebuild should keep these
