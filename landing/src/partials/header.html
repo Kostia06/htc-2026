@@ -1,0 +1,69 @@
+<div class="light-glow" data-fade-in aria-hidden="true"></div>
+<div class="nav-wrap" data-fade-in>
+  <header class="header-new" data-section="header">
+    <div class="header-wrapper">
+      <nav class="nav-new" aria-label="Main">
+        <a class="logo-nav" href="#" aria-label="{{ nav.homeLabel }}">
+          <span class="logo-white wordmark" aria-hidden="true">{{ wordmark }}</span>
+          <span class="logo-black wordmark" aria-hidden="true">{{ wordmark }}</span>
+        </a>
+        <div class="nav-link-wrap nav-menu">
+          <a class="footer-link" href="{{ nav.items.0.href }}">
+            <div class="footer-flip-hover">
+              <div class="footer-nav-link nav">{{ nav.items.0.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.0.label }}</div>
+            </div>
+          </a>
+          <a class="footer-link" href="{{ nav.items.1.href }}">
+            <div class="footer-flip-hover">
+              <div class="footer-nav-link nav">{{ nav.items.1.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.1.label }}</div>
+            </div>
+          </a>
+          <a class="footer-link" href="{{ nav.items.2.href }}">
+            <div class="footer-flip-hover">
+              <div class="footer-nav-link nav">{{ nav.items.2.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.2.label }}</div>
+            </div>
+          </a>
+          <a class="footer-link" href="{{ nav.items.3.href }}">
+            <div class="footer-flip-hover">
+              <div class="footer-nav-link nav">{{ nav.items.3.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.3.label }}</div>
+            </div>
+          </a>
+        </div>
+        <div class="header-btn-wrap">
+          <a class="nav_link-c contact grey" href="{{ links.login }}">
+            <div class="btn-text opacity-90">{{ nav.secondary }}</div>
+            <div class="explode violet"></div>
+          </a>
+          <a class="nav_link-c contact" href="{{ links.app }}">
+            <div class="btn-text opacity-90">{{ nav.primary }}</div>
+            <div class="explode violet"></div>
+          </a>
+        </div>
+        <button class="burger-wrap" type="button" aria-label="{{ nav.menuLabel }}" aria-expanded="false" aria-controls="mob-menu">
+          <span class="burger-line first"></span>
+          <span class="burger-line second"></span>
+        </button>
+      </nav>
+      <div class="mob-menu" id="mob-menu">
+        <div class="zero-block"></div>
+        <div class="mob-nav-block">
+          <a class="mob-nav-link" href="{{ nav.items.0.href }}">{{ nav.items.0.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.1.href }}">{{ nav.items.1.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.2.href }}">{{ nav.items.2.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.3.href }}">{{ nav.items.3.label }}</a>
+        </div>
+        <div class="mob-social-block">
+          <a class="mail-link" href="mailto:{{ links.email }}">{{ links.email }}</a>
+          <a class="nav_link-c contact mob" href="{{ links.app }}">
+            <div class="btn-text opacity-90">{{ nav.primary }}</div>
+            <div class="explode violet"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ meta.title }}</title>
+    <meta name="description" content="{{ meta.description }}">
+    <meta property="og:title" content="{{ meta.title }}">
+    <meta property="og:description" content="{{ meta.description }}">
+    <meta property="og:image" content="{{ meta.ogImage }}">
+    <meta property="og:image:alt" content="{{ meta.ogImageAlt }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="{{ meta.title }}">
+    <meta name="twitter:description" content="{{ meta.description }}">
+    <meta name="twitter:image" content="{{ meta.ogImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <!-- @include preloader.html -->
+    <div class="page-wrapper dark">
+      <!-- @include header.html -->
+      <main class="main">
+        <!-- @include hero.html -->
+        <!-- @include cards.html -->
+        <!-- @include stages.html -->
+        <!-- @include services.html -->
+        <!-- @include clients.html -->
+        <!-- @include testimonial.html -->
+        <div class="bg-style">
+          <!-- @include awards.html -->
+          <!-- @include blog.html -->
+        </div>
+        <!-- @include faq.html -->
+        <!-- @include cta.html -->
+        <!-- @include book-call.html -->
+      </main>
+      <!-- @include footer.html -->
+    </div>
+  </body>
+</html>

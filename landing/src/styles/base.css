@@ -1,0 +1,127 @@
+/* Reset + element defaults. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  color: #333;
+  background-color: var(--white);
+  font-family: 'Questrial', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+article, aside, details, figcaption, figure, footer, header, main, menu, nav, section, summary {
+  display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 500;
+}
+
+h1 {
+  color: var(--dark-black-900);
+  font-size: 7.5rem;
+  line-height: 100%;
+}
+
+h2 {
+  color: var(--dark-black-900);
+  font-size: 2rem;
+  line-height: 2.25rem;
+}
+
+h3 {
+  color: var(--dark-black-900);
+  font-size: 3.5rem;
+  line-height: 121%;
+}
+
+h4 {
+  margin: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+h5 {
+  font-size: 2.222rem;
+  font-weight: 700;
+  line-height: 2.375rem;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+a {
+  color: inherit;
+  background-color: transparent;
+  font-size: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+  border: 0;
+}
+
+video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+:focus {
+  outline: 0;
+}
+
+/* scrolling: Lenis smooth scroll, hidden scrollbar */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+/* utilities */
+.hide {
+  display: none !important;
+}
+
+@media screen and (max-width: 991px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}

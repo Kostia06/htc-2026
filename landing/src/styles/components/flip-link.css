@@ -1,0 +1,47 @@
+/* Text link that flips in 3D to a second copy on hover (nav + footer). */
+
+.footer-link {
+  padding: 0.5rem 0;
+  text-decoration: none;
+}
+
+.footer-flip-hover {
+  position: relative;
+  transform-origin: 50% 0;
+}
+
+.footer-nav-link {
+  color: var(--text-muted);
+  font-size: 0.97222rem;
+  text-decoration: none;
+}
+
+.footer-nav-link.hover {
+  position: absolute;
+  color: var(--white);
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transform: rotateX(-90deg);
+}
+
+@media screen and (max-width: 479px) {
+  .footer-link {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .footer-nav-link {
+    font-size: 0.875rem;
+  }
+}
+
+/* M7 – flip on hover (desktop only) */
+@media screen and (min-width: 992px) {
+  .footer-flip-hover {
+    transition: transform 0.5s ease;
+  }
+
+  .footer-link:hover .footer-flip-hover {
+    transform: rotateX(90deg);
+  }
+}
