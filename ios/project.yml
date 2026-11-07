@@ -1,6 +1,6 @@
 name: Raven
 options:
-  bundleIdPrefix: app.raven
+  bundleIdPrefix: com.raven
   deploymentTarget:
     iOS: "26.0"
   createIntermediateGroups: true
@@ -23,7 +23,7 @@ targets:
       - package: RavenKit
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.raven.ios
+        PRODUCT_BUNDLE_IDENTIFIER: com.raven.ios
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1"

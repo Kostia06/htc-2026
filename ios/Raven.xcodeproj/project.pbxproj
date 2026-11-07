@@ -214,7 +214,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					4B724CEA76ED3EB4F7F055B6 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 5J5P965Q99;
 					};
 				};
 			};
@@ -312,7 +312,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5J5P965Q99;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -356,7 +356,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.raven.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raven.ios;
 				RAVEN_API_URL = "http://localhost:8799";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -398,7 +398,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5J5P965Q99;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -435,7 +435,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.raven.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raven.ios;
 				RAVEN_API_URL = "https://raven-api.ilnkostia-dev.workers.dev";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
