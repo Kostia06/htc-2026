@@ -42,6 +42,10 @@
 	<string>Raven uses the camera to scan the code on your headset so it can join your account.</string>
 	<key>RavenAPIURL</key>
 	<string>$(RAVEN_API_URL)</string>
+	<key>SupabasePublishableKey</key>
+	<string>$(SUPABASE_PUBLISHABLE_KEY)</string>
+	<key>SupabaseURL</key>
+	<string>$(SUPABASE_URL)</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

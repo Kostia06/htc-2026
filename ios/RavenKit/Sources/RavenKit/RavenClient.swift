@@ -1,21 +1,18 @@
 import Foundation
 
-/// The one way the app talks to the Raven server. Every call is scoped to the signed-in person by `token`.
+/// Hands out a current access token, refreshing it first when it's about to expire. Throws when no one is signed in.
+public typealias AccessTokenProvider = @Sendable () async throws -> String
+
+/// The one way the app talks to the Raven server. Every call is scoped to the signed-in person by their access token.
 public struct RavenClient: Sendable {
     public let baseURL: URL
-    private let token: String
+    private let accessToken: AccessTokenProvider
     private let session: URLSession
 
-    public init(baseURL: URL, token: String, session: URLSession = .shared) {
+    public init(baseURL: URL, accessToken: @escaping AccessTokenProvider, session: URLSession = .shared) {
         self.baseURL = baseURL
-        self.token = token
+        self.accessToken = accessToken
         self.session = session
-    }
-
-    public static func startSession(baseURL: URL, session: URLSession = .shared) async throws(RavenError) -> String {
-        let request = Request(method: "POST", url: baseURL.appending(path: "api/session"))
-        let response: TokenResponse = try await send(request.build(), with: session)
-        return response.token
     }
 
     public func profile() async throws(RavenError) -> Profile {
@@ -26,7 +23,7 @@ public struct RavenClient: Sendable {
     public func uploadResume(_ file: ResumeFile) async throws(RavenError) -> ResumeDraft {
         var form = MultipartForm()
         form.addFile(field: "file", file: file)
-        var request = authorized("POST", "api/onboarding/resume")
+        var request = try await authorized("POST", "api/onboarding/resume")
         request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
         request.httpBody = form.encoded()
         return try await send(request)
@@ -43,10 +40,20 @@ public struct RavenClient: Sendable {
     }
 
     public func deleteProfile() async throws(RavenError) {
-        try await sendExpectingNoContent(authorized("DELETE", "api/me/profile"))
+        _ = try await responseData(for: authorized("DELETE", "api/me/profile"))
     }
 
-    private func authorized(_ method: String, _ path: String, json: (some Encodable)? = Never?.none) -> URLRequest {
+    private func authorized(
+        _ method: String,
+        _ path: String,
+        json: (some Encodable)? = Never?.none,
+    ) async throws(RavenError) -> URLRequest {
+        let token: String
+        do {
+            token = try await accessToken()
+        } catch {
+            throw .unauthorized
+        }
         var request = Request(method: method, url: baseURL.appending(path: path)).build()
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let json, let data = try? JSONEncoder().encode(json) {
@@ -57,15 +64,7 @@ public struct RavenClient: Sendable {
     }
 
     private func send<Response: Decodable>(_ request: URLRequest) async throws(RavenError) -> Response {
-        try await Self.send(request, with: session)
-    }
-
-    private func sendExpectingNoContent(_ request: URLRequest) async throws(RavenError) {
-        _ = try await Self.data(for: request, with: session)
-    }
-
-    private static func send<Response: Decodable>(_ request: URLRequest, with session: URLSession) async throws(RavenError) -> Response {
-        let data = try await data(for: request, with: session)
+        let data = try await responseData(for: request)
         do {
             return try JSONDecoder().decode(Response.self, from: data)
         } catch {
@@ -73,7 +72,7 @@ public struct RavenClient: Sendable {
         }
     }
 
-    private static func data(for request: URLRequest, with session: URLSession) async throws(RavenError) -> Data {
+    private func responseData(for request: URLRequest) async throws(RavenError) -> Data {
         let data: Data
         let response: URLResponse
         do {
@@ -105,7 +104,6 @@ private struct Request {
     }
 }
 
-private struct TokenResponse: Decodable { let token: String }
 private struct ProfileResponse: Decodable { let profile: Profile }
 private struct PairedResponse: Decodable { let paired: Bool }
 private struct ErrorResponse: Decodable { let error: String }
