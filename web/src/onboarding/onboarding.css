@@ -229,3 +229,64 @@
   .ob__card { padding: 24px 18px 18px; gap: 22px; }
   .ob__title { font-size: 22px; }
 }
+
+.ob__resume {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ob__resume--busy {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 18px;
+  border: 1px dashed #444;
+  border-radius: 14px;
+}
+
+.ob__resume--busy p { margin: 0; color: #b3b3b3; }
+
+.ob__drop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 26px 20px;
+  border: 1.5px dashed #555;
+  border-radius: 14px;
+  background: #0b0b0b;
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.ob__drop strong { font-size: 17px; font-weight: 500; }
+.ob__drop span { color: #a3a3a3; font-size: 14px; }
+
+.ob__drop:hover,
+.ob__drop.is-over {
+  border-color: #fe4a23;
+  background: rgba(254, 74, 35, 0.08);
+}
+
+.ob__no-resume { align-self: flex-start; }
+
+.ob__error {
+  margin: 0;
+  color: #ff8a73;
+  font-size: 14px;
+}
+
+.ob__from-resume {
+  align-self: flex-start;
+  margin: -4px 0 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(138, 92, 255, 0.15);
+  color: #cbb8ff;
+  font-size: 13px;
+}
+
+.ob__nav[hidden] { display: none; }

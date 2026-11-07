@@ -1,9 +1,16 @@
 // The onboarding questions. Each one is a single screen; most answers are a tap.
-//   type: 'single' (pick one), 'multi' (pick up to `max`), 'text' (optional short answer)
+//   type: 'resume' (optional upload that pre-fills the rest), 'single' (pick one), 'multi' (pick up to `max`),
+//         'text' (optional short answer)
 //   other: lets people type their own option
 //   when: only asked if it returns true for the answers so far
 
 export const QUESTIONS = [
+  {
+    id: 'resume',
+    title: 'Do you have a resume?',
+    hint: "Upload it and we'll fill in the next questions for you. You can change anything before you finish.",
+    type: 'resume',
+  },
   {
     id: 'stage',
     title: 'Where are you right now?',
@@ -55,7 +62,7 @@ export const QUESTIONS = [
     title: 'What can you already do?',
     hint: 'Tap anything that fits, or add your own.',
     type: 'multi',
-    max: 12,
+    max: 20,
     options: ['JavaScript', 'Python', 'Java', 'SQL', 'React', 'HTML / CSS', 'Git', 'Excel', 'Figma', 'Communication', 'Teamwork', 'Public speaking'],
     other: true,
   },
