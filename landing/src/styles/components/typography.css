@@ -1,0 +1,76 @@
+/* Shared heading / body text styles. */
+
+.heading-2 {
+  color: var(--dark-black);
+  font-size: 5rem;
+  line-height: 5rem;
+  transition: all 0.7s ease;
+}
+
+.heading-2.text-align-center {
+  color: var(--dark-black-900);
+  text-align: center;
+  font-size: 4.44rem;
+  line-height: 100%;
+}
+
+.heading-2.text-align-center.max-w-55 {
+  max-width: 55rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--white);
+}
+
+.heading-3 {
+  font-size: 3.88889rem;
+  line-height: 121%;
+}
+
+.heading-5 {
+  position: relative;
+  z-index: 2;
+  font-weight: 500;
+}
+
+.b1 {
+  font-size: 1.3889rem;
+  line-height: 140%;
+}
+
+.text-color-white {
+  color: var(--white);
+}
+
+.section-heading {
+  position: relative;
+  padding-top: 1rem;
+  overflow: hidden;
+  color: var(--white);
+}
+
+.header-block {
+  margin-bottom: 5.56rem;
+}
+
+@media screen and (min-width: 1920px) {
+  .heading-2.text-align-center {
+    line-height: 111%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .heading-5 {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .heading-2.text-align-center {
+    font-size: 2.625rem;
+  }
+}
+
+@media (min-width: 767px) {
+  .heading-5 {
+    transition: color 0.5s;
+  }
+}

@@ -1,0 +1,375 @@
+/* "We prove…" heading + four stats cards that fan in while scrolling (modules/cards.js). */
+
+.section.bg-dark.cards {
+  position: relative;
+  z-index: 20;
+  height: auto;
+  margin-top: -22.9rem; /* overlaps the bottom of the hero */
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+.cards .container.hero {
+  position: relative;
+  z-index: 5;
+  max-width: 100vw;
+  margin-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.anim-heading-home {
+  max-width: 43.4rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--white);
+  text-align: center;
+  font-size: 3.19444rem;
+  line-height: 118.33%;
+}
+
+.hero-cards {
+  position: relative;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2.22rem;
+  margin-top: 5rem;
+  padding-bottom: 8rem;
+}
+
+/* card = glow wrapper (1px light border) + dark card */
+.stats-card-wrapper {
+  position: relative;
+  width: 34.5833rem;
+  height: 23.6111rem;
+  padding: 0.1rem;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+}
+
+.stats-card-wrapper.img-list-set-1 {
+  display: flex;
+  flex-flow: column;
+  gap: 0.75rem;
+}
+
+.stats-card-wrapper.set-4 {
+  z-index: 10;
+}
+
+.stats-card {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  height: 100%;
+  padding: 1rem 0 2.22rem 3.47rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-card);
+  background-color: var(--bg);
+  text-align: center;
+}
+
+.stats-card._2 {
+  gap: 3.1rem;
+  padding: 3.8rem 2.46rem 2.22rem 3.2rem;
+}
+
+.stats-card._4 {
+  padding-top: 1.32rem;
+  padding-right: 1.39rem;
+}
+
+.card-gero-text-img {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.card-hero-img {
+  align-self: flex-end;
+  width: 16.5972rem;
+}
+
+.card-hero-img.set-2 {
+  width: 10.3019rem;
+  margin-top: -1rem;
+}
+
+.card-hero-img.set-3 {
+  align-self: flex-start;
+  width: 14.6528rem;
+  margin-left: -0.5rem;
+}
+
+.card-hero-img.set-4 {
+  position: absolute;
+  inset: 0.5rem 0.5rem auto auto;
+  flex: 0 0 auto;
+  width: 14.3056rem;
+  margin-top: 0;
+}
+
+.card-hero-heading {
+  color: var(--white);
+  font-size: 7.77778rem;
+  line-height: 68%;
+  letter-spacing: -0.07826rem;
+}
+
+.card-hero-heading._2,
+.card-hero-heading._2-1 {
+  margin-top: 2rem;
+}
+
+.card-hero-desc {
+  flex: 0 0 auto;
+  max-width: 23.8654rem;
+  color: var(--text-muted);
+  text-align: left;
+  font-size: 1.11rem;
+  line-height: 140%;
+}
+
+.card-hero-desc.max-w-18 {
+  max-width: 18.6806rem;
+}
+
+.card-hero-desc.max-w-17 {
+  max-width: 17rem;
+}
+
+/* black side masks that hide the cards while they fly in */
+.left-stat-gradient,
+.right-stat-gradient {
+  position: absolute;
+  width: 60rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.left-stat-gradient {
+  background: linear-gradient(-270deg, var(--bg) 40.7%, rgba(8, 8, 8, 0) 100%);
+}
+
+.right-stat-gradient {
+  background: linear-gradient(270deg, var(--bg) 40.7%, rgba(8, 8, 8, 0) 100%);
+}
+
+.left-stat-gradient.top {
+  inset: -5rem auto auto -14rem;
+  z-index: 2;
+  height: 29.9rem;
+}
+
+.left-stat-gradient.bot {
+  inset: auto auto -7rem -14rem;
+  height: 32rem;
+}
+
+.right-stat-gradient.top {
+  inset: -5rem -14rem auto auto;
+  height: 29.9rem;
+}
+
+.right-stat-gradient.bot {
+  inset: auto -14rem -7rem auto;
+  height: 32rem;
+}
+
+.shadow.vertical.small-2 {
+  display: none;
+  width: 100%;
+  height: 300%;
+  background-image: linear-gradient(transparent, var(--bg) 43%, var(--bg));
+}
+
+@media screen and (min-width: 1920px) {
+  .cards .container.hero {
+    max-width: 92rem;
+  }
+
+  .anim-heading-home {
+    max-width: 44.3rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .section.bg-dark.cards {
+    margin-top: 0;
+    padding-bottom: 3rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .anim-heading-home {
+    max-width: 100%;
+    font-size: 1.75rem;
+    line-height: 128%;
+  }
+
+  .hero-cards {
+    gap: 1.25rem;
+    padding-bottom: 0;
+  }
+
+  .stats-card-wrapper {
+    width: 100%;
+    height: 15rem;
+    padding: 0.07rem;
+    border-radius: 1.25rem;
+  }
+
+  .stats-card {
+    gap: 0rem;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .stats-card._2 {
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .stats-card._2._3 {
+    justify-content: flex-end;
+  }
+
+  .stats-card._3 {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .card-hero-img {
+    width: 10.7218rem;
+  }
+
+  .card-hero-img.set-2 {
+    width: 6.95375rem;
+    margin-top: 0;
+  }
+
+  .card-hero-img.set-3 {
+    width: 9.89063rem;
+    margin-top: -0.5rem;
+    margin-left: 0;
+  }
+
+  .card-hero-img.set-4 {
+    top: 1rem;
+    right: 1.2rem;
+    align-self: flex-end;
+    width: 9.65625rem;
+  }
+
+  .card-hero-heading {
+    font-size: 4.5rem;
+  }
+
+  .card-hero-heading._2,
+  .card-hero-heading._2-1 {
+    align-self: flex-start;
+  }
+
+  .card-hero-heading._3 {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-hero-desc,
+  .card-hero-desc.max-w-18 {
+    font-size: 0.875rem;
+  }
+
+  .card-gero-text-img._2 {
+    flex-flow: column;
+    justify-content: flex-start;
+    align-self: flex-start;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .stats-card-wrapper {
+    aspect-ratio: 3.4 / 4.6;
+    padding: 0.05rem;
+  }
+
+  .stats-card {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .stats-card._2 {
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .stats-card._2._3 {
+    gap: 1.1rem;
+  }
+
+  .stats-card._3 {
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .stats-card._4 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .card-hero-img {
+    margin-top: 0;
+  }
+
+  .card-hero-img.set-2 {
+    width: 7.5rem;
+  }
+
+  .card-hero-img.set-3 {
+    position: absolute;
+    inset: 0.8rem auto auto 1.1rem;
+    width: 12rem;
+    margin-top: 0;
+  }
+
+  .card-hero-img.set-4 {
+    top: 1rem;
+    right: 0.8rem;
+    width: 12rem;
+  }
+
+  .card-hero-heading._2 {
+    align-self: flex-end;
+  }
+
+  .card-hero-heading._2-1 {
+    margin-top: 0.5rem;
+  }
+
+  .card-hero-desc.max-w-17 {
+    font-size: 0.875rem;
+  }
+
+  .card-gero-text-img {
+    align-items: stretch;
+  }
+
+  .shadow.vertical.small-2 {
+    top: 0%;
+  }
+}
