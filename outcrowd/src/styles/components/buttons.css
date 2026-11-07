@@ -158,3 +158,29 @@
     font-size: 1.125rem;
   }
 }
+
+/* M47 – secondary button hover: the label rolls up, the arrow leaves top-right and a copy enters */
+.btn-text-secondary,
+.icon-btn-secondary {
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.icon-btn-secondary.second-icon {
+  transform: translate(-1.5rem, 1.5rem);
+}
+
+.btn-secondary:hover .btn-text-secondary.first-txt {
+  transform: translateY(-1.3rem);
+}
+
+.btn-secondary:hover .btn-text-secondary.second-txt {
+  transform: translateY(-1.17rem);
+}
+
+.btn-secondary:hover .icon-btn-secondary.first-icon {
+  transform: translate(1.5rem, -1.5rem);
+}
+
+.btn-secondary:hover .icon-btn-secondary.second-icon {
+  transform: translate(0, 0);
+}

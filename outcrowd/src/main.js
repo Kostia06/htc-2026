@@ -13,6 +13,7 @@ import { initSplitReveal } from './modules/split-reveal.js';
 import { initCards } from './modules/cards.js';
 import { initStages } from './modules/stages.js';
 import { initServices } from './modules/services.js';
+import { initClients } from './modules/clients.js';
 
 initLotties();
 initPreloader();
@@ -27,3 +28,4 @@ initSplitReveal();
 initCards();
 initStages();
 initServices();
+initClients();

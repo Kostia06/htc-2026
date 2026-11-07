@@ -3,8 +3,9 @@
 // bottom, 1 = element bottom at the viewport top; values interpolated between keyframes).
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
 // exposed for the screenshot tooling (tools/lib/capture.mjs completes time-based tweens)
 window.gsap = gsap;
 
@@ -23,9 +24,10 @@ export const MQ = {
   tiny: '(max-width: 479px)',
 };
 
+// the original interaction easings (CSS cubic-béziers)
 export const EASE = {
-  ease: 'power1.inOut', // close to css "ease"
-  easeInOut: 'power1.inOut',
+  ease: CustomEase.create('ease', '0.25,0.1,0.25,1'),
+  easeInOut: CustomEase.create('easeInOut', '0.42,0,0.58,1'),
   outExpo: 'expo.out',
 };
 
