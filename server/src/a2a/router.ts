@@ -55,9 +55,14 @@ function requestedVersion(c: Context<AppContext>) {
   return c.req.header("A2A-Version") ?? c.req.query("A2A-Version") ?? "0.3";
 }
 
-export function a2aRouter(makeDirectory: (env: Env) => AgentDirectory) {
+type WaitUntil = (work: Promise<unknown>) => void;
+
+export function a2aRouter(makeDirectory: (env: Env, waitUntil: WaitUntil) => AgentDirectory) {
   return new Hono<AppContext>()
-    .get("/.well-known/agent-card.json", (c) => c.json(wellKnownCard(new URL(c.req.url).origin, makeDirectory(c.env).cards())))
+    .get("/.well-known/agent-card.json", (c) => {
+      const directory = makeDirectory(c.env, (work) => c.executionCtx.waitUntil(work));
+      return c.json(wellKnownCard(new URL(c.req.url).origin, directory.cards()));
+    })
     .post("/a2a", requireSession, async (c) => {
       let id: RpcId = null;
       try {
@@ -70,7 +75,8 @@ export function a2aRouter(makeDirectory: (env: Env) => AgentDirectory) {
         if (unsupported) throw unsupported;
         const handler = Object.hasOwn(METHODS, req.method) ? METHODS[req.method] : undefined;
         if (!handler) throw new RpcError(ErrorCode.methodNotFound, "Method not found");
-        const result = await handler({ req, userId: c.get("sessionId"), directory: makeDirectory(c.env), env: c.env });
+        const directory = makeDirectory(c.env, (work) => c.executionCtx.waitUntil(work));
+        const result = await handler({ req, userId: c.get("sessionId"), directory, env: c.env });
         return c.json(rpcResult(id, result));
       } catch (err) {
         if (err instanceof RpcError) return c.json(rpcError(id, err), err.httpStatus);
