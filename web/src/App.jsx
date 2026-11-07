@@ -8,8 +8,9 @@ import './auth/auth.css'
 function Account({ session }) {
   const [server, setServer] = useState('checking…')
   useEffect(() => {
-    api('/api/me')
-      .then((me) => setServer(`signed in as ${me.id} (via ${me.via})`))
+    // any protected route works as a check: 200 means the Worker accepted the Supabase token
+    api('/api/me/profile')
+      .then(() => setServer('accepted your sign-in'))
       .catch((e) => setServer(`not reachable (${e.message})`))
   }, [session.access_token])
 
