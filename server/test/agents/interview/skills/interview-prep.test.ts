@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runSkill } from "../../../../src/agents/core/harness";
+import { interviewAgent } from "../../../../src/agents/interview/agent";
 import type { CompanyInsights } from "../../../../src/agents/core/types";
 import { interviewPrep } from "../../../../src/agents/interview/skills/interview-prep";
 import { ACME, call, fakeDeps, fakeMemory, fakeServices } from "../../fakes";
@@ -24,7 +25,7 @@ const five = [
   question("Describe a conflict in a team", false),
 ];
 
-const request = (input: unknown) => ({ skill: interviewPrep, platform: "vr" as const, userId: "u1", input });
+const request = (input: unknown) => ({ skill: interviewPrep, tools: interviewAgent.tools, platform: "vr" as const, userId: "u1", input });
 
 describe("interview-prep skill", () => {
   beforeEach(async () => {

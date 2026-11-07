@@ -1,9 +1,7 @@
 import { Hono } from "hono";
-import { runSkill } from "../agents/core/harness";
 import type { AgentDeps, Platform } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
-import { interviewDebrief } from "../agents/interview/skills/interview-debrief";
-import { networkingRecap } from "../agents/interview/skills/networking-recap";
+import { orchestrate, type Task } from "../agents/orchestrator";
 import type { AppContext, Env } from "../env";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
@@ -24,13 +22,13 @@ const averageOutOfTen = (turn: StoredTurn) => {
   return values.length ? Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 2) : 5;
 };
 
-function debriefRequest(session: VoiceSession, turns: StoredTurn[], userId: string, platform: Platform) {
+function debriefTask(session: VoiceSession, turns: StoredTurn[], userId: string, platform: Platform): Task {
   const role = session.plan.role;
   if (session.mode === "networking") {
-    return { skill: networkingRecap, platform, userId, input: { role, exchanges: turns.map(({ question, answer, tip }) => ({ question, answer, tip })) } };
+    return { skillId: "networking-recap", platform, userId, input: { role, exchanges: turns.map(({ question, answer, tip }) => ({ question, answer, tip })) } };
   }
   const answers = turns.map((t) => ({ question: t.question, answer: t.answer, score: averageOutOfTen(t), feedback: t.tip }));
-  return { skill: interviewDebrief, platform, userId, input: { company: session.companySlug ?? undefined, role, answers } };
+  return { skillId: "interview-debrief", platform, userId, input: { company: session.companySlug ?? undefined, role, answers } };
 }
 
 export function voiceRouter(makeDeps: MakeDeps) {
@@ -78,7 +76,7 @@ export function voiceRouter(makeDeps: MakeDeps) {
 
     await finishSession(c.env, userId, session.id);
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
-    const run = await runSkill(makeDeps(c.env, waitUntil), debriefRequest(session, turns, userId, platform));
+    const run = await orchestrate(makeDeps(c.env, waitUntil), debriefTask(session, turns, userId, platform));
     if (run.status === "failed") return c.json({ error: "the session was saved but the debrief could not be made" }, 502);
     return c.json(run.output);
   });
