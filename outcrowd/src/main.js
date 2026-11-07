@@ -20,6 +20,7 @@ import { initBlog } from './modules/blog.js';
 import { initFaq } from './modules/faq.js';
 import { initCta } from './modules/cta.js';
 import { initCalendly } from './modules/calendly.js';
+import { initCookies } from './modules/cookies.js';
 
 initLotties();
 initPreloader();
@@ -41,3 +42,4 @@ initBlog();
 initFaq();
 initCta();
 initCalendly();
+initCookies();
