@@ -1,4 +1,5 @@
 import type { Env } from "../env";
+import { deleteExpiredPairings } from "../auth/pairing";
 import { deleteExpiredDocuments } from "../documents/store";
 
 const DAY_MS = 86_400_000;
@@ -43,5 +44,6 @@ export async function collectGarbage(env: Env, now = new Date()) {
     factsDeleted: await deleteStaleFacts(env, now),
     cacheDeleted: await deleteExpiredCache(env, now),
     documentsDeleted: await deleteExpiredDocuments(env, now),
+    pairingsDeleted: await deleteExpiredPairings(env, now),
   };
 }

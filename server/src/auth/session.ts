@@ -16,8 +16,12 @@ async function sign(id: string, secret: string) {
 }
 
 export async function issueSession(secret: string) {
-  const id = crypto.randomUUID();
-  return `${id}.${await sign(id, secret)}`;
+  return issueSessionFor(secret, crypto.randomUUID());
+}
+
+// a second device on the same account gets its own token for the same id
+export async function issueSessionFor(secret: string, userId: string) {
+  return `${userId}.${await sign(userId, secret)}`;
 }
 
 export async function verifySession(token: string, secret: string) {
