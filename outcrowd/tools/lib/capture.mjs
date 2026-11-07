@@ -207,8 +207,10 @@ export async function shoot(page) {
   await page.evaluate(() => {
     const g = window.gsap;
     if (g && g.globalTimeline) {
-      for (const t of g.globalTimeline.getChildren(true, true, false)) {
-        if (!t.scrollTrigger && !(t.vars && t.vars.scrollTrigger)) t.progress(1);
+      // top-level tweens/timelines only: children of a scroll-scrubbed timeline must not be
+      // forced to their end state (the snapshot only has top-level tweens, so it is unaffected)
+      for (const t of g.globalTimeline.getChildren(false, true, true)) {
+        if (!t.scrollTrigger && !(t.vars && t.vars.scrollTrigger) && t.repeat() !== -1) t.progress(1);
       }
     }
     window.__clock && window.__clock.freeze();

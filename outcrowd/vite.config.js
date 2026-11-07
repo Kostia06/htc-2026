@@ -33,6 +33,6 @@ function htmlPartials() {
 
 export default defineConfig({
   plugins: [htmlPartials()],
-  server: { port: 5173, strictPort: true },
+  server: { port: 5180, strictPort: true },
   preview: { port: 4173, strictPort: true },
 });

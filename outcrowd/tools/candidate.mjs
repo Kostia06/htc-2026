@@ -2,7 +2,7 @@
 // Capture the rebuilt page exactly like tools/reference.mjs captures the snapshot, then
 // pixel-compare every section against .compare/reference/<width>/.
 //
-// usage: node tools/candidate.mjs [--url=http://localhost:5173/] [--widths=1440,991,390]
+// usage: node tools/candidate.mjs [--url=http://localhost:5180/] [--widths=1440,991,390]
 //                                 [--only=02-hero,03-cards] [--no-full]
 // output: .compare/candidate/<w>/{full.png,sections/*.png,meta.json}
 //         .compare/diff/<w>/{full.png,sections/*.png}  (red = differing pixels)
@@ -21,7 +21,7 @@ const args = Object.fromEntries(
     return [k, v ?? true];
   }),
 );
-const URL_ = args.url || 'http://localhost:5173/';
+const URL_ = args.url || 'http://localhost:5180/';
 const WIDTHS = String(args.widths || '1440,991,390').split(',').map(Number);
 const ONLY = args.only ? String(args.only).split(',') : null;
 
