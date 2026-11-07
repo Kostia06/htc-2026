@@ -7,7 +7,8 @@ Hack the Change 2026. Read this before your first commit.
 | Folder | What lives there | Language |
 |---|---|---|
 | `server/` | Cloudflare Worker: API, research agent, memory, interview scoring | TypeScript |
-| `web/` | React app (Vite): roadmap map, company pages, voice interview, VR scene | JavaScript/TypeScript |
+| `web/` | React app (Vite): roadmap map, company pages, voice interview | JavaScript/TypeScript |
+| `vr/` | WebXR interview scene for Meta Quest 3 | JavaScript/TypeScript |
 | `ios/` | iPhone app | Swift |
 | `scripts/` | One-off data ingest and seeding | TypeScript |
 | `docs/` | Design, plan, AI usage log | Markdown |
