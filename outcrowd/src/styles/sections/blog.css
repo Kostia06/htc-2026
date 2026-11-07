@@ -16,7 +16,7 @@
   height: 194px;
   opacity: 0;
   pointer-events: none;
-  background: url('/images/6659972c205cb2b2fe65ae77_cursor-purple.svg') center / cover;
+  background: none;
   transform: translate(-53%, -53%);
   transition: opacity 0.3s ease;
 }
@@ -56,7 +56,7 @@
   width: 39.7222rem;
   height: 41.6667rem;
   border-radius: 1.67rem;
-  background: url('/images/66d85d9253d649394bcb206a_image.png') 50% / cover;
+  background: radial-gradient(60% 50% at 30% 30%, rgba(138, 92, 255, 0.35), transparent 70%), radial-gradient(50% 45% at 75% 75%, rgba(254, 74, 35, 0.28), transparent 70%), var(--surface-2);
 }
 
 .feature-img {

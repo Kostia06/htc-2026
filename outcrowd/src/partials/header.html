@@ -1,98 +1,65 @@
-<img class="light" data-fade-in src="/images/66c5abcb1c03eb30625c251c_Group.webp" alt="" sizes="(max-width: 2804px) 100vw, 2804px" loading="lazy" srcset="/images/66c5abcb1c03eb30625c251c_Group-p-500.webp 500w, /images/66c5abcb1c03eb30625c251c_Group-p-800.webp 800w, /images/66c5abcb1c03eb30625c251c_Group-p-1080.webp 1080w, /images/66c5abcb1c03eb30625c251c_Group-p-1600.webp 1600w, /images/66c5abcb1c03eb30625c251c_Group-p-2000.webp 2000w, /images/66c5abcb1c03eb30625c251c_Group-p-2600.webp 2600w, /images/66c5abcb1c03eb30625c251c_Group.webp 2804w">
+<div class="light-glow" data-fade-in aria-hidden="true"></div>
 <div class="nav-wrap" data-fade-in>
   <header class="header-new" data-section="header">
     <div class="header-wrapper">
-      <nav class="nav-new">
-        <a class="logo-nav" internal-link href="/" aria-current="page">
-          <div class="logo-white" data-lottie="/lottie/66bdefa0a9bf14b3cb560686_logo%20white.json"></div>
-          <div class="logo-black" data-lottie="/lottie/66bdf91fdd174c6bcc01dcce_logo%20dark.json"></div>
+      <nav class="nav-new" aria-label="Main">
+        <a class="logo-nav" href="#" aria-label="{{ nav.homeLabel }}">
+          <span class="logo-white wordmark" aria-hidden="true">{{ wordmark }}</span>
+          <span class="logo-black wordmark" aria-hidden="true">{{ wordmark }}</span>
         </a>
         <div class="nav-link-wrap nav-menu">
-          <a class="footer-link" internal-link href="/cases">
+          <a class="footer-link" href="{{ nav.items.0.href }}">
             <div class="footer-flip-hover">
-              <div class="footer-nav-link nav">Cases</div>
-              <div class="footer-nav-link hover">Cases</div>
+              <div class="footer-nav-link nav">{{ nav.items.0.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.0.label }}</div>
             </div>
           </a>
-          <a class="footer-link" internal-link href="/services">
+          <a class="footer-link" href="{{ nav.items.1.href }}">
             <div class="footer-flip-hover">
-              <div class="footer-nav-link nav">Service</div>
-              <div class="footer-nav-link hover">Service</div>
+              <div class="footer-nav-link nav">{{ nav.items.1.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.1.label }}</div>
             </div>
           </a>
-          <a class="footer-link" internal-link href="/blog">
+          <a class="footer-link" href="{{ nav.items.2.href }}">
             <div class="footer-flip-hover">
-              <div class="footer-nav-link nav">Blog</div>
-              <div class="footer-nav-link hover">Blog</div>
+              <div class="footer-nav-link nav">{{ nav.items.2.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.2.label }}</div>
             </div>
           </a>
-          <a class="footer-link" internal-link href="/about-us">
+          <a class="footer-link" href="{{ nav.items.3.href }}">
             <div class="footer-flip-hover">
-              <div class="footer-nav-link nav">About us</div>
-              <div class="footer-nav-link hover">About us</div>
+              <div class="footer-nav-link nav">{{ nav.items.3.label }}</div>
+              <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.3.label }}</div>
             </div>
           </a>
         </div>
         <div class="header-btn-wrap">
-          <div class="nav_link-c contact grey">
-            <div class="btn-text opacity-90">Book a call</div>
+          <a class="nav_link-c contact grey" href="{{ links.login }}">
+            <div class="btn-text opacity-90">{{ nav.secondary }}</div>
             <div class="explode violet"></div>
-            <a class="book_a_call" href="" data-calendly="https://calendly.com/vlad-outcrowd/introductory-call-outcrowd-team?hide_gdpr_banner=1"></a>
-          </div>
-          <a class="nav_link-c contact" internal-link href="/contact-us">
-            <div class="btn-text opacity-90">Contact</div>
+          </a>
+          <a class="nav_link-c contact" href="{{ links.app }}">
+            <div class="btn-text opacity-90">{{ nav.primary }}</div>
             <div class="explode violet"></div>
           </a>
         </div>
-        <div class="burger-wrap">
-          <div class="burger-line first"></div>
-          <div class="burger-line second"></div>
-        </div>
+        <button class="burger-wrap" type="button" aria-label="{{ nav.menuLabel }}" aria-expanded="false" aria-controls="mob-menu">
+          <span class="burger-line first"></span>
+          <span class="burger-line second"></span>
+        </button>
       </nav>
-      <div class="mob-menu">
+      <div class="mob-menu" id="mob-menu">
         <div class="zero-block"></div>
         <div class="mob-nav-block">
-          <a class="mob-nav-link" href="/cases">Cases</a>
-          <a class="mob-nav-link" href="/services">Service</a>
-          <a class="mob-nav-link" href="/blog">Blog</a>
-          <a class="mob-nav-link" href="/about-us">About us</a>
+          <a class="mob-nav-link" href="{{ nav.items.0.href }}">{{ nav.items.0.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.1.href }}">{{ nav.items.1.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.2.href }}">{{ nav.items.2.label }}</a>
+          <a class="mob-nav-link" href="{{ nav.items.3.href }}">{{ nav.items.3.label }}</a>
         </div>
         <div class="mob-social-block">
-          <a class="mail-link" href="mailto:hello@outcrowd.io">hello@outcrowd.io</a>
-          <div class="social-link-list">
-            <a class="social-footer-wrap" href="#">
-              <div class="social-footer">
-                <img class="icon-footer set-1" src="/images/66a6043f15171cfef875605c_dribbble-icon%201.svg" loading="lazy" alt="">
-                <div class="explode _400"></div>
-              </div>
-            </a>
-            <a class="social-footer-wrap" href="#">
-              <div class="social-footer">
-                <img class="icon-footer set-2" src="/images/66a60440bb21735987e1a061_Vector.svg" loading="lazy" alt="">
-                <div class="explode _400"></div>
-              </div>
-            </a>
-            <a class="social-footer-wrap" href="#">
-              <div class="social-footer">
-                <img class="icon-footer set-2" src="/images/66a6043fe2f6b52ee7d1d12a_ph_instagram-logo-fill.svg" loading="lazy" alt="">
-                <div class="explode _400"></div>
-              </div>
-            </a>
-            <a class="social-footer-wrap" href="#">
-              <div class="social-footer">
-                <img class="icon-footer set-1" src="/images/66a6043f6f3bdb0490b33e85_Social%20Icons.svg" loading="lazy" alt="">
-                <div class="explode _400"></div>
-              </div>
-            </a>
-            <a class="social-footer-wrap" href="#">
-              <div class="social-footer">
-                <img class="icon-footer set-3" src="/images/66a6043f8b939a6f0fde8e05_Vector-1.svg" loading="lazy" alt="">
-                <div class="explode _400"></div>
-              </div>
-            </a>
-          </div>
-          <a class="nav_link-c contact mob" href="/contact-us">
-            <div class="btn-text opacity-90">Contact</div>
+          <a class="mail-link" href="mailto:{{ links.email }}">{{ links.email }}</a>
+          <a class="nav_link-c contact mob" href="{{ links.app }}">
+            <div class="btn-text opacity-90">{{ nav.primary }}</div>
             <div class="explode violet"></div>
           </a>
         </div>

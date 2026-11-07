@@ -3,20 +3,9 @@
 //   M36 heading mask on mobile
 //   M37 glowing card borders
 //   M38 spotlight that follows the mouse over the cards
-//   M39 card lotties played in loops once visible
-//   M40 Brand Visual logos cross-fade to their coloured versions
-import { gsap, scrollKeyframes, onceInView, MQ, EASE } from './motion.js';
-import { getLottie, lottieLoop } from './lottie.js';
+import { gsap, scrollKeyframes, MQ } from './motion.js';
 import { borderLoop } from './glow-loop.js';
 import { maskOnView } from './reveal-mask.js';
-
-const LOTTIE_LOOPS = [
-  // [card selector, lottie selector, steps]
-  ['.service-card.set-1', '.brand-lottie', [[100, 6.23], [0, 0, 0.3], [100, 6.23], [0, 0, 0.3]]],
-  ['.service-card.set-2', '.platform-lottie', [[100, 2.57], [0, 0, 0.3], [100, 2.57], [0, 0]]],
-  ['.service-card.set-5', '.web-lottie', [[100, 4.47], [0, 0], [100, 4.47], [0, 0]]],
-  ['.service-card.set-6', '.brand-lottie._2', [[93, 3.47], [0, 0], [97, 3.47], [0, 0]]],
-];
 
 export function initServices() {
   const section = document.querySelector('.section.is-cases');
@@ -57,27 +46,4 @@ export function initServices() {
       card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
     }
   });
-
-  // M39
-  for (const [cardSel, lottieSel, steps] of LOTTIE_LOOPS) {
-    const card = section.querySelector(cardSel);
-    const anim = getLottie(card?.querySelector(lottieSel));
-    if (!anim) continue;
-    const tl = lottieLoop(anim, steps, gsap);
-    onceInView(card, () => tl.play());
-  }
-
-  // M40
-  const brand = section.querySelector('.service-card.set-4');
-  if (brand) {
-    const a = brand.querySelectorAll('.brand-item-img.abs.set-1');
-    const b = brand.querySelectorAll('.brand-item-img.abs.set-2');
-    const ease = EASE.ease;
-    const tl = gsap.timeline({ repeat: -1, paused: true });
-    tl.to(a, { opacity: 1, duration: 1.2, delay: 0.7, ease }, 0)
-      .to(b, { opacity: 0, duration: 1, delay: 0.7, ease }, 0)
-      .to(b, { opacity: 1, duration: 1.2, delay: 0.7, ease }, 1.9)
-      .to(a, { opacity: 0, duration: 1, delay: 0.7, ease }, 1.9);
-    onceInView(brand, () => tl.play());
-  }
 }

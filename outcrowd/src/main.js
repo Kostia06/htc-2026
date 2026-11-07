@@ -1,12 +1,10 @@
 import './styles/main.css';
 
-import { initLotties } from './modules/lottie.js';
 import { initPreloader } from './modules/preloader.js';
 import { initSmoothScroll } from './modules/smooth-scroll.js';
 import { initNavTheme } from './modules/nav-theme.js';
 import { initNavCollapse } from './modules/nav-collapse.js';
 import { initBurger } from './modules/burger.js';
-import { initNavLogo } from './modules/nav-logo.js';
 import { initExplode } from './modules/explode.js';
 import { initMagnetic } from './modules/magnetic.js';
 import { initHero } from './modules/hero.js';
@@ -20,16 +18,12 @@ import { initAwards } from './modules/awards.js';
 import { initBlog } from './modules/blog.js';
 import { initFaq } from './modules/faq.js';
 import { initCta } from './modules/cta.js';
-import { initCalendly } from './modules/calendly.js';
-import { initCookies } from './modules/cookies.js';
 
-initLotties();
 initPreloader();
 initSmoothScroll();
 initNavTheme();
 initNavCollapse();
 initBurger();
-initNavLogo();
 initExplode();
 initMagnetic();
 initHero();
@@ -43,5 +37,3 @@ initAwards();
 initBlog();
 initFaq();
 initCta();
-initCalendly();
-initCookies();

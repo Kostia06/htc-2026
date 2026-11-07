@@ -13,6 +13,7 @@ export function initBurger() {
 
   burger.addEventListener('click', () => {
     open = !open;
+    burger.setAttribute('aria-expanded', String(open));
     const ease = EASE.ease;
     if (open) {
       gsap.to(second, { rotation: -45, x: '-0.5rem', y: '-0.3rem', duration: 0.5, ease });

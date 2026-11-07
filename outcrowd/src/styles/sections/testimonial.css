@@ -1,5 +1,5 @@
-/* Testimonials (white): "Clients speak out about us on Clutch" heading that morphs into the
-   Clutch logo while scrolling, and a free-flowing slider of reviews (modules/testimonial.js). */
+/* "Why not just apply?" (white): centred heading and a free-flowing slider of
+   instead-of / do-this cards (modules/testimonial.js). */
 
 .section.is-testimonial {
   padding-top: 6rem;
@@ -61,44 +61,10 @@
   margin-top: 0.625rem;
 }
 
-.icon-clutch-full {
-  position: relative;
-  display: flex;
-  flex: 0 0 auto;
-  width: 4.5rem;
-  height: 5.3rem;
-  margin-left: 0.375rem;
-  overflow: hidden;
-  opacity: 1;
-}
 
-.icon-clutch-small {
-  position: relative;
-  width: 4.305rem;
-  margin-top: 0.25rem;
-}
 
-.icon-clutch-full-icon {
-  position: absolute;
-  left: 0;
-  flex: 0 0 auto;
-  width: 16.3rem;
-  max-width: none;
-  height: 5.2777rem;
-  opacity: 0;
-  object-fit: cover;
-  pointer-events: none;
-}
 
-.icon-clutch-full,
-.icon-clutch-small,
-.icon-clutch-full-icon {
-  transition: all 0.7s ease;
-}
 
-.clutch-mob {
-  display: none;
-}
 
 /* --- slider (no Swiper stylesheet on purpose: slides run past the container edge) --- */
 .swiper-wrapper {
@@ -166,7 +132,7 @@
   line-height: 136%;
 }
 
-.btn-secondary.clutch {
+.btn-secondary.why-cta {
   max-width: 17rem;
   margin: 6rem auto 0;
   color: var(--bg);
@@ -202,15 +168,7 @@
     width: 12rem;
   }
 
-  .icon-clutch-full {
-    display: none;
-  }
 
-  .clutch-mob {
-    display: block;
-    width: 7.59869rem;
-    margin-top: 0.5rem;
-  }
 
   .swiper-slide {
     gap: 2.5rem;
@@ -250,7 +208,7 @@
     font-size: 1.125rem;
   }
 
-  .btn-secondary.clutch {
+  .btn-secondary.why-cta {
     max-width: 12.7rem;
     margin-top: 2rem;
   }

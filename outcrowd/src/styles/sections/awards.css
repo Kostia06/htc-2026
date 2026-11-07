@@ -20,7 +20,7 @@
   opacity: 0;
   filter: blur(16px);
   pointer-events: none;
-  background: url('/images/6683c7e3efd826051f6bcb2c_Rectangle%2034624960.svg') 50% 0 / auto;
+  background: radial-gradient(closest-side, var(--bg) 70%, transparent) 50% 0 / 100% 100% no-repeat;
   transform: translate(-5%, 29vh);
 }
 

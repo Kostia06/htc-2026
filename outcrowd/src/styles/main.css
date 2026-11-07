@@ -26,4 +26,6 @@
 @import './sections/cta.css';
 @import './sections/book-call.css';
 @import './sections/footer.css';
-@import './sections/cookies.css';
+
+/* Raven: product mock-ups, wordmark and copy tweaks layered on the shared layout */
+@import './components/raven.css';
