@@ -11,6 +11,7 @@ import { initMagnetic } from './modules/magnetic.js';
 import { initHero } from './modules/hero.js';
 import { initSplitReveal } from './modules/split-reveal.js';
 import { initCards } from './modules/cards.js';
+import { initStages } from './modules/stages.js';
 
 initLotties();
 initPreloader();
@@ -23,3 +24,4 @@ initMagnetic();
 initHero();
 initSplitReveal();
 initCards();
+initStages();

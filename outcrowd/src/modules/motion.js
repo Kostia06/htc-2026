@@ -42,6 +42,7 @@ export function scrollKeyframes(trigger, frames, { scrub = 0.15, start = 'top bo
     scrollTrigger: { trigger, start, end, scrub, invalidateOnRefresh: true },
   });
   const tracks = new Map(); // key: target + prop → [{p, v, ease}]
+  // string targets are looked up inside the trigger (like the original "children" targets)
   const targetsOf = (t) => (typeof t === 'string' ? gsap.utils.toArray(trigger.querySelectorAll(t)) : gsap.utils.toArray(t));
   for (const [t, p, props, ease] of frames) {
     for (const el of targetsOf(t)) {
