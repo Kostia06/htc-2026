@@ -5,7 +5,7 @@ import { tools } from "../../../src/agents/tools";
 
 describe("skill registry", () => {
   it("has every skill, keyed by name", () => {
-    expect(Object.keys(skills).sort()).toEqual(["career-snapshot", "interview-debrief", "interview-prep", "profile-intake", "recommend-courses", "recommend-jobs", "recommend-research", "research-company"]);
+    expect(Object.keys(skills).sort()).toEqual(["career-snapshot", "interview-debrief", "interview-intel", "interview-prep", "profile-intake", "recommend-courses", "recommend-jobs", "recommend-research", "research-company"]);
     for (const [key, skill] of Object.entries(skills)) expect(skill.name).toBe(key);
   });
 
