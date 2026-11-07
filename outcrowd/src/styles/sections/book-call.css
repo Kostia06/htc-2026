@@ -1,0 +1,71 @@
+/* Floating "Book a call" pill, fixed bottom-right. */
+
+.contact-book-a-call {
+  position: absolute;
+  inset: auto 1.67rem 0 auto;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 13.75rem;
+  height: 4.72222rem;
+  border-radius: 6.94rem;
+  background-color: var(--purple);
+  cursor: pointer;
+}
+
+.contact-book-a-call.home {
+  position: fixed;
+  inset: auto 1.1rem 1.1rem auto;
+}
+
+.btn-book-text-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.2rem;
+}
+
+.btn-book-text {
+  padding-top: 0.2rem;
+  color: var(--white);
+  font-size: 1.25rem;
+}
+
+.arrow {
+  width: 1.66667rem;
+}
+
+@media screen and (max-width: 991px) {
+  .contact-book-a-call {
+    bottom: 5rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .contact-book-a-call {
+    width: 11.125rem;
+    height: 4rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-book-a-call:not(.home) {
+    position: relative;
+    bottom: 0;
+    right: 0;
+  }
+
+  .btn-book-text {
+    font-size: 0.875rem;
+  }
+
+  .btn-book-text-wrap {
+    gap: 0.5rem;
+  }
+
+  .arrow {
+    width: 1.5rem;
+  }
+}
