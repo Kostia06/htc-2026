@@ -13,10 +13,13 @@ import { research } from "./api/research";
 import { session } from "./api/session";
 import { requireSession } from "./auth/session";
 import type { AppContext, Env } from "./env";
+import { corsForApi } from "./lib/cors";
 import { collectGarbage } from "./memory/gc";
 
 const app = new Hono<AppContext>();
 
+// before the session check, so preflights are answered without a token
+app.use("/api/*", corsForApi);
 app.use("/api/*", async (c, next) => {
   // pairing checks its own session: the headset asking for a code has none yet
   if (c.req.path === "/api/session" || c.req.path.startsWith("/api/pairing")) return next();
