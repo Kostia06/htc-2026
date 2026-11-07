@@ -29,4 +29,12 @@ describe("wiring", () => {
     expect(res.status).toBe(404);
     expect(await res.json()).toHaveProperty("error");
   });
+  it("mounts the public A2A card and the signed-in A2A endpoint", async () => {
+    const res = await app.request("/.well-known/agent-card.json", {}, env);
+    expect(res.status).toBe(200);
+    const card = await res.json<{ name: string; skills: { id: string }[] }>();
+    expect(card.name).toBe("Raven");
+    expect(card.skills.map((s) => s.id)).toContain("career-snapshot");
+    expect((await app.request("/a2a", { method: "POST", body: "{}" }, env)).status).toBe(401);
+  });
 });

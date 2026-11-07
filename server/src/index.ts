@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { agentDirectory } from "./a2a/agent-directory";
+import { a2aRouter } from "./a2a/router";
 import { researchTracked } from "./agents/background";
 import { liveDeps } from "./agents/live";
 import { agent } from "./api/agent";
@@ -36,6 +38,8 @@ app.route("/api/onboarding", onboarding);
 app.route("/api/pairing", pairing);
 app.route("/api/voice", voice);
 app.route("/api/agent", agent);
+// outside the /api CORS and session middleware: the card is public and /a2a checks its own session
+app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));
 
 export default {
   fetch: app.fetch,
