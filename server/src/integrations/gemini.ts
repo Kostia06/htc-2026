@@ -5,10 +5,12 @@ const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 export type GeminiPart = { text?: string; functionCall?: { name: string; args: Record<string, unknown> }; functionResponse?: { name: string; response: unknown } };
 export type GeminiContent = { role: "user" | "model"; parts: GeminiPart[] };
 
-// 503 means Google is overloaded and 429 means we hit the rate limit; both pass within seconds, a bad request never does
-const RETRYABLE = new Set([429, 503]);
+// only an overload (503) is worth retrying on the same model: it clears in seconds.
+// A spent quota (429) or a model too slow to answer will not, so those go straight to the fallback.
+const OVERLOADED = 503;
+const QUOTA_SPENT = 429;
 const TIMED_OUT = 504;
-export const retry = { delaysMs: [800, 2500], timeoutMs: 45_000 };
+export const retry = { delaysMs: [800, 2500], timeoutMs: 30_000 };
 
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,12 +28,12 @@ async function post(env: Env, model: string, body: Record<string, unknown>): Pro
   }
 }
 
-const isBusy = (res: Response) => RETRYABLE.has(res.status) || res.status === TIMED_OUT;
+const isUnavailable = (res: Response) => [OVERLOADED, QUOTA_SPENT, TIMED_OUT].includes(res.status);
 
 async function postWithRetries(env: Env, model: string, body: Record<string, unknown>) {
   let res = await post(env, model, body);
   for (const delay of retry.delaysMs) {
-    if (!isBusy(res)) break;
+    if (res.status !== OVERLOADED) break;
     await pause(delay);
     res = await post(env, model, body);
   }
@@ -40,8 +42,8 @@ async function postWithRetries(env: Env, model: string, body: Record<string, unk
 
 export async function generate(env: Env, body: Record<string, unknown>) {
   let res = await postWithRetries(env, env.GEMINI_MODEL, body);
-  // a busy main model should slow the demo down, not stop it
-  if (isBusy(res) && env.GEMINI_FALLBACK_MODEL) res = await postWithRetries(env, env.GEMINI_FALLBACK_MODEL, body);
+  // an unavailable main model should slow the demo down, not stop it
+  if (isUnavailable(res) && env.GEMINI_FALLBACK_MODEL) res = await postWithRetries(env, env.GEMINI_FALLBACK_MODEL, body);
   if (!res.ok) throw new Error(`gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const json = await res.json<{ candidates?: { content?: GeminiContent }[] }>();
   const content = json.candidates?.[0]?.content;
