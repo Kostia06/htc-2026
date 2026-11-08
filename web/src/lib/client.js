@@ -167,6 +167,25 @@ export const resumeApi = {
   },
 }
 
+export const notificationsApi = {
+  // Load notifications and unread count
+  page: (cursor) =>
+      request('/api/notifications', {
+        query: {
+          cursor,
+          tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      }),
+
+  // Mark selected notifications as read
+  read: (ids) =>
+      post('/api/notifications/read', { ids }),
+
+  // Mark all notifications as read
+  readAll: () =>
+      post('/api/notifications/read', { all: true }),
+}
+
 /** { reply, needsAnswer, applied: [{ type, summary }] } */
 export const sendUpdate = (message, conversation) => post('/api/updates', { message, conversation })
 
