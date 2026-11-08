@@ -10,12 +10,18 @@ struct RoadmapView: View {
     @State private var pending: PracticeLaunch?
     @State private var practice: PracticeLaunch?
     @State private var lastPractice: PracticeLaunch?
+    @State private var exploring = false
 
     var body: some View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.ground)
+                .navigationDestination(isPresented: $exploring) { CrossroadsView() }
+        }
+        // opening Crossroads finishes its step on the server, so the road is fetched again on the way back
+        .onChange(of: exploring) { _, open in
+            if !open { Task { await model?.load() } }
         }
         // the cover goes up once the picker is fully gone; iOS drops one presented while a sheet is closing
         .sheet(item: $picking, onDismiss: launchPending) { pick in
@@ -60,6 +66,10 @@ struct RoadmapView: View {
     /// Asks what the interview is for first, preset to what the step says; "Practice again" skips the asking.
     private func startPractice(_ step: RoadmapStep) {
         guard let action = step.action else { return }
+        if action.type == .crossroads {
+            exploring = true
+            return
+        }
         if let last = lastPractice, last.step.id == step.id {
             // the summary is on screen, so the first run already counts before the second one starts
             recordIfFinished(last)
