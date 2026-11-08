@@ -30,7 +30,8 @@ function write(key, value) {
 }
 
 export function useComfort(inXR) {
-  const [posture, setPostureState] = useState(() => (read(POSTURE_KEY, 'seated') === 'standing' ? 'standing' : 'seated'))
+  // the interview is always seated; a standing choice saved by an older build is ignored
+  const [posture, setPostureState] = useState('seated')
   const [offset, setOffset] = useState(() => {
     const saved = Number(read(HEIGHT_KEY, '0'))
     return Number.isFinite(saved) ? saved : 0

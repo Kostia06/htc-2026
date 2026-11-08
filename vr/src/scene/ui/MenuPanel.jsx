@@ -34,8 +34,6 @@ export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, hints
 
         {inXR && (
           <group position={[left, top - 0.13, 0.003]}>
-            <Segment label="Seated" selected={posture === 'seated'} onPress={() => onPosture('seated')} x={0.065} reducedMotion={reducedMotion} />
-            <Segment label="Standing" selected={posture === 'standing'} onPress={() => onPosture('standing')} x={0.21} reducedMotion={reducedMotion} />
             <RaisedButton label="Recenter" tone="secondary" variant="subhead" width={0.14} height={0.056} onPress={onRecenter} reducedMotion={reducedMotion} position={[inner - 0.07, 0, 0]} />
             {/* talking points beside the desk during the interview; off by default */}
             <RaisedButton
@@ -76,18 +74,3 @@ export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, hints
   )
 }
 
-function Segment({ label, selected, onPress, x, reducedMotion }) {
-  return (
-    <RaisedButton
-      label={label}
-      tone={selected ? 'action' : 'chip'}
-      variant="subhead"
-      width={0.13}
-      height={0.056}
-      radius={0.028}
-      onPress={onPress}
-      reducedMotion={reducedMotion}
-      position={[x, 0, 0]}
-    />
-  )
-}
