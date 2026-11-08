@@ -1,6 +1,6 @@
 # A2A endpoint
 
-Exposes Raven's internal agents to outside agents over the [A2A protocol v1.0](https://a2a-protocol.org/latest/specification/) (JSON-RPC binding). `a2aRouter(makeDirectory)` serves:
+Exposes Skillit's internal agents to outside agents over the [A2A protocol v1.0](https://a2a-protocol.org/latest/specification/) (JSON-RPC binding). `a2aRouter(makeDirectory)` serves:
 
 - `GET /.well-known/agent-card.json` — public card; one A2A skill per internal skill, tagged with its agent.
 - `POST /a2a` — signed in with the same `Authorization: Bearer` token as `/api/*`; the user is always the session's, never the body's. Send `A2A-Version: 1.0`.

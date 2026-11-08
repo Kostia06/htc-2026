@@ -33,7 +33,7 @@ async function isRateLimited(env: Env, userId: string, limit: number) {
   return (row?.n ?? 0) >= limit;
 }
 
-/** /api/postings: a job posting the person is preparing for, read from a link or pasted text, and what Raven set up from it. */
+/** /api/postings: a job posting the person is preparing for, read from a link or pasted text, and what Skillit set up from it. */
 export function postingsRouter(makeDeps: MakeDeps, options: Options = {}) {
   const router = new Hono<AppContext>();
 

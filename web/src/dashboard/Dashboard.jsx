@@ -53,7 +53,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
           placeholder="e.g. junior data analyst in Calgary"
           initial={[roles.join(' or '), answers.where].filter(Boolean).join(', ') || undefined}
           intro="Real postings, each checked against your profile. Every requirement is quoted from the posting, so you can see exactly why it got its label."
-          empty="No postings Raven could check came up. Try a broader search."
+          empty="No postings Skillit could check came up. Try a broader search."
           onPractise={(title) => {
             setPracticePreset({ role: title, key: Date.now() })
             go('practice')
@@ -78,7 +78,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
           placeholder="e.g. machine learning"
           initial={answers.school?.program || role || undefined}
           intro="University of Calgary courses for your goals, checked against their prerequisites and antirequisites."
-          empty="No courses Raven could check came up. Try another topic."
+          empty="No courses Skillit could check came up. Try another topic."
         />
       ),
     },
@@ -99,7 +99,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
           placeholder="e.g. human-computer interaction"
           initial={answers.school?.program || undefined}
           intro="Undergraduate research routes at the University of Calgary: UREX, USRA and labs that take students."
-          empty="Nothing Raven could check came up. Try another area."
+          empty="Nothing Skillit could check came up. Try another area."
         />
       ),
     },
@@ -143,7 +143,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   return (
     <div className="db">
       <header className="db__bar">
-        <span className="db__logo">raven</span>
+        <span className="db__logo">skillit</span>
         <nav className="db__nav" aria-label="Sections">
           {inNav.map((t) => (
             <button key={t.id} type="button" className={`db__tab${navOn(t.id) ? ' is-on' : ''}`} aria-current={navOn(t.id) ? 'page' : undefined} onClick={() => go(t.id)}>

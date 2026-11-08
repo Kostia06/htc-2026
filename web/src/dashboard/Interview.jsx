@@ -22,7 +22,7 @@ function CompanyRole({ company, setCompany, role, setRole, companyRequired, idPr
 }
 
 const unknownCompany = (error, company) =>
-  error?.status === 404 ? { message: `Raven doesn't have interview notes for "${company}" yet. Check the spelling, or leave it blank for general questions` } : error
+  error?.status === 404 ? { message: `Skillit doesn't have interview notes for "${company}" yet. Check the spelling, or leave it blank for general questions` } : error
 
 /** interview-prep: five questions for one company, weighted toward this person's weak spots. */
 export function InterviewPrep({ userId, stamp, defaultRole, onPractice }) {
@@ -48,13 +48,13 @@ export function InterviewPrep({ userId, stamp, defaultRole, onPractice }) {
       </form>
 
       <section className="pg__main" aria-label="Questions to prepare">
-        {busy && <Thinking>Raven is reading what candidates report and what it knows about you…</Thinking>}
+        {busy && <Thinking>Skillit is reading what candidates report and what it knows about you…</Thinking>}
         <Problem error={state.status === 'error' && unknownCompany(state.error, company)} onRetry={state.error?.status === 404 ? null : prepare} />
 
         {!output && !busy && (
           <div className="pg__card pg__card--dashed">
             <h2>Name a company to start</h2>
-            <p className="pg__muted">Raven picks five questions, starting with ones real candidates were asked there, then fills in with your weak spots.</p>
+            <p className="pg__muted">Skillit picks five questions, starting with ones real candidates were asked there, then fills in with your weak spots.</p>
           </div>
         )}
 
@@ -202,7 +202,7 @@ export function Practice({ defaultRole, preset }) {
         {!session && !debrief && (
           <div className="pg__card pg__card--dashed">
             <h2>A mock interview you answer by typing</h2>
-            <p className="pg__muted">Raven asks questions planned from your profile (and the company, if you name one), scores each answer and debriefs you at the end.</p>
+            <p className="pg__muted">Skillit asks questions planned from your profile (and the company, if you name one), scores each answer and debriefs you at the end.</p>
           </div>
         )}
 
@@ -213,7 +213,7 @@ export function Practice({ defaultRole, preset }) {
             <span className="pg__label">Before the real one</span>
             <Steps items={debrief.prepList} />
             {debrief.savedToMemory > 0 && (
-              <p className="pg__label">Raven noted {debrief.savedToMemory} pattern{debrief.savedToMemory === 1 ? '' : 's'} to work on next time. See them under You.</p>
+              <p className="pg__label">Skillit noted {debrief.savedToMemory} pattern{debrief.savedToMemory === 1 ? '' : 's'} to work on next time. See them under You.</p>
             )}
             <button type="button" className="ob__next db__start" onClick={reset}>Practise again</button>
           </div>
@@ -260,7 +260,7 @@ export function Practice({ defaultRole, preset }) {
             </form>
 
             {answered && <Scores result={answered} n={index + 1} />}
-            {busy === 'finish' && <Thinking>Raven is looking for patterns across your answers…</Thinking>}
+            {busy === 'finish' && <Thinking>Skillit is looking for patterns across your answers…</Thinking>}
           </>
         )}
         <Problem error={error} />

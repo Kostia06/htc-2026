@@ -97,7 +97,7 @@ describe("POST /api/postings", () => {
     expect(goal).toContain("Junior Data Analyst at Acme Analytics");
   });
 
-  it("reuses a company Raven already knows instead of making a second one", async () => {
+  it("reuses a company Skillit already knows instead of making a second one", async () => {
     await env.DB.prepare("INSERT INTO companies (id, slug, name) VALUES ('c1', 'acme-analytics', 'ACME Analytics Ltd')").run();
     const me = await person();
     const { app } = postingsApp([extracted()]);

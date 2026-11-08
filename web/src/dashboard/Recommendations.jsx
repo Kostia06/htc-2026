@@ -33,7 +33,7 @@ function Item({ item, open, onToggle, onPractise }) {
   const reqs = [
     ...(item.matched ?? []).map((m) => ({ mark: '✓', kind: 'met', text: m.requirement, note: m.evidence ? `From your profile: ${m.evidence}` : 'Matches your profile.' })),
     ...(item.missing ?? []).map((m) => ({ mark: '–', kind: 'missing', text: m.requirement, note: m.kind === 'hard' ? 'Must have, and not on your profile yet.' : 'Not on your profile yet.' })),
-    ...(item.unknown ?? []).map((m) => ({ mark: '·', kind: 'unknown', text: m.requirement, note: "Raven couldn't check this one against your profile." })),
+    ...(item.unknown ?? []).map((m) => ({ mark: '·', kind: 'unknown', text: m.requirement, note: "Skillit couldn't check this one against your profile." })),
   ]
 
   return (
@@ -115,14 +115,14 @@ export default function Recommendations({ userId, stamp, skill, field, heading, 
 
       <div className="pg__grid">
         <section className="pg__main" aria-label="Results">
-          {busy && <Thinking>Raven is finding and checking options for you…</Thinking>}
+          {busy && <Thinking>Skillit is finding and checking options for you…</Thinking>}
           <Problem error={state.status === 'error' && state.error} onRetry={search} />
 
           {output && !busy && (
             <>
               {output.question && (
                 <div className="jb__ask">
-                  <span className="pg__label">Raven needs to know</span>
+                  <span className="pg__label">Skillit needs to know</span>
                   <p>{output.question}</p>
                 </div>
               )}

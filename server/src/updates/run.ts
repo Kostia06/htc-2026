@@ -15,7 +15,7 @@ const MAX_STEPS = 40;
 
 type UpdateTurn = { userId: string; messages: UpdateMessage[]; timeoutMs?: number; waitUntil?: (work: Promise<unknown>) => void };
 
-/** One question per update: once Raven has replied to what the person said, there is none left. */
+/** One question per update: once Skillit has replied to what the person said, there is none left. */
 export const canStillAsk = (messages: UpdateMessage[]) => {
   const firstUser = messages.findIndex((m) => m.role === "user");
   return firstUser < 0 || !messages.slice(firstUser).some((m) => m.role === "raven");

@@ -1,6 +1,6 @@
 // Small pieces every AI panel shares.
 
-export function Thinking({ children = 'Raven is working on it…' }) {
+export function Thinking({ children = 'Skillit is working on it…' }) {
   return (
     <div className="db__thinking" role="status">
       <span className="ob__spinner" aria-hidden="true" />
