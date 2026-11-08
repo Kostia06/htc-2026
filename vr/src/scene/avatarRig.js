@@ -29,11 +29,16 @@ export const SEATED_POSE = {
   LeftFoot: { nod: 0.12 },
   RightFoot: { nod: 0.12 },
 
-  // Left empty on purpose: the GLB is exported in an A-pose, so the arms already
-  // hang correctly and any offset here fights the baked pose. Posing them onto
-  // the table looked worse than letting them rest.
+  // The GLB is exported in an A-pose, so these are corrections on top of it.
+  // Values found by measuring the hand bone's world position, not by eye: the
+  // elbow lands within a few millimetres of the table top, so guessing leaves
+  // the forearms either buried in it or floating above it.
   LeftShoulder: {},
   RightShoulder: {},
+  LeftArm: { tilt: 0.1 },
+  RightArm: { tilt: -0.1 },
+  LeftForeArm: { nod: -0.6, turn: 0.3 },
+  RightForeArm: { nod: -0.6, turn: -0.3 },
 }
 
 // Canonical name -> the spellings seen in the wild. Matching is case-insensitive
