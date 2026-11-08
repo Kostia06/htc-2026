@@ -1,8 +1,10 @@
 import { type Debrief, turnScore } from "../voice/debrief";
 import type { StoredTurn } from "../voice/store";
+import type { Source } from "../voice/coach/types";
 import { overlap, quoteTime, type Span, type TimedLine } from "./align";
+import { coachMoments } from "./coach-moments";
 
-export type MomentKind = "mistake" | "better" | "strength" | "filler";
+export type MomentKind = "mistake" | "better" | "researched" | "strength" | "filler" | "delivery";
 export type Moment = {
   t: number;
   kind: MomentKind;
@@ -14,6 +16,8 @@ export type Moment = {
   said?: string;
   question: string;
   turn: number;
+  /** Pages a researched tip rests on; only pages the server actually fetched. */
+  sources?: Source[];
 };
 
 const MISTAKE_BELOW = 55;
@@ -22,7 +26,7 @@ const FILLER_FROM = 3;
 const SAID_MATCH = 0.5;
 const QUESTION_MATCH = 0.6;
 // on a tie in time, the problem comes before its fix
-const ORDER: Record<MomentKind, number> = { mistake: 0, better: 1, strength: 2, filler: 3 };
+const ORDER: Record<MomentKind, number> = { mistake: 0, researched: 1, better: 2, strength: 3, filler: 4, delivery: 5 };
 
 const WEAKEST_TITLE: Record<string, string> = {
   structure: "The story lost its shape",
@@ -78,7 +82,7 @@ function reportMoments(turns: StoredTurn[], report: Debrief, spans: Span[], line
 
 /** Every dot on the replay bar: what went wrong, how to say it better, what worked, and filler. */
 export function buildMoments(turns: StoredTurn[], report: Debrief | null, spans: Span[], lines: TimedLine[]): Moment[] {
-  const fromAnswers = turns.flatMap((turn, i) => answerMoments(turn, i, report, spans[i]));
+  const fromAnswers = turns.flatMap((turn, i) => [...answerMoments(turn, i, report, spans[i]), ...coachMoments(turn, i, spans[i])]);
   const fromReport = report ? reportMoments(turns, report, spans, lines) : [];
   return [...fromAnswers, ...fromReport].sort((a, b) => a.t - b.t || ORDER[a.kind] - ORDER[b.kind]);
 }

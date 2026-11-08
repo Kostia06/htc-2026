@@ -3,7 +3,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Env } from "../src/env";
 import { attachConversation, conversationOf, conversationsBefore, conversationsOfUser, deleteSession, loadReplayRecord, saveReport } from "../src/replay/store";
 import { fallbackDebrief } from "../src/voice/debrief";
-import { addTurn, createSession, findSession } from "../src/voice/store";
+import { claimLiveTip, countSessionsWithIssue, saveDeliveryIssues } from "../src/voice/coach/session-store";
+import { addTurn, createSession, findSession, listTurns, saveLiveTip } from "../src/voice/store";
 import { openTestDatabase } from "./pglite";
 
 let db: Awaited<ReturnType<typeof openTestDatabase>>;
@@ -42,5 +43,25 @@ describe("replay store", () => {
     expect(await loadReplayRecord(env, "bob", id)).toEqual({ conversationId: null, report: null });
     await deleteSession(env, "alice", id);
     expect(await findSession(env, "alice", id)).toBeNull();
+  });
+
+  it("keeps live timestamps, one sealed tip per session and the delivery habits", async () => {
+    const id = await createSession(env, "alice", { mode: "interview", companySlug: null, plan }, NOW);
+    const score = { scores: { structure: 1 }, delivery: { words: 9, fillerWords: 0, wordsPerMinute: null }, tip: "t" };
+    expect(await addTurn(env, "alice", id, { question: "q", answer: "a", score, timing: { answerStartSec: 4.25, atSec: 9 } })).toBe(0);
+    expect(await addTurn(env, "alice", id, { question: "q2", answer: "b", score })).toBe(1);
+    expect(await claimLiveTip(env, "bob", id)).toBe(false);
+    expect(await claimLiveTip(env, "alice", id)).toBe(true);
+    expect(await claimLiveTip(env, "alice", id)).toBe(false);
+    const tip = { kind: "coaching" as const, said: "a", rewrite: "better", why: "because", sources: [] };
+    await saveLiveTip(env, "alice", id, 0, tip);
+    const turns = await listTurns(env, "alice", id);
+    expect(turns[0]).toMatchObject({ answerStartSec: 4.25, atSec: 9, liveTip: tip });
+    expect(turns[1].answerStartSec).toBeUndefined();
+
+    await saveDeliveryIssues(env, "alice", id, ["we", "no_result"]);
+    expect(await countSessionsWithIssue(env, "alice", "we")).toBe(1);
+    expect(await countSessionsWithIssue(env, "alice", "hedging")).toBe(0);
+    expect(await countSessionsWithIssue(env, "bob", "we")).toBe(0);
   });
 });
