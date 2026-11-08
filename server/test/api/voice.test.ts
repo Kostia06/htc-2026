@@ -7,6 +7,8 @@ import type { AppContext } from "../../src/env";
 import { deps as jev } from "../../src/integrations/jev";
 import { updateProfile } from "../../src/memory/profile/store";
 import { newPostingId, savePosting } from "../../src/postings/store";
+import { insertSteps, loadAll } from "../../src/roadmap/store";
+import type { StepContent } from "../../src/roadmap/types";
 import { deps as followUpModel } from "../../src/voice/follow-up";
 import { deps as liveToken } from "../../src/voice/providers/gemini";
 import { profile } from "../voice/fixtures";
@@ -54,6 +56,16 @@ const debriefReply = {
   improvements: [{ moment: "Q1", said: "I built an API.", better: "Add who used it.", example: "I built an API that 2,000 staff used daily." }],
   perQuestion: [{ question: "Q1", score: 64, oneLineFeedback: "Add the result." }],
   nextSteps: ["Add a number.", "Run it again."],
+};
+
+const interviewStep: StepContent = {
+  kind: "interview_practice",
+  title: "Practise a data analyst interview",
+  why: "Interviews get easier with reps",
+  detail: "Ten minutes, out loud.",
+  estimate: "10 min",
+  label: "ready_now",
+  action: { type: "interview" },
 };
 
 function voiceApp() {
@@ -151,6 +163,26 @@ describe("/api/voice", () => {
     expect(finished.status).toBe(200);
     expect(await finished.json()).toEqual(debriefReply);
     expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q", answer: "A", durationMs: 1 })).status).toBe(409);
+  });
+
+  it("marks the road step it was started from done when it finishes, for its owner only", async () => {
+    const me = await person();
+    const other = await person();
+    await insertSteps(env, me.id, 0, [interviewStep], "template");
+    await insertSteps(env, other.id, 0, [interviewStep], "template");
+    const [mine] = await loadAll(env, me.id);
+    const [theirs] = await loadAll(env, other.id);
+
+    const start = (stepId: string) => send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", stepId });
+    const own = await (await start(mine!.id)).json<Started>();
+    const stolen = await (await start(theirs!.id)).json<Started>();
+    for (const { sessionId } of [own, stolen]) {
+      await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API that 2,000 staff used every day.", durationMs: 3000 });
+      expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {})).status).toBe(200);
+    }
+
+    expect((await loadAll(env, me.id))[0]!.status).toBe("done");
+    expect((await loadAll(env, other.id))[0]!.status).toBe("todo");
   });
 
   it("passes the chosen difficulty into the interviewer's instructions and rejects unknown ones", async () => {

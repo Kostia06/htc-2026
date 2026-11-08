@@ -1,6 +1,6 @@
 import { db } from "../db";
 import type { Env } from "../env";
-import { VOICE_MODES, type VoiceMode } from "../voice/types";
+import { DIFFICULTIES, type Difficulty, type InterviewLength, LENGTHS, VOICE_MODES, type VoiceMode } from "../voice/types";
 
 // long enough to put the headset on, short enough that a forgotten tap doesn't start a session tomorrow
 export const LAUNCH_LIFETIME_MS = 2 * 60 * 1000;
@@ -8,7 +8,15 @@ export const MAX_WAIT_MS = 20_000;
 const CHECK_INTERVAL_MS = 1500;
 
 /** `reviewSessionId` opens that past session's review instead of a new interview; the headset proves ownership when it loads it. */
-export type Launch = { mode: VoiceMode; companySlug?: string; role?: string; stepId?: string; reviewSessionId?: string };
+export type Launch = {
+  mode: VoiceMode;
+  companySlug?: string;
+  role?: string;
+  stepId?: string;
+  difficulty?: Difficulty;
+  length?: InterviewLength;
+  reviewSessionId?: string;
+};
 
 // swapped out in tests, which must not wait real seconds
 export const deps = {
@@ -22,11 +30,14 @@ const optionalText = (value: unknown, max: number) => {
   return text || undefined;
 };
 
-/** The phone's request body, or null when it isn't a launch. Same fields `POST /api/voice/sessions` takes, plus the roadmap step. */
+const isOneOf = <T extends string>(choices: readonly T[], value: unknown): value is T | undefined => value === undefined || choices.includes(value as T);
+
+/** The phone's request body, or null when it isn't a launch. Same fields `POST /api/voice/sessions` takes. */
 export function parseLaunch(body: unknown): Launch | null {
   if (!body || typeof body !== "object") return null;
-  const { mode, companySlug, role, stepId, reviewSessionId } = body as Record<string, unknown>;
+  const { mode, companySlug, role, stepId, difficulty, length, reviewSessionId } = body as Record<string, unknown>;
   if (!VOICE_MODES.includes(mode as VoiceMode)) return null;
+  if (!isOneOf(DIFFICULTIES, difficulty) || !isOneOf(LENGTHS, length)) return null;
   const fields = {
     companySlug: optionalText(companySlug, 100),
     role: optionalText(role, 100),
@@ -38,6 +49,8 @@ export function parseLaunch(body: unknown): Launch | null {
   if (fields.companySlug) launch.companySlug = fields.companySlug;
   if (fields.role) launch.role = fields.role;
   if (fields.stepId) launch.stepId = fields.stepId;
+  if (difficulty) launch.difficulty = difficulty;
+  if (length) launch.length = length;
   if (fields.reviewSessionId) launch.reviewSessionId = fields.reviewSessionId;
   return launch;
 }
@@ -45,21 +58,42 @@ export function parseLaunch(body: unknown): Launch | null {
 export async function queueLaunch(env: Env, userId: string, launch: Launch, now = new Date()) {
   const expiresAt = new Date(now.getTime() + LAUNCH_LIFETIME_MS).toISOString();
   await db(env).prepare(
-    `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, review_session_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, difficulty, interview_length, review_session_id, created_at, expires_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (user_id) DO UPDATE SET mode = excluded.mode, company_slug = excluded.company_slug, role = excluded.role, step_id = excluded.step_id,
-       review_session_id = excluded.review_session_id, created_at = excluded.created_at, expires_at = excluded.expires_at`,
+       difficulty = excluded.difficulty, interview_length = excluded.interview_length, review_session_id = excluded.review_session_id,
+       created_at = excluded.created_at, expires_at = excluded.expires_at`,
   )
-    .bind(userId, launch.mode, launch.companySlug ?? null, launch.role ?? null, launch.stepId ?? null, launch.reviewSessionId ?? null, now.toISOString(), expiresAt)
+    .bind(
+      userId,
+      launch.mode,
+      launch.companySlug ?? null,
+      launch.role ?? null,
+      launch.stepId ?? null,
+      launch.difficulty ?? null,
+      launch.length ?? null,
+      launch.reviewSessionId ?? null,
+      now.toISOString(),
+      expiresAt,
+    )
     .run();
   return { expiresAt };
 }
 
-type LaunchRow = { mode: VoiceMode; company_slug: string | null; role: string | null; step_id: string | null; review_session_id: string | null };
+type LaunchRow = {
+  mode: VoiceMode;
+  company_slug: string | null;
+  role: string | null;
+  step_id: string | null;
+  difficulty: Difficulty | null;
+  interview_length: InterviewLength | null;
+  review_session_id: string | null;
+};
 
 /** Removes and returns the person's pending launch; of two headsets polling, only one gets it. */
 export async function takeLaunch(env: Env, userId: string, now = new Date()): Promise<Launch | null> {
   const row = await db(env).prepare(
-    "DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id, review_session_id",
+    "DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id, difficulty, interview_length, review_session_id",
   )
     .bind(userId, now.toISOString())
     .first<LaunchRow>();
@@ -68,6 +102,8 @@ export async function takeLaunch(env: Env, userId: string, now = new Date()): Pr
   if (row.company_slug) launch.companySlug = row.company_slug;
   if (row.role) launch.role = row.role;
   if (row.step_id) launch.stepId = row.step_id;
+  if (row.difficulty) launch.difficulty = row.difficulty;
+  if (row.interview_length) launch.length = row.interview_length;
   if (row.review_session_id) launch.reviewSessionId = row.review_session_id;
   return launch;
 }

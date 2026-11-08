@@ -11,7 +11,15 @@ import type { Difficulty, InterviewLength, VoiceMode, VoicePlan } from "./types"
 export class UnknownCompany extends Error {}
 export class UnknownPosting extends Error {}
 
-type StartRequest = { mode: VoiceMode; companySlug?: string; role?: string; difficulty?: Difficulty; length?: InterviewLength; postingId?: string };
+type StartRequest = {
+  mode: VoiceMode;
+  companySlug?: string;
+  role?: string;
+  difficulty?: Difficulty;
+  length?: InterviewLength;
+  postingId?: string;
+  stepId?: string;
+};
 
 // a posting decides the role and the company; a role or company sent alongside it is ignored
 async function withPosting(env: Env, userId: string, request: StartRequest) {
@@ -48,7 +56,7 @@ export async function startVoiceSession(env: Env, userId: string, request: Start
   const plan = buildInterviewPlan(inputs);
   const opening = openingLine(plan);
   const voice = await voiceProvider(env).startSession(env, { instructions: liveInstructions(plan), opening });
-  const sessionId = await createSession(env, userId, { mode: request.mode, companySlug: inputs.company?.slug ?? null, plan });
+  const sessionId = await createSession(env, userId, { mode: request.mode, companySlug: inputs.company?.slug ?? null, stepId: request.stepId, plan });
   return {
     sessionId,
     mode: request.mode,

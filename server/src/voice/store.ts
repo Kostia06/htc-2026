@@ -7,12 +7,30 @@ import type { VoiceMode, VoicePlan } from "./types";
 
 export const KEEP_DAYS = 30;
 
-export type VoiceSession = { id: string; mode: VoiceMode; companySlug: string | null; plan: VoicePlan; status: "active" | "finished"; createdAt: string };
+/** `stepId` is the road step the session was started from; finishing the session marks it done. */
+export type VoiceSession = {
+  id: string;
+  mode: VoiceMode;
+  companySlug: string | null;
+  stepId: string | null;
+  plan: VoicePlan;
+  status: "active" | "finished";
+  createdAt: string;
+};
 /** Seconds since the call connected, by the client's clock: when the answer began and when it was sent for scoring. */
 export type TurnTiming = { answerStartSec?: number; atSec?: number };
 export type StoredTurn = { idx: number; question: string; answer: string } & TurnScore & TurnTiming & { liveTip?: LiveTip };
 
-type SessionRow = { id: string; mode: VoiceMode; company_slug: string | null; ciphertext: string; iv: string; status: "active" | "finished"; created_at: string };
+type SessionRow = {
+  id: string;
+  mode: VoiceMode;
+  company_slug: string | null;
+  step_id: string | null;
+  ciphertext: string;
+  iv: string;
+  status: "active" | "finished";
+  created_at: string;
+};
 type TurnRow = {
   idx: number;
   ciphertext: string;
@@ -28,15 +46,15 @@ type TurnRow = {
 export async function createSession(
   env: Env,
   userId: string,
-  session: { mode: VoiceMode; companySlug: string | null; plan: VoicePlan },
+  session: { mode: VoiceMode; companySlug: string | null; stepId?: string; plan: VoicePlan },
   now = new Date(),
 ): Promise<string> {
   const id = crypto.randomUUID();
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(session.plan));
   await db(env).prepare(
-    "INSERT INTO voice_sessions (id, user_id, mode, company_slug, ciphertext, iv, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'active', ?)",
+    "INSERT INTO voice_sessions (id, user_id, mode, company_slug, step_id, ciphertext, iv, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)",
   )
-    .bind(id, userId, session.mode, session.companySlug, sealed.ciphertext, sealed.iv, now.toISOString())
+    .bind(id, userId, session.mode, session.companySlug, session.stepId ?? null, sealed.ciphertext, sealed.iv, now.toISOString())
     .run();
   return id;
 }
@@ -46,7 +64,7 @@ export async function findSession(env: Env, userId: string, id: string): Promise
   const row = await db(env).prepare("SELECT * FROM voice_sessions WHERE id = ? AND user_id = ? AND mode = 'interview'").bind(id, userId).first<SessionRow>();
   if (!row) return null;
   const plan = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as VoicePlan;
-  return { id: row.id, mode: row.mode, companySlug: row.company_slug, plan, status: row.status, createdAt: row.created_at };
+  return { id: row.id, mode: row.mode, companySlug: row.company_slug, stepId: row.step_id, plan, status: row.status, createdAt: row.created_at };
 }
 
 export async function countSessionsSince(env: Env, userId: string, since: Date) {

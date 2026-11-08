@@ -5,6 +5,7 @@ import { coachTurn } from "../voice/coach/live";
 import { notePatterns } from "../voice/coach/patterns";
 import { finalReport, latestDraft, refreshDraft } from "../voice/draft";
 import { saveReport } from "../replay/store";
+import { setStepStatus } from "../roadmap/store";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
@@ -46,7 +47,7 @@ export function voiceRouter() {
   const router = new Hono<AppContext>();
 
   router.post("/sessions", async (c) => {
-    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown; length?: unknown; postingId?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown; length?: unknown; postingId?: unknown; stepId?: unknown }>().catch(() => null);
     if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview" }, 400);
     if (body.difficulty !== undefined && !DIFFICULTIES.includes(body.difficulty as Difficulty)) {
       return c.json({ error: "difficulty must be easy, standard or hard" }, 400);
@@ -66,6 +67,7 @@ export function voiceRouter() {
         difficulty: body.difficulty as Difficulty | undefined,
         length: body.length as InterviewLength | undefined,
         postingId: optionalText(body.postingId),
+        stepId: optionalText(body.stepId),
       });
       return c.json(started, 201);
     } catch (e) {
@@ -121,6 +123,8 @@ export function voiceRouter() {
     const debrief = await finalReport(c.env, userId, session, turns);
     await finishSession(c.env, userId, session.id, debrief.overall);
     await saveReport(c.env, userId, session.id, debrief);
+    // scoped by user, so a step id from someone else's road is simply not found
+    if (session.stepId) await setStepStatus(c.env, userId, session.stepId, "done", undefined);
     c.executionCtx.waitUntil(notePatterns(c.env, userId, session.id, turns));
     notifyAfterWrite(c.env, userId, (work) => c.executionCtx.waitUntil(work));
     return c.json(debrief);

@@ -369,6 +369,14 @@ describe('createApiSession', () => {
     expect(api.of('/api/voice/sessions')[0].body).toEqual({ mode: 'interview', companySlug: 'atb', role: 'Data Analyst' })
   })
 
+  it('carries the road step, difficulty and length from a phone launch', async () => {
+    await session().start({ mode: 'interview', role: 'Data Analyst', stepId: 'st_1', difficulty: 'hard', length: 'quick' })
+
+    expect(api.of('/api/voice/sessions')[0].body).toEqual({
+      mode: 'interview', companySlug: 'acme', role: 'Data Analyst', stepId: 'st_1', difficulty: 'hard', length: 'quick',
+    })
+  })
+
   it('refuses to call the API before the headset has signed in', async () => {
     await expect(session({ getToken: () => null }).start()).rejects.toBeInstanceOf(SignedOutError)
     expect(api.calls).toHaveLength(0)
