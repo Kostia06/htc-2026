@@ -1,6 +1,7 @@
 import { type Context, Hono } from "hono";
 import { RunRejected } from "../agents/core/harness";
 import type { AgentDeps } from "../agents/core/types";
+import { addLineToRoad } from "../crossroads/add-to-road";
 import { AskFailed, askCrossroads } from "../crossroads/ask";
 import { finishExploreStep } from "../crossroads/explore-step";
 import { standBehind } from "../crossroads/patterns";
@@ -61,6 +62,13 @@ export function crossroadsRouter(makeDeps: MakeDeps, options: Options = {}) {
   };
   router.post("/lines/:id/me-too", meToo(true));
   router.delete("/lines/:id/me-too", meToo(false));
+
+  router.post("/lines/:id/add-to-road", async (c) => {
+    const result = await addLineToRoad(c.env, c.var.sessionId, c.req.param("id") ?? "");
+    if (result.status === "unknown") return c.json({ error: "unknown line" }, 404);
+    if (result.status === "not_addable") return c.json({ error: "only tips and interview questions can go on your road" }, 400);
+    return c.json({ added: true }, result.status === "added" ? 201 : 200);
+  });
 
   return router;
 }

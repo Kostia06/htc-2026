@@ -2,6 +2,9 @@ import type { Env } from "../env";
 import { listMemories, type MemoryKind } from "../memory/private/store";
 import { getProfile } from "../memory/profile/store";
 import { goalOf } from "../roadmap/background";
+import { loadAll } from "../roadmap/store";
+import type { StepKind } from "../roadmap/types";
+import { roadFacts } from "./add-to-road";
 import { interviewLines } from "./interviews";
 import { LANE_NAMES, type Lane, laneOf } from "./lanes";
 import { linesFor, MIN_PEOPLE, type RoadLine } from "./patterns";
@@ -24,6 +27,8 @@ export type Crossroads = {
   links: Link[];
   trails: Trail[];
   badges: Badge[];
+  /** The person's own road: step kinds they finished, and road lines they already added to it. */
+  yourRoad: { done: StepKind[]; added: string[] };
   minPeople: number;
 };
 
@@ -52,11 +57,12 @@ function linkedFirst(lines: RoadLine[], links: Link[]): RoadLine[] {
 export async function crossroadsFor(env: Env, userId: string): Promise<Crossroads> {
   const { goal, items } = await yourItems(env, userId);
   const lane = laneOf(goal);
-  const [lines, interviews, research, paths] = await Promise.all([
+  const [lines, interviews, research, paths, steps] = await Promise.all([
     linesFor(env, userId, lane),
     interviewLines(env, lane),
     researchFor(env, userId, lane),
     pathsFor(env, lane, goal),
+    loadAll(env, userId),
   ]);
   const everyone = [...interviews, ...lines];
   const links = await linkItems(env, items, [...everyone, ...research.map((f) => ({ id: f.id, text: f.text }))]);
@@ -70,6 +76,7 @@ export async function crossroadsFor(env: Env, userId: string): Promise<Crossroad
     links: links.filter((link) => visible.has(link.everyone)),
     trails: paths.trails,
     badges: paths.badges,
+    yourRoad: roadFacts(steps, shown, goal),
     minPeople: MIN_PEOPLE,
   };
 }

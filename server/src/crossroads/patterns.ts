@@ -41,7 +41,7 @@ export async function linesFor(env: Env, userId: string, lane: Lane): Promise<Ro
   return results.map(visibleLine).filter((line): line is RoadLine => line !== null).sort(byWeight);
 }
 
-async function lineFor(env: Env, userId: string, id: string): Promise<RoadLine | null> {
+export async function lineFor(env: Env, userId: string, id: string): Promise<RoadLine | null> {
   const row = await db(env).prepare(
     `SELECT p.id, p.kind, p.text, p.is_seeded,
        (SELECT count(*) FROM road_pattern_votes v WHERE v.pattern_id = p.id) AS votes,
