@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { memories as memoryApi } from '../lib/agent'
-import { supabase } from '../lib/supabase'
 import Interview from './Interview'
 import Plan from './Plan'
 import Recommendations from './Recommendations'
 import ResumeBuilder from './Resume'
 import { pruneResults } from './useSkill'
-import { Problem } from './ui'
+import You from './You'
 import '../onboarding/onboarding.css'
 import './dashboard.css'
 
@@ -14,86 +12,11 @@ const list = (v) => (Array.isArray(v) ? v : v ? [v] : [])
 const realRoles = (answers) => list(answers.roles).filter((r) => r !== 'Not sure yet')
 const isStudent = (answers) => ['High school', 'University or college'].includes(answers.stage)
 
-const KINDS = { goal: 'Goals', skill: 'Strengths', weakness: 'Working on', preference: 'Preferences', note: 'Notes' }
-
-/** What the agents have remembered about this person, encrypted on the server. They can see and delete every item. */
-function Memory() {
-  const [items, setItems] = useState(null)
-  const [error, setError] = useState(null)
-
-  const load = () => memoryApi.list().then((all) => (setItems(all), setError(null)), setError)
-  useEffect(() => {
-    load()
-  }, [])
-
-  const forget = async (id) => {
-    try {
-      await memoryApi.forget(id)
-      setItems((all) => all.filter((m) => m.id !== id))
-    } catch (e) {
-      setError(e)
-    }
-  }
-
-  const groups = Object.keys(KINDS)
-    .map((kind) => [kind, (items ?? []).filter((m) => m.kind === kind)])
-    .filter(([, group]) => group.length)
-
-  return (
-    <div className="db__panel">
-      <p className="db__intro">What Raven's agents have learned from your profile and practice sessions, used to tailor questions and plans. It's stored encrypted, and you can delete anything.</p>
-      <Problem error={error} onRetry={load} />
-      {items === null && !error && <p className="db__muted">Loading…</p>}
-      {items?.length === 0 && <p className="db__muted">Nothing yet. Practise an interview and Raven will note what to work on.</p>}
-      {groups.map(([kind, group]) => (
-        <section key={kind}>
-          <h3 className="db__h3">{KINDS[kind]}</h3>
-          <ul className="db__memories">
-            {group.map((m) => (
-              <li key={m.id}>
-                <span>{m.text}</span>
-                <button type="button" className="db__link" onClick={() => forget(m.id)} aria-label={`Forget: ${m.text}`}>Forget</button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  )
-}
-
-function Profile({ answers, syncProblem, onRedo }) {
-  const rows = [
-    ['Now', answers.stage],
-    ['Studying', [answers.school?.school, answers.school?.program].filter(Boolean).join(', ')],
-    ['Target roles', list(answers.roles).join(', ')],
-    ['Search so far', answers.situation],
-    ['Skills', list(answers.skills).join(', ')],
-    ['Looking in', answers.where],
-    ['Time per week', answers.time],
-    ['Resume', answers.resume?.fileName],
-  ].filter(([, v]) => v)
-
-  return (
-    <div className="db__panel">
-      {syncProblem && <p className="db__problem">Your answers are saved on this device, but not on the server yet: {syncProblem}. Use "Edit my answers" to try again.</p>}
-      <dl className="account__answers">
-        {rows.map(([k, v]) => (
-          <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
-        ))}
-      </dl>
-      <div className="db__row">
-        <button type="button" className="db__ghost" onClick={onRedo}>Edit my answers</button>
-        <button type="button" className="db__ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
-      </div>
-    </div>
-  )
-}
-
 export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   const userId = session.user.id
   const stamp = answers.completedAt ?? 'answers'
-  const first = session.user.user_metadata?.full_name?.split(' ')[0]
+  const fullName = session.user.user_metadata?.full_name
+  const first = fullName?.split(' ')[0]
   const roles = realRoles(answers)
   const role = roles[0] ?? ''
   const [tab, setTab] = useState('plan')
@@ -200,11 +123,20 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
         />
       ),
     },
-    { id: 'memory', label: 'What Raven knows', title: 'What Raven knows about you', render: () => <Memory /> },
-    { id: 'profile', label: 'Profile', title: 'Your answers', render: () => <Profile answers={answers} syncProblem={syncProblem} onRedo={onRedo} /> },
+    {
+      id: 'you',
+      label: 'You',
+      title: 'You',
+      bare: true,
+      render: () => <You name={fullName || first} role={role} answers={answers} syncProblem={syncProblem} onRedo={onRedo} onGo={go} />,
+    },
   ]
-  // course and research picks are UCalgary-specific, so they lead for students and stay reachable for everyone
-  const ordered = isStudent(answers) ? tabs : [...tabs.filter((t) => !t.student), ...tabs.filter((t) => t.student)]
+  // the design's order: Plan, Jobs, Interview, Resume, You. Course and research picks are UCalgary-specific, so they
+  // sit in the nav for students and are reached from the You page for everyone else
+  const order = ['plan', 'jobs', 'courses', 'research', 'interview', 'resume', 'you']
+  const ordered = order.map((id) => tabs.find((t) => t.id === id))
+  const inNav = ordered.filter((t) => !t.student || isStudent(answers))
+  const navOn = (id) => id === tab || (id === 'you' && !inNav.some((t) => t.id === tab))
 
   const initial = (first ?? session.user.email ?? '?').charAt(0).toUpperCase()
 
@@ -213,13 +145,13 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       <header className="db__bar">
         <span className="db__logo">raven</span>
         <nav className="db__nav" aria-label="Sections">
-          {ordered.map((t) => (
-            <button key={t.id} type="button" className={`db__tab${tab === t.id ? ' is-on' : ''}`} aria-current={tab === t.id ? 'page' : undefined} onClick={() => go(t.id)}>
+          {inNav.map((t) => (
+            <button key={t.id} type="button" className={`db__tab${navOn(t.id) ? ' is-on' : ''}`} aria-current={navOn(t.id) ? 'page' : undefined} onClick={() => go(t.id)}>
               {t.label}
             </button>
           ))}
         </nav>
-        <button type="button" className="db__avatar" onClick={() => go('profile')} aria-label="Your profile">{initial}</button>
+        <button type="button" className="db__avatar" onClick={() => go('you')} aria-label="Your profile">{initial}</button>
       </header>
 
       <main className="db__main">
