@@ -148,6 +148,7 @@
 		C0529CC57946BB9DEAFB4786 /* RecapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7D58A0FCA1EFF69AB41D74 /* RecapService.swift */; };
 		C19B196CE2745FD14ECFCF9F /* BringYourWorkList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2294383E7F8960B702E80275 /* BringYourWorkList.swift */; };
 		C2FBD0718397A44193B0D841 /* RoadmapStep+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089B0D464E2E3A6B695ADA5E /* RoadmapStep+Display.swift */; };
+		C460C0078D521A92683ABB2E /* NearbyJobsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A7687428464EA92155B646 /* NearbyJobsSection.swift */; };
 		C4F5E89FCF08D03C51821D4E /* SampleRoadmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B534B76E95550B5E4AF2E1 /* SampleRoadmap.swift */; };
 		C5F60B61FA7389E98D4D3BA4 /* ElevenLabsVoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617B7D2FC68DA52D4D1D645 /* ElevenLabsVoiceEngine.swift */; };
 		C6E361503FE5FA60759C509D /* PracticeHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023362126EA217591D45F919 /* PracticeHistoryService.swift */; };
@@ -296,6 +297,7 @@
 		80783E0FAC748A32CA113631 /* NotificationRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRefresh.swift; sourceTree = "<group>"; };
 		823BA15A5174DDD005D9C410 /* TailoredResumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailoredResumeView.swift; sourceTree = "<group>"; };
 		828F9A136578F7BCEC205237 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		83A7687428464EA92155B646 /* NearbyJobsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyJobsSection.swift; sourceTree = "<group>"; };
 		872B18F017D6CC9D19AA5F5E /* ResumeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeService.swift; sourceTree = "<group>"; };
 		89E84B4D25E4AB389D35FA79 /* ThinProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThinProgressBar.swift; sourceTree = "<group>"; };
 		8B065DFB9D6072FF2D8102BD /* FeedCard+Samples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedCard+Samples.swift"; sourceTree = "<group>"; };
@@ -459,6 +461,7 @@
 				6E30C7D6C3967E21F9B40648 /* InterviewLengthPicker.swift */,
 				E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */,
 				59815D96F6C995E7B6EFA23F /* InterviewTargetPicker.swift */,
+				83A7687428464EA92155B646 /* NearbyJobsSection.swift */,
 				3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */,
 				FC6E2301E658B586D135965B /* PracticeView.swift */,
 				966D3989EF154F072250543B /* PreviewVoiceEngine.swift */,
@@ -951,6 +954,7 @@
 				16A1095304F0D9EDF87272D2 /* MemoryView.swift in Sources */,
 				D0BA593033FE2289C96AF153 /* MomentCard.swift in Sources */,
 				9EBB009F9C92021D4A91BBB8 /* MomentRow.swift in Sources */,
+				C460C0078D521A92683ABB2E /* NearbyJobsSection.swift in Sources */,
 				F820071A08B54ABA24870226 /* NextMoveCard.swift in Sources */,
 				87CEF293DB9AB256CA685F82 /* NotificationBell.swift in Sources */,
 				A4CFE1ED98F73DCA4E23B986 /* NotificationCenterView.swift in Sources */,

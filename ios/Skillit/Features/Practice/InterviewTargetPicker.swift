@@ -35,7 +35,7 @@ struct InterviewTargetPicker: View {
                 if !postings.isEmpty {
                     section("Your postings", postings.map { InterviewTarget.posting(id: $0.id, title: $0.title, company: $0.company) })
                 }
-                section("Target roles", app.profile.targetRoles.map(InterviewTarget.role))
+                NearbyJobsSection { selected = $0 }
                 Section("Something else") {
                     TextField("A role, a company, anything", text: $other)
                         .textInputAutocapitalization(.words)
