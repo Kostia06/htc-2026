@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import type { AppContext } from "../env";
 import { sha256 } from "../lib/hash";
 
-type Scope = "session" | "pairing-claim";
+type Scope = "session" | "pairing-claim" | "headset-refresh";
 type Limit = { attempts: number; windowMs: number };
 
 const MINTS: Limit = { attempts: 10, windowMs: 3600_000 };

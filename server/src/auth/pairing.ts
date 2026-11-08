@@ -1,15 +1,12 @@
 import type { Env } from "../env";
-import { issueExpiringSessionFor } from "./session";
 
 const OFFER_LIFETIME_MS = 2 * 60 * 1000;
-const HEADSET_SESSION_MS = 12 * 60 * 60 * 1000;
 const CODE_SPACE = 10_000;
 // with a few hundred live codes at most, ten random draws in a row all colliding means something is wrong
 const MAX_DRAWS = 10;
 
 export type Offer = { code: string; expiresAt: string };
 export type OfferStatus = "waiting" | "claimed" | "expired";
-export type HeadsetSession = { token: string; expiresAt: string };
 
 export const isPairingCode = (code: unknown): code is string => typeof code === "string" && /^\d{4}$/.test(code);
 
@@ -42,14 +39,12 @@ export async function offerCode(env: Env, userId: string, now = new Date()): Pro
   throw new Error("no free pairing code");
 }
 
-// conditional update: two headsets typing the same code can't both win
-export async function claimCode(env: Env, code: string, secret: string, now = new Date()): Promise<HeadsetSession | null> {
+// conditional update: two headsets typing the same code can't both win. Returns whose code it was.
+export async function claimCode(env: Env, code: string, now = new Date()): Promise<string | null> {
   const row = await env.DB.prepare("UPDATE pairing_offers SET status = 'claimed' WHERE code = ? AND status = 'waiting' AND expires_at > ? RETURNING user_id")
     .bind(code, now.toISOString())
     .first<{ user_id: string }>();
-  if (!row) return null;
-  const expiresAt = new Date(now.getTime() + HEADSET_SESSION_MS);
-  return { token: await issueExpiringSessionFor(secret, row.user_id, expiresAt), expiresAt: expiresAt.toISOString() };
+  return row?.user_id ?? null;
 }
 
 // someone else's code reads as expired, so the endpoint can't be used to find live codes
