@@ -9,15 +9,16 @@ export function useStickToBottom(dependency) {
   return end
 }
 
-/** Calls `fn` every `ms` while `active`; the latest `fn` is always the one called. */
-export function useInterval(fn, ms, active = true) {
+/** Calls `fn` every `ms` while `active` (and once at the start when `immediate`); the latest `fn` is always the one called. */
+export function useInterval(fn, ms, active = true, immediate = false) {
   const saved = useRef(fn)
   useEffect(() => {
     saved.current = fn
   })
   useEffect(() => {
     if (!active) return undefined
+    if (immediate) saved.current()
     const t = setInterval(() => saved.current(), ms)
     return () => clearInterval(t)
-  }, [ms, active])
+  }, [ms, active, immediate])
 }
