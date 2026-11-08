@@ -18,6 +18,7 @@ final class AppModel {
     var profile: Profile = .empty
     /// A headset code that arrived from the Camera app before the person reached the pairing screen.
     var pendingPairing: PairingCode?
+    var feed = ForYouModel()
 
     let authenticator: Authenticator
     private let baseURL: URL
@@ -44,6 +45,8 @@ final class AppModel {
             return
         }
         let client = RavenClient(baseURL: baseURL, accessToken: authenticator.accessToken)
+        // alongside the profile request, so the For you tab is fresh before anyone opens it
+        Task { await feed.refresh(using: client) }
         do {
             profile = try await client.profile()
             self.client = client
@@ -58,6 +61,7 @@ final class AppModel {
     func signOut() async {
         await authenticator.signOut()
         client = nil
+        feed.forget()
         profile = .empty
         phase = .signedOut
     }
