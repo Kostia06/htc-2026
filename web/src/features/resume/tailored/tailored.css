@@ -58,6 +58,9 @@
 .tailored-view {
   gap: 20px;
 }
+.tailored-view__export {
+  gap: 10px;
+}
 .tailored-view__head {
   gap: 4px;
 }

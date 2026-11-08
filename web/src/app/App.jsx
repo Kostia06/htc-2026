@@ -40,7 +40,7 @@ const SkillsEditor = named(() => import('../features/profile/SkillsEditor'), 'Sk
 const Resume = lazy(() => import('../features/resume/Resume'))
 const resumeSheets = () => import('../features/resume/ResumeSheets')
 const SectionEditor = named(resumeSheets, 'SectionEditor')
-const PdfSheet = named(resumeSheets, 'PdfSheet')
+const PdfSheet = named(() => import('../features/resume/ExportSheet'), 'PdfSheet')
 const TailorSheet = named(() => import('../features/resume/tailored/TailorSheet'), 'TailorSheet')
 const TailoredSheet = named(() => import('../features/resume/tailored/TailoredSheet'), 'TailoredSheet')
 const settings = () => import('../features/settings/Settings')

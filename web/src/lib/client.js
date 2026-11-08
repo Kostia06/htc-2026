@@ -160,7 +160,8 @@ export const resumeApi = {
     post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
   /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
   upload: (file) => upload('/api/resume/upload', file),
-  pdf: () => pdfBlob('/api/resume/pdf'),
+  /** the resume as a file: format 'pdf' | 'docx', template 'skillit' (default look) | 'plain' (bare, ATS-style) */
+  file: ({ format = 'pdf', template = 'skillit' } = {}) => fileBlob(`/api/resume/${format}?template=${template}`),
   /** LinkedIn's "Save to PDF" export, read once and kept nowhere: { targetRole, suggestions: [{ area, quote, suggestion, why }] } */
   reviewLinkedin: (file) => request('/api/resume/linkedin', { method: 'POST', form: formWith(file), timeout: 120000 }),
 }
@@ -189,13 +190,13 @@ export const connectionsApi = {
   disconnect: (id) => request(providerPath(id), { method: 'DELETE' }).then((r) => r.connection),
 }
 
-async function pdfBlob(path) {
+async function fileBlob(path) {
   const res = await send(path)
   if (res.status === 401) {
     unauthorized()
     throw new ApiError(401, SIGNED_OUT)
   }
-  if (!res.ok) throw new ApiError(res.status, "The PDF couldn't be made. Try again.")
+  if (!res.ok) throw new ApiError(res.status, "The file couldn't be made. Try again.")
   return res.blob()
 }
 
@@ -213,7 +214,7 @@ export const tailoredApi = {
   /** the server rebuilds the copy from the base resume, so a revert is exact; 409 once it was edited by hand */
   setChange: (id, changeId, accepted) => request(`/api/resume/tailored/${id}`, { method: 'PUT', body: { changes: [{ id: changeId, accepted }] } }),
   remove: (id) => request(`/api/resume/tailored/${id}`, { method: 'DELETE' }),
-  pdf: (id) => pdfBlob(`/api/resume/tailored/${id}/pdf`),
+  file: (id, { format = 'pdf', template = 'skillit' } = {}) => fileBlob(`/api/resume/tailored/${id}/${format}?template=${template}`),
 }
 
 /** { reply, needsAnswer, applied: [{ type, summary }] } */

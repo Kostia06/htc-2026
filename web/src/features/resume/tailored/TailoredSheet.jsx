@@ -2,12 +2,15 @@
 // then each change as before → after with why and the requirement it serves, each one revertable.
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router'
-import { ArrowDown, CircleCheck, Circle, Download, FileText, Trash2, TriangleAlert } from 'lucide-react'
+import { ArrowDown, CircleCheck, Circle, FileText, Trash2, TriangleAlert } from 'lucide-react'
 import { capitalized } from '../../../lib/format'
 import { tailoredApi } from '../../../lib/client'
-import { RaisedButton, Spinner, TextButton } from '../../../ui/Button'
+import { Spinner, TextButton } from '../../../ui/Button'
+import { Segmented } from '../../../ui/Controls'
 import { ContentUnavailable, SkeletonLines } from '../../../ui/Feedback'
 import { Confirm, Sheet } from '../../../ui/Sheet'
+import ExportButtons from '../ExportButtons'
+import { TEMPLATES, useTemplate } from '../template'
 import { kindLabel } from './match'
 
 export function TailoredSheet() {
@@ -19,7 +22,8 @@ export function TailoredSheet() {
   const [failure, setFailure] = useState(null)
   const [pending, setPending] = useState(null)
   const [error, setError] = useState(null)
-  const [pdf, setPdf] = useState('idle')
+  // some postings want a bare page, so the layout is chosen per job
+  const [template, setTemplate] = useTemplate(`tailored-${id}`)
   const [confirming, setConfirming] = useState(false)
 
   useEffect(() => {
@@ -44,20 +48,6 @@ export function TailoredSheet() {
       setError(e.message)
     } finally {
       setPending(null)
-    }
-  }
-
-  const download = async () => {
-    setPdf('making')
-    try {
-      const url = URL.createObjectURL(await tailoredApi.pdf(id))
-      const link = Object.assign(document.createElement('a'), { href: url, download: `Resume - ${doc.company}.pdf` })
-      link.click()
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
-      setPdf('idle')
-    } catch (e) {
-      setError(e.message)
-      setPdf('idle')
     }
   }
 
@@ -86,9 +76,15 @@ export function TailoredSheet() {
       }}
       footer={
         doc && (
-          <RaisedButton icon={pdf === 'making' ? undefined : Download} busy={pdf === 'making'} onClick={download}>
-            Download PDF
-          </RaisedButton>
+          <div className="stack tailored-view__export">
+            <Segmented label="Layout for this job" options={TEMPLATES} value={template} onChange={setTemplate} />
+            <ExportButtons
+              fetchFile={(options) => tailoredApi.file(id, options)}
+              name={`Resume - ${doc.company}`}
+              template={template}
+              onError={setError}
+            />
+          </div>
         )
       }
     >

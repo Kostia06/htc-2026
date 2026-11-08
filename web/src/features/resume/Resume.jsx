@@ -1,24 +1,31 @@
-// The resume builder at /resume: the resume as a sheet of paper (tap a section to edit it), where it stands against
-// the saved copy, importing from a file, the coach's rewrites and the PDF. On wide screens the paper and the tools
-// sit side by side.
+// The resume builder at /resume: the resume as a sheet of paper in the chosen layout (tap a section to edit it),
+// where it stands against the saved copy, the coach, tailored versions and the download. On wide screens the paper
+// and the tools sit side by side; the longer career analysis waits behind a disclosure.
 import { useRef } from 'react'
 import { Outlet, useNavigate } from 'react-router'
-import { CircleCheck, FileText, FileUp, TriangleAlert, UserRound } from 'lucide-react'
+import { ChevronDown, CircleCheck, Download, FileText, FileUp, Target, TriangleAlert, UserRound } from 'lucide-react'
 import { relative } from '../../lib/format'
 import { RESUME_ACCEPT } from '../../lib/client'
 import { RaisedButton, Spinner, TextButton } from '../../ui/Button'
+import { Segmented } from '../../ui/Controls'
 import { ContentUnavailable, SkeletonLines } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import Coach from './Coach'
 import ResumeIntelligence from './ResumeIntelligence'
 import ResumePaper from './ResumePaper'
+import TailoredList from './tailored/TailoredList'
+import { useTailoredList } from './tailored/useTailoredList'
+import { TEMPLATES, useTemplate } from './template'
 import { useResume } from './useResume'
 import './resume.css'
+import './tailored/tailored.css'
 
 export default function Resume() {
   const navigate = useNavigate()
   const doc = useResume()
   const picker = useRef(null)
+  const tailored = useTailoredList()
+  const [template, setTemplate] = useTemplate()
   const { resume } = doc
   const canExport = doc.source === 'saved' && doc.saving !== 'failed'
 
@@ -31,7 +38,7 @@ export default function Resume() {
           resume && (
             <>
               <BarButton icon={FileUp} label="Import" showLabel onClick={() => picker.current?.click()} disabled={doc.importing} />
-              <BarButton icon={FileText} label="PDF" showLabel onClick={() => navigate('/resume/pdf')} disabled={!canExport} />
+              <BarButton icon={Download} label="Download" showLabel onClick={() => navigate('/resume/pdf')} disabled={!canExport} />
             </>
           )
         }
@@ -67,16 +74,26 @@ export default function Resume() {
             <Status doc={doc} onImport={() => picker.current?.click()} />
             {/* a new resume (another file, or a discard) starts the coach over; saving a draft doesn't */}
             <Coach key={doc.generation} resume={resume} onApply={doc.update} />
+            <TailoredList list={tailored} />
           </aside>
-          <div className="builder__paper">
-            <ResumePaper resume={resume} onEdit={(section) => navigate(`/resume/edit/${section}`)} />
+          <div className="stack builder__paper">
+            <Segmented label="Resume layout" options={TEMPLATES} value={template} onChange={setTemplate} />
+            <ResumePaper resume={resume} template={template} onEdit={(section) => navigate(`/resume/edit/${section}`)} />
           </div>
         </div>
       )}
 
-      {resume && <ResumeIntelligence key={doc.generation} resume={resume} onApply={doc.update} />}
+      {resume && (
+        <details className="card builder__more">
+          <summary className="row t-headline">
+            <Target size={17} aria-hidden /> <span className="grow">Compare with job postings</span>
+            <ChevronDown size={18} className="c-3 builder__more-chevron" aria-hidden />
+          </summary>
+          <ResumeIntelligence key={doc.generation} resume={resume} onApply={doc.update} />
+        </details>
+      )}
 
-      <Outlet context={{ resume, update: doc.update }} />
+      <Outlet context={{ resume, update: doc.update, tailored, template, setTemplate }} />
     </Page>
   )
 }

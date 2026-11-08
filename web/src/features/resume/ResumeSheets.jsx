@@ -1,10 +1,7 @@
-// ResumeSectionEditor.swift at /resume/edit/:section, and ResumePDFViewer.swift at /resume/pdf.
+// ResumeSectionEditor.swift at /resume/edit/:section.
 import { useEffect, useState } from 'react'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
-import { Download, FileWarning, Plus } from 'lucide-react'
-import { resumeApi } from '../../lib/client'
-import { Spinner } from '../../ui/Button'
-import { ContentUnavailable } from '../../ui/Feedback'
+import { Plus } from 'lucide-react'
 import { Sheet } from '../../ui/Sheet'
 import { BLANK, SECTION_TITLES, SECTIONS } from './resumeDoc'
 
@@ -182,54 +179,6 @@ export function SectionEditor() {
           </>
         )}
       </div>
-    </Sheet>
-  )
-}
-
-/** The one-page PDF the server renders, shown in the browser's own viewer, with a download. */
-export function PdfSheet({ back }) {
-  const navigate = useNavigate()
-  const [state, setState] = useState({ phase: 'loading' })
-
-  useEffect(() => {
-    let url = null
-    let alive = true
-    resumeApi.pdf().then(
-      (blob) => {
-        url = URL.createObjectURL(blob)
-        if (alive) setState({ phase: 'ready', url })
-      },
-      (e) => alive && setState({ phase: 'failed', message: e.message }),
-    )
-    return () => {
-      alive = false
-      if (url) URL.revokeObjectURL(url)
-    }
-  }, [])
-
-  return (
-    <Sheet
-      onClose={() => navigate(back)}
-      size="large"
-      className="pdf-sheet"
-      header={{
-        title: 'Resume.pdf',
-        trailing: () =>
-          state.url && (
-            <a className="glass-button" href={state.url} download="Resume.pdf">
-              <Download size={16} strokeWidth={2.4} aria-hidden /> Download
-            </a>
-          ),
-      }}
-    >
-      {state.phase === 'loading' && (
-        <div className="pdf-sheet__status c-agent" role="status">
-          <Spinner size={22} />
-          <p className="t-subhead">Making your PDF…</p>
-        </div>
-      )}
-      {state.phase === 'failed' && <ContentUnavailable icon={FileWarning} title="Couldn't make the PDF" description={state.message} />}
-      {state.url && <iframe className="pdf-sheet__frame" src={state.url} title="Resume PDF" />}
     </Sheet>
   )
 }

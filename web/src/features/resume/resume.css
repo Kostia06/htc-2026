@@ -126,100 +126,34 @@
   flex: 1;
 }
 
-/* ---------- paper ---------- */
-.paper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 22px;
-  border-radius: 20px;
-  background: #f7f7f7;
-  color: #1f1f1f;
-  box-shadow: 0 24px 60px rgb(0 0 0 / 0.35);
-  color-scheme: light;
-}
-.paper--skeleton {
-  background: var(--raised);
-  box-shadow: none;
-  gap: 22px;
-  margin-top: 8px;
-}
-.paper__section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-  border-radius: 10px;
-  margin: -6px;
-  padding: 6px;
-  transition: opacity 0.15s, background 0.15s;
-}
-.paper__section:hover {
-  background: rgb(0 0 0 / 0.035);
-}
-.paper__section:active {
-  opacity: 0.55;
-}
-.paper__section:focus-visible {
-  outline-color: #5b7d56;
-}
-.paper__name {
-  font: var(--title2);
-}
-.paper__faint {
-  font: var(--caption);
-  color: rgb(0 0 0 / 0.55);
-}
-.paper__header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font: 700 11px/13px var(--font);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: #666;
-}
-.paper__header::after {
-  content: '';
-  height: 0.8px;
-  background: #ccc;
-}
-.paper__text {
-  font: var(--footnote);
-}
-.paper__entry {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.paper__entry-head {
-  display: flex;
-  justify-content: space-between;
+/* ---------- the career analysis, folded away until asked for ---------- */
+.builder__paper {
   gap: 12px;
-  font: var(--footnote);
 }
-.paper__entry-head strong {
-  font-weight: 600;
+.builder__more {
+  margin-top: 24px;
 }
-.paper__entry-head span {
-  font: var(--caption2);
-  color: rgb(0 0 0 / 0.5);
-  white-space: nowrap;
+.builder__more > summary {
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
 }
-.paper__bullet {
-  position: relative;
-  padding-left: 12px;
-  font: var(--footnote);
+.builder__more > summary::-webkit-details-marker {
+  display: none;
 }
-.paper__bullet::before {
-  content: '•';
-  position: absolute;
-  left: 0;
+.builder__more[open] .builder__more-chevron {
+  transform: rotate(180deg);
 }
-.paper__empty {
-  font: var(--footnote);
-  color: #5b7d56;
-  font-weight: 500;
+.builder__more .career {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.builder__more .career__intro h2 {
+  display: none;
 }
 
 /* ---------- editor and pdf ---------- */
@@ -271,4 +205,16 @@
   min-height: 70vh;
   border: 0;
   background: var(--ground);
+}
+.pdf-sheet__layout {
+  padding: 12px 16px;
+}
+.pdf-sheet__footer {
+  gap: 8px;
+}
+.export-buttons {
+  gap: 12px;
+}
+.export-buttons .raised-btn {
+  flex: 1;
 }

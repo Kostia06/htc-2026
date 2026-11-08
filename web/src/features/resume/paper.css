@@ -1,0 +1,155 @@
+/* ---------- paper ----------
+   The default layout mirrors the server's PDF: Calibri-style sans, navy name and section rules, italic subtitles,
+   dates flush right. Sizes are the template's own (10pt body), so the preview reads like the printed page. */
+.paper {
+  --paper-navy: #1e3a5f;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 40px 28px;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: Calibri, Carlito, 'Segoe UI', Arial, sans-serif;
+  font-size: 13.33px;
+  line-height: 1.35;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.35);
+  color-scheme: light;
+}
+@media (max-width: 520px) {
+  .paper { padding: 18px 18px 22px; }
+}
+.paper--skeleton {
+  background: var(--raised);
+  box-shadow: none;
+  gap: 22px;
+  margin-top: 8px;
+  padding: 22px;
+  border-radius: 20px;
+}
+.paper__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  border-radius: 4px;
+  margin: -4px;
+  padding: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.paper__section:hover {
+  background: rgb(30 58 95 / 0.05);
+}
+.paper__section:focus-visible {
+  outline: 2px solid var(--paper-navy);
+}
+.paper__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--paper-navy);
+}
+.paper__header .paper__section {
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+.paper__name {
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  color: var(--paper-navy);
+}
+.paper__contact {
+  color: #333;
+  overflow-wrap: anywhere;
+}
+.paper__headline {
+  font-style: italic;
+  color: #444;
+}
+.paper__section-title {
+  font-size: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--paper-navy);
+  border-bottom: 2px solid var(--paper-navy);
+  padding-bottom: 1px;
+  margin-bottom: 2px;
+}
+.paper__entry + .paper__entry {
+  margin-top: 4px;
+}
+.paper__entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.paper__entry-title {
+  font-weight: 700;
+}
+.paper__entry-subtitle {
+  font-style: italic;
+  color: #444;
+}
+.paper__entry-date {
+  white-space: nowrap;
+  color: #555;
+}
+.paper__entry ul {
+  margin: 1px 0 0 16px;
+  padding-right: 0.35in;
+  list-style: disc;
+}
+.paper__entry li {
+  line-height: 1.3;
+  margin-bottom: 1px;
+}
+.paper__skills,
+.paper__text {
+  line-height: 1.3;
+}
+.paper__empty {
+  color: #5b7d56;
+  font-weight: 600;
+}
+
+/* the plain layout: black, left aligned, hairline rules */
+.paper--plain {
+  font-family: Helvetica, Arial, sans-serif;
+  gap: 12px;
+}
+.paper--plain .paper__header,
+.paper--plain .paper__header .paper__section {
+  align-items: flex-start;
+  text-align: left;
+  border-bottom: 0;
+}
+.paper--plain .paper__name {
+  color: #1a1a1a;
+  letter-spacing: 0;
+  font-size: 24px;
+}
+.paper--plain .paper__contact {
+  color: #666;
+  font-size: 12px;
+}
+.paper--plain .paper__section-title {
+  color: #404040;
+  font-size: 12px;
+  border-bottom: 1px solid #bfbfbf;
+}
+.paper--plain .paper__entry-subtitle {
+  font-style: normal;
+  color: #1a1a1a;
+}
+.paper--plain .paper__entry-date {
+  color: #666;
+  font-size: 12px;
+}
