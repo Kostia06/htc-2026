@@ -103,10 +103,9 @@ extension StubbedNetworkTests {
         }
 
         @Test func `turns server refusals into readable errors`() async throws {
-            StubProtocol.routes.withLock { $0["POST /api/pairing/K7M2Q9XD/approve"] = (410, #"{"error":"that code expired"}"#) }
-            let code = try #require(PairingCode(typed: "K7M2Q9XD"))
-            await #expect(throws: RavenError.rejected(status: 410, message: "that code expired")) {
-                try await client.approveHeadset(code)
+            StubProtocol.routes.withLock { $0["POST /api/pairing/offer"] = (503, #"{"error":"try again"}"#) }
+            await #expect(throws: RavenError.rejected(status: 503, message: "try again")) {
+                try await client.offerHeadsetCode()
             }
         }
 

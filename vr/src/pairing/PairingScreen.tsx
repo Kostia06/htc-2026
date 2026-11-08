@@ -1,32 +1,31 @@
 import "./pairing.css";
 import { useEffect } from "react";
-import type { PairingProblem } from "./api";
-import { formatCode } from "./code";
-import { Countdown } from "./Countdown";
-import type { PairingState } from "./pairingState";
-import { QrCode } from "./QrCode";
-import { usePairing } from "./usePairing";
+import type { ClaimProblem } from "./api";
+import { DigitBoxes } from "./DigitBoxes";
+import { Keypad } from "./Keypad";
+import { useKeypad } from "./useKeypad";
 
-// long enough to read "signed in" before the screen changes
-const SUCCESS_PAUSE_MS = 1200;
+// long enough to read "signed in" before the screen changes, short enough not to feel like waiting
+const SUCCESS_PAUSE_MS = 700;
 
-const PROBLEM_COPY: Record<PairingProblem, string> = {
-  offline: "This headset is offline. Check its Wi-Fi and we'll try again.",
-  rate_limited: "Too many new codes in a row. We'll try again in half a minute.",
-  unavailable: "Raven isn't answering right now. We'll try again in a few seconds.",
+const NOTICE_COPY: Record<ClaimProblem, string> = {
+  wrong: "That code isn't right. Check your phone and try again.",
+  rate_limited: "Too many wrong codes. Wait a few minutes, then try again.",
+  offline: "This headset is offline. Check its Wi-Fi, then enter the code again.",
+  unavailable: "Raven isn't answering. Enter the code again in a moment.",
 };
 
 export function PairingScreen({ onSignIn }: { onSignIn: (token: string) => void }) {
-  const { state, retry } = usePairing();
-  const approvedToken = state.phase === "approved" ? state.token : null;
+  const { state, press, backspace } = useKeypad();
+  const signedInToken = state.phase === "signedIn" ? state.token : null;
 
   useEffect(() => {
-    if (!approvedToken) return;
-    const timer = setTimeout(() => onSignIn(approvedToken), SUCCESS_PAUSE_MS);
+    if (!signedInToken) return;
+    const timer = setTimeout(() => onSignIn(signedInToken), SUCCESS_PAUSE_MS);
     return () => clearTimeout(timer);
-  }, [approvedToken, onSignIn]);
+  }, [signedInToken, onSignIn]);
 
-  if (state.phase === "approved") {
+  if (state.phase === "signedIn") {
     return (
       <main className="screen centered">
         <h1>You're signed in</h1>
@@ -35,53 +34,25 @@ export function PairingScreen({ onSignIn }: { onSignIn: (token: string) => void 
     );
   }
 
+  const isChecking = state.phase === "checking";
+  const notice = state.phase === "entering" ? state.notice : null;
+
   return (
     <main className="screen pairing">
       <p className="wordmark">Raven</p>
       <div className="pairing-layout">
-        <div className="qr-frame">
-          {state.phase === "waiting" ? <QrCode value={state.pairing.link} label="Sign-in QR code" /> : <p className="qr-placeholder">{state.phase === "failed" ? "No code yet" : "Getting a code"}</p>}
-        </div>
         <section className="pairing-details">
           <h1>Sign in to Raven</h1>
-          <p className="lead">Scan with the Raven app on your phone</p>
-          <PairingDetails state={state} onRetry={retry} />
+          <p className="lead">
+            On your phone, open Raven, go to Practice, then <strong>Practice in VR</strong>. Enter the 4 digits it shows.
+          </p>
+          <DigitBoxes digits={state.digits} isChecking={isChecking} isWrong={notice === "wrong"} shakes={state.shakes} />
+          <p className={notice ? "pairing-status is-problem" : "pairing-status"} aria-live="polite">
+            {isChecking ? "Checking the code" : notice ? NOTICE_COPY[notice] : " "}
+          </p>
         </section>
+        <Keypad isDisabled={isChecking} onDigit={press} onBackspace={backspace} />
       </div>
     </main>
-  );
-}
-
-function PairingDetails({ state, onRetry }: { state: PairingState; onRetry: () => void }) {
-  if (state.phase === "failed") {
-    return (
-      <div className="problem" role="alert">
-        <p>{PROBLEM_COPY[state.problem]}</p>
-        <button className="button primary" onClick={onRetry}>
-          Try again
-        </button>
-      </div>
-    );
-  }
-  if (state.phase !== "waiting") return null;
-
-  return (
-    <>
-      <p className="code-label">Or type this code in the app</p>
-      <p className="code" aria-label={state.pairing.code.split("").join(" ")}>
-        {formatCode(state.pairing.code)}
-      </p>
-      <p className="status" aria-live="polite">
-        {state.isConnectionLost ? (
-          <span className="status-warning">Can't reach Raven. Still trying.</span>
-        ) : (
-          <span className="status-live">
-            <span className="live-dot" aria-hidden="true" />
-            Waiting for your phone
-          </span>
-        )}
-        <Countdown deadline={state.deadline} />
-      </p>
-    </>
   );
 }

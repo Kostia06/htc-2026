@@ -4,7 +4,7 @@
 
     /// Opens one screen with sample data: launch with `-RavenScreen onboarding` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile
+        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile, pairHeadset
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -23,6 +23,9 @@
             case .voice: DebugVoiceSession()
             case .summary: SessionSummaryView(summary: .offline, onDone: {})
             case .profile: tabs(.profile)
+            case .pairHeadset:
+                NavigationStack { PairHeadsetView(issuer: DemoHeadsetIssuer()) }
+                    .environment(AppModel.preview(profile: .sample))
             }
         }
 

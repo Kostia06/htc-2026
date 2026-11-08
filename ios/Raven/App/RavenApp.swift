@@ -23,7 +23,6 @@ struct RavenApp: App {
             .environment(model)
             .preferredColorScheme(.dark)
             .tint(Theme.action)
-            .onOpenURL { model.handle($0) }
     }
 }
 

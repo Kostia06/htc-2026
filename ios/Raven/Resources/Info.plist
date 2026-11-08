@@ -18,17 +18,6 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>app.raven.pairing</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>raven</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -38,8 +27,6 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Raven uses the camera to scan the code on your headset so it can join your account.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Raven listens while you answer practice questions so it can tell when you've finished and respond.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
