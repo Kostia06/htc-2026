@@ -3,6 +3,7 @@ import { memories as memoryApi } from '../lib/agent'
 import { supabase } from '../lib/supabase'
 import { InterviewPrep, Practice } from './Interview'
 import Recommendations from './Recommendations'
+import ResumeBuilder from './Resume'
 import { pruneResults, useSkill } from './useSkill'
 import { Problem, Steps, Thinking, Updated } from './ui'
 import '../onboarding/onboarding.css'
@@ -35,6 +36,7 @@ function Plan({ userId, stamp, onGo }) {
         </>
       )}
       <div className="db__shortcuts">
+        <button type="button" onClick={() => onGo('resume')}><strong>Polish your resume</strong><span>Sharper wording, nothing made up</span></button>
         <button type="button" onClick={() => onGo('jobs')}><strong>Jobs you could apply for</strong><span>Real postings, checked against your profile</span></button>
         <button type="button" onClick={() => onGo('prep')}><strong>Prepare for an interview</strong><span>Questions candidates were asked</span></button>
         <button type="button" onClick={() => onGo('practice')}><strong>Practise an interview</strong><span>Scored answers and a debrief</span></button>
@@ -138,6 +140,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
 
   const tabs = [
     { id: 'plan', label: 'Your plan', title: 'Your plan', render: () => <Plan userId={userId} stamp={stamp} onGo={go} /> },
+    { id: 'resume', label: 'Resume', title: 'Your resume', render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
     {
       id: 'jobs',
       label: 'Jobs',
