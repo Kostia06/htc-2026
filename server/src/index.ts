@@ -5,6 +5,7 @@ import { researchTracked } from "./agents/background";
 import { liveDeps } from "./agents/live";
 import { agent } from "./api/agent";
 import { experiences } from "./api/experiences";
+import { feed } from "./api/feed";
 import { memories } from "./api/memories";
 import { memory } from "./api/memory";
 import { onboarding } from "./api/onboarding";
@@ -15,6 +16,7 @@ import { research } from "./api/research";
 import { session } from "./api/session";
 import { requireSession } from "./auth/session";
 import type { AppContext, Env } from "./env";
+import { rebuildStaleFeeds } from "./feed/build";
 import { corsForApi } from "./lib/cors";
 import { collectGarbage } from "./memory/gc";
 
@@ -38,6 +40,7 @@ app.route("/api/onboarding", onboarding);
 app.route("/api/pairing", pairing);
 app.route("/api/voice", voice);
 app.route("/api/agent", agent);
+app.route("/api/feed", feed);
 // outside the /api CORS and session middleware: the card is public and /a2a checks its own session
 app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));
 
@@ -46,6 +49,7 @@ export default {
   request: app.request,
   scheduled: async (_event, env, ctx) => {
     ctx.waitUntil(collectGarbage(env));
+    ctx.waitUntil(rebuildStaleFeeds(env));
     ctx.waitUntil(researchTracked(liveDeps(env, (work) => ctx.waitUntil(work))));
   },
 } satisfies ExportedHandler<Env> & { request: typeof app.request };
