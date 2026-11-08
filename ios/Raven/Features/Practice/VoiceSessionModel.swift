@@ -19,6 +19,8 @@ final class VoiceSessionModel: Identifiable {
     private(set) var voiceState: VoiceState = .connecting
     private(set) var level: Float = 0
     private(set) var question: PracticeQuestion?
+    /// 1-based position of the latest planned question the agent reached; nil until it asks the first one.
+    private(set) var questionNumber: Int?
     private(set) var company: String?
     private(set) var tip: String?
     private(set) var answersScored = 0
@@ -38,6 +40,11 @@ final class VoiceSessionModel: Identifiable {
 
     var hasStarted: Bool {
         session != nil
+    }
+
+    /// Planned interview questions; zero for a networking chat.
+    var questionCount: Int {
+        session?.questions.count ?? 0
     }
 
     func run() async {
@@ -84,7 +91,7 @@ final class VoiceSessionModel: Identifiable {
             level = max(newLevel, level * 0.8)
         case let .transcript(speaker, text):
             if speaker == .agent {
-                question = session.questions.first { $0.text == text } ?? PracticeQuestion(text: text)
+                showQuestion(from: text, in: session)
             }
             if let turn = transcript.add(speaker == .agent ? .agent : .person, text) {
                 submit(turn, in: session)
@@ -92,6 +99,18 @@ final class VoiceSessionModel: Identifiable {
         case let .failed(message):
             phase = .failed(message)
             engine.stop()
+        }
+    }
+
+    /// The voice decorates its lines with tags like `[laughs]`; the screen shows the words, and a line that was only tags changes nothing.
+    private func showQuestion(from spokenLine: String, in session: VoiceSession) {
+        let spoken = spokenLine.withoutAudioTags
+        guard !spoken.isEmpty else { return }
+        if let index = session.plannedQuestionIndex(matching: spoken) {
+            question = session.questions[index]
+            questionNumber = index + 1
+        } else {
+            question = PracticeQuestion(text: spoken)
         }
     }
 

@@ -1,32 +1,26 @@
 import RavenKit
 import SwiftUI
 
-/// The debrief: one score, what worked, what to fix and how, question by question. `debrief` is nil while it's being written.
+/// The debrief as one calm page: the score, two things that worked, up to three things to fix, two buttons.
+/// Question-by-question detail waits behind one disclosure at the bottom. `debrief` is nil while it's being written.
 struct SessionSummaryView: View {
     let debrief: SessionDebrief?
     let onPracticeAgain: () -> Void
     let onDone: () -> Void
 
-    @State private var expanded: Set<Int> = []
-
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
+            VStack(alignment: .leading, spacing: 40) {
                 if let debrief {
-                    header(debrief)
-                    section("What worked") {
-                        ForEach(debrief.strengths.indices, id: \.self) { StrengthCard(strength: debrief.strengths[$0]) }
+                    ScoreHeadline(score: debrief.overall, verdict: debrief.verdict)
+                    if !debrief.strengths.isEmpty {
+                        wentWell(debrief.strengths.prefix(2))
                     }
-                    section("What to change", detail: "Tap one to see the rewrite") {
-                        ForEach(debrief.improvements.indices, id: \.self) { index in
-                            ImprovementCard(improvement: debrief.improvements[index], isExpanded: binding(for: index))
-                        }
+                    if !debrief.improvements.isEmpty {
+                        workOnNext(debrief.improvements.prefix(3))
                     }
                     if !debrief.perQuestion.isEmpty {
-                        section("Question by question") { questionList(debrief.perQuestion) }
-                    }
-                    if !debrief.nextSteps.isEmpty {
-                        section("Before the next one") { nextSteps(debrief.nextSteps) }
+                        everyAnswer(debrief.perQuestion)
                     }
                 } else {
                     writing
@@ -41,70 +35,68 @@ struct SessionSummaryView: View {
         .animation(.smooth, value: debrief == nil)
     }
 
-    private func header(_ debrief: SessionDebrief) -> some View {
-        VStack(spacing: 20) {
-            ScoreRing(score: debrief.overall)
-            Text(debrief.verdict)
-                .font(.title3.weight(.semibold))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 12)
-    }
-
-    private var writing: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            HStack(spacing: 14) {
-                Circle()
-                    .stroke(Color(white: 0.16), lineWidth: 12)
-                    .frame(width: 148, height: 148)
-                    .shimmering()
-            }
-            .frame(maxWidth: .infinity)
-            Label("Reviewing what you said…", systemImage: "sparkles")
-                .font(.footnote.weight(.medium))
-                .foregroundStyle(Theme.agent)
-            SkeletonLines().ravenCard()
-            SkeletonLines(widths: [0.5, 0.9, 0.7], highlighted: 0).ravenCard()
-            SkeletonLines(widths: [0.8, 0.6], highlighted: 1).ravenCard()
-        }
-    }
-
-    private func section(_ title: String, detail: String? = nil, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.headline)
-                if let detail {
-                    Text(detail).font(.caption).foregroundStyle(.secondary)
+    private func wentWell(_ strengths: ArraySlice<SessionDebrief.Strength>) -> some View {
+        section("What went well") {
+            ForEach(Array(strengths), id: \.quote) { strength in
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    Image(systemName: "checkmark")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Theme.action)
+                    Text(strength.why)
+                        .font(.body)
                 }
             }
+        }
+    }
+
+    private func workOnNext(_ improvements: ArraySlice<SessionDebrief.Improvement>) -> some View {
+        section("Work on next") {
+            ForEach(Array(improvements.enumerated()), id: \.offset) { index, improvement in
+                ImprovementRow(number: index + 1, improvement: improvement)
+            }
+        }
+    }
+
+    private func everyAnswer(_ results: [SessionDebrief.QuestionResult]) -> some View {
+        DisclosureGroup {
+            VStack(spacing: 0) {
+                ForEach(results.indices, id: \.self) { index in
+                    QuestionRow(result: results[index])
+                    if index < results.count - 1 {
+                        Divider().overlay(Theme.hairline)
+                    }
+                }
+            }
+            .padding(.top, 8)
+        } label: {
+            Text("See every answer")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+        }
+        .tint(.secondary)
+    }
+
+    private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(.secondary)
             content()
         }
     }
 
-    private func questionList(_ results: [SessionDebrief.QuestionResult]) -> some View {
-        VStack(spacing: 0) {
-            ForEach(results.indices, id: \.self) { index in
-                QuestionRow(result: results[index])
-                if index < results.count - 1 {
-                    Divider().overlay(Theme.hairline)
-                }
-            }
+    private var writing: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Theme.raised)
+                .frame(width: 140, height: 72)
+                .shimmering()
+            Label("Reviewing what you said…", systemImage: "waveform")
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(Theme.agent)
+            SkeletonLines(widths: [0.9, 0.6], highlighted: -1)
+            SkeletonLines(widths: [0.8, 0.5, 0.7], highlighted: -1)
         }
-        .ravenCard()
-    }
-
-    private func nextSteps(_ steps: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ForEach(steps.indices, id: \.self) { index in
-                HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: "\(index + 1).circle.fill")
-                        .foregroundStyle(Theme.action)
-                    Text(steps[index]).font(.subheadline)
-                }
-            }
-        }
-        .ravenCard()
     }
 
     private var actions: some View {
@@ -121,14 +113,5 @@ struct SessionSummaryView: View {
         .background(Theme.ground)
         .disabled(debrief == nil)
         .opacity(debrief == nil ? 0.4 : 1)
-    }
-
-    private func binding(for index: Int) -> Binding<Bool> {
-        Binding(
-            get: { expanded.contains(index) },
-            set: { isOpen in
-                if isOpen { expanded.insert(index) } else { expanded.remove(index) }
-            },
-        )
     }
 }

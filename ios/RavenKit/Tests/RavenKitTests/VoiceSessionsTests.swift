@@ -36,6 +36,17 @@ extension StubbedNetworkTests {
             #expect(sent == ["mode": "interview", "role": "Data analyst"])
         }
 
+        @Test func `sends the difficulty only when one was picked`() async throws {
+            StubProtocol.routes.withLock {
+                $0["POST /api/voice/sessions"] = (201, #"{"sessionId":"vs_3","mode":"interview","opening":"Hi."}"#)
+            }
+            _ = try await client.startVoiceSession(.init(mode: .interview, difficulty: .hard))
+
+            let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/voice/sessions"] })
+            let sent = try JSONSerialization.jsonObject(with: body) as? [String: String]
+            #expect(sent == ["mode": "interview", "difficulty": "hard"])
+        }
+
         @Test func `starts a networking chat with a persona and no expiry`() async throws {
             StubProtocol.routes.withLock {
                 $0["POST /api/voice/sessions"] = (201, """

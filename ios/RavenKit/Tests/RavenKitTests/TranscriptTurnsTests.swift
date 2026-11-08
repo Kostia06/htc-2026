@@ -23,6 +23,13 @@ struct TranscriptTurnsTests {
         #expect(turns.add(.agent, "Next question.", at: start) == nil)
     }
 
+    @Test func `sends the question without the voice's expression tags`() {
+        var turns = TranscriptTurns()
+        _ = turns.add(.agent, "[warmly] Why us? [laughs]", at: start)
+        _ = turns.add(.person, "Because of the team.", at: start.addingTimeInterval(1))
+        #expect(turns.flush()?.question == "Why us?")
+    }
+
     @Test func `flushes the answer in progress when the conversation ends`() {
         var turns = TranscriptTurns()
         _ = turns.add(.agent, "Why us?", at: start)

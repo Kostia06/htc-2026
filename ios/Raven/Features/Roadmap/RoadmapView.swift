@@ -49,7 +49,7 @@ struct RoadmapView: View {
     private func startPractice(_ step: RoadmapStep) {
         guard let action = step.action else { return }
         let mode: PracticeMode = action.type == .interview ? .interview : .networking
-        let request = VoiceSessionRequest(mode: mode, companySlug: action.companySlug, role: action.role)
+        let request = VoiceSessionRequest(mode: mode, companySlug: action.companySlug, role: action.role, difficulty: .preferred)
         let session = VoiceSessionModel(request: request, service: voiceService, engine: voiceEngine)
         let launch = PracticeLaunch(step: step, session: session)
         lastPractice = launch

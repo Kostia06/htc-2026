@@ -5,6 +5,7 @@ import SwiftUI
 struct PracticeView: View {
     @Environment(AppModel.self) private var app
     @State private var target = ""
+    @AppStorage(PracticeDifficulty.storageKey) private var difficulty: PracticeDifficulty = .standard
     @State private var activeSession: VoiceSessionModel?
     @State private var isPairing = false
     @State private var isRecapping = false
@@ -17,6 +18,7 @@ struct PracticeView: View {
                         .textInputAutocapitalization(.words)
                         .submitLabel(.done)
                         .ravenCard()
+                    DifficultyPicker(difficulty: $difficulty)
                         .padding(.bottom, 8)
                     choice(
                         .interview, title: "Interview", systemImage: "person.fill.questionmark",
@@ -91,7 +93,7 @@ struct PracticeView: View {
 
     private func start(_ mode: PracticeMode) {
         let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
-        start(VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed))
+        start(VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed, difficulty: difficulty))
     }
 
     /// Also how "Practice again" works: a fresh model replaces the one on screen, so the cover stays up.

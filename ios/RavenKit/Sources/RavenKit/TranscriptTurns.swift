@@ -21,7 +21,9 @@ public struct TranscriptTurns: Sendable {
         switch speaker {
         case .agent:
             let finished = flush()
-            question = trimmed
+            // the scorer should see the question as asked, not the voice's stage directions
+            let spoken = trimmed.withoutAudioTags
+            if !spoken.isEmpty { question = spoken }
             return finished
         case .person:
             guard question != nil else { return nil }

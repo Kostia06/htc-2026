@@ -4,15 +4,22 @@ public enum PracticeMode: String, Codable, Sendable, CaseIterable {
     case interview, networking
 }
 
+/// How hard the interviewer pushes. The server treats a missing value as `standard`.
+public enum PracticeDifficulty: String, Codable, Sendable, CaseIterable {
+    case easy, standard, hard
+}
+
 public struct VoiceSessionRequest: Encodable, Equatable, Sendable {
     public var mode: PracticeMode
     public var companySlug: String?
     public var role: String?
+    public var difficulty: PracticeDifficulty?
 
-    public init(mode: PracticeMode, companySlug: String? = nil, role: String? = nil) {
+    public init(mode: PracticeMode, companySlug: String? = nil, role: String? = nil, difficulty: PracticeDifficulty? = nil) {
         self.mode = mode
         self.companySlug = companySlug
         self.role = role
+        self.difficulty = difficulty
     }
 }
 
