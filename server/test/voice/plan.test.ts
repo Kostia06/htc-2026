@@ -1,0 +1,68 @@
+import { describe, expect, it } from "vitest";
+import { emptyProfile } from "../../src/memory/profile/patch";
+import { buildInterviewPlan, buildNetworkingPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
+import { inputs, profile } from "./fixtures";
+
+const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
+
+describe("interview plan", () => {
+  it("opens with the person's own resume, then what people reported, then their field", () => {
+    const plan = buildInterviewPlan(inputs());
+    expect(plan.questions.map((q) => q.source)).toEqual(["resume", "resume", "reported", "technical", "technical"]);
+    expect(plan.questions.length).toBeLessThanOrEqual(MAX_QUESTIONS);
+  });
+
+  it("keeps every question short and conversational", () => {
+    for (const question of buildInterviewPlan(inputs()).questions) expect(words(question.text)).toBeLessThanOrEqual(MAX_WORDS);
+  });
+
+  it("says what it saw on the resume, in plain words", () => {
+    const [first, second] = buildInterviewPlan(inputs()).questions;
+    expect(first.text).toMatch(/^I saw you built a Python Flask API/);
+    expect(first.text).toContain("ATB Financial");
+    expect(second.text).toMatch(/^I saw you wrote SQL reports/);
+  });
+
+  it("asks about research the way a person would", () => {
+    const researcher = { ...profile, experience: [{ role: "Research Assistant", org: "Starfish" }], skills: [] };
+    const [first] = buildInterviewPlan(inputs({ profile: researcher })).questions;
+    expect(first.text).toBe("I saw you did research for Starfish. Could you tell me about that?");
+  });
+
+  it("matches technical questions to the target role, not just the degree", () => {
+    const technical = (role: string) =>
+      buildInterviewPlan(inputs({ role, reportedQuestions: [], profile: emptyProfile() })).questions.filter((q) => q.source === "technical");
+    expect(technical("Junior data analyst")[0].text).toMatch(/missing values/);
+    expect(technical("Software developer")[0].text).toMatch(/web address/);
+    expect(technical("Staff accountant")[0].text).toMatch(/financial statements/);
+    expect(technical("Registered nurse")[0].text).toMatch(/patient/);
+    expect(technical("Marketing coordinator")).toHaveLength(2);
+  });
+
+  it("skips reported questions too long to say naturally", () => {
+    const long = { text: "Please describe in great detail every single step of the process you would follow to migrate a legacy data warehouse to the cloud.", last_reported_at: null };
+    const plan = buildInterviewPlan(inputs({ reportedQuestions: [long] }));
+    expect(plan.questions.some((q) => q.source === "reported")).toBe(false);
+  });
+
+  it("falls back to short behavioural questions with no company, resume or known field", () => {
+    const plan = buildInterviewPlan(inputs({ role: "entry-level", company: null, reportedQuestions: [], facts: [], profile: emptyProfile() }));
+    expect(plan.questions.length).toBe(MAX_QUESTIONS);
+    expect(plan.questions.every((q) => q.source === "behavioral")).toBe(true);
+  });
+});
+
+describe("networking plan", () => {
+  it("meets someone from the company and talks about what the company is doing", () => {
+    const plan = buildNetworkingPlan(inputs());
+    expect(plan.persona.company).toBe("Acme");
+    expect(plan.talkingPoints).toContain("Acme opened a Calgary office in 2026.");
+    expect(plan.goals).toHaveLength(3);
+  });
+
+  it("falls back to a Calgary meetup when no company is chosen", () => {
+    const plan = buildNetworkingPlan(inputs({ company: null, facts: [] }));
+    expect(plan.persona.company).toBeNull();
+    expect(plan.talkingPoints.length).toBeGreaterThanOrEqual(3);
+  });
+});

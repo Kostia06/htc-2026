@@ -10,6 +10,14 @@ async function addExperience(i: number, seeded = 0) {
   ).bind(`e${i}`, JSON.stringify([`Question ${i}`, "Tell me about yourself"]), seeded, new Date().toISOString()).run();
 }
 
+async function addReport(id: string, questions: string[], createdAt: string, seeded = 0) {
+  await env.DB.prepare(
+    "INSERT INTO experiences (id, company_id, role, questions_json, is_seeded, created_at) VALUES (?, 'c1', 'Junior Developer', ?, ?, ?)",
+  ).bind(id, JSON.stringify(questions), seeded, createdAt).run();
+}
+
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
+
 describe("company insights", () => {
   beforeEach(async () => {
     await env.DB.prepare("INSERT INTO companies (id, slug, name) VALUES ('c1', 'acme', 'Acme')").run();
@@ -49,6 +57,40 @@ describe("company insights", () => {
     ).bind(JSON.stringify(["A very specific question only I was asked"]), new Date().toISOString()).run();
     const out = await getCompanyInsights(env, "acme");
     expect(out?.questions.map((q) => q.text)).not.toContain("A very specific question only I was asked");
+  });
+
+  it("ranks a question reported recently above one reported more often long ago", async () => {
+    for (const id of ["old1", "old2", "old3"]) await addReport(id, ["Old favourite"], daysAgo(400));
+    await addReport("new1", ["Brand new question"], daysAgo(2));
+    const out = await getCompanyInsights(env, "acme");
+    expect(out?.questions.map((q) => q.text)).toEqual(["Brand new question", "Old favourite"]);
+    expect(out?.questions[1].count).toBe(3);
+  });
+
+  it("still ranks by count among questions reported around the same time", async () => {
+    await addReport("a", ["Common", "Rare"], daysAgo(10));
+    await addReport("b", ["Common"], daysAgo(10));
+    await addReport("c", ["Common"], daysAgo(10));
+    const out = await getCompanyInsights(env, "acme");
+    expect(out?.questions.map((q) => q.text)).toEqual(["Common", "Rare"]);
+  });
+
+  it("says in which month each real question was last reported, and nothing for examples", async () => {
+    await addReport("r1", ["Design a parking lot"], "2026-06-01T00:00:00.000Z");
+    await addReport("r2", ["Design a parking lot"], "2026-10-01T00:00:00.000Z");
+    await addReport("r3", ["Other"], "2026-09-01T00:00:00.000Z");
+    await addReport("s1", ["Why Acme?"], "2026-11-01T00:00:00.000Z", 1);
+    const out = await getCompanyInsights(env, "acme");
+    const byText = Object.fromEntries((out?.questions ?? []).map((q) => [q.text, q]));
+    expect(byText["Design a parking lot"].last_reported_at).toBe("2026-10");
+    expect(byText["Why Acme?"]).toMatchObject({ example: true, last_reported_at: null });
+    expect(out?.questions.at(-1)?.text).toBe("Why Acme?");
+  });
+
+  it("keeps fresh reports hidden while there are fewer than 3", async () => {
+    await addReport("n1", ["Fresh one"], daysAgo(1));
+    await addReport("n2", ["Fresh one"], daysAgo(1));
+    expect((await getCompanyInsights(env, "acme"))?.questions).toEqual([]);
   });
 
   it("returns null for an unknown company", async () => {

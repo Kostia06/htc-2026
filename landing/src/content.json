@@ -1,0 +1,406 @@
+{
+  "_readme": "All page copy lives here. Partials reference keys as {{ path.to.key }} (HTML-escaped) or {{{ path.to.key }}} (raw HTML). Any value may contain {brand}, which is replaced with the brand name below.",
+  "brand": "Raven",
+  "wordmark": "raven",
+  "links": {
+    "_note": "app / login: the product app's sign-up and sign-in screens. {appUrl} comes from APP_URL (landing/.env.local), default /app (same site).",
+    "app": "{appUrl}/?mode=signup",
+    "login": "{appUrl}/?mode=signin",
+    "how": "#how",
+    "actions": "#actions",
+    "why": "#why",
+    "faq": "#faq",
+    "cta": "#cta",
+    "repo": "https://github.com/Kostia06/htc-2026",
+    "email": "[TEAM EMAIL]"
+  },
+  "meta": {
+    "title": "{brand}: the job search actions you're missing",
+    "description": "Applying is one action. {brand} gives you the rest: events to attend, what to say, who to follow up with, and which startups are about to hire.",
+    "ogImage": "/og.png",
+    "ogImageAlt": "{brand}: Applying is one action. Getting hired takes ten."
+  },
+  "nav": {
+    "items": [
+      {
+        "label": "How it works",
+        "href": "#how"
+      },
+      {
+        "label": "Actions",
+        "href": "#actions"
+      },
+      {
+        "label": "Why Raven",
+        "href": "#why"
+      },
+      {
+        "label": "FAQ",
+        "href": "#faq"
+      }
+    ],
+    "primary": "Get my plan",
+    "secondary": "Sign in",
+    "menuLabel": "Open menu",
+    "homeLabel": "{brand} home"
+  },
+  "hero": {
+    "eyebrow": "Job search, without the black hole",
+    "title": "Applying isn't a strategy. Moving is.",
+    "subtitle": "{brand} turns the job you want into a weekly list of real actions: which events to show up to, what to say, and who to follow up with.",
+    "primary": "Get my plan",
+    "secondary": "See how it works",
+    "widgets": [
+      {
+        "label": "This week",
+        "value": "3 actions",
+        "tone": "orange"
+      },
+      {
+        "label": "Shortlist",
+        "value": "See which jobs to apply to",
+        "tone": "violet"
+      },
+      {
+        "label": "Event",
+        "value": "Thu · JS Meetup",
+        "tone": "blue"
+      },
+      {
+        "label": "Draft",
+        "value": "Brainstorm your opener",
+        "tone": "violet"
+      },
+      {
+        "label": "Talking points",
+        "value": "5 ready",
+        "tone": "orange"
+      },
+      {
+        "label": "Practice",
+        "value": "10-minute mock interview",
+        "tone": "green"
+      },
+      {
+        "label": "Follow up",
+        "value": "Within 24 hours",
+        "tone": "orange"
+      },
+      {
+        "label": "Funding news",
+        "value": "A local startup just raised",
+        "tone": "green"
+      },
+      {
+        "label": "Research",
+        "value": "Read their latest launch",
+        "tone": "blue"
+      },
+      {
+        "label": "Next move",
+        "value": "Say hello to the speaker",
+        "tone": "violet"
+      },
+      {
+        "label": "Reminder",
+        "value": "Send your thank-you note",
+        "tone": "blue"
+      }
+    ]
+  },
+  "stats": {
+    "heading": "Applying is one action. Getting hired takes ten. {brand} tells you the other nine.",
+    "label": "What your week looks like",
+    "items": [
+      {
+        "number": "3",
+        "caption": "actions every week, picked for the role you want"
+      },
+      {
+        "number": "1",
+        "caption": "local event worth showing up to"
+      },
+      {
+        "number": "5",
+        "caption": "talking points ready before you walk in"
+      },
+      {
+        "number": "24h",
+        "caption": "follow-up window, and a draft waiting for you"
+      }
+    ],
+    "actionCard": {
+      "title": "Thursday · Calgary JS Meetup",
+      "body": "Ask about their move to TypeScript. They posted a junior role last week.",
+      "button": "Add to my plan"
+    }
+  },
+  "stages": {
+    "heading": "Wherever you're starting",
+    "intro": "Most job advice assumes you're already halfway there. {brand} starts from where you actually are.",
+    "cards": [
+      {
+        "title": "Starting from zero",
+        "body": "No experience, no network, no idea where to begin. {brand} picks your first three moves: one event, one skill to show off, and one person worth meeting.",
+        "link": "See the first week",
+        "screen": "Your first week",
+        "rows": [
+          "Go to one local meetup",
+          "Show one project you built",
+          "Meet one person who hires"
+        ]
+      },
+      {
+        "title": "Skills, but no callbacks",
+        "body": "You've applied everywhere and heard nothing. {brand} shifts your time from applications to the conversations that get your name in front of people who hire.",
+        "link": "See what changes",
+        "screen": "Where your time goes",
+        "rows": [
+          "Fewer cold applications",
+          "More real conversations",
+          "Follow-ups that land"
+        ]
+      },
+      {
+        "title": "Interviews coming up",
+        "body": "You're getting calls. {brand} helps you prepare for that exact role, practise out loud, and follow up so you're the one they remember.",
+        "link": "See interview prep",
+        "screen": "Interview prep",
+        "rows": [
+          "Questions from the posting",
+          "Practise out loud",
+          "Follow up the same day"
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "heading": "The actions most people skip",
+    "intro": "Job boards show you postings. {brand} shows you what to do about them, one small step at a time.",
+    "featureTag": "Your weekly action plan",
+    "featureBody": "Tell {brand} the role you want. Each week it checks local events, company news and new job postings, then gives you three things to do, with the words already drafted. You do the actions; {brand} does the homework.",
+    "cards": [
+      {
+        "title": "Event radar",
+        "body": "Pulls meetups, hackathons and career fairs near you that match your target role, and flags which companies will be in the room."
+      },
+      {
+        "title": "What to say",
+        "body": "A short, natural opener for the people you'll meet, based on who they are and what they're working on. No scripts that sound like scripts."
+      },
+      {
+        "title": "Things to talk about",
+        "body": "Two or three real topics per company, from their recent news, product launches and the tech they hire for, so the conversation goes past \"so, what do you do?\""
+      },
+      {
+        "title": "Funding watch",
+        "body": "Startups that just raised money are about to hire. {brand} watches funding news, including new Y Combinator batches and local raises, and tells you when to reach out."
+      },
+      {
+        "title": "Follow-up nudges",
+        "body": "Met someone? {brand} reminds you within 24 hours and drafts the message. You always review it and hit send yourself."
+      },
+      {
+        "title": "Interview practice",
+        "body": "Practise out loud for the specific role, with questions built from the actual posting. Get feedback on what to tighten."
+      }
+    ],
+    "art": {
+      "events": [
+        "Meetup",
+        "Hackathon",
+        "Career fair"
+      ],
+      "opener": "Hi, I saw your talk on moving to TypeScript. How did the team handle the switch?",
+      "topics": [
+        "Recent news",
+        "Product launch",
+        "Tech they hire for",
+        "Open roles"
+      ],
+      "funding": {
+        "label": "Just raised",
+        "value": "Seed round",
+        "note": "Reach out this week"
+      },
+      "followup": {
+        "label": "Draft ready",
+        "body": "Great meeting you on Thursday. Thanks for the tip about the junior role.",
+        "button": "Review and send"
+      },
+      "practice": {
+        "label": "Practice question",
+        "body": "Tell me about a project where you had to learn a new tool fast."
+      }
+    }
+  },
+  "sources": {
+    "line": "Built at <strong>Hack the Change 2026</strong>, University of Calgary, on public job postings, event listings and startup funding news.",
+    "labels": [
+      "Job postings",
+      "Local events",
+      "Company news",
+      "Funding news",
+      "Your own notes"
+    ]
+  },
+  "week": {
+    "heading": "What a week with {brand} looks like",
+    "intro": "Small, specific moves, each one built on the last.",
+    "introMuted": "These are example actions, not real users.",
+    "label": "Example plan",
+    "cards": [
+      {
+        "day": "Mon",
+        "title": "Monday · Funding news",
+        "body": "A Calgary software startup just announced a new funding round. Send its engineering lead three lines: congrats, one thing you liked about the product, and a question.",
+        "link": "See the draft"
+      },
+      {
+        "day": "Tue",
+        "title": "Tuesday · Pick your event",
+        "body": "Two meetups this week. {brand} recommends Thursday's: the speaker's company posted a junior role, and smaller rooms mean real conversations.",
+        "link": "See why"
+      },
+      {
+        "day": "Wed",
+        "title": "Wednesday · Prep the room",
+        "body": "Five talking points for Thursday, one per company likely to attend, each tied to something they shipped or announced recently.",
+        "link": "See talking points"
+      },
+      {
+        "day": "Thu",
+        "title": "Thursday · Show up",
+        "body": "Your opener for the speaker, plus one question that shows you actually read their work. Ten minutes of prep, not two hours.",
+        "link": "See the opener"
+      },
+      {
+        "day": "Fri",
+        "title": "Friday · Follow up",
+        "body": "You met three people. {brand} drafted three short follow-ups from your notes. Edit, send, and log who replied.",
+        "link": "See follow-ups"
+      },
+      {
+        "day": "Wknd",
+        "title": "Weekend · Practise",
+        "body": "One of them mentioned an opening. Do a 10-minute practice interview for that exact role before Monday.",
+        "link": "Try a question"
+      }
+    ]
+  },
+  "why": {
+    "headingLine1": "Why not",
+    "headingLine2": "just apply?",
+    "sub": "You should still apply. It's just not enough on its own.",
+    "insteadLabel": "Instead of",
+    "doLabel": "Do this",
+    "cards": [
+      {
+        "instead": "Sending your 80th application",
+        "do": "Have one real conversation with someone at the company"
+      },
+      {
+        "instead": "Waiting for a posting",
+        "do": "Reach out when a startup announces funding, before the posting goes up"
+      },
+      {
+        "instead": "Going to an event and standing by the snacks",
+        "do": "Walk in with an opener and three things to talk about"
+      },
+      {
+        "instead": "\"Nice to meet you\" and nothing after",
+        "do": "Follow up within 24 hours, while they still remember you"
+      },
+      {
+        "instead": "Rehearsing generic interview answers",
+        "do": "Practise the questions for that exact role, out loud"
+      },
+      {
+        "instead": "Guessing what to do next",
+        "do": "Get three clear actions every Monday"
+      }
+    ],
+    "cta": "Get my plan"
+  },
+  "faq": {
+    "heading": "Questions and answers",
+    "items": [
+      {
+        "q": "Do I still need to apply to jobs?",
+        "a": "Yes. {brand} doesn't replace applying; it adds the actions that make applications work. Most people only apply and wait. {brand} adds the events, conversations and follow-ups that get your name in front of the person who decides."
+      },
+      {
+        "q": "How is this different from asking ChatGPT?",
+        "a": "A chatbot gives advice when you ask. {brand} checks real local events, company news and funding announcements every week, remembers what you've already done, and hands you the next three actions without you having to ask the right question."
+      },
+      {
+        "q": "Where do the events and news come from?",
+        "a": "Public sources: event listings, job postings, company announcements and startup funding news. Each action shows where its information came from, so you can check it yourself."
+      },
+      {
+        "q": "Will {brand} message people for me?",
+        "a": "No. {brand} drafts openers and follow-ups, but you always review, edit and send them yourself. Nothing goes out in your name without you."
+      },
+      {
+        "q": "What do you store about me?",
+        "a": "Your goals and notes stay on your device by default. Sharing anonymous outcomes, like which events led to interviews, is opt-in, and you can delete everything at any time."
+      },
+      {
+        "q": "Is it only for tech jobs?",
+        "a": "We're starting with tech roles, because event and funding data is easiest to find for them. The same approach (show up, talk, follow up) works in any field, and more are on the roadmap."
+      },
+      {
+        "q": "Which cities does it work in?",
+        "a": "Calgary first. {brand} is built at a Calgary hackathon and tuned to local events and companies. Other cities come next."
+      },
+      {
+        "q": "How much does it cost?",
+        "a": "Free while we're in beta."
+      }
+    ]
+  },
+  "cta": {
+    "heading": "Your next move is waiting",
+    "body": "Tell {brand} the job you want. Get your first three actions in two minutes.",
+    "primary": "Get my plan",
+    "secondary": "See how it works",
+    "screen": {
+      "title": "Next 3 moves",
+      "week": "This week",
+      "moves": [
+        {
+          "tag": "Event",
+          "text": "Go to Thursday's JS meetup"
+        },
+        {
+          "tag": "Reach out",
+          "text": "Congratulate a startup on its new funding round"
+        },
+        {
+          "tag": "Follow up",
+          "text": "Send the draft to the speaker you met"
+        }
+      ]
+    }
+  },
+  "fab": "Get my plan",
+  "footer": {
+    "product": "Product",
+    "project": "Project",
+    "contact": "Contact",
+    "projectLinks": {
+      "hackathon": "Hack the Change 2026",
+      "team": "Our team",
+      "repo": "GitHub"
+    },
+    "legal": "© 2026 {brand} · Built at Hack the Change, Calgary",
+    "place": "Calgary, Alberta"
+  },
+  "cookies": {
+    "text": "{brand} only stores what the site needs to work. If we add analytics later, they stay off unless you choose Accept.",
+    "deny": "Deny all",
+    "accept": "Accept",
+    "label": "Cookie preferences",
+    "settings": "Cookie settings"
+  }
+}

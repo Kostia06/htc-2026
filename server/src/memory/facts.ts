@@ -2,7 +2,8 @@ import type { Env } from "../env";
 import { sha256 } from "../lib/hash";
 import { upsertVector } from "./vectors";
 
-export type FactKind = "about" | "hiring" | "interview" | "tech" | "news";
+export type FactKind = "about" | "hiring" | "interview" | "interview_process" | "tech" | "news";
+export const FACT_KINDS: FactKind[] = ["about", "hiring", "interview", "interview_process", "tech", "news"];
 export type NewFact = { kind: FactKind; text: string; source_url: string };
 
 export const deps = { upsertVector };

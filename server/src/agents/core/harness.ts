@@ -1,13 +1,12 @@
 import type { Env } from "../../env";
 import { schemaError } from "../../lib/json-schema";
 import { scrubStrings } from "../../lib/scrub";
-import { tools as registry } from "../tools";
-import { finishTool } from "../tools/finish";
+import { finishTool } from "../shared-tools/finish";
 import { withBudget } from "./budget";
 import { runAgent, type Tool, type ToolCallRecord } from "./loop";
 import { systemPrompt } from "./prompt";
 import { recordRunDone, recordRunFailed, recordRunStart } from "./runs";
-import type { AgentDeps, CompanyRef, PrivateMemoryPort, RunRequest, RunResult, Skill, ToolContext, ToolDefinition } from "./types";
+import type { AgentDeps, CompanyRef, PrivateMemoryPort, RunRequest, RunResult, Skill, ToolContext, ToolDefinition, Toolbox } from "./types";
 
 const PERSONAL_CONTEXT_LIMIT = 8;
 
@@ -20,11 +19,15 @@ export class RunRejected extends Error {
   }
 }
 
+const noPrivateAccess = async (): Promise<never> => {
+  throw new Error("this skill has no access to private memory");
+};
+
 const NO_MEMORY: PrivateMemoryPort = {
   recall: async () => [],
-  remember: async () => {
-    throw new Error("this skill has no access to private memory");
-  },
+  remember: noPrivateAccess,
+  profile: noPrivateAccess,
+  updateProfile: noPrivateAccess,
 };
 
 // validates and records the run, then hands back its result as a promise so callers can wait or not
@@ -58,11 +61,12 @@ async function execute(deps: AgentDeps, request: RunRequest, runId: string, comp
       triedPages: new Set(),
       memory,
       services: deps.services,
+      groundingText: skill.groundingText?.(input),
     };
 
     const run = await runAgent({
       model: deps.model(systemPrompt(skill, platform, memories)),
-      tools: bindTools(skill, ctx),
+      tools: bindTools(skill, request.tools, ctx),
       goal: skill.buildGoal(input, ctx),
       maxSteps: skill.maxSteps,
     });
@@ -71,7 +75,7 @@ async function execute(deps: AgentDeps, request: RunRequest, runId: string, comp
       return fail(deps.env, runId, `the agent ${reason}`, run.toolCalls);
     }
 
-    const output = scrubStrings(skill.finalize?.(run.output, run.toolCalls) ?? run.output);
+    const output = scrubStrings(skill.finalize?.(run.output, run.toolCalls, input) ?? run.output);
     await recordRunDone(deps.env, runId, output);
     return { runId, status: "done", output, toolCalls: run.toolCalls };
   } catch (e) {
@@ -92,15 +96,14 @@ async function resolveCompany(env: Env, input: unknown): Promise<CompanyRef | un
   return company;
 }
 
-function registered(name: string) {
-  const tool = registry[name];
-  if (!tool) throw new Error(`skill uses unknown tool ${name}`);
-  return tool;
+function fromToolbox(tools: Toolbox, name: string) {
+  if (!Object.hasOwn(tools, name)) throw new Error(`skill uses ${name}, which its agent does not hold`);
+  return tools[name];
 }
 
 // the model sees only what the skill allows, each tool bound to this run's context
-function bindTools(skill: Skill, ctx: ToolContext): Record<string, Tool> {
-  const definitions: ToolDefinition[] = [...skill.tools.map(registered), finishTool(skill.outputSchema)];
+function bindTools(skill: Skill, tools: Toolbox, ctx: ToolContext): Record<string, Tool> {
+  const definitions: ToolDefinition[] = [...skill.tools.map((name) => fromToolbox(tools, name)), finishTool(skill.outputSchema)];
   const bound = definitions.map((d): [string, Tool] => [
     d.name,
     {

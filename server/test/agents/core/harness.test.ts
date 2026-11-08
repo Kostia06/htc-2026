@@ -2,6 +2,8 @@ import { env } from "cloudflare:workers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RunRejected, runSkill, startSkill } from "../../../src/agents/core/harness";
 import type { Skill } from "../../../src/agents/core/types";
+import { readDocumentTool } from "../../../src/agents/resume/tools/read-document";
+import { recall } from "../../../src/agents/shared-tools/recall";
 import { call, fakeDeps, fakeMemory } from "../fakes";
 
 const skill: Skill<{ company?: string; topic: string }> = {
@@ -17,7 +19,7 @@ const skill: Skill<{ company?: string; topic: string }> = {
   buildGoal: (input, ctx) => `Summarise ${input.topic}${ctx.company ? ` at ${ctx.company.name}` : ""}.`,
 };
 
-const request = (over: Record<string, unknown> = {}) => ({ skill, platform: "app" as const, userId: "u1", input: { topic: "SQL" }, ...over });
+const request = (over: Record<string, unknown> = {}) => ({ skill, tools: { recall }, platform: "app" as const, userId: "u1", input: { topic: "SQL" }, ...over });
 
 async function runRow(runId: string) {
   return env.DB.prepare("SELECT * FROM agent_runs WHERE id = ?").bind(runId).first<Record<string, string>>();
@@ -82,6 +84,14 @@ describe("runSkill", () => {
     expect(prompts[0]).toContain("Write a summary about the topic.");
     expect(prompts[0]).toContain("read aloud");
     expect(prompts[0]).toContain("[weakness] Rambles on behavioural answers");
+  });
+
+  it("binds only tools from the request's toolbox, so a skill can't reach another agent's tool", async () => {
+    const { deps, toolNames } = fakeDeps();
+    const greedy = { ...skill, tools: ["recall", readDocumentTool.name] };
+    const result = await runSkill(deps, request({ skill: greedy }));
+    expect(result).toMatchObject({ status: "failed", error: expect.stringContaining("read_document") });
+    expect(toolNames).toEqual([]);
   });
 
   it("never opens private memory for a skill that isn't personal", async () => {

@@ -1,7 +1,7 @@
 import type { Tool } from "./loop";
 
 // on top of the skill's maxSteps: one step can hold several calls, so steps alone don't bound cost
-export const RUN_LIMITS = { totalCalls: 25, perTool: { fetch_page: 6 } as Record<string, number> };
+export const RUN_LIMITS = { totalCalls: 25, perTool: { fetch_page: 6, job_postings: 3, hn_search: 3, devto_search: 3 } as Record<string, number> };
 
 export function withBudget(tools: Record<string, Tool>, limits = RUN_LIMITS): Record<string, Tool> {
   let total = 0;

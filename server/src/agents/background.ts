@@ -1,7 +1,7 @@
 import type { Env } from "../env";
-import { RunRejected, startSkill } from "./core/harness";
+import { RunRejected } from "./core/harness";
 import type { AgentDeps, RunResult } from "./core/types";
-import { researchCompany as researchCompanySkill } from "./skills/research-company";
+import { dispatch } from "./orchestrator";
 
 // background runs act for nobody in particular; this id never matches a real session
 const BACKGROUND_USER = "background";
@@ -20,9 +20,9 @@ export async function claimResearch(env: Env, slug: string) {
 
 // null while the company is on cooldown; otherwise the run is recorded and still going
 export async function startResearch(deps: AgentDeps, slug: string) {
-  const request = { skill: researchCompanySkill, platform: "background" as const, userId: BACKGROUND_USER, input: { company: slug } };
+  const task = { skillId: "research-company", platform: "background" as const, userId: BACKGROUND_USER, input: { company: slug } };
   try {
-    return await startSkill(deps, request);
+    return await dispatch(deps, task);
   } catch (e) {
     if (e instanceof RunRejected && e.status === 429) return null;
     throw e;

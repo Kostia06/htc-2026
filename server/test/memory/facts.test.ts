@@ -16,6 +16,13 @@ describe("saveFact", () => {
     expect(row?.fetched_at).toBeTruthy();
   });
 
+  it("stores interview_process facts", async () => {
+    const out = await saveFact(env, "c1", { kind: "interview_process", text: "Phone screen, then onsite", source_url: "https://acme.com/hiring" });
+    expect(out.saved).toBe(true);
+    const row = await env.DB.prepare("SELECT kind FROM company_facts").first<{ kind: string }>();
+    expect(row?.kind).toBe("interview_process");
+  });
+
   it("ignores a duplicate fact", async () => {
     const fact = { kind: "hiring" as const, text: "Hiring juniors", source_url: "https://acme.com/careers" };
     await saveFact(env, "c1", fact);

@@ -1,0 +1,151 @@
+.pairing {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pairing-layout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 96px;
+  flex-wrap: wrap;
+}
+
+.pairing-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 600px;
+}
+
+.pairing-details strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.digit-boxes {
+  margin-top: 16px;
+  display: flex;
+  gap: 20px;
+}
+
+.digit-box {
+  width: 112px;
+  height: 140px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 80px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 120ms ease-out;
+}
+
+.digit-box.is-next {
+  border-color: var(--accent);
+}
+
+.is-checking .digit-box {
+  border-color: var(--text-muted);
+  animation: checking 900ms ease-in-out infinite;
+}
+
+.is-wrong .digit-box {
+  border-color: var(--danger);
+}
+
+.shake {
+  animation: shake 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.pairing-status {
+  min-height: 1.4em;
+  color: var(--text-muted);
+}
+
+.pairing-status.is-problem {
+  color: var(--warning);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 120px);
+  grid-auto-rows: 108px;
+  gap: 16px;
+}
+
+.key {
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 52px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  box-shadow: 0 6px 0 var(--key-edge);
+  transition:
+    transform 60ms ease-out,
+    box-shadow 60ms ease-out,
+    background-color 120ms ease-out,
+    border-color 120ms ease-out;
+}
+
+.key:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+.key:active:not(:disabled) {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--key-edge);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--background);
+}
+
+.key:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.key-quiet {
+  color: var(--text-muted);
+}
+
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-16px);
+  }
+  40%,
+  80% {
+    transform: translateX(16px);
+  }
+}
+
+@keyframes checking {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake,
+  .is-checking .digit-box {
+    animation: none;
+  }
+
+  .key {
+    transition: none;
+  }
+}

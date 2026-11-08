@@ -1,0 +1,82 @@
+.practice {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.practice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.practice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 32px;
+}
+
+.practice-option {
+  min-height: 280px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  text-align: left;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 28px;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.practice-option:hover {
+  border-color: var(--accent);
+}
+
+.practice-title {
+  font-size: 56px;
+  line-height: 1.1;
+}
+
+.practice-hint {
+  color: var(--text-muted);
+}
+
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 132px;
+}
+
+.skeleton {
+  display: block;
+  border-radius: 16px;
+  background: var(--surface);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-title {
+  width: min(640px, 80%);
+  height: 70px;
+}
+
+.skeleton-line {
+  width: min(420px, 60%);
+  height: 40px;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

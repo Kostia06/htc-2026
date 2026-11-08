@@ -1,0 +1,93 @@
+<footer class="footer" data-section="footer" data-section-color="black">
+  <div class="container is-footer">
+    <div class="footer-main">
+      <div class="nav-block">
+        <div class="footer-col">
+          <div class="footer-secondary-link-list">
+            <div class="footer-link main r-static">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link white">{{ footer.product }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.product }}</div>
+              </div>
+            </div>
+            <a class="footer-link" href="{{ nav.items.0.href }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ nav.items.0.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.0.label }}</div>
+              </div>
+            </a>
+            <a class="footer-link" href="{{ nav.items.1.href }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ nav.items.1.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.1.label }}</div>
+              </div>
+            </a>
+            <a class="footer-link" href="{{ nav.items.2.href }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ nav.items.2.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.2.label }}</div>
+              </div>
+            </a>
+            <a class="footer-link" href="{{ nav.items.3.href }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ nav.items.3.label }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ nav.items.3.label }}</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-secondary-link-list">
+            <div class="footer-link main r-static">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link white">{{ footer.project }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.project }}</div>
+              </div>
+            </div>
+            <div class="footer-link r-static">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ footer.projectLinks.hackathon }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.hackathon }}</div>
+              </div>
+            </div>
+            <div class="footer-link r-static">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ footer.projectLinks.team }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.team }}</div>
+              </div>
+            </div>
+            <a class="footer-link" href="{{ links.repo }}" target="_blank" rel="noopener">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ footer.projectLinks.repo }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.projectLinks.repo }}</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-secondary-link-list">
+            <div class="footer-link main r-static">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link white">{{ footer.contact }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ footer.contact }}</div>
+              </div>
+            </div>
+            <a class="footer-link" href="mailto:{{ links.email }}">
+              <div class="footer-flip-hover">
+                <div class="footer-nav-link">{{ links.email }}</div>
+                <div class="footer-nav-link hover" aria-hidden="true">{{ links.email }}</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="links-block">
+        <a class="email-link" href="mailto:{{ links.email }}">{{ links.email }}</a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div class="copy max-w-14">{{ footer.legal }}</div>
+      <div class="copy">{{ footer.place }} · <button class="cookie-settings" type="button" data-cookie-settings>{{ cookies.settings }}</button></div>
+    </div>
+  </div>
+</footer>
