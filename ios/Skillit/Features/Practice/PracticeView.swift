@@ -17,6 +17,8 @@ struct PracticeView: View {
     @State private var headsetNotice: String?
     @State private var isRecapping = false
     @State private var replaying: PracticeSessionSummary?
+    /// loaded when Practice appears, so the picker's In VR knows at once whether a headset is listening
+    @State private var headset = HeadsetLinkModel()
     @AppStorage(InterviewTargetPicker.lastChoiceKey) private var lastChoice: Data?
 
     var body: some View {
@@ -64,7 +66,7 @@ struct PracticeView: View {
             .sheet(isPresented: $isRecapping) { RecapView(companySlug: nil, voice: ElevenLabsRecapVoice()) }
             // the session starts once the picker is fully gone; iOS drops a cover presented while a sheet is closing
             .sheet(isPresented: $isPicking, onDismiss: startPending) {
-                InterviewTargetPicker(postings: postings.postings) { pending = $0 }
+                InterviewTargetPicker(postings: postings.postings, headset: headset) { pending = $0 }
             }
             .sheet(isPresented: $isPickingForHeadset, onDismiss: sendPendingToHeadset) {
                 InterviewTargetPicker(postings: postings.postings, sendsToHeadset: true) { headsetPending = $0 }
@@ -78,6 +80,7 @@ struct PracticeView: View {
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
             .task(id: app.updatesApplied) { await postings.load(using: app.client) }
+            .task { await preload() }
             .task(id: activeSession == nil) {
                 // reloads when a session closes, so the card shows the score just earned
                 guard activeSession == nil else { return }
@@ -181,6 +184,15 @@ struct PracticeView: View {
         }
         .foregroundStyle(.primary)
         .skillitCard()
+    }
+
+    /// Everything a start needs that costs nothing, fetched while they look at the screen: the known companies
+    /// and whether a headset is listening. The target is already local (last choice, else profile role). No voice
+    /// session is opened here: that call, and the ElevenLabs credit it spends, waits for the tap.
+    private func preload() async {
+        guard let client = app.client else { return }
+        await headset.refresh(using: client)
+        if !app.companies.hasLoaded { await app.companies.refresh(using: client) }
     }
 
     private func startPending() {

@@ -12,6 +12,10 @@ struct InterviewTargetPicker: View {
     @State private var selected: InterviewTarget?
     @State private var other = ""
     @State private var localCompany: String?
+    @State private var isPairing = false
+    @State private var isSending = false
+    @State private var sentToHeadset = false
+    @State private var sendFailure: String?
 
     static let lastChoiceKey = "interviewTarget"
 
@@ -20,6 +24,8 @@ struct InterviewTargetPicker: View {
     var initial: InterviewTarget?
     /// The pick goes to the paired headset instead of starting here, so the button says so.
     var sendsToHeadset = false
+    /// Whether a headset is listening. Practice passes the one it already loaded, so In VR knows at once.
+    var headset = HeadsetLinkModel()
     let onStart: (VoiceSessionRequest) -> Void
 
     var body: some View {
@@ -54,6 +60,22 @@ struct InterviewTargetPicker: View {
         .presentationDetents([.large])
         .presentationBackground(Theme.ground)
         .onAppear(perform: preselect)
+        // kept current while the picker is up, so the headset can come online while they choose
+        .task {
+            guard let client = app.client else { return }
+            await headset.watch(using: client)
+        }
+        .sheet(isPresented: $isPairing) {
+            NavigationStack {
+                PairHeadsetView()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { isPairing = false }
+                        }
+                    }
+            }
+        }
+        .sensoryFeedback(.success, trigger: sentToHeadset) { _, sent in sent }
     }
 
     /// The one line that says what this interview is for, plus the local companies when there's no employer yet.
@@ -139,9 +161,25 @@ struct InterviewTargetPicker: View {
         VStack(spacing: 14) {
             InterviewLengthPicker(length: $length)
             DifficultyPicker(difficulty: $difficulty)
-            Button(startTitle, action: start)
-                .buttonStyle(.raised)
-                .disabled(selected == nil)
+            HStack(spacing: 12) {
+                Button(startTitle, action: start)
+                    .buttonStyle(.raised)
+                if !sendsToHeadset {
+                    Button(action: startInVR) {
+                        Label(sentToHeadset ? "Sent" : "In VR", systemImage: sentToHeadset ? "checkmark" : "visionpro")
+                    }
+                    .buttonStyle(.raisedSecondary)
+                    .frame(width: 128)
+                    .disabled(isSending || sentToHeadset)
+                    .accessibilityHint(headset.connectedName.map { "Starts it on \($0)" } ?? "Pairs a headset first")
+                }
+            }
+            .disabled(selected == nil)
+            if let sendFailure {
+                Text(sendFailure)
+                    .font(.footnote)
+                    .foregroundStyle(Theme.negative)
+            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
@@ -159,6 +197,30 @@ struct InterviewTargetPicker: View {
         selected = initial ?? lastChoice.flatMap { try? JSONDecoder().decode(InterviewTarget.self, from: $0) }
         if case let .other(text)? = selected {
             other = text
+        }
+    }
+
+    /// The same choice, started in the paired headset; with none listening, pairing comes first.
+    private func startInVR() {
+        guard let selected, let client = app.client else { return }
+        guard headset.isConnected else {
+            isPairing = true
+            return
+        }
+        lastChoice = try? JSONEncoder().encode(selected)
+        let slug: String? = if case let .posting(_, _, company) = selected { app.companies.slug(matching: company) } else { localCompany }
+        isSending = true
+        Task {
+            defer { isSending = false }
+            do throws(SkillitError) {
+                _ = try await headset.send(selected.headsetLaunch(at: slug), using: client)
+                sendFailure = nil
+                sentToHeadset = true
+                try? await Task.sleep(for: .seconds(1))
+                dismiss()
+            } catch {
+                sendFailure = error.message
+            }
         }
     }
 

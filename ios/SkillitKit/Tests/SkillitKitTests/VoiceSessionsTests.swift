@@ -64,6 +64,15 @@ extension StubbedNetworkTests {
             #expect(VoiceSessionRequest.quick(target: posting, difficulty: .hard).postingId == "p1")
         }
 
+        @Test func `the headset gets the same interview the phone would start`() {
+            let posting = InterviewTarget.posting(id: "p1", title: "Analyst", company: "ATB")
+            #expect(posting.headsetLaunch(at: "atb") == HeadsetLaunch(mode: .interview, companySlug: "atb", role: "Analyst"))
+            #expect(InterviewTarget.role("Designer").headsetLaunch(at: nil) == HeadsetLaunch(mode: .interview, role: "Designer"))
+            // a company target keeps its own slug, whatever the picker had chosen
+            let company = InterviewTarget.company(slug: "helcim", name: "Helcim")
+            #expect(company.headsetLaunch(at: "atb") == HeadsetLaunch(mode: .interview, companySlug: "helcim"))
+        }
+
         @Test func `reads a session saved under the retired networking mode as an interview`() async throws {
             StubProtocol.routes.withLock {
                 $0["POST /api/voice/sessions"] = (201, """

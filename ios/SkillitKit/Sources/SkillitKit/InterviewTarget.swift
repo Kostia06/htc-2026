@@ -53,6 +53,17 @@ public enum InterviewTarget: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    /// The same interview sent to the headset. A launch carries only a role and a company slug (no posting id),
+    /// so a posting goes as its title, with the slug the caller matched from its company name.
+    public func headsetLaunch(at companySlug: String?) -> HeadsetLaunch {
+        switch self {
+        case let .posting(_, title, _): HeadsetLaunch(mode: .interview, companySlug: companySlug, role: title)
+        case let .role(role): HeadsetLaunch(mode: .interview, companySlug: companySlug, role: role)
+        case let .company(slug, _): HeadsetLaunch(mode: .interview, companySlug: slug)
+        case let .other(text): HeadsetLaunch(mode: .interview, companySlug: companySlug, role: text)
+        }
+    }
+
     /// The target a roadmap step points at: its posting first, else the company, else the role.
     public init?(action: RoadmapAction, postings: [JobPosting], companyName: (String) -> String?) {
         if let id = action.postingId, let posting = postings.first(where: { $0.id == id }) {
