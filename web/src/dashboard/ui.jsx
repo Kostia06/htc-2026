@@ -47,3 +47,17 @@ export function Updated({ at, onRefresh, busy }) {
     </p>
   )
 }
+
+/** The big page heading every tab opens with; children sit on the right (a mode switch, a file, a button). */
+export function PageHead({ eyebrow, title, lead, children }) {
+  return (
+    <section className="pg__head">
+      <div className="pg__intro">
+        {eyebrow && <span className="pg__eyebrow">{eyebrow}</span>}
+        <h1 className="pg__title">{title}</h1>
+        {lead && <p className="pg__lead">{lead}</p>}
+      </div>
+      {children}
+    </section>
+  )
+}

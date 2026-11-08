@@ -5,6 +5,7 @@ import { officeToText } from "./office";
 import { transcribe } from "./transcribe";
 
 export const MAX_DOCUMENT_TEXT = 30_000;
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export class UnreadableDocument extends Error {}
 

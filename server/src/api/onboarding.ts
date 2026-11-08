@@ -2,13 +2,11 @@ import { Hono } from "hono";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
 import { orchestrate } from "../agents/orchestrator";
-import { extractText, UnreadableDocument } from "../documents/extract";
+import { extractText, MAX_UPLOAD_BYTES, UnreadableDocument } from "../documents/extract";
 import { deleteDocument, saveDocument } from "../documents/store";
 import type { AppContext, Env } from "../env";
 import { isEmptyPatch, parsePatch } from "../memory/profile/patch";
 import { updateProfile } from "../memory/profile/store";
-
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 
