@@ -206,6 +206,8 @@ async function fileBlob(path) {
 
 export const postingsApi = {
   list: () => request('/api/postings').then((r) => r.postings ?? []),
+  /** from a link ({ url }) or pasted text ({ text }); 422 when the site can't be read and the text is needed */
+  import: ({ url, text }) => post('/api/postings', url ? { url } : { text }, { timeout: 30000 }),
 }
 
 export const outcomeApi = {

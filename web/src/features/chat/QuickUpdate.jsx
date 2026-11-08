@@ -1,11 +1,13 @@
 // QuickUpdateView.swift: "What's new?" in plain words, typed or spoken. Skillit applies it at once, or asks one
-// question first. With a `focusTitle` it is about one roadmap step ("Mark done").
+// question first. With a `focusTitle` it is about one roadmap step ("Mark done"). A pasted job link or ad is
+// imported as a posting instead.
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../../app/context'
-import { sendUpdate } from '../../lib/client'
+import { postingsApi, sendUpdate } from '../../lib/client'
 import { useStickToBottom } from '../../lib/hooks'
 import { AppliedCard, Bubble, Composer, TypingIndicator } from '../../ui/Chat'
 import { Sheet } from '../../ui/Sheet'
+import { detectPosting, postingChanges, postingReply } from './posting'
 import { useDictation } from './useDictation'
 import './chat.css'
 
@@ -40,7 +42,11 @@ export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClos
     setError(null)
     setThinking(true)
     try {
-      const reply = await sendUpdate(text, conversation, focusStepId)
+      const posting = detectPosting(text)
+      // a posting is its own receipt: the line says what was read, the applied card what was set up from it
+      const reply = posting
+        ? await postingsApi.import(posting).then((p) => ({ reply: postingReply(p), needsAnswer: false, applied: postingChanges(p) }))
+        : await sendUpdate(text, conversation, focusStepId)
       const said = line('raven', reply.reply)
       setMessages((m) => {
         const next = [...m, said]
@@ -71,7 +77,7 @@ export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClos
           value={draft}
           onChange={setDraft}
           onSend={() => send(draft.trim())}
-          placeholder="Say what's new"
+          placeholder="What's new? Or paste a job link"
           disabled={thinking || Boolean(mic?.listening)}
           mic={mic}
           error={error}
