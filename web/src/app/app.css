@@ -4,6 +4,11 @@
 .shell__content {
   min-height: 100dvh;
 }
+.shell__loading {
+  display: grid;
+  place-items: center;
+  min-height: 60dvh;
+}
 
 /* ---------- sidebar (wide screens) ---------- */
 .sidebar {
