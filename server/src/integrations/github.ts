@@ -221,7 +221,12 @@ async function createApiError(
     }
 
     const rateLimit = getRateLimit(response);
-
+    console.error("GitHub API diagnostic:", {
+        url: response.url,
+        status: response.status,
+        message,
+        rateLimit: getRateLimit(response),
+    });
     return new GitHubApiError(
         message,
         response.status,
@@ -424,6 +429,19 @@ export async function searchGitHubRepositories(
         method: "GET",
         headers: buildHeaders(env),
     });
+
+    console.log("[GitHub] Search API response:", {
+        status: response.status,
+        tokenConfigured: Boolean(env.GITHUB_TOKEN),
+        rateLimitRemaining: response.headers.get("x-ratelimit-remaining"),
+        rateLimitResource: response.headers.get("x-ratelimit-resource"),
+        retryAfter: response.headers.get("retry-after"),
+        requestId: response.headers.get("x-github-request-id"),
+    });
+
+    if (!response.ok) {
+        throw await createApiError(response);
+    }
 
     if (!response.ok) {
         throw await createApiError(response);
