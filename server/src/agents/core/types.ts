@@ -87,7 +87,7 @@ export type Skill<Input = unknown> = {
   // checked on every entry path before a run is recorded; false means "ran recently, not again yet"
   claim?(input: Input, services: Services): Promise<boolean>;
   // replaces model-reported fields with ones derived from what the tools actually did
-  finalize?(output: SkillOutput, toolCalls: ToolCallRecord[]): SkillOutput;
+  finalize?(output: SkillOutput, toolCalls: ToolCallRecord[], input?: Input): SkillOutput;
 };
 
 // the tools one agent holds, keyed by name; a skill can only be bound to tools from its own agent's toolbox

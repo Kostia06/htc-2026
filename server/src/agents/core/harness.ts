@@ -75,7 +75,7 @@ async function execute(deps: AgentDeps, request: RunRequest, runId: string, comp
       return fail(deps.env, runId, `the agent ${reason}`, run.toolCalls);
     }
 
-    const output = scrubStrings(skill.finalize?.(run.output, run.toolCalls) ?? run.output);
+    const output = scrubStrings(skill.finalize?.(run.output, run.toolCalls, input) ?? run.output);
     await recordRunDone(deps.env, runId, output);
     return { runId, status: "done", output, toolCalls: run.toolCalls };
   } catch (e) {
