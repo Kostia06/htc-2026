@@ -31,9 +31,8 @@ struct PostingCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Theme.raised, in: .rect(cornerRadius: 16))
             .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Theme.hairline))
-            .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.raisedCard(cornerRadius: 16))
         .accessibilityElement(children: .combine)
     }
 }

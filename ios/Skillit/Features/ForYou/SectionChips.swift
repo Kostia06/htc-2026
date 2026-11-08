@@ -43,11 +43,9 @@ struct SectionChips: View {
                         Capsule().fill(Theme.raised)
                     }
                 }
-                // the pill stays slim; the tap target around it is the full 44pt
-                .frame(minHeight: 44)
-                .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        // the face slides between chips; the ledge under it just changes colour
+        .buttonStyle(.raisedChip(isSelected ? Theme.action : Theme.raised))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

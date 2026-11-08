@@ -34,7 +34,7 @@ struct PracticeProgressCard: View {
             }
             .skillitCard()
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.raisedCard())
         .accessibilityHint("Opens past sessions")
     }
 

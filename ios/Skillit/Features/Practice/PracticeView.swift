@@ -76,7 +76,7 @@ struct PracticeView: View {
             .padding(.vertical, 12)
             .skillitCard()
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.raisedCard())
     }
 
     @ViewBuilder private var yourPostings: some View {
@@ -99,7 +99,7 @@ struct PracticeView: View {
 
     private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) { rowLabel(title, systemImage: systemImage) }
-            .buttonStyle(.plain)
+            .buttonStyle(.raisedCard())
     }
 
     private func rowLabel(_ title: String, systemImage: String) -> some View {
