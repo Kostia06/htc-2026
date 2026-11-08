@@ -75,6 +75,7 @@
 		8B38C61320F73A0D6BF6E00B /* DemoHeadsetIssuer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B30FA9A74413AABD60B9D6 /* DemoHeadsetIssuer.swift */; };
 		8BDEADA3A13F4BAFE77222AE /* DebugScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1D24DEBBBB8FCB9F116699 /* DebugScreen.swift */; };
 		8CE6B79F97E7B4595D5E881D /* FeedDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DC4DFB55A0D171642620DF /* FeedDetailSheet.swift */; };
+		8E9A0E86DAA9A25DB3141823 /* SkillsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28063CA8CDE81D5FFCE5882 /* SkillsEditor.swift */; };
 		923E19E8F4028356FF3AA338 /* Skeleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C64B7C98F8A2987EBDB0D9 /* Skeleton.swift */; };
 		967FC182F027D48351B8FBCA /* RecapBubbles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D83394F42B6C946BDD40B95 /* RecapBubbles.swift */; };
 		976712A5CF427734C3784A79 /* DebriefRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF932E7DAA88A9E9FE89F46 /* DebriefRows.swift */; };
@@ -250,6 +251,7 @@
 		DF7FDB2141745DC18AEE22B9 /* SkillsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsSummary.swift; sourceTree = "<group>"; };
 		E06601A0C6D03EF5E851BCD8 /* HeadsetLinkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsetLinkModel.swift; sourceTree = "<group>"; };
 		E1C2488386CDFECC621FB315 /* FeedCard+When.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedCard+When.swift"; sourceTree = "<group>"; };
+		E28063CA8CDE81D5FFCE5882 /* SkillsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsEditor.swift; sourceTree = "<group>"; };
 		E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewProgress.swift; sourceTree = "<group>"; };
 		EC68B0ED66432B610FABFF34 /* PracticeHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHistoryView.swift; sourceTree = "<group>"; };
 		ED6148A49BBD6F7C60870578 /* SkillitKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SkillitKit; path = SkillitKit; sourceTree = SOURCE_ROOT; };
@@ -357,6 +359,7 @@
 				7011C11EF0CD2188D3C06275 /* ProfileHeader.swift */,
 				2867B9149D3C5BB7EBB279EA /* ProfileRows.swift */,
 				F10593F16D018A8CD81FD92E /* ProfileView.swift */,
+				E28063CA8CDE81D5FFCE5882 /* SkillsEditor.swift */,
 				DF7FDB2141745DC18AEE22B9 /* SkillsSummary.swift */,
 			);
 			path = Profile;
@@ -781,6 +784,7 @@
 				64CB5DDFC6D6EAD6047599C2 /* SignInView.swift in Sources */,
 				923E19E8F4028356FF3AA338 /* Skeleton.swift in Sources */,
 				D42F438FC24276349D3D5035 /* SkillitApp.swift in Sources */,
+				8E9A0E86DAA9A25DB3141823 /* SkillsEditor.swift in Sources */,
 				E58293C189C27DCCBF5A77EC /* SkillsSummary.swift in Sources */,
 				E58F8E91D899A4E833057A4F /* SpeechDictation.swift in Sources */,
 				305965D6B6F6E47981A43905 /* StartPracticeButton.swift in Sources */,

@@ -8,6 +8,7 @@ struct ProfileView: View {
     @State private var isShowingSettings = false
     @State private var experienceSheet: RowSheet<Profile.Experience>?
     @State private var educationSheet: RowSheet<Profile.Education>?
+    @State private var isEditingSkills = false
 
     var body: some View {
         NavigationStack {
@@ -47,6 +48,9 @@ struct ProfileView: View {
             .sheet(item: $educationSheet) { sheet in
                 EducationForm(editing: sheet.row) { apply(.saveEducation($0, replacing: sheet.row)) }
             }
+            .sheet(isPresented: $isEditingSkills) {
+                SkillsEditor(skills: app.profile.skills) { editor.saveSkills($0, to: app) }
+            }
             .alert("Couldn't save", isPresented: hasFailure) {
                 Button("OK") { editor.dismissFailure() }
             } message: {
@@ -65,8 +69,10 @@ struct ProfileView: View {
             )
         }
         .listRowBackground(Theme.raised)
-        Section("Skills") {
-            SkillsSummary(skills: app.profile.skills.map(\.name)) { apply(.removeSkill($0)) }
+        Section {
+            SkillsSummary(skills: app.profile.skills.map(\.name), failure: editor.skillsFailure)
+        } header: {
+            SkillsHeader { isEditingSkills = true }
         }
         .listRowBackground(Theme.raised)
         Section("Experience") {

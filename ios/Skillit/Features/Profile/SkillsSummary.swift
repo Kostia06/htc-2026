@@ -1,21 +1,22 @@
 import SwiftUI
 
-/// Skills come from the resume and practice, so there's nothing to type here: a few chips, the rest one tap away.
-/// Long-press a chip to remove it.
+/// Skills mostly come from the resume and practice, so the section stays compact: a few chips, the rest one tap away.
+/// Changes happen in the skills editor, opened from the section's Edit button.
 struct SkillsSummary: View {
     let skills: [String]
-    let onRemove: (String) -> Void
+    /// Why the last save didn't land; the list has already rolled back.
+    let failure: String?
 
     @State private var showsAll = false
     private static let visibleCount = 8
 
     var body: some View {
-        if skills.isEmpty {
-            Text("Skillit picks these up from your resume and practice.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        } else {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            if skills.isEmpty {
+                Text("Skillit picks these up from your resume and practice. Tap Edit to add your own.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
                 FlowLayout(spacing: 8) {
                     ForEach(visible, id: \.self) { skill in
                         Text(skill)
@@ -23,9 +24,6 @@ struct SkillsSummary: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(Theme.chip, in: .capsule)
-                            .contextMenu {
-                                Button("Remove", systemImage: "minus.circle", role: .destructive) { onRemove(skill) }
-                            }
                     }
                 }
                 if skills.count > Self.visibleCount {
@@ -37,11 +35,34 @@ struct SkillsSummary: View {
                     .frame(minHeight: 44)
                 }
             }
-            .padding(.vertical, 4)
+            if let failure {
+                Label("Couldn't save your skills. \(failure)", systemImage: "exclamationmark.circle")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.negative)
+            }
         }
+        .padding(.vertical, 4)
     }
 
     private var visible: [String] {
         showsAll ? skills : Array(skills.prefix(Self.visibleCount))
+    }
+}
+
+/// The Skills section's header: its name, and the way into the editor.
+struct SkillsHeader: View {
+    let onEdit: () -> Void
+
+    var body: some View {
+        HStack {
+            Text("Skills")
+            Spacer()
+            Button("Edit", action: onEdit)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.action)
+                .textCase(nil)
+                .frame(minHeight: 44)
+                .accessibilityLabel("Edit skills")
+        }
     }
 }
