@@ -16,11 +16,16 @@ const isError = (result: unknown) => typeof result === "object" && result !== nu
 
 export async function runAgent(opts: { model: Model; tools: Record<string, Tool>; goal: string; maxSteps: number }) {
   const declarations = Object.values(opts.tools).map((t) => t.declaration);
+  const finishOnly = Object.values(opts.tools).filter((t) => t.terminal).map((t) => t.declaration);
   const contents: GeminiContent[] = [{ role: "user", parts: [{ text: opts.goal }] }];
   const toolCalls: ToolCallRecord[] = [];
 
   for (let step = 0; step < opts.maxSteps; step++) {
-    const reply = await opts.model(contents, declarations);
+    // Models keep researching until they run out of steps; on the last one, leave them nothing to do but finish
+    // so the work they already did isn't thrown away as a failed run.
+    const lastStep = step === opts.maxSteps - 1 && finishOnly.length > 0;
+    if (lastStep) contents.at(-1)!.parts.push({ text: "This is your last step: call the finish tool now with what you have." });
+    const reply = await opts.model(contents, lastStep ? finishOnly : declarations);
     contents.push(reply);
     const calls = reply.parts.filter((p) => p.functionCall).map((p) => p.functionCall!);
     if (calls.length === 0) {
