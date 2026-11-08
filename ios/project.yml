@@ -60,10 +60,6 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSMicrophoneUsageDescription: Raven listens while you answer practice questions so it can tell when you've finished and respond.
         NSSpeechRecognitionUsageDescription: Raven turns your spoken answers into text on your iPhone so the interviewer can follow up on what you said.
-        NSCameraUsageDescription: Raven uses the camera to scan the code on your headset so it can join your account.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
-        CFBundleURLTypes:
-          - CFBundleURLName: app.raven.pairing
-            CFBundleURLSchemes: [raven]
         ITSAppUsesNonExemptEncryption: false

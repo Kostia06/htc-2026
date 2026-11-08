@@ -1,116 +1,89 @@
 import RavenKit
 import SwiftUI
 
-/// Signs a Meta Quest into this account: the headset shows a QR, this phone scans it and approves. Pushed from Practice.
+/// Signs a Meta Quest into this account: the phone shows 4 digits, the headset types them in. Pushed from Practice.
 struct PairHeadsetView: View {
     @Environment(AppModel.self) private var app
-    @State private var model = PairingModel()
-    @State private var isScanning = false
+    @State private var model = HeadsetPairingModel()
+    /// bumped to pair one more headset; restarts the task below
+    @State private var attempt = 0
+    private let issuer: (any HeadsetCodeIssuer)?
+
+    /// `issuer` stands in for the server in screenshots; the signed-in client is used otherwise.
+    init(issuer: (any HeadsetCodeIssuer)? = nil) {
+        self.issuer = issuer
+    }
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Practice in VR")
-                    .font(.largeTitle.bold())
-                Text("""
-                Open Raven in the Quest browser. It shows a code: scan it here and the headset joins your account, \
-                with your profile and interview plans.
-                """)
-                .foregroundStyle(.secondary)
-                statusCard
-                Button {
-                    isScanning = true
-                } label: {
-                    Label("Scan the headset's code", systemImage: "qrcode.viewfinder")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.glassProminent)
-                .controlSize(.large)
-                .disabled(!QRScannerView.isAvailable)
-                typedCodeField
+            VStack(spacing: 32) {
+                content
             }
+            .frame(maxWidth: .infinity)
             .padding(24)
         }
-        .sheet(isPresented: $isScanning) {
-            QRScannerView { code in
-                isScanning = false
-                model.found(code)
-            }
-            .ignoresSafeArea()
-            .presentationDetents([.large])
+        .background(Theme.ground)
+        .navigationTitle("Practice in VR")
+        .navigationBarTitleDisplayMode(.inline)
+        .task(id: attempt) {
+            guard let issuer = issuer ?? app.client else { return }
+            await model.run(using: issuer)
         }
-        .confirmationDialog("Sign this headset in to your account?", isPresented: isConfirming, titleVisibility: .visible) {
-            Button("Sign in headset") { approvePending() }
-            Button("Cancel", role: .cancel) { model.reset() }
-        } message: {
-            Text("Only approve a code shown on your own headset.")
-        }
-        .sensoryFeedback(.success, trigger: model.state == .paired)
-        .onAppear(perform: takePendingLink)
-        .onChange(of: app.pendingPairing) { _, _ in takePendingLink() }
+        .sensoryFeedback(.success, trigger: model.state == .connected) { _, isConnected in isConnected }
+        .animation(.spring(duration: 0.35), value: model.state)
     }
 
-    @ViewBuilder private var statusCard: some View {
+    @ViewBuilder private var content: some View {
         switch model.state {
-        case .paired:
-            Label("Headset connected. Put it on to start.", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .ravenCard()
-        case .pairing:
-            Label("Connecting…", systemImage: "visionpro")
-                .foregroundStyle(Theme.agent)
-                .ravenCard()
+        case .loading:
+            Circle()
+                .fill(Theme.raised)
+                .frame(width: 272, height: 272)
+                .shimmering()
+                .accessibilityLabel("Getting a code")
+            instructions
+        case let .showing(code):
+            CodeCountdownRing(code: code)
+            instructions
+            Label("Waiting for your headset", systemImage: "visionpro")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        case .connected:
+            connected
         case let .failed(message):
-            Label(message, systemImage: "exclamationmark.triangle")
+            Label(message, systemImage: "wifi.exclamationmark")
                 .foregroundStyle(.orange)
                 .ravenCard()
-        case .idle, .confirming:
-            EmptyView()
+            Text("Trying again in a moment.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 
-    private var typedCodeField: some View {
-        HStack {
-            TextField("Or type the code", text: $model.typedCode)
-                .textInputAutocapitalization(.characters)
-                .autocorrectionDisabled()
-                .font(.body.monospaced())
-            Button("Pair") {
-                if let code = model.typedPairingCode {
-                    model.found(code)
-                }
-            }
-            .disabled(model.typedPairingCode == nil)
+    private var instructions: some View {
+        // the address on a line of its own so it never breaks at a hyphen
+        Text("On your headset, open\n**raven-vr.ilnkostia-dev.workers.dev**\nand enter this code")
+            .font(.body)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 8)
+    }
+
+    private var connected: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 88))
+                .foregroundStyle(.green)
+                .symbolEffect(.bounce, value: model.state)
+            Text("Headset connected")
+                .font(.title.bold())
+            Text("Put it on to start practicing. It stays signed in for 12 hours.")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button("Pair another headset") { attempt += 1 }
+                .buttonStyle(.raised)
+                .padding(.top, 24)
         }
-        .ravenCard()
-    }
-
-    private var isConfirming: Binding<Bool> {
-        Binding(
-            get: {
-                if case .confirming = model.state {
-                    true
-                } else {
-                    false
-                }
-            },
-            set: {
-                if !$0, case .confirming = model.state {
-                    model.reset()
-                }
-            },
-        )
-    }
-
-    private func approvePending() {
-        guard case let .confirming(code) = model.state, let client = app.client else { return }
-        Task { await model.approve(code, using: client) }
-    }
-
-    private func takePendingLink() {
-        guard let code = app.pendingPairing else { return }
-        app.pendingPairing = nil
-        model.found(code)
+        .padding(.top, 48)
     }
 }
