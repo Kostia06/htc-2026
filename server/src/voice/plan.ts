@@ -1,9 +1,15 @@
 import type { Profile } from "../memory/profile/types";
+import { isShortEnough, resumeQuestions } from "./resume-questions";
+import { technicalQuestions } from "./technical";
 import type { InterviewPlan, NetworkingPlan, PlannedQuestion } from "./types";
 
-export const MAX_QUESTIONS = 6;
-const MAX_REPORTED = 3;
+export { MAX_WORDS } from "./resume-questions";
+
+// short on purpose: five questions with a follow-up each is a ten-minute conversation
+export const MAX_QUESTIONS = 5;
 const MAX_FROM_RESUME = 2;
+const MAX_REPORTED = 1;
+const MAX_TECHNICAL = 2;
 const MAX_TALKING_POINTS = 5;
 
 export type PlanInputs = {
@@ -16,32 +22,28 @@ export type PlanInputs = {
 };
 
 const behavioralQuestions = (role: string) => [
-  `What draws you to the ${role} role?`,
-  "Tell me about a time you had to learn something quickly. What did you do?",
-  "Describe a time you disagreed with a teammate. How did you handle it?",
-  "Tell me about a mistake you made and what you changed afterwards.",
-  "Walk me through a project you're proud of, from start to finish.",
-  "Where do you want to be in two years, and how does this role fit?",
+  `So what draws you to the ${role} role?`,
+  "Tell me about a time you had to learn something fast.",
+  "Tell me about a time you disagreed with a teammate. What happened?",
+  "What's a mistake you made, and what did you change after?",
+  "What's a project you're really proud of?",
 ];
 
-// the resume's own words, so the person hears their claim back and has to stand behind it
-function resumeQuestions(profile: Profile): PlannedQuestion[] {
-  const fromExperience = profile.experience.flatMap((job) =>
-    (job.highlights ?? []).map((line) => `Your resume says "${line}" at ${job.org}. What was your part, and how did it turn out?`),
-  );
-  const fromSkills = profile.skills
-    .filter((skill) => skill.evidence)
-    .map((skill) => `You wrote "${skill.evidence}". Walk me through how you used ${skill.name} there.`);
-  return [...fromExperience, ...fromSkills].slice(0, MAX_FROM_RESUME).map((text) => ({ text, source: "resume" }));
-}
+const planned = (texts: string[], source: PlannedQuestion["source"], max: number): PlannedQuestion[] =>
+  texts.filter(isShortEnough).slice(0, max).map((text) => ({ text, source }));
 
+// personal first, so it opens like a real conversation; then what others were asked, then their field
 export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
   const reported: PlannedQuestion[] = inputs.reportedQuestions
+    .filter((q) => isShortEnough(q.text))
     .slice(0, MAX_REPORTED)
     .map((q) => ({ text: q.text, source: "reported", reportedIn: q.last_reported_at }));
-  const planned = [...reported, ...resumeQuestions(inputs.profile)];
-  const behavioral = behavioralQuestions(inputs.role).map((text): PlannedQuestion => ({ text, source: "behavioral" }));
-  const questions = [...planned, ...behavioral].slice(0, MAX_QUESTIONS);
+  const questions = [
+    ...planned(resumeQuestions(inputs.profile), "resume", MAX_FROM_RESUME),
+    ...reported,
+    ...planned(technicalQuestions(inputs.role, inputs.profile), "technical", MAX_TECHNICAL),
+    ...planned(behavioralQuestions(inputs.role), "behavioral", MAX_QUESTIONS),
+  ].slice(0, MAX_QUESTIONS);
   return { mode: "interview", role: inputs.role, company: inputs.company?.name ?? null, questions };
 }
 

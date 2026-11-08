@@ -1,7 +1,7 @@
 export const VOICE_MODES = ["interview", "networking"] as const;
 export type VoiceMode = (typeof VOICE_MODES)[number];
 
-export type QuestionSource = "reported" | "resume" | "behavioral";
+export type QuestionSource = "reported" | "resume" | "technical" | "behavioral";
 export type PlannedQuestion = { text: string; source: QuestionSource; reportedIn?: string | null };
 
 export type InterviewPlan = {
