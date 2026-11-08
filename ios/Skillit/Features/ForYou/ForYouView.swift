@@ -45,8 +45,20 @@ struct ForYouView: View {
             .animation(.snappy, value: model.cards)
             .animation(.smooth, value: model.isBuilding)
             .navigationTitle("For you")
-            .refreshable { await refresh() }
+            .refreshable {
+                if isRadar {
+                    await refreshRadar()
+                } else {
+                    await refresh()
+                }
+            }
             .task(id: model.section) { await refresh() }
+            // the companies list is otherwise fetched only at sign-in, so one added since would never appear
+            .task(id: isRadar) {
+                if isRadar {
+                    await refreshRadar()
+                }
+            }
             .sensoryFeedback(.impact(weight: .light), trigger: model.dismissals)
             .sheet(item: $opened) { card in
                 // read the live card so the bookmark fills as soon as it's saved from the sheet
@@ -85,7 +97,7 @@ struct ForYouView: View {
                 SkeletonLines(widths: [0.5, 0.9, 0.7], highlighted: 2).skillitCard().feedRow()
             }
         } else if !model.isBuilding {
-            EmptyFeed(section: model.section, message: model.errorMessage).feedRow()
+            EmptyFeed(section: model.section, message: model.errorMessage) { await refresh() }.feedRow()
         }
     }
 
@@ -113,6 +125,10 @@ struct ForYouView: View {
     private func refresh() async {
         guard let client = app.client else { return }
         await model.refresh(using: client)
+    }
+
+    private func refreshRadar() async {
+        await app.companies.refresh(using: app.companyService)
     }
 
     private func save(_ card: FeedCard) {
@@ -162,12 +178,20 @@ private struct BuildingRow: View {
 private struct EmptyFeed: View {
     let section: FeedSection
     let message: String?
+    let retry: () async -> Void
 
     var body: some View {
         ContentUnavailableView {
             Label(title, systemImage: section == .saved ? "bookmark" : "tray")
         } description: {
             Text(message ?? description)
+        } actions: {
+            // pull-to-refresh is invisible on an empty screen, so a failed load gets a button
+            if message != nil {
+                Button("Try again") { Task { await retry() } }
+                    .buttonStyle(.raised)
+                    .frame(maxWidth: 220)
+            }
         }
         .padding(.top, 40)
     }

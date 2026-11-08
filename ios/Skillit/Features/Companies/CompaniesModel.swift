@@ -8,18 +8,23 @@ import SkillitKit
 final class CompaniesModel {
     private(set) var companies: [CompanySummary]
     private(set) var errorMessage: String?
+    /// False until a list has come from disk or the server, so Radar can tell "loading" from "none yet".
+    private(set) var hasLoaded: Bool
 
     private let cache: CompaniesCache
 
     init(cache: CompaniesCache = CompaniesCache()) {
         self.cache = cache
-        companies = cache.load() ?? []
+        let saved = cache.load()
+        companies = saved ?? []
+        hasLoaded = saved != nil
     }
 
     func refresh(using service: any CompanyService) async {
         do {
             companies = try await service.companies()
             errorMessage = nil
+            hasLoaded = true
             cache.save(companies)
         } catch {
             errorMessage = error.message

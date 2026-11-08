@@ -8,10 +8,10 @@ import SkillitKit
 final class ForYouModel {
     private(set) var section: FeedSection = .all
     private(set) var timelines: [FeedSection: FeedTimeline] = [:]
-    /// The server is assembling a fresher feed; shown as a calm row, never as a spinner over the cards.
-    private(set) var isBuilding = false
-    private(set) var isLoadingMore = false
-    private(set) var errorMessage: String?
+    // kept per section: the For you poll keeps running after you switch to Jobs, and its state must not leak there
+    private var buildingSections: Set<FeedSection> = []
+    private var loadingMoreSections: Set<FeedSection> = []
+    private var errors: [FeedSection: String] = [:]
     /// Bumps once per dismissed card, so the view plays one haptic per swipe.
     private(set) var dismissals = 0
 
@@ -37,9 +37,21 @@ final class ForYouModel {
         timelines[section] != nil
     }
 
+    /// The server is assembling a fresher feed for this section; shown as a calm row, never as a spinner over the cards.
+    var isBuilding: Bool {
+        buildingSections.contains(section)
+    }
+
+    var isLoadingMore: Bool {
+        loadingMoreSections.contains(section)
+    }
+
+    var errorMessage: String? {
+        errors[section]
+    }
+
     func show(_ section: FeedSection) {
         self.section = section
-        errorMessage = nil
     }
 
     /// Joins a refresh already in flight, so the prefetch at launch and the tab appearing don't fetch twice.
@@ -48,6 +60,8 @@ final class ForYouModel {
         if let running = refreshTasks[section] {
             return await running.value
         }
+        // a retry shows skeletons (or the cards) again rather than the old error while it waits
+        errors[section] = nil
         let task = Task { await fetchFirstPage(of: section, using: client) }
         refreshTasks[section] = task
         await task.value
@@ -56,9 +70,11 @@ final class ForYouModel {
 
     func loadMore(using client: SkillitClient) async {
         let section = section
-        guard let cursor = timelines[section]?.nextCursor, !isLoadingMore, refreshTasks[section] == nil else { return }
-        isLoadingMore = true
-        defer { isLoadingMore = false }
+        guard let cursor = timelines[section]?.nextCursor, !loadingMoreSections.contains(section), refreshTasks[section] == nil else {
+            return
+        }
+        loadingMoreSections.insert(section)
+        defer { loadingMoreSections.remove(section) }
         guard let page = try? await client.feed(section: section, cursor: cursor) else { return }
         timelines[section]?.apply(nextPage: page)
         persist(section)
@@ -110,7 +126,9 @@ final class ForYouModel {
         cache.clear()
         timelines = [:]
         section = .all
-        isBuilding = false
+        buildingSections = []
+        loadingMoreSections = []
+        errors = [:]
     }
 
     private func send(_ action: FeedCardAction, for card: FeedCard, using client: SkillitClient, orRevert revert: () -> Void) async {
@@ -132,9 +150,9 @@ final class ForYouModel {
             } catch {
                 // with cards on screen a failed refresh stays silent; the cached feed is still useful
                 if timelines[section]?.cards.isEmpty ?? true {
-                    errorMessage = error.message
+                    errors[section] = error.message
                 }
-                isBuilding = false
+                buildingSections.remove(section)
                 return
             }
             try? await Task.sleep(for: Self.buildPollInterval)
@@ -142,14 +160,22 @@ final class ForYouModel {
                 return
             }
         }
-        isBuilding = false
+        buildingSections.remove(section)
+        // still building after every poll: show the empty state rather than skeletons that never end
+        if timelines[section] == nil {
+            timelines[section] = FeedTimeline()
+        }
     }
 
     private func apply(_ page: FeedPage, to section: FeedSection) {
         var timeline = timelines[section] ?? FeedTimeline()
         timeline.apply(firstPage: page)
-        isBuilding = page.building
-        errorMessage = nil
+        if page.building {
+            buildingSections.insert(section)
+        } else {
+            buildingSections.remove(section)
+        }
+        errors[section] = nil
         if !page.building || !page.items.isEmpty {
             timelines[section] = timeline
             persist(section)
@@ -178,7 +204,9 @@ final class ForYouModel {
                 model.timelines[.saved] = FeedTimeline(cards: cards.filter(\.isSaved))
             }
             model.section = section
-            model.isBuilding = isBuilding
+            if isBuilding {
+                model.buildingSections.insert(section)
+            }
             return model
         }
     }
