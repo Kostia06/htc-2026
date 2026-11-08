@@ -13,7 +13,7 @@ const call = { userId: "skillit_x", accountId: "ca_1", args: {} };
 describe("GitHub through Composio is read-only", () => {
   it("allows only reads", () => {
     for (const slug of READ_ONLY_GITHUB_TOOLS) {
-      expect(slug).toMatch(/^GITHUB_(GET|LIST)_/);
+      expect(slug).toMatch(/^GITHUB_(GET|LIST|SEARCH)_/);
       expect(slug).not.toMatch(/CREATE|UPDATE|DELETE|REMOVE|ADD|SET|PUT|POST|EDIT|MERGE|STAR|FORK|COMMIT|PUSH|TRANSFER|REPLACE|DISPATCH/);
     }
   });

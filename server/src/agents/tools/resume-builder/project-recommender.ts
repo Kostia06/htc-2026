@@ -5,6 +5,7 @@ import {
     getRepositorySnapshot,
     searchGitHubRepositories,
     type GitHubRepository,
+    type GitHubSearchReader,
 } from "../../../integrations/github";
 
 
@@ -100,6 +101,7 @@ export async function recommendProjects(
         preferredLanguages?: string[];
         timeBudgetHours?: number;
         maxIdeas?: number;
+        searchWithConnection?: GitHubSearchReader;
     }
 ) {
     const {
@@ -171,7 +173,8 @@ export async function recommendProjects(
                 sort: "stars",
                 order: "desc",
                 perPage: 5,
-            }
+            },
+            options.searchWithConnection,
         );
 
         for (const repository of result.repositories) {

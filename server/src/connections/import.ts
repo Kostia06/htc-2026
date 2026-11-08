@@ -19,6 +19,11 @@ async function readerFor(env: Env, userId: string, connector: Connector): Promis
   return (slug, args) => executeReadTool(env, connector, slug, { userId: composioUser, accountId: connection.accountId, args });
 }
 
+// The person's reader when that service is connected, otherwise null: callers that can manage without it fall back.
+export async function readerIfConnected(env: Env, userId: string, connector: Connector): Promise<Reader | null> {
+  return readerFor(env, userId, connector).catch(() => null);
+}
+
 // projects the person already had (typed in, from their resume, or from another connector) are not this import's: it never
 // overwrites or removes them, so disconnecting one service can't take away what another one, or the person, added
 // skills follow the same rule: a language the person already lists keeps their own source and evidence

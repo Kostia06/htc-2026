@@ -279,9 +279,25 @@ function normalizeRepository(
 
 
 // SEARCH PUBLIC GITHUB REPO
+// Runs a repository search through the person's own connected GitHub (Composio, read-only).
+export type GitHubSearchReader = (args: { q: string; sort: GitHubSort; order: GitHubOrder; page: number; per_page: number }) => Promise<unknown>;
+
+// GitHub's items array, wherever Composio nests it ({ items }, { details: { items } }, { data: { items } }).
+function itemsOf(value: unknown, depth = 0): GitHubRawRepository[] {
+    if (!value || typeof value !== "object" || depth > 3) return [];
+    const record = value as Record<string, unknown>;
+    if (Array.isArray(record.items)) return record.items as GitHubRawRepository[];
+    for (const child of Object.values(record)) {
+        const found = itemsOf(child, depth + 1);
+        if (found.length) return found;
+    }
+    return [];
+}
+
 export async function searchGitHubRepositories(
     env: Pick<Env, "GITHUB_TOKEN">,
-    options: GitHubSearchOptions
+    options: GitHubSearchOptions,
+    read?: GitHubSearchReader,
 ) {
     const {
         query,
@@ -410,6 +426,24 @@ export async function searchGitHubRepositories(
     const githubQuery = queryParts.join(" ");
 
 
+    // The person's connected GitHub first; a failure there falls back to the shared token below.
+    if (read) {
+        try {
+            const data = await read({ q: githubQuery, sort, order, page, per_page: perPage });
+            const repositories = itemsOf(data).map(normalizeRepository).filter((repo) => !repo.isDisabled);
+            return {
+                totalCount: repositories.length,
+                incompleteResults: false,
+                repositories,
+                pagination: { page, perPage, maxPage },
+                rateLimit: null,
+                retrievedAt: new Date().toISOString(),
+            };
+        } catch (error) {
+            console.warn("[GitHub] connected search failed, using shared token:", error instanceof Error ? error.message : error);
+        }
+    }
+
     // Construct API URL
     const url = new URL(
         `${GITHUB_API_BASE}/search/repositories`
@@ -438,10 +472,6 @@ export async function searchGitHubRepositories(
         retryAfter: response.headers.get("retry-after"),
         requestId: response.headers.get("x-github-request-id"),
     });
-
-    if (!response.ok) {
-        throw await createApiError(response);
-    }
 
     if (!response.ok) {
         throw await createApiError(response);

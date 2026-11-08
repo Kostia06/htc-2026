@@ -1,3 +1,4 @@
+import type { GitHubSearchReader } from "../../../integrations/github";
 import type { Env } from "../../../env";
 import { matchResumeEvidence, type EvidenceMatchResult } from "./evidence-matcher";
 import { analyzeJobMarket, type JobAnalysis } from "./job-analyzer";
@@ -13,6 +14,8 @@ export type BuildResumeIntelligenceInput = {
     resumeText: string;
     preferredLanguages?: string[];
     timeBudgetHours?: number;
+    // the person's own connected GitHub; without it the search uses the shared token
+    searchWithConnection?: GitHubSearchReader;
 };
 
 export type ResumeIntelligenceResult = {
@@ -124,6 +127,7 @@ export async function buildResumeIntelligence(
             preferredLanguages,
             timeBudgetHours,
             maxIdeas: 3,
+            searchWithConnection: input.searchWithConnection,
         })
             .then((recommendations) => ({ recommendations }))
             .catch((error: unknown) => ({

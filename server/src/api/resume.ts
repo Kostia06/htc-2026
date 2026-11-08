@@ -1,3 +1,5 @@
+import { github } from "../connections/github/connector";
+import { readerIfConnected } from "../connections/import";
 import { Hono } from "hono";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
@@ -157,7 +159,9 @@ export function resumeRouter(makeDeps: MakeDeps) {
     }
 
     try {
+      const reader = await readerIfConnected(c.env, c.var.sessionId, github);
       const data = await buildResumeIntelligence(c.env, {
+        searchWithConnection: reader ? (args) => reader("GITHUB_SEARCH_REPOSITORIES", args) : undefined,
         targetRole,
         location,
         resumeText,
