@@ -14,7 +14,8 @@
     "headset": "node scripts/headset.mjs",
     "deploy": "npm run build && wrangler deploy",
     "quest": "node scripts/quest.mjs",
-    "quest:app": "sh scripts/quest-app.sh"
+    "quest:app": "sh scripts/quest-app.sh",
+    "record": "bash scripts/record-quest.sh"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
