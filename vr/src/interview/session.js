@@ -1,37 +1,122 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // THE INTEGRATION SEAM.
 //
-// The VR scene talks to the backend through this module and nothing else. Both
-// implementations below satisfy the same interface, so switching from example
-// data to the live Worker is one env var and zero changes under src/scene/.
+// The VR scene talks to the backend through this module and nothing else.
 //
-//   start()                      -> { company, role, questionCount }
-//   nextQuestion()               -> { id, text, isSeeded } | null
-//   submitAnswer({ questionId, question, transcript, audioBase64, mimeType, durationMs })
-//                                -> AnswerScore
-//   finish()                     -> { overall, summary }
-//   isStub                       -> true while running on example data
+//   start()        -> { company, role, opening, question, isStub }
+//   submitAnswer({ question, answer, durationMs })
+//                  -> { score, next: { say, kind } }
+//   finish()       -> { summary, prepList }
 //
-// AnswerScore matches the Worker contract exactly:
-//   { structure, clarity, confidence, relevance } each 1..5,
-//   fillerWords, wpm, strongerAnswer, tip, transcript
+// `next.kind` is 'follow_up' | 'question' | 'wrap_up'. A wrap_up means the
+// interview is over and finish() should be called.
 //
-// Every method is async. The scene already handles latency (the avatar holds a
-// thinking beat) and rejections (the error surfaces in the panel), so real
-// network behaviour needs no extra work here.
+// The Worker keeps no conversation state: it works out where we are by matching
+// the transcript we echo back against its planned questions. So every line the
+// interviewer speaks must be appended VERBATIM — paraphrase it and the server
+// loses its place and repeats question one forever.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { DEFAULT_SCORE, EXAMPLE_QUESTIONS, EXAMPLE_SCORES } from './questions.js'
 
-const STUB_LATENCY_MS = 650 // pretend the model is thinking, so timing bugs show up early
-const DIMENSIONS = ['structure', 'clarity', 'confidence', 'relevance']
+const API_URL = import.meta.env?.VITE_API_URL || 'https://htc-mentor.ilnkostia-dev.workers.dev'
+const STUB_LATENCY_MS = 650
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n))
 
+export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Software Developer' } = {}) {
+  let token = null
+  let sessionId = null
+  let transcript = []
+  let scored = 0
+
+  async function call(path, { method = 'GET', body } = {}) {
+    const response = await fetch(`${baseUrl}${path}`, {
+      method,
+      headers: {
+        ...(body ? { 'content-type': 'application/json' } : {}),
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok) throw new Error(data.error || `${method} ${path} failed (${response.status})`)
+    return data
+  }
+
+  const said = (text) => transcript.push({ speaker: 'interviewer', text })
+
+  return {
+    isStub: false,
+
+    async start() {
+      const auth = await call('/api/session', { method: 'POST' })
+      token = auth.token
+      if (typeof localStorage !== 'undefined') localStorage.setItem('aim.token', token)
+
+      const started = await call('/api/voice/sessions', {
+        method: 'POST',
+        body: { mode: 'interview', ...(companySlug ? { companySlug } : {}), role },
+      })
+      sessionId = started.sessionId
+      transcript = []
+      scored = 0
+
+      const first = started.questions?.[0]?.text ?? null
+      if (started.opening) said(started.opening)
+      if (first) said(first)
+
+      return {
+        company: started.companySlug ?? companySlug ?? null,
+        role,
+        opening: started.opening ?? null,
+        question: first,
+      }
+    },
+
+    async submitAnswer({ question, answer = '', durationMs = 0 }) {
+      transcript.push({ speaker: 'candidate', text: answer })
+
+      // Independent endpoints: /turns scores, /next advances. They run together
+      // so feedback lands while the next line is being spoken, but settled
+      // separately: losing a score costs a panel, losing the transcript line
+      // costs the whole conversation.
+      const [scoring, advancing] = await Promise.allSettled([
+        call(`/api/voice/sessions/${sessionId}/turns`, {
+          method: 'POST',
+          body: { question, answer: answer || '(no answer given)', durationMs: Math.round(durationMs) },
+        }),
+        call(`/api/voice/sessions/${sessionId}/next`, {
+          method: 'POST',
+          // The server caps this at 80 lines.
+          body: { answer, transcript: transcript.slice(-80) },
+        }),
+      ])
+
+      if (advancing.status === 'rejected') throw advancing.reason
+      const next = advancing.value
+      if (next?.say) said(next.say)
+
+      if (scoring.status === 'fulfilled') scored++
+      return { score: scoring.status === 'fulfilled' ? scoring.value : null, next }
+    },
+
+    async finish() {
+      // The server 400s if nothing was ever scored.
+      if (!scored) return { summary: 'No answers were recorded.', prepList: [] }
+      return call(`/api/voice/sessions/${sessionId}/finish`, {
+        method: 'POST',
+        body: { platform: 'vr' },
+      })
+    },
+  }
+}
+
+// Example data, so the demo still runs if the Worker is unreachable. Everything
+// it returns is flagged isSeeded and the panels badge it EXAMPLE.
 export function createStubSession({ company = 'Example Co.', role = 'Software Developer' } = {}) {
   let index = 0
-  let scored = []
+  const given = []
 
   return {
     isStub: true,
@@ -39,155 +124,68 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
     async start() {
       await wait(200)
       index = 0
-      scored = []
-      return { company, role, questionCount: EXAMPLE_QUESTIONS.length, live: null }
+      given.length = 0
+      return {
+        company,
+        role,
+        opening: `Hi, thanks for coming in. We're meeting about the ${role} role. Ready to start?`,
+        question: EXAMPLE_QUESTIONS[index++].text,
+        isSeeded: true,
+      }
     },
 
-    async nextQuestion() {
+    async submitAnswer({ question, answer = '', durationMs = 0 }) {
       await wait(STUB_LATENCY_MS)
-      if (index >= EXAMPLE_QUESTIONS.length) return null
-      return EXAMPLE_QUESTIONS[index++]
-    },
-
-    async submitAnswer({ questionId, transcript = '', durationMs = 0 }) {
-      await wait(STUB_LATENCY_MS)
-      const base = EXAMPLE_SCORES[questionId] ?? DEFAULT_SCORE
-
-      // React to what the candidate actually did, so the demo is not a fixed
-      // recording. Real scoring replaces all of this.
-      const words = transcript.trim().split(/\s+/).filter(Boolean).length
+      const base = EXAMPLE_SCORES[`q${index}`] ?? DEFAULT_SCORE
+      const words = answer.trim().split(/\s+/).filter(Boolean).length
       const seconds = Math.max(1, durationMs / 1000)
-      const tooShort = words > 0 && words < 25
+      const thin = words > 0 && words < 25
 
-      const result = { ...base, transcript }
-      for (const dim of DIMENSIONS) {
-        result[dim] = clamp(base[dim] + (tooShort ? -1 : 0), 1, 5)
+      const score = {
+        scores: {
+          structure: clamp(base.structure - (thin ? 1 : 0)),
+          relevance: clamp(base.relevance - (thin ? 1 : 0)),
+          specificity: clamp(base.clarity - (thin ? 2 : 0)),
+          confidence: clamp(base.confidence),
+        },
+        delivery: {
+          words,
+          fillerWords: countFillers(answer),
+          wordsPerMinute: words && durationMs ? Math.round((words / seconds) * 60) : null,
+        },
+        tip: thin
+          ? 'That was very short. Give the situation, what you did, then the result.'
+          : base.tip,
       }
-      if (words > 0) result.wpm = Math.round((words / seconds) * 60)
-      if (tooShort) {
-        result.tip =
-          'That was very short. Interviewers read brevity here as not having an example ready — give the situation, your action, then the result.'
-      }
+      given.push(score)
 
-      scored.push(result)
-      return result
+      // Mirror the real server: probe a thin answer once, otherwise move on.
+      const next = thin
+        ? { say: 'What was your part in that, specifically?', kind: 'follow_up' }
+        : index < EXAMPLE_QUESTIONS.length
+          ? { say: EXAMPLE_QUESTIONS[index++].text, kind: 'question' }
+          : { say: "That's everything from me. Thanks so much, you'll hear from us soon.", kind: 'wrap_up' }
+
+      return { score, next }
     },
 
     async finish() {
       await wait(200)
-      return { overall: aggregate(scored), summary: summarize(scored) }
-    },
-  }
-}
-
-// The live path. Shipping it now rather than at 3am means integration is a flag
-// flip, not a rewrite.
-export function createApiSession({ baseUrl, companySlug, role }) {
-  let sessionId = null
-  let authToken = null
-  let questions = []
-  let index = 0
-  let scored = []
-
-  async function call(path, { method = 'GET', body } = {}) {
-    const response = await fetch(`${baseUrl}${path}`, {
-      method,
-      headers: {
-        ...(body ? { 'content-type': 'application/json' } : {}),
-        ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    })
-    if (!response.ok) {
-      throw new Error(`${method} ${path} failed (${response.status})`)
-    }
-    return response.json()
-  }
-
-  return {
-    isStub: false,
-
-    async start() {
-      const session = await call('/api/session', { method: 'POST' })
-      authToken = session.token
-      localStorage.setItem('aim.token', session.token)
-
-      const started = await call('/api/interview/start', {
-        method: 'POST',
-        body: { companySlug, role },
-      })
-      sessionId = started.sessionId
-      // The API flags genuinely reported questions; the scene thinks in terms of
-      // seeded ones, so translate here and keep one concept in the UI.
-      questions = (started.questions ?? []).map((q, i) => ({
-        id: `q${i}`,
-        text: q.text,
-        isSeeded: q.reported !== true,
-      }))
-      index = 0
-      scored = []
       return {
-        company: companySlug,
-        role,
-        questionCount: questions.length,
-        // Gemini Live credentials, deliberately distinct from the bearer token
-        // above. These are short-lived and are the only Gemini credential a
-        // client is ever allowed to hold — the API key stays a Worker secret.
-        live: {
-          sessionId: started.sessionId,
-          token: started.token,
-          model: started.model,
-          expiresAt: started.expiresAt,
-        },
+        summary: 'Your structure is solid. The gap is specifics — every answer needs one number.',
+        prepList: [
+          { step: 'Write three stories in situation-action-result form', why: 'Structure is what interviewers grade first' },
+          { step: 'Put a number in each one', why: 'A measurable result is what makes an answer verifiable' },
+        ],
       }
     },
-
-    async nextQuestion() {
-      return index < questions.length ? questions[index++] : null
-    },
-
-    async submitAnswer({ question, transcript, audioBase64, mimeType, durationMs = 0 }) {
-      const result = await call(`/api/interview/${sessionId}/answer`, {
-        method: 'POST',
-        body: {
-          question,
-          ...(audioBase64 ? { audioBase64, mimeType } : { text: transcript }),
-          seconds: Math.round(durationMs / 1000),
-        },
-      })
-      scored.push(result)
-      return result
-    },
-
-    async finish() {
-      return { overall: aggregate(scored), summary: summarize(scored) }
-    },
   }
 }
 
-function aggregate(scores) {
-  if (!scores.length) return 0
-  const total = scores.reduce(
-    (sum, s) => sum + DIMENSIONS.reduce((d, key) => d + (s[key] ?? 0), 0) / DIMENSIONS.length,
-    0,
-  )
-  return Math.round((total / scores.length) * 10) / 10
-}
-
-function summarize(scores) {
-  if (!scores.length) return 'No answers recorded.'
-  const weakest = DIMENSIONS.map((dim) => ({
-    dim,
-    mean: scores.reduce((sum, s) => sum + (s[dim] ?? 0), 0) / scores.length,
-  })).sort((a, b) => a.mean - b.mean)[0]
-
-  const fillers = Math.round(scores.reduce((sum, s) => sum + (s.fillerWords ?? 0), 0) / scores.length)
-  return `Your weakest dimension was ${weakest.dim}, averaging ${weakest.mean.toFixed(1)} out of 5, with about ${fillers} filler words per answer.`
-}
-
-const API_URL = import.meta.env?.VITE_API_URL
+const clamp = (n) => Math.min(5, Math.max(1, n))
+const countFillers = (text) => (text.match(/\b(um+|uh+|erm|like|you know)\b/gi) ?? []).length
 
 export const createSession = (options = {}) =>
-  API_URL
-    ? createApiSession({ baseUrl: API_URL, companySlug: 'example-co', role: 'Software Developer', ...options })
-    : createStubSession(options)
+  import.meta.env?.VITE_USE_STUB === 'true'
+    ? createStubSession(options)
+    : createApiSession(options)

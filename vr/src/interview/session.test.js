@@ -1,142 +1,345 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createStubSession } from './session.js'
+import { createApiSession, createStubSession } from './session.js'
 import { EXAMPLE_QUESTIONS } from './questions.js'
 
-const DIMENSIONS = ['structure', 'clarity', 'confidence', 'relevance']
+const DIMENSIONS = ['structure', 'relevance', 'specificity', 'confidence']
 
-const LONG_ANSWER =
-  'We had four days to ship a payments integration in a language I had never written before. ' +
-  'I spent the first morning reading the reference implementation, had a throwaway prototype by noon, ' +
-  'then rewrote it properly with tests the next day. It shipped on day three and cleared about twelve ' +
-  'hundred transactions in the first week with no rollbacks at all.'
+// Hand-counted: 28 words, so it clears the stub's 25-word "thin answer" line.
+const SOLID =
+  'We had four days to ship the payments integration, so I read the reference code, ' +
+  'built a prototype by noon, and shipped it with tests on day three.'
+const THIN = 'Yeah, I did that once.'
+const FILLERS = 'Um, I guess I like, you know, uh, just sort of handled it myself in the end.'
 
-const SHORT_ANSWER = 'Yeah, I did that once.'
-
-// The stub fakes model latency on purpose. Fake timers let us keep that latency
-// in the code under test without paying for it on every run.
+// The stub fakes model latency on purpose (650ms a turn). Fake timers keep that
+// latency in the code under test without paying for it on every run. The promise
+// is created before settle() runs, so its timer is already pending.
 const settle = async (promise) => {
   await vi.runAllTimersAsync()
   return promise
 }
 
-const totalScore = (score) => DIMENSIONS.reduce((sum, dim) => sum + score[dim], 0)
-
-async function answer(transcript, durationMs) {
+async function answerOnce(args) {
   const session = createStubSession()
   await settle(session.start())
-  const question = await settle(session.nextQuestion())
-  return settle(session.submitAnswer({ questionId: question.id, transcript, durationMs }))
+  return settle(session.submitAnswer({ question: 'q', ...args }))
 }
 
 describe('createStubSession', () => {
   beforeEach(() => vi.useFakeTimers())
   afterEach(() => vi.useRealTimers())
 
-  it('asks every question once in order, then returns null', async () => {
+  it('opens with a greeting and a first question', async () => {
     const session = createStubSession({ company: 'Acme', role: 'Designer' })
-    const meta = await settle(session.start())
-
-    expect(meta).toEqual({
-      company: 'Acme',
-      role: 'Designer',
-      questionCount: EXAMPLE_QUESTIONS.length,
-      live: null,
-    })
-
-    const asked = []
-    for (let i = 0; i < EXAMPLE_QUESTIONS.length + 2; i++) {
-      asked.push(await settle(session.nextQuestion()))
-    }
-
-    expect(asked.slice(0, EXAMPLE_QUESTIONS.length).map((q) => q.id)).toEqual(
-      EXAMPLE_QUESTIONS.map((q) => q.id),
-    )
-    expect(asked.slice(EXAMPLE_QUESTIONS.length)).toEqual([null, null])
-  })
-
-  // The privacy rules require an EXAMPLE badge on anything seeded. A question
-  // leaving here unflagged would be rendered as a real reported question.
-  it('flags every stub question as seeded', async () => {
-    const session = createStubSession()
     expect(session.isStub).toBe(true)
 
-    const { questionCount } = await settle(session.start())
-    for (let i = 0; i < questionCount; i++) {
-      const question = await settle(session.nextQuestion())
-      expect(question.isSeeded, `${question.id} would be shown as a real report`).toBe(true)
-    }
+    const { company, role, opening, question, isSeeded } = await settle(session.start())
 
-    expect(EXAMPLE_QUESTIONS.every((q) => q.isSeeded === true)).toBe(true)
+    expect(company).toBe('Acme')
+    expect(role).toBe('Designer')
+    expect(typeof opening).toBe('string')
+    expect(opening.trim().length).toBeGreaterThan(0)
+    expect(typeof question).toBe('string')
+    expect(question.trim().length).toBeGreaterThan(0)
+    expect(question).not.toBe(opening)
+    // Privacy rules: anything seeded has to arrive flagged or the panel renders
+    // example data without its EXAMPLE badge.
+    expect(isSeeded).toBe(true)
   })
 
-  it('returns the full AnswerScore contract', async () => {
-    const score = await answer(LONG_ANSWER, 42000)
+  // The probe is what makes the interview feel real, and it is what the live
+  // server does too, so the scene has to handle it from the stub as well.
+  it('probes a thin answer with a follow-up', async () => {
+    const { next } = await answerOnce({ answer: THIN, durationMs: 4000 })
 
-    for (const dim of DIMENSIONS) {
-      expect(Number.isInteger(score[dim]), `${dim} is ${score[dim]}`).toBe(true)
-      expect(score[dim]).toBeGreaterThanOrEqual(1)
-      expect(score[dim]).toBeLessThanOrEqual(5)
-    }
-    expect(typeof score.fillerWords).toBe('number')
-    expect(typeof score.wpm).toBe('number')
-    expect(score.wpm).toBeGreaterThan(0)
-    expect(score.strongerAnswer.length).toBeGreaterThan(0)
-    expect(score.tip.length).toBeGreaterThan(0)
-    expect(score.transcript).toBe(LONG_ANSWER)
+    expect(next.kind).toBe('follow_up')
+    expect(next.say.trim().length).toBeGreaterThan(0)
   })
 
-  it('scores a one-line answer below a substantial one', async () => {
-    const short = await answer(SHORT_ANSWER, 4000)
-    const full = await answer(LONG_ANSWER, 42000)
-
-    expect(totalScore(short)).toBeLessThan(totalScore(full))
-    expect(short.tip).not.toBe(full.tip)
-  })
-
-  it('finishes with an aggregate that matches the answers given', async () => {
+  it('moves to a new question after a substantial answer', async () => {
     const session = createStubSession()
-    await settle(session.start())
+    const { question } = await settle(session.start())
+    const { next } = await settle(
+      session.submitAnswer({ question, answer: SOLID, durationMs: 12000 }),
+    )
 
-    const given = []
-    for (const question of EXAMPLE_QUESTIONS) {
-      await settle(session.nextQuestion())
-      given.push(
-        await settle(
-          session.submitAnswer({
-            questionId: question.id,
-            transcript: LONG_ANSWER,
-            durationMs: 40000,
-          }),
-        ),
+    expect(next.kind).toBe('question')
+    expect(next.say).not.toBe(question)
+  })
+
+  it('reaches a wrap_up and stops asking', async () => {
+    const session = createStubSession()
+    let { question } = await settle(session.start())
+    const asked = [question]
+    let kind = null
+
+    // Bounded: a state machine that never advances must fail the suite, not hang it.
+    for (let turn = 0; turn < EXAMPLE_QUESTIONS.length + 4 && kind !== 'wrap_up'; turn++) {
+      const { next } = await settle(
+        session.submitAnswer({ question, answer: SOLID, durationMs: 12000 }),
       )
+      kind = next.kind
+      question = next.say
+      asked.push(next.say)
     }
 
-    const { overall, summary } = await settle(session.finish())
-    const expected =
-      given.reduce((sum, score) => sum + totalScore(score) / DIMENSIONS.length, 0) / given.length
-    const weakest = DIMENSIONS.map((dim) => ({
-      dim,
-      mean: given.reduce((sum, score) => sum + score[dim], 0) / given.length,
-    })).sort((a, b) => a.mean - b.mean)[0]
+    expect(kind).toBe('wrap_up')
+    expect(asked.length).toBeLessThanOrEqual(EXAMPLE_QUESTIONS.length + 1)
+    expect(new Set(asked).size).toBe(asked.length) // no question repeated
+  })
 
-    expect(overall).toBeCloseTo(expected, 1)
-    expect(overall).toBeGreaterThanOrEqual(1)
-    expect(overall).toBeLessThanOrEqual(5)
-    expect(summary).toContain(weakest.dim)
+  it('returns the documented score shape', async () => {
+    const { score } = await answerOnce({ answer: SOLID, durationMs: 12000 })
+
+    expect(Object.keys(score.scores).sort()).toEqual([...DIMENSIONS].sort())
+    for (const dim of DIMENSIONS) {
+      expect(score.scores[dim], dim).toBeGreaterThanOrEqual(1)
+      expect(score.scores[dim], dim).toBeLessThanOrEqual(5)
+    }
+    expect(score.delivery.words).toBe(28)
+    expect(score.delivery.wordsPerMinute).toBe(140) // 28 words in 12s
+    expect(typeof score.tip).toBe('string')
+    expect(score.tip.trim().length).toBeGreaterThan(0)
+  })
+
+  it('counts um / uh / like / you know as filler words', async () => {
+    const { score } = await answerOnce({ answer: FILLERS, durationMs: 9000 })
+
+    expect(score.delivery.words).toBe(17)
+    expect(score.delivery.fillerWords).toBe(4) // um, like, you know, uh
+  })
+
+  it('reports no words-per-minute when there are no words', async () => {
+    const { score } = await answerOnce({ answer: '', durationMs: 5000 })
+
+    expect(score.delivery.words).toBe(0)
+    expect(score.delivery.wordsPerMinute).toBeNull()
+  })
+
+  // KNOWN GAP, reported not fixed: the contract says wordsPerMinute is null when
+  // Without a duration there is no pace to report. Gating this on the word count
+  // instead once put ~1680 wpm straight into the score panel.
+  it('reports no words-per-minute when the answer was not timed', async () => {
+    const { score } = await answerOnce({ answer: SOLID })
+
+    expect(score.delivery.wordsPerMinute).toBeNull()
+    expect(score.delivery.words).toBeGreaterThan(0)
+  })
+
+  it('scores a thin answer below a substantial one', async () => {
+    // Fresh sessions: both land on the same question, so only answer length differs.
+    const thin = await answerOnce({ answer: THIN, durationMs: 4000 })
+    const solid = await answerOnce({ answer: SOLID, durationMs: 12000 })
+
+    const lower = DIMENSIONS.filter((dim) => thin.score.scores[dim] < solid.score.scores[dim])
+    expect(lower.length).toBeGreaterThan(0)
+    expect(thin.score.tip).not.toBe(solid.score.tip)
   })
 
   it('resets on start, so a second run of the demo behaves like the first', async () => {
     const session = createStubSession()
-    await settle(session.start())
-    const first = await settle(session.nextQuestion())
-    await settle(
-      session.submitAnswer({ questionId: first.id, transcript: SHORT_ANSWER, durationMs: 4000 }),
+
+    const first = await settle(session.start())
+    const firstTurn = await settle(
+      session.submitAnswer({ question: first.question, answer: SOLID, durationMs: 12000 }),
     )
 
-    await settle(session.start())
+    const again = await settle(session.start())
+    const againTurn = await settle(
+      session.submitAnswer({ question: again.question, answer: SOLID, durationMs: 12000 }),
+    )
 
-    expect((await settle(session.nextQuestion())).id).toBe(first.id)
-    // Zero proves the previous run's scores were dropped, not carried over.
-    expect((await settle(session.finish())).overall).toBe(0)
+    expect(again.question).toBe(first.question)
+    expect(againTurn.next).toEqual(firstTurn.next)
+  })
+
+  it('finishes with a summary and a prep list', async () => {
+    const session = createStubSession()
+    await settle(session.start())
+    const { summary, prepList } = await settle(session.finish())
+
+    expect(typeof summary).toBe('string')
+    expect(summary.trim().length).toBeGreaterThan(0)
+    expect(prepList.length).toBeGreaterThan(0)
+    for (const item of prepList) {
+      expect(Object.keys(item).sort()).toEqual(['step', 'why'])
+      expect(item.step.trim().length).toBeGreaterThan(0)
+      expect(item.why.trim().length).toBeGreaterThan(0)
+    }
+  })
+
+  // Speech recognition is unreliable in the Quest browser, so these are the
+  // answers the scene actually submits when a turn goes wrong.
+  it.each([
+    ['no answer at all', { answer: '', durationMs: 3000 }],
+    ['whitespace only', { answer: '   \n\t  ', durationMs: 3000 }],
+    ['no duration measured', { answer: SOLID }],
+    ['a very long answer', { answer: 'word '.repeat(5000), durationMs: 600000 }],
+  ])('survives %s', async (_label, args) => {
+    const { score, next } = await answerOnce(args)
+
+    for (const dim of DIMENSIONS) {
+      expect(score.scores[dim], dim).toBeGreaterThanOrEqual(1)
+      expect(score.scores[dim], dim).toBeLessThanOrEqual(5)
+    }
+    expect(score.delivery.words).toBeGreaterThanOrEqual(0)
+    expect(['follow_up', 'question', 'wrap_up']).toContain(next.kind)
+  })
+})
+
+// ─── createApiSession ────────────────────────────────────────────────────────
+// No real requests: fetch is swapped for a recorder so we can assert on exactly
+// what the seam puts on the wire.
+
+const BASE = 'https://worker.test'
+const TOKEN = 'tok_abc123'
+const OPENING = 'Hi, thanks for making the time. Shall we start?'
+const FIRST = 'Walk me through a project you shipped under a deadline.'
+const SECOND = 'Tell me about a disagreement with a teammate.'
+
+function recordingFetch() {
+  const calls = []
+  // Most specific path first: /turns and /next both sit under /api/voice/sessions.
+  const routes = [
+    ['/turns', { scores: { structure: 4.2, relevance: 3.8, specificity: 3.5, confidence: 4 }, delivery: { words: 28, fillerWords: 1, wordsPerMinute: 140 }, tip: 'Close with a number.' }],
+    ['/next', { say: SECOND, kind: 'question' }],
+    ['/finish', { summary: 'Solid structure.', prepList: [{ step: 'Add numbers', why: 'Verifiable' }] }],
+    ['/api/voice/sessions', { sessionId: 'sess_1', companySlug: 'acme', opening: OPENING, questions: [{ text: FIRST }, { text: SECOND }] }],
+    ['/api/session', { token: TOKEN }],
+  ]
+
+  const fetch = vi.fn(async (url, init = {}) => {
+    calls.push({
+      url,
+      method: init.method ?? 'GET',
+      headers: init.headers ?? {},
+      body: init.body ? JSON.parse(init.body) : null,
+    })
+    const route = routes.find(([path]) => url.endsWith(path))
+    if (!route) throw new Error(`fake fetch has no route for ${url}`)
+    return { ok: true, status: 200, json: async () => route[1] }
+  })
+
+  return { fetch, calls, of: (path) => calls.filter((c) => c.url.endsWith(path)) }
+}
+
+describe('createApiSession', () => {
+  let api
+  let realFetch
+  let realStorage
+
+  beforeEach(() => {
+    api = recordingFetch()
+    realFetch = globalThis.fetch
+    realStorage = globalThis.localStorage
+    globalThis.fetch = api.fetch
+    // start() caches the token in localStorage, which the node test env lacks.
+    globalThis.localStorage = { store: {}, setItem() {}, getItem: () => null }
+  })
+
+  afterEach(() => {
+    globalThis.fetch = realFetch
+    globalThis.localStorage = realStorage
+  })
+
+  const session = () => createApiSession({ baseUrl: BASE, companySlug: 'acme', role: 'Designer' })
+
+  it('mints a token and authorizes every voice call with it', async () => {
+    const s = session()
+    expect(s.isStub).toBe(false)
+
+    const started = await s.start()
+
+    expect(started).toEqual({ company: 'acme', role: 'Designer', opening: OPENING, question: FIRST })
+    expect(api.calls[0].url).toBe(`${BASE}/api/session`)
+    expect(api.calls[0].method).toBe('POST')
+    expect(api.calls[0].headers.authorization).toBeUndefined() // nothing to send yet
+
+    const voice = api.calls.filter((c) => c.url.includes('/api/voice/'))
+    expect(voice.length).toBeGreaterThan(0)
+    for (const call of voice) expect(call.headers.authorization).toBe(`Bearer ${TOKEN}`)
+  })
+
+  // /turns scores and /next advances. They are fired together so the feedback
+  // lands while the next line is still being spoken — both must go out per turn.
+  it('scores and advances in the same turn', async () => {
+    const s = session()
+    const { question } = await s.start()
+    const { score, next } = await s.submitAnswer({ question, answer: SOLID, durationMs: 12000 })
+
+    expect(api.of('/turns')).toHaveLength(1)
+    expect(api.of('/next')).toHaveLength(1)
+    expect(api.of('/turns')[0].body).toEqual({ question, answer: SOLID, durationMs: 12000 })
+    expect(score.scores.structure).toBe(4.2)
+    expect(next).toEqual({ say: SECOND, kind: 'question' })
+  })
+
+  // THE ONE THAT MATTERS. The Worker keeps no state: it finds its place by
+  // string-matching this transcript against its planned questions. Paraphrase a
+  // line and it silently re-asks question one forever.
+  it('echoes the interviewer lines back verbatim', async () => {
+    const s = session()
+    const { question } = await s.start()
+    await s.submitAnswer({ question, answer: SOLID, durationMs: 12000 })
+
+    expect(api.of('/next')[0].body.transcript).toEqual([
+      { speaker: 'interviewer', text: OPENING },
+      { speaker: 'interviewer', text: FIRST },
+      { speaker: 'candidate', text: SOLID },
+    ])
+
+    // And the line it just spoke carries into the next turn, still verbatim.
+    await s.submitAnswer({ question: SECOND, answer: SOLID, durationMs: 12000 })
+    expect(api.of('/next')[1].body.transcript).toContainEqual({
+      speaker: 'interviewer',
+      text: SECOND,
+    })
+  })
+
+  // The server returns {} for scores when its scoring provider is down. The
+  // interview has to keep going on an empty score, not throw.
+  it('passes an empty score object straight through', async () => {
+    api.fetch.mockImplementation(async (url, init = {}) => {
+      api.calls.push({ url, method: init.method, body: init.body ? JSON.parse(init.body) : null, headers: init.headers ?? {} })
+      if (url.endsWith('/turns')) return { ok: true, status: 200, json: async () => ({ scores: {}, delivery: { words: 28, fillerWords: 0, wordsPerMinute: null }, tip: '' }) }
+      if (url.endsWith('/next')) return { ok: true, status: 200, json: async () => ({ say: SECOND, kind: 'follow_up' }) }
+      if (url.endsWith('/api/session')) return { ok: true, status: 200, json: async () => ({ token: TOKEN }) }
+      return { ok: true, status: 200, json: async () => ({ sessionId: 'sess_1', opening: OPENING, questions: [{ text: FIRST }] }) }
+    })
+
+    const s = session()
+    const { question } = await s.start()
+    const { score, next } = await s.submitAnswer({ question, answer: SOLID, durationMs: 12000 })
+
+    expect(score.scores).toEqual({})
+    expect(score.delivery.wordsPerMinute).toBeNull()
+    expect(next.kind).toBe('follow_up')
+  })
+
+  // The server 400s a finish with nothing scored, so ending early must not call it.
+  it('does not call finish when no answer was ever scored', async () => {
+    const s = session()
+    await s.start()
+    const afterStart = api.calls.length
+
+    const { summary, prepList } = await s.finish()
+
+    expect(api.calls).toHaveLength(afterStart)
+    expect(api.of('/finish')).toHaveLength(0)
+    expect(typeof summary).toBe('string')
+    expect(prepList).toEqual([])
+  })
+
+  it('finishes through the API once a turn has been scored', async () => {
+    const s = session()
+    const { question } = await s.start()
+    await s.submitAnswer({ question, answer: SOLID, durationMs: 12000 })
+
+    const { summary, prepList } = await s.finish()
+
+    expect(api.of('/finish')).toHaveLength(1)
+    expect(api.of('/finish')[0].body).toEqual({ platform: 'vr' })
+    expect(summary).toBe('Solid structure.')
+    expect(prepList).toEqual([{ step: 'Add numbers', why: 'Verifiable' }])
   })
 })
