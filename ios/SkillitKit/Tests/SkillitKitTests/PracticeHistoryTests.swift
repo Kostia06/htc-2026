@@ -13,8 +13,9 @@ struct PracticeHistoryTests {
         """#
         let detail = try JSONDecoder().decode(PracticeSessionDetail.self, from: Data(json.utf8))
         #expect(detail.turns.count == 2)
-        #expect(detail.turns[0].averageScore == 3)
-        #expect(detail.turns[1].averageScore == nil)
+        // {4, 2} average 3 on the 1-5 ratings, which the report shows as 50 out of 100
+        #expect(detail.turns[0].score == 50)
+        #expect(detail.turns[1].score == nil)
         #expect(detail.turns[0].delivery?.fillerWords == 1)
     }
 

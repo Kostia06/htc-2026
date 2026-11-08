@@ -15,7 +15,7 @@ describe("cors", () => {
     expect(res.status).toBe(204);
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe("http://localhost:5173");
     expect(res.headers.get("Access-Control-Allow-Headers")).toContain("Authorization");
-    expect(res.headers.get("Access-Control-Allow-Methods")).toBe("GET,POST,PATCH,DELETE");
+    expect(res.headers.get("Access-Control-Allow-Methods")).toBe("GET,POST,PUT,PATCH,DELETE");
   });
 
   it("does not allow an origin that is not listed", async () => {

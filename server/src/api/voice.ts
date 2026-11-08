@@ -93,8 +93,9 @@ export function voiceRouter() {
     if (turns.length === 0) return c.json({ error: "nothing was said in this session yet" }, 400);
 
     // one model call over the stored turns; the same debrief on the phone and in the headset
-    await finishSession(c.env, userId, session.id);
-    return c.json(await buildDebrief(c.env, session.plan, turns));
+    const debrief = await buildDebrief(c.env, session.plan, turns);
+    await finishSession(c.env, userId, session.id, debrief.overall);
+    return c.json(debrief);
   });
 
   router.get("/sessions/:id", async (c) => {

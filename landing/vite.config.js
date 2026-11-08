@@ -68,7 +68,8 @@ function appSlash() {
 }
 
 export default defineConfig(({ mode }) => {
-  APP_URL = loadEnv(mode, process.cwd(), '').APP_URL || APP_URL;
+  // the deployed app lives on its own subdomain; dev keeps the same-site /app path
+  APP_URL = loadEnv(mode, process.cwd(), '').APP_URL || (mode === 'production' ? 'https://app.skillit.study' : APP_URL);
   return {
     plugins: [htmlPartials(), appSlash()],
     server: {

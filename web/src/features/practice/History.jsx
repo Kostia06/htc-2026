@@ -12,7 +12,8 @@ import { Page, PageHeader } from '../../ui/Layout'
 import './practice.css'
 
 const CACHE = 'history'
-const one = (n) => (Number.isFinite(n) ? n.toFixed(1) : '–')
+// scores are out of 100, the same number the report shows
+const one = (n) => (Number.isFinite(n) ? String(Math.round(n)) : '–')
 
 export function History() {
   const [page, setPage] = useState(() => readCache(CACHE))
@@ -111,14 +112,14 @@ function TrendCard({ sessions }) {
           <span className="t-subhead c-2">Average score</span>
           <p className="row trend-card__avg">
             <span className="t-large-title rounded-num">{one(average)}</span>
-            <span className="t-title3 c-2">/ 5</span>
+            <span className="t-title3 c-2">/ 100</span>
           </p>
         </div>
         {change !== null && (
           <span className={`trend-card__change t-subhead semibold ${change >= 0 ? 'is-up' : ''}`}>
             {change >= 0 ? <ArrowUpRight size={15} strokeWidth={2.6} aria-hidden /> : <ArrowDownRight size={15} strokeWidth={2.6} aria-hidden />}
             {change >= 0 ? '+' : ''}
-            {change.toFixed(1)}
+            {Math.round(change)}
           </span>
         )}
       </div>
@@ -127,11 +128,11 @@ function TrendCard({ sessions }) {
   )
 }
 
-/** ScoreSparkline.swift: smooth curve on a 1–5 scale that draws itself in, ending in a dot. */
+/** ScoreSparkline.swift: smooth curve on the 0–100 scale that draws itself in, ending in a dot. */
 function Sparkline({ scores, height = 56 }) {
   const width = 600
   const points = scores.map((s, i) => {
-    const unit = (Math.min(5, Math.max(1, s)) - 1) / 4
+    const unit = Math.min(100, Math.max(0, s)) / 100
     return [scores.length === 1 ? width / 2 : (i / (scores.length - 1)) * width, 4 + (height - 8) * (1 - unit)]
   })
   const d = points.reduce((path, [x, y], i) => {
@@ -194,7 +195,9 @@ export function SessionDetail() {
   const turns = detail?.turns ?? []
   const avg = (t) => {
     const values = Object.values(t.scores ?? {})
-    return values.length ? values.reduce((a, b) => a + b, 0) / values.length : null
+    if (!values.length) return null
+    // 1-5 ratings mapped like the report: lowest is 0, highest is 100
+    return ((values.reduce((a, b) => a + b, 0) / values.length - 1) / 4) * 100
   }
   const scored = turns.map(avg).filter((v) => v !== null)
   const overall = scored.length ? scored.reduce((a, b) => a + b, 0) / scored.length : null
@@ -224,7 +227,7 @@ export function SessionDetail() {
             {overall !== null && (
               <div className="stack session-detail__score">
                 <span className="t-large-title rounded-num">{one(overall)}</span>
-                <span className="t-caption c-2">of 5</span>
+                <span className="t-caption c-2">of 100</span>
               </div>
             )}
           </header>

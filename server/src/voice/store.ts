@@ -68,9 +68,10 @@ export async function listTurns(env: Env, userId: string, sessionId: string): Pr
   );
 }
 
-export async function finishSession(env: Env, userId: string, id: string) {
-  await db(env).prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ? WHERE id = ? AND user_id = ?")
-    .bind(new Date().toISOString(), id, userId)
+// overall is the report's 0-100 score, kept so history shows the number the person already saw
+export async function finishSession(env: Env, userId: string, id: string, overall: number | null = null) {
+  await db(env).prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ?, overall = ? WHERE id = ? AND user_id = ?")
+    .bind(new Date().toISOString(), overall, id, userId)
     .run();
 }
 

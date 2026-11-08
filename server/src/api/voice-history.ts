@@ -1,6 +1,7 @@
-import { db } from "../db";
 import { Hono } from "hono";
+import { db } from "../db";
 import type { AppContext, Env } from "../env";
+import { turnScore } from "../voice/debrief";
 
 const PAGE_SIZE = 20;
 
@@ -12,6 +13,7 @@ type SessionRow = {
   status: string;
   created_at: string;
   finished_at: string | null;
+  overall: number | null;
 };
 type ScoreRow = { session_id: string; scores_json: string };
 
@@ -20,7 +22,7 @@ type ScoreRow = { session_id: string; scores_json: string };
 async function loadPage(env: Env, userId: string, cursor: string | null) {
   const before = cursor ? " AND s.created_at < ?" : "";
   const stmt = db(env).prepare(
-    `SELECT s.id, s.mode, s.company_slug, c.name AS company_name, s.status, s.created_at, s.finished_at
+    `SELECT s.id, s.mode, s.company_slug, c.name AS company_name, s.status, s.created_at, s.finished_at, s.overall
      FROM voice_sessions s LEFT JOIN companies c ON c.slug = s.company_slug
      WHERE s.user_id = ? AND s.mode = 'interview'${before}
      ORDER BY s.created_at DESC LIMIT ?`,
@@ -31,7 +33,7 @@ async function loadPage(env: Env, userId: string, cursor: string | null) {
   return { page, nextCursor: results.length > PAGE_SIZE ? page[page.length - 1].created_at : null };
 }
 
-// one average per session over every scored dimension of every turn, on the 1–5 scale people see live
+// for sessions without a saved report score: the mean of each turn's 0-100 score, mapped the way the report maps it
 async function scoresBySession(env: Env, userId: string, sessionIds: string[]) {
   const totals = new Map<string, { sum: number; n: number; turns: number }>();
   if (sessionIds.length === 0) return totals;
@@ -43,8 +45,9 @@ async function scoresBySession(env: Env, userId: string, sessionIds: string[]) {
     const entry = totals.get(row.session_id) ?? { sum: 0, n: 0, turns: 0 };
     entry.turns++;
     const scores = (JSON.parse(row.scores_json) as { scores?: Record<string, number> }).scores ?? {};
-    for (const value of Object.values(scores)) {
-      entry.sum += value;
+    const score = turnScore({ scores });
+    if (score !== null) {
+      entry.sum += score;
       entry.n++;
     }
     totals.set(row.session_id, entry);
@@ -68,7 +71,7 @@ voiceHistory.get("/", async (c) => {
       status: row.status,
       createdAt: row.created_at,
       finishedAt: row.finished_at,
-      score: total && total.n > 0 ? Math.round((total.sum / total.n) * 10) / 10 : null,
+      score: row.overall ?? (total && total.n > 0 ? Math.round(total.sum / total.n) : null),
       turnCount: total?.turns ?? 0,
     };
   });

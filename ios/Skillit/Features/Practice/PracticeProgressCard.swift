@@ -51,10 +51,10 @@ struct PracticeProgressCard: View {
 
     private func scoreText(_ score: Double) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Text(score, format: .number.precision(.fractionLength(1)))
+            Text(score, format: .number.precision(.fractionLength(0)))
                 .font(.system(.largeTitle, design: .rounded).bold())
                 .monospacedDigit()
-            Text("/ 5 last session")
+            Text("/ 100 last session")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -65,12 +65,12 @@ struct PracticeProgressCard: View {
         if scores.count > 1, let last = scores.last {
             let change = last - scores[scores.count - 2]
             Label(
-                change.formatted(.number.sign(strategy: .always()).precision(.fractionLength(1))),
+                change.formatted(.number.sign(strategy: .always()).precision(.fractionLength(0))),
                 systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right",
             )
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(change >= 0 ? Theme.positive : Theme.negative)
-            .accessibilityLabel("Change since the session before: \(change.formatted(.number.precision(.fractionLength(1))))")
+            .accessibilityLabel("Change since the session before: \(change.formatted(.number.precision(.fractionLength(0))))")
         }
     }
 }
