@@ -20,3 +20,9 @@ export function practiceLine(meta) {
   if (role && company) return `${role} at ${company}`
   return role || company || ''
 }
+
+/** The end card's words when there is no score to show yet, or none at all. */
+export function endNotice(status) {
+  if (status === 'pending') return { title: 'Putting your report together…', body: 'Your score and tips will appear here in a moment.' }
+  return { title: 'Not enough answers to score', body: 'Answer a few questions next time to get a score out of 100 and tips.' }
+}

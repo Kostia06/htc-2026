@@ -6,6 +6,7 @@ import { createVoiceDetector } from './vad.js'
 import { ensureMicrophone, micProblem } from './microphone.js'
 import { voicePathOf } from './voicePath.js'
 import { isLaunch } from './picker.js'
+import { reportAfterCall } from './endOfInterview.js'
 
 // Phases: idle -> asking -> listening -> scoring -> asking -> ... -> done
 // 'awaiting' only happens when there is no microphone and we fall back to a button.
@@ -76,6 +77,7 @@ export function useInterview(auth = {}) {
   // that is exactly how the computer voice used to talk over ElevenLabs.
   const [usingAgent, setUsingAgent] = useState(false)
   const scoringRef = useRef([]) // the agent path's turns still being scored; finish waits for them
+  const runRef = useRef(0) // bumped by begin and restart, so a late report can't land on the next interview
   const callClock = useMemo(() => createCallClock(), [])
   const [recording, setRecording] = useState(false)
 
@@ -134,6 +136,23 @@ export function useInterview(auth = {}) {
   }, [listener, vad])
   listenRef.current = listen
 
+  // The end of every interview, on either voice path: the card always gets a
+  // report or the unscored state. A report for an interview the candidate has
+  // already left (restart bumped runRef) is dropped.
+  const showReport = useCallback(
+    async (closingLine) => {
+      const run = runRef.current
+      const report = await reportAfterCall({
+        pending: scoringRef.current,
+        finish: (options) => session.finish(options),
+        closingLine,
+        isCurrent: () => alive.current && runRef.current === run,
+      })
+      if (report) setSummary(report)
+    },
+    [session],
+  )
+
   // Speak a line, then hand the floor back to the candidate.
   const sayThenListen = useCallback(
     async (text) => {
@@ -173,8 +192,7 @@ export function useInterview(auth = {}) {
         running.current = false
         setPhase('done')
         await say(next.say)
-        const final = await session.finish()
-        if (alive.current) setSummary(final)
+        await showReport()
         return
       }
       await sayThenListen(next?.say ?? '')
@@ -183,7 +201,7 @@ export function useInterview(auth = {}) {
       setError(err.message ?? 'Lost the connection to the interviewer.')
       setPhase('awaiting')
     }
-  }, [listener, say, sayThenListen, session, transcript, vad])
+  }, [listener, say, sayThenListen, session, showReport, transcript, vad])
 
   // The provider's own agent does speech-to-text, the model and speech-out over
   // one socket, so none of our speech stack runs on this path. It is the same
@@ -197,15 +215,11 @@ export function useInterview(auth = {}) {
     agentRef.current = null
     setSpeaking(false)
     setPhase('done')
-    await Promise.all(scoringRef.current)
-    if (!scoringRef.current.length) return
-    try {
-      const final = await session.finish()
-      if (alive.current) setSummary(final)
-    } catch (err) {
-      if (alive.current) setError(err.message ?? 'Could not get the report.')
-    }
-  }, [session])
+    // Always ask for the report, however few answers were scored: returning early
+    // here used to leave an empty room with no card and no way back to the menu.
+    // The agent's last line goes along so the server can tell a conduct ending.
+    await showReport(askedRef.current)
+  }, [showReport])
 
   const beginWithAgent = useCallback(
     async (started) => {
@@ -305,6 +319,8 @@ export function useInterview(auth = {}) {
     setError(null)
     setSummary(null)
     setResult(null)
+    runRef.current++
+    scoringRef.current = []
     running.current = true
     try {
       // The mic before anything that costs credits, and never a prompt inside
@@ -348,16 +364,25 @@ export function useInterview(auth = {}) {
     if (phaseRef.current === 'idle') begin({ length: 'quick' })
   }, [begin])
 
+  // Back to the menu with a clean room: nothing of the last interview may show
+  // in the next one, including a report that is still on its way.
   const restart = useCallback(() => {
     running.current = false
+    runRef.current++
+    scoringRef.current = []
+    askedRef.current = null
     agentRef.current?.disconnect()
     agentRef.current = null
     setUsingAgent(false)
     speaker.cancel()
     vad.stop()
     setPhase('idle')
+    setSpeaking(false)
+    setHeard(false)
+    setMeta(null)
     setQuestion(null)
     setResult(null)
+    setResultAt(0)
     setSummary(null)
     setCaption('')
     setTranscript('')

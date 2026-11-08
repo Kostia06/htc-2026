@@ -20,7 +20,7 @@ import { useSpatialVoice } from './useSpatialVoice.js'
 import { useControllerInput, useGreeting, useKeyboard, useRecent } from './useSceneInput.js'
 import { useReducedMotion } from '../ui/useReducedMotion.js'
 import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './seating.js'
-import { toPanelScore, toPanelSummary } from '../interview/scores.js'
+import { toEndCard, toPanelScore } from '../interview/scores.js'
 
 // Laid out for a candidate sitting at the near edge of the desk, looking down -Z.
 // Panels float 1.0-1.2 m out, just below eye level (comfortable focus, readable
@@ -188,9 +188,10 @@ export function Scene({ interview, headset, review, captions }) {
           </>
         )}
 
-        {stage === 'summary' && summary && (
+        {/* always a card once it's over, even before or without a report: its key is the way back to the menu */}
+        {stage === 'summary' && (
           <ReviewPanel
-            summary={toPanelSummary(summary)}
+            summary={toEndCard(summary)}
             meta={meta}
             sample={isStub}
             onPracticeAgain={actions.restart}

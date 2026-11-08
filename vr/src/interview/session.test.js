@@ -386,6 +386,16 @@ describe('createApiSession', () => {
     expect(prepList).toEqual([{ step: 'Add numbers', why: 'Verifiable' }])
   })
 
+  it("sends the interviewer's last line with the finish, so the server can spot a conduct ending", async () => {
+    const s = session()
+    const { question } = await s.start()
+    await s.submitAnswer({ question, answer: SOLID, durationMs: 12000 })
+
+    await s.finish({ closingLine: "I'm going to end the interview here. Goodbye." })
+
+    expect(api.of('/finish')[0].body).toEqual({ platform: 'vr', closingLine: "I'm going to end the interview here. Goodbye." })
+  })
+
   it('starts the interview the phone asked for', async () => {
     await session().start({ mode: 'interview', companySlug: 'atb', role: 'Data Analyst' })
 

@@ -146,12 +146,13 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
       return call(`/api/voice/sessions/${sessionId}/conversation`, { method: 'POST', body })
     },
 
-    async finish() {
-      // The server 400s if nothing was ever scored.
+    // closingLine is the interviewer's last line, which no answer followed; the server reads a conduct ending from it
+    async finish({ closingLine } = {}) {
+      // The server 400s if nothing was ever scored. No overall: the card shows it as unscored, not 0/100.
       if (!scored) return { summary: 'No answers were recorded.', prepList: [] }
       return call(`/api/voice/sessions/${sessionId}/finish`, {
         method: 'POST',
-        body: { platform: 'vr' },
+        body: { platform: 'vr', ...(closingLine ? { closingLine: String(closingLine).slice(0, 1000) } : {}) },
       })
     },
   }

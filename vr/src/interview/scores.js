@@ -34,3 +34,12 @@ export function toPanelSummary(debrief) {
     nextSteps: (debrief.nextSteps ?? []).filter(Boolean).slice(0, 3),
   }
 }
+
+// The end-of-interview card in one of three states. `summary` is null while
+// the report is on its way; a report without a number (nothing was scored, or
+// /finish failed) is 'unscored' rather than a misleading 0/100.
+export function toEndCard(summary) {
+  if (!summary) return { status: 'pending' }
+  if (!Number.isFinite(summary.overall)) return { status: 'unscored' }
+  return { status: 'scored', ...toPanelSummary(summary) }
+}
