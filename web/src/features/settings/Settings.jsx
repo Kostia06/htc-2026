@@ -1,7 +1,7 @@
-// SettingsView.swift and PrivacyView.swift: account, headset, voice, privacy and about; and what Skillit keeps,
+// SettingsView.swift and PrivacyView.swift, behind the Profile page's gear: account, voice, privacy and about; and what Skillit keeps,
 // with the one button that deletes all of it.
 import { useState } from 'react'
-import { Brain, FileLock, FileText, Glasses, Lock, Route, AudioWaveform } from 'lucide-react'
+import { Brain, FileLock, FileText, Lock, Route, AudioWaveform } from 'lucide-react'
 import { useApp } from '../../app/context'
 import { profileApi } from '../../lib/client'
 import { Spinner } from '../../ui/Button'
@@ -32,12 +32,6 @@ export function Settings() {
           </GroupRow>
         </Group>
 
-        <Group header="Headset">
-          <GroupRow to="/settings/headset">
-            <IconLabel icon={Glasses}>Pair a headset</IconLabel>
-          </GroupRow>
-        </Group>
-
         <Group header="Practice voice" footer="The same voice in your browser and on your headset.">
           <GroupRow>
             <span className="row settings__labeled">
@@ -55,7 +49,7 @@ export function Settings() {
 
         <Group
           header="About"
-          footer="Skillit uses AI to read your resume, build your roadmap and run practice conversations. It can get things wrong; check anything before you rely on it."
+          footer="Skillit uses AI to read your resume, build your road and run practice conversations. It can get things wrong; check anything before you rely on it."
         >
           <GroupRow>
             <span className="row settings__labeled">
@@ -91,7 +85,7 @@ const KEPT = [
   [FileLock, 'Profile', 'Encrypted with a key tied to your account; only you can read it.'],
   [FileText, 'Resume text', 'Deleted an hour after upload. Only what you confirm stays, in your profile.'],
   [AudioWaveform, 'Practice sessions', 'Transcripts and scores, encrypted the same way.'],
-  [Route, 'Roadmap and feed', 'Built from your profile; rebuilt when it changes.'],
+  [Route, 'Road and feed', 'Built from your profile; rebuilt when it changes.'],
 ]
 
 export function Privacy() {
@@ -138,7 +132,7 @@ export function Privacy() {
           </GroupRow>
         </Group>
 
-        <Group footer="Removes your profile, memories, roadmap, feed and practice sessions from Skillit's servers, then signs you out. This can't be undone.">
+        <Group footer="Removes your profile, memories, road, feed and practice sessions from Skillit's servers, then signs you out. This can't be undone.">
           <GroupRow destructive onClick={deleting ? undefined : () => setConfirming(true)}>
             <span className="row settings__icon-label">
               Delete my data
@@ -150,7 +144,7 @@ export function Privacy() {
       {confirming && (
         <Confirm
           title="Delete everything Skillit knows about you?"
-          message="Your profile, memories, roadmap, feed and practice sessions are removed for good, and you're signed out."
+          message="Your profile, memories, road, feed and practice sessions are removed for good, and you're signed out."
           confirmLabel="Delete my data"
           onConfirm={eraseAll}
           onClose={() => setConfirming(false)}

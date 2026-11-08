@@ -61,13 +61,13 @@ describe("reasons a card is in the feed", () => {
     expect(reasonsOf(item("e", "event", "Mixer", { where: "Calgary, AB", startsAt: "2026-11-20" }), criteria)).toEqual(["Near you in Calgary", "Coming up Nov 20"]);
   });
 
-  it("keeps at most three reasons, each at most sixty characters, and none when nothing matches", () => {
+  it("keeps at most three reasons, each at most sixty characters, and a true line about the item when nothing matches", () => {
     const longRole = "Senior principal distinguished staff platform reliability engineer";
     const criteria = criteriaFrom(profile({ targetRoles: [longRole], skills: [{ name: "Python", source: "resume" }], projects: [{ name: "Flask API" }] }));
     const reasons = reasonsOf(item("j", "job", longRole, { text: `${longRole} python flask ai`, where: "Calgary" }), { ...criteria, location: "Calgary", usesAI: true });
     expect(reasons).toHaveLength(3);
     for (const reason of reasons) expect(reason.length).toBeLessThanOrEqual(60);
     expect(reasons[0]).toMatch(/^Fits your goal: Senior principal/);
-    expect(reasonsOf(item("b", "event", "Bingo", { tags: ["fun"] }), { roles: [], skills: [] })).toEqual([]);
+    expect(reasonsOf(item("b", "event", "Bingo", { tags: ["fun"] }), { roles: [], skills: [] })).toEqual(["Open to everyone"]);
   });
 });

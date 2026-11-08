@@ -17,6 +17,8 @@ struct CompanyView: View {
     @State private var isSharing = false
     @State private var researchFinished = 0
     @State private var tab = Tab.facts
+    /// The header already shows the name in large type; the bar repeats it only once that has scrolled away.
+    @State private var showsTitle = false
 
     let slug: String
     private let injectedService: (any CompanyService)?
@@ -33,7 +35,7 @@ struct CompanyView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.ground)
-            .navigationTitle(model?.insights?.company.name ?? "")
+            .navigationTitle(showsTitle ? model?.insights?.company.name ?? "" : "")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Theme.ground, for: .navigationBar)
             .toolbar {
@@ -104,7 +106,7 @@ struct CompanyView: View {
                     nothingYet(model)
                 } else {
                     Picker("Section", selection: $tab) {
-                        ForEach(Tab.allCases) { Text($0.rawValue).tag($0) }
+                        ForEach(Tab.allCases) { Text(title(for: $0, in: insights)).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     switch tab {
@@ -118,12 +120,23 @@ struct CompanyView: View {
             .animation(.spring(duration: 0.4), value: insights.facts)
             .animation(.spring(duration: 0.35), value: model.research)
         }
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y + geometry.contentInsets.top > 40
+        } action: { _, scrolledPast in
+            showsTitle = scrolledPast
+        }
         .refreshable { await model.load() }
+    }
+
+    /// Counts on the tabs say up front whether either side is worth opening.
+    private func title(for tab: Tab, in insights: CompanyInsights) -> String {
+        let count = tab == .facts ? insights.facts.count : insights.questions.count
+        return count > 0 ? "\(tab.rawValue) \(count)" : tab.rawValue
     }
 
     @ViewBuilder private func facts(_ model: CompanyModel) -> some View {
         if model.factGroups.isEmpty {
-            Text("No facts yet. Refresh to research.")
+            Text("No facts yet. Tap the refresh button above to research.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

@@ -39,12 +39,12 @@ describe("GET /api/voice/history", () => {
     ]);
   });
 
-  it("lists my sessions newest first with the company name and an average score", async () => {
+  it("lists my sessions newest first with the company name and the report's 0-100 score", async () => {
     const me = await person();
     const older = await createSession(env, me.id, { mode: "interview", companySlug: "atb", plan }, at(5));
     await addTurn(env, me.id, older, { question: "Q1", answer: "A1", score: { scores: { structure: 4, relevance: 2 }, delivery, tip: "t" } });
     await addTurn(env, me.id, older, { question: "Q2", answer: "A2", score: { scores: { structure: 3 }, delivery, tip: "t" } });
-    await finishSession(env, me.id, older);
+    await finishSession(env, me.id, older, 72);
     const newer = await createSession(env, me.id, { mode: "interview", companySlug: null, plan }, at(1));
 
     const { status, body } = await get(me);
@@ -53,8 +53,19 @@ describe("GET /api/voice/history", () => {
     expect(body.sessions.map((s) => s.id)).toEqual([newer, older]);
     const [fresh, done] = body.sessions;
     expect(fresh).toMatchObject({ mode: "interview", companySlug: null, companyName: null, status: "active", score: null, turnCount: 0 });
-    expect(done).toMatchObject({ mode: "interview", companySlug: "atb", companyName: "ATB Financial", status: "finished", score: 3, turnCount: 2 });
+    expect(done).toMatchObject({ mode: "interview", companySlug: "atb", companyName: "ATB Financial", status: "finished", score: 72, turnCount: 2 });
     expect(done.finishedAt).not.toBeNull();
+  });
+
+  it("scores a session that never reached its report on the same 0-100 scale", async () => {
+    const me = await person();
+    const open = await createSession(env, me.id, { mode: "interview", companySlug: null, plan }, at(1));
+    // lowest rating is 0 and highest is 100, like the report: {4, 2} and {3} both average 3, which is 50
+    await addTurn(env, me.id, open, { question: "Q1", answer: "A1", score: { scores: { structure: 4, relevance: 2 }, delivery, tip: "t" } });
+    await addTurn(env, me.id, open, { question: "Q2", answer: "A2", score: { scores: { structure: 3 }, delivery, tip: "t" } });
+
+    const { body } = await get(me);
+    expect(body.sessions[0]).toMatchObject({ status: "active", score: 50, turnCount: 2 });
   });
 
   it("never shows someone else's sessions", async () => {

@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.kostiailn.skillit.notifications.refresh</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -28,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Skillit listens while you answer practice questions so the interviewer can respond to what you said.</string>
+	<string>Skillit listens while you answer practice questions so the interviewer can respond to what you said, and keeps a recording you can replay.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Skillit turns what you say into text so a quick update can be applied to your roadmap and profile.</string>
 	<key>RavenAPIURL</key>
@@ -37,6 +41,10 @@
 	<string>$(SUPABASE_PUBLISHABLE_KEY)</string>
 	<key>SupabaseURL</key>
 	<string>$(SUPABASE_URL)</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

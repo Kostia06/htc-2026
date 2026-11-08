@@ -1,0 +1,230 @@
+/* Crossroads: two lanes that meet at a spine. Sage marks what you can act on and overlaps, sand marks what the
+   AI cited, teal is a real count of people. */
+.xr-intro {
+  max-width: 640px;
+  margin-top: 6px;
+}
+.xr-error {
+  margin: 8px 0;
+}
+
+.xr-lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0 28px;
+}
+.xr-lane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.xr-lane__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.xr-sub {
+  margin-top: 12px;
+}
+.xr-empty {
+  padding: 16px 0;
+}
+.xr-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* the spine is the crossroads itself; on phones it is just a quiet divider with the overlap count */
+.xr-spine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-3);
+  font: var(--caption);
+}
+.xr-spine::before,
+.xr-spine::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
+@media (min-width: 1024px) {
+  .xr-lanes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.25fr);
+    gap: 0 20px;
+    align-items: start;
+  }
+  .xr-spine {
+    position: sticky;
+    top: 96px;
+    flex-direction: column;
+    height: calc(100vh - 220px);
+    min-height: 240px;
+  }
+  .xr-spine span {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .xr-spine::before,
+  .xr-spine::after {
+    width: 2px;
+    height: auto;
+    border-radius: 2px;
+    background: linear-gradient(var(--hairline), rgb(168 199 163 / 0.35), var(--hairline));
+  }
+  /* an overlapping item reaches toward the spine, so the link reads across the gap */
+  .xr-lane--you .xr-item.is-lit {
+    transform: translateX(8px);
+  }
+  .xr-lane--road .xr-item.is-lit {
+    transform: translateX(-8px);
+  }
+}
+
+.xr-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: var(--radius-card);
+  background: rgb(28 33 29 / 0.82);
+  border: 1px solid var(--hairline);
+  transition: transform 0.25s var(--smooth), opacity 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.xr-item--you {
+  background: var(--inset);
+}
+.xr-item:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+.xr-item.is-lit {
+  border-color: rgb(168 199 163 / 0.6);
+  box-shadow: 0 0 0 1px rgb(168 199 163 / 0.25), 0 8px 24px rgb(0 0 0 / 0.25);
+}
+.xr-item.is-dim {
+  opacity: 0.45;
+}
+.xr-item.is-cited,
+.xr-trail.is-cited {
+  border-color: rgb(227 209 173 / 0.7);
+  box-shadow: 0 0 0 1px rgb(227 209 173 / 0.3);
+}
+.xr-item__kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.xr-item__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  min-height: 28px;
+}
+
+.xr-tag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--grey-30);
+  color: var(--text-2);
+  font: var(--caption2);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.xr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--text-2);
+  font: var(--caption);
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+.xr-chip:hover {
+  color: var(--text);
+}
+.xr-chip--link {
+  color: var(--action);
+}
+.xr-metoo.is-on {
+  background: rgb(168 199 163 / 0.18);
+  color: var(--action);
+}
+.xr-icon-btn {
+  margin-left: auto;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: var(--text-3);
+}
+.xr-icon-btn:hover {
+  color: var(--negative);
+  background: rgb(255 158 148 / 0.1);
+}
+.xr-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+}
+.xr-source:hover {
+  text-decoration: underline;
+}
+
+/* ---------- ask ---------- */
+.xr-ask {
+  position: sticky;
+  bottom: calc(var(--tabbar-space) - 8px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 5;
+}
+.xr-ask__log {
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: var(--radius-card);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  min-height: 0;
+}
+.xr-ask .composer {
+  border-radius: 28px;
+}
+@media (min-width: 900px) {
+  .xr-ask {
+    bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xr-item {
+    transition: none;
+  }
+  .xr-lane--you .xr-item.is-lit,
+  .xr-lane--road .xr-item.is-lit {
+    transform: none;
+  }
+}

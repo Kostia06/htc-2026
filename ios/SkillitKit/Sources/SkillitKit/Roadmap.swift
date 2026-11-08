@@ -45,10 +45,10 @@ public struct CompletedDay: Decodable, Equatable, Sendable, Identifiable {
     }
 }
 
-/// What the app launches when the person taps a step's button: a spoken interview.
+/// What the app launches when the person taps a step's button: a spoken interview, or the Crossroads screen.
 public struct RoadmapAction: Decodable, Equatable, Sendable {
     public enum Kind: String, Decodable, Sendable {
-        case interview
+        case interview, crossroads
     }
 
     public let type: Kind
@@ -70,6 +70,18 @@ public struct RoadmapStep: Decodable, Equatable, Sendable, Identifiable {
         case project, event, course, application, certification, volunteering
         case interviewPractice = "interview_practice"
         case networkingPractice = "networking_practice"
+        case exploreMemory = "explore_memory"
+    }
+
+    /// Set when at least three people who reached a job took a step of this kind.
+    public struct Travelled: Decodable, Equatable, Sendable {
+        public let people: Int
+        public let reached: String
+
+        public init(people: Int, reached: String) {
+            self.people = people
+            self.reached = reached
+        }
     }
 
     public enum Label: String, Decodable, Sendable {
@@ -93,10 +105,12 @@ public struct RoadmapStep: Decodable, Equatable, Sendable, Identifiable {
     public var status: Status
     public var completedAt: String?
     public var note: String?
+    public let travelled: Travelled?
 
     public init(
         id: String, kind: Kind, title: String, why: String, detail: String, label: Label, estimate: String,
         action: RoadmapAction? = nil, status: Status = .todo, completedAt: String? = nil, note: String? = nil,
+        travelled: Travelled? = nil,
     ) {
         self.id = id
         self.kind = kind
@@ -109,6 +123,7 @@ public struct RoadmapStep: Decodable, Equatable, Sendable, Identifiable {
         self.status = status
         self.completedAt = completedAt
         self.note = note
+        self.travelled = travelled
     }
 
     public init(from decoder: any Decoder) throws {
@@ -125,9 +140,10 @@ public struct RoadmapStep: Decodable, Equatable, Sendable, Identifiable {
         status = try container.decodeIfPresent(Status.self, forKey: .status) ?? .todo
         completedAt = try container.decodeIfPresent(String.self, forKey: .completedAt)
         note = try container.decodeIfPresent(String.self, forKey: .note)
+        travelled = try? container.decodeIfPresent(Travelled.self, forKey: .travelled)
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, kind, title, why, detail, label, estimate, action, status, completedAt, note
+        case id, kind, title, why, detail, label, estimate, action, status, completedAt, note, travelled
     }
 }

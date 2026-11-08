@@ -31,6 +31,8 @@ final class VoiceSessionModel: Identifiable {
     private var session: VoiceSession?
     private var transcript = TranscriptTurns()
     private var scoring: [Task<Void, Never>] = []
+    /// The interviewer said goodbye after the last question; the call ends once it stops speaking.
+    private var isSigningOff = false
 
     init(request: VoiceSessionRequest, service: any VoicePracticeService, engine: any VoiceEngine) {
         self.request = request
@@ -42,19 +44,29 @@ final class VoiceSessionModel: Identifiable {
         session != nil
     }
 
+    /// The server's id for this session once it exists; the replay is looked up by it.
+    var sessionId: String? {
+        session?.id
+    }
+
     /// How many questions the server planned for this interview.
     var questionCount: Int {
         session?.questions.count ?? 0
     }
 
     func run() async {
-        guard let session = await startSession() else { return }
+        guard let session = await startSession(), !Task.isCancelled else { return }
         self.session = session
         company = session.company
         for await event in engine.start(session) {
             handle(event, in: session)
         }
-        guard phase == .live, !Task.isCancelled else { return }
+        // the screen went away mid-call: hang up, or the mic and the agent keep going in the background
+        if Task.isCancelled {
+            engine.stop()
+            return
+        }
+        guard phase == .live else { return }
         if let last = transcript.flush() {
             submit(last, in: session)
         }
@@ -86,16 +98,23 @@ final class VoiceSessionModel: Identifiable {
         switch event {
         case let .stateChanged(state):
             voiceState = state
+            if isSigningOff, state == .listening {
+                engine.stop()
+            }
         case let .level(newLevel):
             // rise at once, fall gently, so the bars don't flicker between readings
             level = max(newLevel, level * 0.8)
         case let .transcript(speaker, text):
             if speaker == .agent {
                 showQuestion(from: text, in: session)
+                isSigningOff = isSigningOff || session.isSignOff(text, afterQuestion: questionNumber)
             }
             if let turn = transcript.add(speaker == .agent ? .agent : .person, text) {
                 submit(turn, in: session)
             }
+        case let .conversationStarted(conversationId):
+            // without this link there is no replay, but the interview itself carries on regardless
+            Task { try? await service.attachConversation(conversationId, to: session.id) }
         case let .failed(message):
             phase = .failed(message)
             engine.stop()

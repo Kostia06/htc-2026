@@ -25,7 +25,7 @@ export async function findCard(env: Env, userId: string, id: string): Promise<Fe
 }
 
 // a dismissed card leaves every section at once and marks the feed for a rebuild, so the nudge shows on the next page load
-export async function applyAction(env: Env, userId: string, card: FeedCard, action: FeedAction, now: Date) {
+export async function applyAction(env: Env, userId: string, card: FeedCard, action: Exclude<FeedAction, "unsave">, now: Date) {
   const { saved: _saved, ...stored } = card;
   const statements = [
     db(env).prepare(
@@ -40,4 +40,9 @@ export async function applyAction(env: Env, userId: string, card: FeedCard, acti
     );
   }
   await db(env).batch(statements);
+}
+
+// only a save is undone: a dismissal stays a dismissal, and the feed itself is untouched, so the card stays where it was
+export async function removeSave(env: Env, userId: string, id: string) {
+  await db(env).prepare("DELETE FROM feed_actions WHERE user_id = ? AND item_id = ? AND action = 'save'").bind(userId, id).run();
 }

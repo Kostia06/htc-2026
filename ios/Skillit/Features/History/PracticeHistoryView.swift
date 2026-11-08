@@ -18,7 +18,9 @@ struct PracticeHistoryView: View {
                 .background(Theme.ground)
                 .navigationTitle("Practice history")
                 .navigationDestination(for: PracticeSessionSummary.self) { session in
-                    PracticeSessionDetailView(session: session, service: injectedService ?? app.practiceHistoryService)
+                    PracticeSessionDetailView(
+                        session: session, service: injectedService ?? app.practiceHistoryService, replayService: app.replayService,
+                    )
                 }
         }
         .task {
@@ -90,16 +92,16 @@ private struct TrendCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Average score").font(.subheadline).foregroundStyle(.secondary)
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text(average.map { $0.formatted(.number.precision(.fractionLength(1))) } ?? "–")
+                        Text(average.map { $0.formatted(.number.precision(.fractionLength(0))) } ?? "–")
                             .font(.system(.largeTitle, design: .rounded).bold())
                             .contentTransition(.numericText())
-                        Text("/ 5").font(.title3).foregroundStyle(.secondary)
+                        Text("/ 100").font(.title3).foregroundStyle(.secondary)
                     }
                 }
                 Spacer()
                 if let change {
                     Label(
-                        change.formatted(.number.sign(strategy: .always()).precision(.fractionLength(1))),
+                        change.formatted(.number.sign(strategy: .always()).precision(.fractionLength(0))),
                         systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right",
                     )
                     .font(.subheadline.weight(.semibold))
@@ -107,7 +109,7 @@ private struct TrendCard: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background((change >= 0 ? Theme.action : Color.secondary).opacity(0.14), in: .capsule)
-                    .accessibilityLabel("Change since first session \(change.formatted(.number.precision(.fractionLength(1))))")
+                    .accessibilityLabel("Change since first session \(change.formatted(.number.precision(.fractionLength(0))))")
                 }
             }
             if scores.count > 1 {
@@ -160,7 +162,7 @@ private struct SessionRow: View {
         if session.status == .active {
             Text("In progress").font(.caption.weight(.semibold)).foregroundStyle(Theme.agent)
         } else if let score = session.score {
-            Text(score.formatted(.number.precision(.fractionLength(1))))
+            Text(score.formatted(.number.precision(.fractionLength(0))))
                 .font(.system(.title3, design: .rounded).bold())
                 .monospacedDigit()
         } else {

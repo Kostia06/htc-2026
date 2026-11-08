@@ -18,7 +18,9 @@ struct QuickUpdateView: View {
         NavigationStack {
             Group {
                 if let model {
-                    QuickUpdateConversation(model: model, isTyping: $isTyping)
+                    QuickUpdateConversation(model: model, focusTitle: focusTitle, isTyping: $isTyping)
+                        // focused once the field exists; setting it before the field is on screen does nothing
+                        .task { isTyping = true }
                 } else {
                     Color.clear
                 }
@@ -28,13 +30,12 @@ struct QuickUpdateView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark") {
-                        model?.stopListening()
-                        dismiss()
-                    }
+                    Button("Close", systemImage: "xmark") { dismiss() }
                 }
             }
         }
+        // a swipe down closes the sheet too, so dictation is dropped here rather than in the Close button
+        .onDisappear { model?.cancelListening() }
         .task {
             guard model == nil else { return }
             // screenshots and previews run without a signed-in client; they get the offline service and a scripted mic
@@ -45,7 +46,6 @@ struct QuickUpdateView: View {
                     service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), focusTitle: focusTitle, onApplied: applied,
                 )
             }
-            isTyping = true
         }
     }
 
@@ -58,94 +58,64 @@ struct QuickUpdateView: View {
 
 private struct QuickUpdateConversation: View {
     @Bindable var model: QuickUpdateModel
+    let focusTitle: String?
     var isTyping: FocusState<Bool>.Binding
 
+    private var hasStarted: Bool {
+        model.messages.count > 1 || model.isThinking
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(model.messages) { message in
-                    RecapBubble(message: message)
+        ChatScrollView(hasStarted: hasStarted) {
+            intro
+        } lines: {
+            ForEach(model.messages) { message in
+                RecapBubble(message: message)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                if let changes = model.appliedAfter[message.id] {
+                    AppliedCard(changes: changes)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
-                    if let changes = model.appliedAfter[message.id] {
-                        AppliedCard(changes: changes)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
-                if model.isThinking {
-                    TypingIndicator()
-                        .transition(.opacity)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .animation(.spring(duration: 0.4), value: model.messages)
-            .animation(.spring(duration: 0.4), value: model.isThinking)
+            if model.isThinking {
+                TypingIndicator()
+                    .transition(.opacity)
+            }
         }
-        .defaultScrollAnchor(.bottom)
-        .scrollDismissesKeyboard(.interactively)
-        .safeAreaInset(edge: .bottom) { composer }
+        .animation(.spring(duration: 0.4), value: model.messages)
+        .animation(.spring(duration: 0.4), value: model.isThinking)
+        .safeAreaInset(edge: .bottom) {
+            ChatComposerBar(model: model, placeholder: placeholder, error: model.error, isFocused: isTyping)
+        }
     }
 
-    private var composer: some View {
-        VStack(spacing: 10) {
-            if let error = model.error {
-                Text(error)
-                    .font(.footnote)
-                    .foregroundStyle(Theme.action)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            HStack(alignment: .bottom, spacing: 10) {
-                micButton
-                TextField(model.isListening ? "Listening…" : "Say what's new", text: $model.draft, axis: .vertical)
-                    .lineLimit(1 ... 4)
-                    .focused(isTyping)
-                    .disabled(model.isListening)
-                    .submitLabel(.send)
-                    .onSubmit { Task { await model.sendDraft() } }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .background(Theme.raised, in: .rect(cornerRadius: 24))
-                    .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(Theme.hairline))
-                Button {
-                    Task { await model.sendDraft() }
-                } label: {
-                    Image(systemName: "arrow.up")
-                        .font(.body.weight(.bold))
-                        .frame(width: 48, height: 48)
-                }
-                .buttonStyle(.glassProminent)
-                .buttonBorderShape(.circle)
-                .tint(Theme.action)
-                .disabled(!model.canSend)
-                .accessibilityLabel("Send")
-            }
+    @ViewBuilder
+    private var intro: some View {
+        if let focusTitle {
+            ChatIntro(
+                symbol: "checkmark.circle",
+                title: focusTitle,
+                message: "What did you do for it? One line is enough, and I'll mark it done.",
+                onStarter: start,
+            )
+        } else {
+            ChatIntro(
+                symbol: "point.topleft.down.to.point.bottomright.curvepath",
+                title: "What's new?",
+                message: "One line is enough. I'll update your road and profile. You can paste a job posting too.",
+                starters: ["I finished", "I applied to", "I started learning"],
+                onStarter: start,
+            )
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.bar)
     }
 
-    /// Tap to talk, tap again to stop; what was heard goes out as the update.
-    private var micButton: some View {
-        Button {
-            if model.isListening {
-                model.stopListening()
-            } else {
-                isTyping.wrappedValue = false
-                model.startListening()
-            }
-        } label: {
-            Image(systemName: model.isListening ? "stop.fill" : "mic.fill")
-                .font(.title3.weight(.semibold))
-                .frame(width: 56, height: 56)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .buttonStyle(.glassProminent)
-        .buttonBorderShape(.circle)
-        .tint(Theme.agent)
-        .disabled(model.isThinking)
-        .symbolEffect(.pulse, isActive: model.isListening)
-        .accessibilityLabel(model.isListening ? "Stop and send" : "Say it instead")
+    private var placeholder: String {
+        focusTitle == nil ? "What's new?" : "What did you do?"
+    }
+
+    private func start(with starter: String) {
+        model.draft = starter + " "
+        isTyping.wrappedValue = true
     }
 }
 

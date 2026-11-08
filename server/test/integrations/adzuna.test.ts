@@ -30,6 +30,8 @@ describe("adzuna client", () => {
     expect(url.searchParams.get("app_id")).toBe("app123");
     expect(url.searchParams.get("what")).toBe("software developer");
     expect(url.searchParams.get("where")).toBe("Calgary");
+    // old postings are mostly filled; Adzuna leaves them out before they cost us a result slot
+    expect(url.searchParams.get("max_days_old")).toBe("30");
 
     expect(posting).toMatchObject({
       title: "Junior Software Developer",

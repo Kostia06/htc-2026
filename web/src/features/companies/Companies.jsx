@@ -62,7 +62,7 @@ export function CompaniesList() {
         <ContentUnavailable
           icon={Building2}
           title={error ? "Couldn't load companies" : 'Nothing researched yet'}
-          description={error ?? 'Skillit researches the companies on your roadmap overnight.'}
+          description={error ?? 'Skillit researches the companies on your road overnight.'}
           className="companies__empty"
         >
           <RaisedButton onClick={load}>Try again</RaisedButton>
@@ -71,22 +71,29 @@ export function CompaniesList() {
       {companies?.length > 0 && (
         <div className="companies__grid">
           {companies.map((c) => (
-            <Link key={c.slug} to={`/companies/${c.slug}`} className="card company-row">
-              <span className="monogram t-title3 bold">{c.name.charAt(0)}</span>
-              <span className="grow stack">
-                <span className="t-headline">{c.name}</span>
-                <span className="t-subhead c-2 clamp-1">
-                  {c.lastResearchedAt
-                    ? `${c.factCount} facts · ${c.reportedCount} reports · Researched ${relative(c.lastResearchedAt)}`
-                    : 'Not researched yet'}
-                </span>
-              </span>
-              <ChevronRight size={16} strokeWidth={2.8} className="c-3" aria-hidden />
-            </Link>
+            <CompanyRow key={c.slug} company={c} />
           ))}
         </div>
       )}
     </Page>
+  )
+}
+
+/** One researched company as a tappable row; also For you's Radar list. */
+export function CompanyRow({ company: c }) {
+  return (
+    <Link to={`/companies/${c.slug}`} className="card company-row">
+      <span className="monogram t-title3 bold">{c.name.charAt(0)}</span>
+      <span className="grow stack">
+        <span className="t-headline">{c.name}</span>
+        <span className="t-subhead c-2 clamp-1">
+          {c.lastResearchedAt
+            ? `${c.factCount} facts · ${c.reportedCount} reports · Researched ${relative(c.lastResearchedAt)}`
+            : 'Not researched yet'}
+        </span>
+      </span>
+      <ChevronRight size={16} strokeWidth={2.8} className="c-3" aria-hidden />
+    </Link>
   )
 }
 

@@ -15,7 +15,7 @@ const wordsOf = (text: string) => text.toLowerCase().match(/[a-z0-9+#]+/g) ?? []
 const listed = (names: string[]) => (names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`);
 
 // what the ranker already worked out about this item, so the reasons agree with the score
-export type Matches = { role?: string; skills: string[]; field?: FeedField; near: boolean; daysUntil?: number; upcomingDays: number };
+export type Matches = { role?: string; skills: string[]; learning: string[]; field?: FeedField; near: boolean; daysUntil?: number; upcomingDays: number };
 
 const clip = (text: string) => (text.length <= MAX_REASON_LENGTH ? text : `${text.slice(0, MAX_REASON_LENGTH - 1).trimEnd()}…`);
 
@@ -42,7 +42,9 @@ export function reasonsFor(candidate: Candidate, criteria: FeedCriteria, matches
   const soon = matches.daysUntil !== undefined && matches.daysUntil <= matches.upcomingDays;
   const all = [
     matches.role && `Fits your goal: ${matches.role}`,
-    matches.skills.length > 0 && `Uses ${listed(matches.skills)} from your profile`,
+    ...matches.learning,
+    // a course teaches its skills rather than using them; its own line says what it builds on
+    candidate.card.kind !== "course" && matches.skills.length > 0 && `Uses ${listed(matches.skills)} from your profile`,
     matches.field && matches.field !== "general" && `In your field: ${FIELD_LABELS[matches.field]}`,
     pastWorkReason(candidate, criteria),
     levelReason(candidate, criteria),

@@ -1,134 +1,189 @@
 import SkillitKit
 import SwiftUI
 
+/// The Profile tab, kept short on purpose: who you are and how far along the road you are, the one thing worth
+/// doing next, then four doors. Every editor lives one tap behind a door; settings sit behind the gear.
 struct ProfileView: View {
     @Environment(AppModel.self) private var app
-    @State private var editor = ProfileEditor()
-    @State private var isRefreshing = false
-    @State private var isShowingSettings = false
-    @State private var experienceSheet: RowSheet<Profile.Experience>?
-    @State private var educationSheet: RowSheet<Profile.Education>?
+    @State private var overview = ProfileOverviewModel()
+    @State private var headlineEditor = ProfileEditor()
+    @State private var path: [ProfileDestination] = []
+    @State private var openedTailored: TailoredResumeModel?
+    @State private var tailoring: TailorRequest?
+    @State private var isRecordingOutcome = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                // the header sits on the ground; everything under it is one inset-grouped list
-                Section {
-                    ProfileHeader(profile: app.profile) { apply(.setHeadline($0)) }
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
+        NavigationStack(path: $path) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ProfileHeader(profile: app.profile) { headlineEditor.apply(.setHeadline($0), to: app) }
+                        if let road = overview.road, road.total > 0 {
+                            RoadProgressLine(progress: road)
+                        }
+                    }
+                    if let move = overview.nextMove(for: app.profile) {
+                        NextMoveCard(move: move) { take(move) }
+                            .transition(.opacity)
+                    }
+                    ProfileDoors(doors: doors)
+                    gotTheJobButton
                 }
-                Section {
-                    ResumeCard(service: resumeService)
-                }
-                .listRowBackground(Theme.raised)
-                if isRefreshing, app.profile.isEmpty {
-                    loadingSections
-                } else {
-                    editableSections
-                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 24)
+                .animation(.spring(duration: 0.35), value: overview.hasLoaded)
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
             .background(Theme.ground)
             .navigationTitle("Profile")
+            .sheet(isPresented: $isRecordingOutcome) { GotTheJobSheet() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Settings", systemImage: "gearshape") { isShowingSettings = true }
+                    Button("Settings", systemImage: "gearshape") { path.append(.settings) }
                 }
             }
-            .navigationDestination(isPresented: $isShowingSettings) { SettingsView() }
+            .navigationDestination(for: ProfileDestination.self, destination: screen)
+            .navigationDestination(isPresented: isTailoredOpen) {
+                if let openedTailored {
+                    TailoredResumeView(model: openedTailored, onDeleted: reload)
+                }
+            }
+            .sheet(item: $tailoring, onDismiss: reload) { request in
+                TailorJobSheet(service: app.tailoredResumeService, postingId: request.postingId, onSaved: reload)
+            }
+            .task { await overview.load(from: app) }
+            // coming back from a door may have changed what it shows: a new tailored copy, a paired headset
+            .onChange(of: path) { _, newPath in
+                if newPath.isEmpty { reload() }
+            }
             .refreshable { await refresh() }
-            .overlay(alignment: .bottom) { SavedFlash(count: editor.saveCount) }
-            .sensoryFeedback(.success, trigger: editor.saveCount)
-            .sheet(item: $experienceSheet) { sheet in
-                ExperienceForm(editing: sheet.row) { apply(.saveExperience($0, replacing: sheet.row)) }
-            }
-            .sheet(item: $educationSheet) { sheet in
-                EducationForm(editing: sheet.row) { apply(.saveEducation($0, replacing: sheet.row)) }
-            }
+            .overlay(alignment: .bottom) { SavedFlash(count: headlineEditor.saveCount) }
+            .sensoryFeedback(.success, trigger: headlineEditor.saveCount)
             .alert("Couldn't save", isPresented: hasFailure) {
-                Button("OK") { editor.dismissFailure() }
+                Button("OK") { headlineEditor.dismissFailure() }
             } message: {
-                Text(editor.failure ?? "")
+                Text(headlineEditor.failure ?? "")
             }
         }
     }
 
-    @ViewBuilder private var editableSections: some View {
-        Section("Target roles") {
-            ChipsSection(
-                chips: app.profile.targetRoles.map { .init(title: $0) },
-                placeholder: "Add a role you're aiming for",
-                onAdd: { apply(.addTargetRole($0)) },
-                onRemove: { apply(.removeTargetRole($0.title)) },
-            )
-        }
-        .listRowBackground(Theme.raised)
-        Section("Skills") {
-            SkillsSummary(skills: app.profile.skills.map(\.name)) { apply(.removeSkill($0)) }
-        }
-        .listRowBackground(Theme.raised)
-        Section("Experience") {
-            ForEach(app.profile.experience, id: \.self) { row in
-                ExperienceRow(row: row) { experienceSheet = RowSheet(row: row) }
-                    .swipeActions(edge: .trailing) {
-                        Button("Delete", systemImage: "trash", role: .destructive) { apply(.removeExperience(row)) }
-                    }
+    /// The finish line of the road: recording it can feed the shared trails that help the next person.
+    private var gotTheJobButton: some View {
+        Button { isRecordingOutcome = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "flag.checkered")
+                    .font(.title3)
+                    .foregroundStyle(Theme.positive)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("I got the job").font(.headline)
+                    Text("Mark the finish and help the next person on your road")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            AddRowButton(title: "Add experience") { experienceSheet = RowSheet(row: nil) }
+            .foregroundStyle(.primary)
+            .skillitCard()
         }
-        .listRowBackground(Theme.raised)
-        Section("Education") {
-            ForEach(app.profile.education, id: \.self) { row in
-                EducationRow(row: row) { educationSheet = RowSheet(row: row) }
-                    .swipeActions(edge: .trailing) {
-                        Button("Delete", systemImage: "trash", role: .destructive) { apply(.removeEducation(row)) }
-                    }
-            }
-            AddRowButton(title: "Add education") { educationSheet = RowSheet(row: nil) }
-        }
-        .listRowBackground(Theme.raised)
+        .buttonStyle(.raisedCard())
     }
 
-    @ViewBuilder private var loadingSections: some View {
-        ForEach(["Target roles", "Experience"], id: \.self) { title in
-            Section(title) { SkeletonLines(widths: [0.6, 0.8, 0.4], highlighted: 1).padding(.vertical, 8) }
-                .listRowBackground(Theme.raised)
+    private var doors: [ProfileDoor] {
+        let profile = app.profile
+        let tailoredCount = overview.tailored.count
+        return [
+            ProfileDoor(
+                destination: .resume, title: "Resume", symbol: "doc.text",
+                fact: tailoredCount == 0 ? "Base resume" : "Base + \(tailoredCount) tailored",
+            ),
+            ProfileDoor(
+                destination: .skillsAndExperience, title: "Skills & experience", symbol: "list.bullet.rectangle",
+                fact: "\(counted(profile.skills.count, "skill")) · \(counted(profile.experience.count, "job"))",
+            ),
+            ProfileDoor(destination: .crossroads, title: "Crossroads", symbol: "signpost.right.and.left", fact: "What Skillit remembers"),
+            ProfileDoor(destination: .headsets, title: "Headsets", symbol: "visionpro", fact: headsetFact),
+        ]
+    }
+
+    private var headsetFact: String {
+        switch overview.headsetCount {
+        case nil: "Practice in VR"
+        case 0: "None paired yet"
+        case let count?: "\(count) paired"
+        }
+    }
+
+    @ViewBuilder private func screen(for destination: ProfileDestination) -> some View {
+        switch destination {
+        case .resume: ResumeView()
+        case .skillsAndExperience: SkillsAndExperienceView()
+        case .crossroads: MemoryView()
+        case .headsets: PairHeadsetView()
+        case .settings: SettingsView()
+        }
+    }
+
+    private func take(_ move: ProfileNextMove) {
+        switch move {
+        case .chooseRole, .addExperience, .backUpSkill:
+            path.append(.skillsAndExperience)
+        case let .closeGap(tailoredId, _, _):
+            Task { await openTailored(id: tailoredId) }
+        case let .tailor(postingId, _):
+            tailoring = TailorRequest(postingId: postingId)
+        }
+    }
+
+    private func openTailored(id: String) async {
+        let service = app.tailoredResumeService
+        guard let tailored = try? await service.tailoredResume(id: id) else { return }
+        openedTailored = TailoredResumeModel(tailored: tailored, service: service)
+    }
+
+    private var isTailoredOpen: Binding<Bool> {
+        Binding {
+            openedTailored != nil
+        } set: { isPresented in
+            guard !isPresented else { return }
+            openedTailored = nil
+            reload()
         }
     }
 
     private var hasFailure: Binding<Bool> {
-        Binding(get: { editor.failure != nil }, set: { if !$0 { editor.dismissFailure() } })
+        Binding(get: { headlineEditor.failure != nil }, set: { if !$0 { headlineEditor.dismissFailure() } })
     }
 
-    private func apply(_ edit: ProfileEdit) {
-        editor.apply(edit, to: app)
+    private func reload() {
+        Task { await overview.load(from: app) }
     }
 
     private func refresh() async {
-        guard let client = app.client else { return }
-        isRefreshing = true
-        defer { isRefreshing = false }
-        if let profile = try? await client.profile() {
+        if let profile = try? await app.client?.profile() {
             app.profile = profile
         }
+        await overview.load(from: app)
     }
 
-    private var resumeService: any ResumeService {
-        if let client = app.client {
-            return client
-        }
-        #if DEBUG
-            return SampleResume()
-        #else
-            return UnavailableResume()
-        #endif
+    private func counted(_ count: Int, _ noun: String) -> String {
+        "\(count) \(noun)\(count == 1 ? "" : "s")"
     }
 }
 
-/// What a row sheet is editing; nil means a new row. Fresh identity each time so the form restarts from the right values.
-private struct RowSheet<Row: Hashable>: Identifiable {
-    let id = UUID()
-    let row: Row?
+/// Which saved posting the tailor sheet opens on.
+private struct TailorRequest: Identifiable {
+    let postingId: String
+
+    var id: String {
+        postingId
+    }
 }
+
+#if DEBUG
+#Preview {
+    ProfileView()
+        .environment(AppModel.preview(profile: .sample))
+}
+#endif

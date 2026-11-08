@@ -32,7 +32,7 @@ extension FeedCard.Kind {
     }
 }
 
-/// A neutral disc with the kind's glyph; the tint lives only in the glyph so the card itself stays grey.
+/// The kind's glyph alone, tinted, with nothing filled behind it; the frame keeps the title's alignment.
 struct KindBadge: View {
     let kind: FeedCard.Kind
     @ScaledMetric(relativeTo: .headline) private var size: CGFloat = 44
@@ -42,7 +42,6 @@ struct KindBadge: View {
             .font(.headline.weight(.semibold))
             .foregroundStyle(kind.tint)
             .frame(width: size, height: size)
-            .background(Theme.chip, in: .circle)
             .accessibilityLabel(kind.name)
     }
 }

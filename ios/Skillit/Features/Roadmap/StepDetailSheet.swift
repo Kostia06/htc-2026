@@ -23,7 +23,7 @@ struct StepDetailSheet: View {
                 Label(step.why, systemImage: "target")
                     .font(.subheadline)
                     .foregroundStyle(Theme.agent)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             FactGrid(facts: facts)
             if let slug = step.action?.companySlug {
@@ -61,10 +61,13 @@ struct StepDetailSheet: View {
         if isDone {
             facts.append(.init(label: "Status", value: doneLine, tint: Theme.positive))
         } else {
-            facts.append(.init(label: "Status", value: step.label.text))
+            facts.append(.init(label: "Readiness", value: step.label.text))
         }
         if !step.estimate.isEmpty {
             facts.append(.init(label: "Time", value: step.estimate))
+        }
+        if let travelled = step.travelled {
+            facts.append(.init(label: "Taken by", value: "\(travelled.people) who reached \(travelled.reached)", tint: Theme.positive))
         }
         return facts
     }
@@ -79,7 +82,10 @@ struct StepDetailSheet: View {
     }
 
     @ViewBuilder private var actions: some View {
-        if let action = step.action {
+        if step.action?.type == .crossroads {
+            Button("Open Crossroads", action: onPractice)
+                .buttonStyle(.raised)
+        } else if let action = step.action {
             StartPracticeButton(companySlug: action.companySlug, role: action.role, stepID: step.id, onPhone: onPractice)
         } else {
             Button("Mark done", action: onMarkDone)

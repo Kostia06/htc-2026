@@ -103,6 +103,19 @@ describe("GET /api/feed?section=", () => {
   });
 });
 
+describe("GET /api/feed/items/:id", () => {
+  it("returns one of the caller's cards and nobody else's", async () => {
+    const { token } = await person(["Junior developer"]);
+    const { body } = await builtFeed(token);
+    const read = (t: string) => app.request(`/items/${encodeURIComponent(body.items[0].id)}`, { headers: { Authorization: `Bearer ${t}` } }, env, backgroundWork().ctx);
+    const res = await read(token);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as Item).id).toBe(body.items[0].id);
+    const stranger = await person(["Nurse"]);
+    expect((await read(stranger.token)).status).toBe(404);
+  });
+});
+
 describe("POST /api/feed/items/:id", () => {
   it("keeps saved cards in Saved, newest first, and marks them in the feed", async () => {
     const { token } = await person(["Junior developer"]);
@@ -144,6 +157,33 @@ describe("POST /api/feed/items/:id", () => {
     await act(token, body.items[0].id, "save");
     await act(token, body.items[0].id, "dismiss");
     expect((await getFeed(token, "saved")).body.items).toEqual([]);
+  });
+
+  it("unsaving takes a card out of Saved but leaves it in the feed, and is not a dismissal", async () => {
+    const { token, id } = await person(["Junior developer"]);
+    const { body } = await builtFeed(token);
+    const target = body.items[0];
+    await act(token, target.id, "save");
+    expect(await act(token, target.id, "unsave")).toEqual({ status: 200, body: { id: target.id, action: "unsave" } });
+
+    expect((await getFeed(token, "saved")).body.items).toEqual([]);
+    const main = await getFeed(token);
+    expect(main.body.building).toBe(false);
+    expect(main.body.items.find((i) => i.id === target.id)?.saved).toBeUndefined();
+    const history = await actionHistory(env, id);
+    expect([...history.dismissed]).toEqual([]);
+    expect(history.avoidTags).toEqual([]);
+  });
+
+  it("unsaving is safe to repeat and never brings back a dismissed card", async () => {
+    const { token, id } = await person(["Junior developer"]);
+    const { body } = await builtFeed(token);
+    expect((await act(token, body.items[0].id, "unsave")).status).toBe(200);
+    expect((await act(token, "job:never-seen", "unsave")).status).toBe(200);
+
+    await act(token, body.items[1].id, "dismiss");
+    await act(token, body.items[1].id, "unsave");
+    expect([...(await actionHistory(env, id)).dismissed]).toEqual([body.items[1].id]);
   });
 
   it("rejects an unknown action and a card that was never in the feed", async () => {

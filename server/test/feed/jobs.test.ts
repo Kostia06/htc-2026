@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { jobCandidate } from "../../src/feed/jobs";
+import { jobCandidate, jobCandidates } from "../../src/feed/jobs";
+import type { JobPosting } from "../../src/integrations/adzuna";
 
 const posting = {
   title: "Junior Data Analyst",
@@ -22,5 +23,13 @@ describe("job cards", () => {
     const { card } = jobCandidate({ ...posting, description: "   ", salary: undefined } as never);
     expect(card).not.toHaveProperty("summary");
     expect(card).not.toHaveProperty("salary");
+  });
+
+  it("drop postings over thirty days old, keeping undated ones", async () => {
+    const now = new Date("2026-11-08T12:00:00Z");
+    const at = (id: string, posted_at: string) => ({ ...posting, url: `https://www.adzuna.ca/details/${id}`, posted_at }) as JobPosting;
+    const search = async () => [at("fresh", "2026-11-06T00:00:00Z"), at("old", "2026-09-20T00:00:00Z"), at("undated", "")];
+    const ids = (await jobCandidates(search, [{ what: "data analyst" }], now)).map((c) => c.card.id);
+    expect(ids).toEqual(["job:fresh", "job:undated"]);
   });
 });

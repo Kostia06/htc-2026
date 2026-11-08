@@ -5,6 +5,9 @@ import SwiftUI
 /// morphs the capsule into an input bar (type, or talk with on-device dictation); Skillit's reply floats just above it.
 /// Built by hand because the system search tab can't carry a mic or a reply card; the glass shapes share ids so they morph.
 struct AskSkillitBar: View {
+    /// Bar height plus its gap above the home indicator; tabs pad their content by this much.
+    static let reservedHeight: CGFloat = 92
+
     @Environment(AppModel.self) private var app
     @Binding var selection: MainTabView.Section
     @Binding var isAsking: Bool
@@ -48,7 +51,7 @@ struct AskSkillitBar: View {
                         Text(section.title).font(.caption2)
                     }
                     .foregroundStyle(selection == section ? Theme.action : .secondary)
-                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .frame(maxWidth: .infinity, minHeight: 62)
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
@@ -60,57 +63,13 @@ struct AskSkillitBar: View {
         .glassEffectID("bar", in: glass)
     }
 
+    /// The field takes the whole bar beside the close button; its one small button swaps between mic, send and stop.
     private func input(_ model: QuickUpdateModel) -> some View {
-        @Bindable var model = model
-        return HStack(spacing: 8) {
-            micButton(model)
-            TextField(model.isListening ? "Listening…" : QuickUpdateModel.placeholder, text: $model.draft, axis: .vertical)
-                .lineLimit(1 ... 3)
-                .focused($isTyping)
-                .disabled(model.isListening)
-                .submitLabel(.send)
-                .onSubmit { Task { await model.sendDraft() } }
-            Button {
-                Task { await model.sendDraft() }
-            } label: {
-                Image(systemName: "arrow.up")
-                    .font(.footnote.weight(.bold))
-                    .foregroundStyle(Theme.onAction)
-                    .frame(width: 30, height: 30)
-                    .background(Theme.action, in: .circle)
-            }
-            .buttonStyle(.plain)
-            .disabled(!model.canSend)
-            .opacity(model.canSend ? 1 : 0.4)
-            .accessibilityLabel("Send")
-        }
-        .padding(.leading, 6)
-        .padding(.trailing, 7)
-        .frame(minHeight: 48)
-        .glassEffect(.regular, in: .capsule)
-        .glassEffectID("bar", in: glass)
-    }
-
-    /// Tap to talk, tap again to stop; what was heard goes out as the update.
-    private func micButton(_ model: QuickUpdateModel) -> some View {
-        Button {
-            if model.isListening {
-                model.stopListening()
-            } else {
-                isTyping = false
-                model.startListening()
-            }
-        } label: {
-            Image(systemName: model.isListening ? "stop.fill" : "mic.fill")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(Theme.agent)
-                .frame(width: 30, height: 30)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .buttonStyle(.plain)
-        .disabled(model.isThinking)
-        .symbolEffect(.pulse, isActive: model.isListening)
-        .accessibilityLabel(model.isListening ? "Stop and send" : "Say it instead")
+        ChatComposer(model: model, placeholder: QuickUpdateModel.placeholder, isFocused: $isTyping)
+            .glassEffect(.regular, in: .rect(cornerRadius: 24))
+            .glassEffectID("bar", in: glass)
+            // focused once the field exists; setting it in the same pass that creates the model does nothing
+            .task { isTyping = true }
     }
 
     private var askButton: some View {
@@ -119,8 +78,8 @@ struct AskSkillitBar: View {
         } label: {
             Image(systemName: isAsking ? "xmark" : "waveform")
                 .font(.body.weight(.semibold))
-                .foregroundStyle(isAsking ? .secondary : Theme.action)
-                .frame(width: 44, height: 44)
+                .foregroundStyle(isAsking ? Color.secondary : Theme.action)
+                .frame(width: 52, height: 52)
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)
@@ -136,66 +95,12 @@ struct AskSkillitBar: View {
         } else {
             model = QuickUpdateModel(service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), onApplied: app.noteApplied)
         }
-        isTyping = true
     }
 
     private func close() {
-        model?.stopListening()
+        // closing mid-sentence means "never mind", so what was heard is dropped rather than sent
+        model?.cancelListening()
         isTyping = false
         model = nil
-    }
-}
-
-/// Skillit's answer, floating above the bar: the one line, what it changed, the posting it read, or its one question.
-private struct AskSkillitReplyCard: View {
-    let model: QuickUpdateModel
-    let onOpenPosting: (JobPosting) -> Void
-
-    var body: some View {
-        Group {
-            if model.isThinking {
-                TypingIndicator()
-            } else if let reply = model.lastReply {
-                card(reply)
-            } else if let error = model.error {
-                Text(error)
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.negative)
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.raised, in: .rect(cornerRadius: 20))
-                    .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Theme.hairline))
-            }
-        }
-        .animation(.spring(duration: 0.4), value: model.isThinking)
-        .animation(.spring(duration: 0.4), value: model.messages)
-    }
-
-    private func card(_ reply: QuickUpdateModel.Message) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(reply.text)
-                .font(.subheadline)
-                .fixedSize(horizontal: false, vertical: true)
-            if let posting = model.postingAfter[reply.id] {
-                PostingCard(posting: posting) { onOpenPosting(posting) }
-            }
-            if let changes = model.appliedAfter[reply.id] {
-                ForEach(changes) { change in
-                    Label(change.summary, systemImage: "checkmark")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            if let error = model.error {
-                Text(error)
-                    .font(.footnote)
-                    .foregroundStyle(Theme.negative)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.raised, in: .rect(cornerRadius: 20))
-        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Theme.hairline))
-        .accessibilityElement(children: .combine)
     }
 }

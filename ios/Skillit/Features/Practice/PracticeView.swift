@@ -1,42 +1,75 @@
 import SkillitKit
 import SwiftUI
 
-/// The Practice tab: pick what you're interviewing for and start talking, or move to the headset.
+/// The Practice tab: how your last interview went, then pick what you're interviewing for and start talking.
 struct PracticeView: View {
     @Environment(AppModel.self) private var app
     @State private var postings = PostingsModel()
+    @State private var history: PracticeHistoryModel?
+    @State private var isShowingHistory = false
     @State private var isPicking = false
     @State private var pending: VoiceSessionRequest?
     @State private var activeSession: VoiceSessionModel?
     @State private var openedPosting: JobPosting?
     @State private var isPairing = false
     @State private var isRecapping = false
+    @State private var replaying: PracticeSessionSummary?
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    interviewChoice
+                    if let history {
+                        PracticeProgressCard(model: history) { isShowingHistory = true }
+                    }
+                    VStack(spacing: 10) {
+                        interviewChoice
+                        vrLink
+                    }
+                    // said before the call starts, so nobody is surprised that ElevenLabs keeps the audio
+                    Label("Recorded so you can replay it", systemImage: "waveform")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 4)
+                    if let history {
+                        RecordingsSection(
+                            sessions: history.sessions,
+                            onOpen: { replaying = $0 },
+                            onSeeAll: { isShowingHistory = true }
+                        )
+                    }
                     yourPostings
-                    vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
-                    NavigationLink { PracticeHistoryView() } label: { rowLabel("Past sessions", systemImage: "chart.line.uptrend.xyaxis") }
-                        .buttonStyle(.plain)
                 }
                 .padding(24)
             }
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
+            // a sheet, not a push: the history screen brings its own NavigationStack, and nesting it broke its links
+            .sheet(isPresented: $isShowingHistory) {
+                PracticeHistoryView().presentationDragIndicator(.visible)
+            }
             .sheet(isPresented: $isRecapping) { RecapView(companySlug: nil, voice: ElevenLabsRecapVoice()) }
             // the session starts once the picker is fully gone; iOS drops a cover presented while a sheet is closing
             .sheet(isPresented: $isPicking, onDismiss: startPending) {
                 InterviewTargetPicker(postings: postings.postings) { pending = $0 }
             }
             .sheet(item: $openedPosting) { PostingView(posting: $0) }
+            .sheet(item: $replaying) { session in
+                NavigationStack { ReplayView(sessionId: session.id, service: app.replayService) }
+                    .presentationDragIndicator(.visible)
+            }
             .fullScreenCover(item: $activeSession) { session in
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
             .task(id: app.updatesApplied) { await postings.load(using: app.client) }
+            .task(id: activeSession == nil) {
+                // reloads when a session closes, so the card shows the score just earned
+                guard activeSession == nil else { return }
+                let model = history ?? PracticeHistoryModel(service: app.practiceHistoryService)
+                history = model
+                await model.refresh()
+            }
         }
     }
 
@@ -62,7 +95,7 @@ struct PracticeView: View {
             .padding(.vertical, 12)
             .skillitCard()
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.raisedCard())
     }
 
     @ViewBuilder private var yourPostings: some View {
@@ -80,12 +113,12 @@ struct PracticeView: View {
     }
 
     private var vrLink: some View {
-        row("Practice in VR", systemImage: "visionpro") { isPairing = true }
+        row("Or practise in VR", systemImage: "visionpro") { isPairing = true }
     }
 
     private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) { rowLabel(title, systemImage: systemImage) }
-            .buttonStyle(.plain)
+            .buttonStyle(.raisedCard())
     }
 
     private func rowLabel(_ title: String, systemImage: String) -> some View {

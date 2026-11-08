@@ -28,4 +28,18 @@ struct VoiceSessionQuestionsTests {
         #expect(session.plannedQuestionIndex(matching: "[sighs]") == nil)
         #expect(VoiceSession(id: "n", mode: .interview, provider: "test", opening: "Hey.").plannedQuestionIndex(matching: "Hey.") == nil)
     }
+
+    @Test func `hears the goodbye only once the last planned question was reached`() {
+        let goodbye = "Thanks for your time. Next steps come by email. Goodbye! [warmly]"
+        #expect(session.isSignOff(goodbye, afterQuestion: 2))
+        #expect(session.isSignOff("Great talking with you, bye.", afterQuestion: 2))
+        #expect(!session.isSignOff(goodbye, afterQuestion: 1))
+        #expect(!session.isSignOff(goodbye, afterQuestion: nil))
+    }
+
+    @Test func `a question or a passing word is not a goodbye`() {
+        #expect(!session.isSignOff("Before we say goodbye, what questions do you have?", afterQuestion: 2))
+        #expect(!session.isSignOff("What would your next steps be?", afterQuestion: 2))
+        #expect(!session.isSignOff("Did you work at Byers?", afterQuestion: 2))
+    }
 }

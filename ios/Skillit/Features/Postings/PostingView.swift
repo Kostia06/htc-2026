@@ -7,6 +7,7 @@ struct PostingView: View {
     @Environment(AppModel.self) private var app
     @State private var session: VoiceSessionModel?
     @State private var company: CompanyLink?
+    @State private var isTailoring = false
 
     let posting: JobPosting
 
@@ -18,6 +19,9 @@ struct PostingView: View {
             companyLine
             FactGrid(facts: facts)
             requirements
+            Button("Tailor my resume for this job", systemImage: "doc.text") { isTailoring = true }
+                .font(.subheadline.weight(.semibold))
+                .tint(Theme.action)
             if !posting.responsibilities.isEmpty {
                 section("You'd be doing") {
                     ForEach(posting.responsibilities, id: \.self) { line in
@@ -43,6 +47,9 @@ struct PostingView: View {
         }
         .sheet(item: $company) { link in
             CompanySheet(slug: link.slug)
+        }
+        .sheet(isPresented: $isTailoring) {
+            TailorJobSheet(service: app.tailoredResumeService, postingId: posting.id)
         }
     }
 

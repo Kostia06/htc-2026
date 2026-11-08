@@ -25,15 +25,19 @@ final class SpeechDictation: Dictation {
     private let audioEngine = AVAudioEngine()
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
+    /// A stop that lands while the permission prompts are still up, before any audio runs; listening then never starts.
+    private var isStopRequested = false
 
     func start() -> AsyncThrowingStream<String, any Error> {
-        AsyncThrowingStream { continuation in
+        isStopRequested = false
+        return AsyncThrowingStream { continuation in
             Task { await self.listen(into: continuation) }
         }
     }
 
     /// Ends the audio so the recogniser finishes with what it has; the stream closes once that final read lands.
     func stop() {
+        isStopRequested = true
         guard audioEngine.isRunning else { return }
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
@@ -44,6 +48,10 @@ final class SpeechDictation: Dictation {
     private func listen(into continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
         guard await Self.authorize() else {
             continuation.finish(throwing: DictationError.notAuthorized)
+            return
+        }
+        guard !isStopRequested else {
+            continuation.finish()
             return
         }
         guard let recognizer = SFSpeechRecognizer(), recognizer.isAvailable else {

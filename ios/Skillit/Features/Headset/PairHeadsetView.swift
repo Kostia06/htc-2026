@@ -66,7 +66,7 @@ struct PairHeadsetView: View {
             connected
         case let .failed(message):
             Label(message, systemImage: "wifi.exclamationmark")
-                .foregroundStyle(.orange)
+                .foregroundStyle(Theme.negative)
                 .skillitCard()
             Text("Trying again in a moment.")
                 .font(.subheadline)
@@ -87,7 +87,7 @@ struct PairHeadsetView: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 88))
-                .foregroundStyle(.green)
+                .foregroundStyle(Theme.positive)
                 .symbolEffect(.bounce, value: model.state)
             Text("Headset connected")
                 .font(.title.bold())

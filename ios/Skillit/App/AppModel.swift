@@ -19,6 +19,8 @@ final class AppModel {
     var feed = ForYouModel()
     /// The companies Skillit has researched, so a job card or a step can open the company behind it.
     let companies = CompaniesModel()
+    /// The bell: shared by the Road toolbar, the tab view that opens targets, and the app delegate.
+    let notifications = NotificationsModel()
     /// Bumped whenever Skillit applied an update, so screens showing roadmap steps or postings read them again.
     private(set) var updatesApplied = 0
 
@@ -65,6 +67,7 @@ final class AppModel {
         await authenticator.signOut()
         client = nil
         feed.forget()
+        notifications.forget()
         profile = .empty
         phase = .signedOut
     }
@@ -72,6 +75,7 @@ final class AppModel {
     func finishOnboarding(with profile: Profile) {
         self.profile = profile
         phase = .ready
+        Task { await LocalNotifier.requestPermission() }
     }
 
     /// Everything Skillit changed is on the server already; this refreshes what the app holds in memory.

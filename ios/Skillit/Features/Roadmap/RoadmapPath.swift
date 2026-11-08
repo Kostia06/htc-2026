@@ -30,13 +30,17 @@ struct RoadmapPath: View {
                         .font(.subheadline.weight(.semibold))
                         .tint(.secondary)
                     }
-                    trail
+                    // the rows are laid out from the measured width; drawing them at width 0 flashes every tile at the left edge
+                    if width > 0 {
+                        trail
+                    }
                 }
                 .padding(.vertical, 16)
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             }
-            .task(id: page.next.first?.id) {
-                guard let current = page.next.first else { return }
+            // keyed on the width too: the trail only exists once it is measured, so an earlier scroll finds nothing
+            .task(id: width > 0 ? page.next.first?.id : nil) {
+                guard width > 0, let current = page.next.first else { return }
                 proxy.scrollTo(current.id, anchor: .center)
             }
         }
@@ -61,9 +65,15 @@ struct RoadmapPath: View {
         LazyVStack(spacing: 0) {
             ForEach(stops.enumerated(), id: \.element.id) { index, step in
                 PathRow(width: width, sway: sway(index), previousSway: index == 0 ? nil : sway(index - 1)) {
-                    PathNode(step: step, state: state(of: step)) { selected = step }
+                    PathNode(step: step, state: state(of: step), meta: StopLabel.meta(for: step, state: state(of: step))) {
+                        selected = step
+                    }
                 } label: {
+                    // the label is part of the stop too, so a tap on the words opens it as well; VoiceOver reads it on the tile
                     StopLabel(step: step, state: state(of: step))
+                        .contentShape(.rect)
+                        .onTapGesture { selected = step }
+                        .accessibilityHidden(true)
                 }
                 .id(step.id)
                 .onAppear {
@@ -125,19 +135,24 @@ private struct StopLabel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(meta)
+            Text(Self.meta(for: step, state: state))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(state == .current ? Theme.action : .secondary)
             Text(step.title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(state == .upcoming ? .secondary : .primary)
-                .lineLimit(2)
+                .lineLimit(3)
+                .minimumScaleFactor(0.85)
         }
     }
 
-    private var meta: String {
+    /// "Done today", "Done yesterday", "Done Oct 3"; a bare weekday is ambiguous once a step is over a week old.
+    static func meta(for step: RoadmapStep, state: PathNode.State) -> String {
         if state == .done, let stamp = step.completedAt, let date = try? Date(stamp, strategy: .iso8601) {
-            return "Done \(date.formatted(.dateTime.weekday(.abbreviated)))"
+            let calendar = Calendar.current
+            if calendar.isDateInToday(date) { return "Done today" }
+            if calendar.isDateInYesterday(date) { return "Done yesterday" }
+            return "Done \(date.formatted(.dateTime.month(.abbreviated).day()))"
         }
         return step.estimate.isEmpty ? step.kind.name : "\(step.kind.name) · \(step.estimate)"
     }

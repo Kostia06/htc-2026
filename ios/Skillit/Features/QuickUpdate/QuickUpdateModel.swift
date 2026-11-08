@@ -5,11 +5,11 @@ import SkillitKit
 /// One "what's new?" chat: each update is applied at once, or answered with one question and then applied.
 /// A pasted job posting goes the same way and comes back as a posting card under the reply.
 @Observable
-final class QuickUpdateModel {
+final class QuickUpdateModel: ChatDraftModel {
     typealias Message = RecapModel.Message
 
     static let opening = "What's new? One line is enough, I'll update your road and profile."
-    static let placeholder = "What's new? Or paste a job posting"
+    static let placeholder = "What's new? Or paste a job"
 
     private(set) var messages: [Message]
     /// What each of Skillit's replies changed, by message id; only replies that applied something have an entry.
@@ -27,6 +27,8 @@ final class QuickUpdateModel {
     /// Where the current update began: an answered update starts the next one clean, so Skillit may ask again.
     private var turnStart = 1
     private var listening: Task<Void, Never>?
+    /// Set when the chat closes mid-dictation, so what was heard is dropped instead of sent.
+    private var discardsHeard = false
 
     /// With a `focusTitle` the chat is about one roadmap step: Skillit opens by asking what they did for it, and that
     /// question goes to the server with the first answer, so it knows which step is meant without asking.
@@ -56,7 +58,8 @@ final class QuickUpdateModel {
 
     func sendDraft() async {
         let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { return }
+        // checked before clearing the draft: a send while Skillit is still answering would otherwise lose the text
+        guard !text.isEmpty, !isThinking else { return }
         draft = ""
         await send(text)
     }
@@ -83,8 +86,8 @@ final class QuickUpdateModel {
     func startListening() {
         guard listening == nil, !isThinking else { return }
         isListening = true
+        discardsHeard = false
         error = nil
-        draft = ""
         listening = Task { [weak self] in
             await self?.listen()
             self?.listening = nil
@@ -92,6 +95,21 @@ final class QuickUpdateModel {
     }
 
     func stopListening() {
+        dictation.stop()
+    }
+
+    func toggleListening() {
+        if isListening {
+            stopListening()
+        } else {
+            startListening()
+        }
+    }
+
+    /// Ends dictation without sending, for when the chat is closed mid-sentence.
+    func cancelListening() {
+        guard isListening else { return }
+        discardsHeard = true
         dictation.stop()
     }
 
@@ -105,6 +123,7 @@ final class QuickUpdateModel {
             self.error = error.localizedDescription
             return
         }
+        guard !discardsHeard else { return }
         guard !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             error = "I couldn't hear you. Type it instead?"
             return

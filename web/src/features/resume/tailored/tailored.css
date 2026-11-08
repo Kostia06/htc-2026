@@ -1,0 +1,114 @@
+/* ---------- the list beside the builder ---------- */
+.tailored {
+  gap: 14px;
+}
+.tailored__intro {
+  gap: 4px;
+}
+.tailored__rows {
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tailored__row {
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--inset);
+  text-align: left;
+}
+.tailored__row:hover {
+  background: var(--chip);
+}
+.tailored__row-text {
+  gap: 2px;
+}
+
+/* ---------- choosing what to tailor for ---------- */
+.tailor-pick {
+  gap: 20px;
+}
+.tailor-pick__group {
+  gap: 8px;
+}
+.tailor-pick__posting {
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  text-align: left;
+}
+.tailor-pick__posting.is-selected {
+  border-color: var(--action);
+}
+.tailor-wait {
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+  padding: 48px 16px;
+}
+
+/* ---------- the change view ---------- */
+.tailored-view {
+  gap: 20px;
+}
+.tailored-view__head {
+  gap: 4px;
+}
+.tailored-view__changes {
+  gap: 12px;
+}
+.tailored-view__warn {
+  gap: 6px;
+  align-items: center;
+}
+.tailored-match {
+  gap: 14px;
+}
+.tailored-match__group {
+  gap: 6px;
+}
+.tailored-match__list {
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tailored-match__item {
+  gap: 8px;
+  align-items: center;
+}
+.tailored-match__item svg {
+  flex: none;
+}
+.tailored-change {
+  gap: 10px;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  transition: opacity 0.25s var(--spring);
+}
+.tailored-change.is-reverted {
+  opacity: 0.7;
+}
+.tailored-change.is-reverted .tailored-change__after {
+  color: var(--text-3);
+}
+.tailored-change__head {
+  gap: 8px;
+  align-items: center;
+}
+.tailored-change__struck {
+  text-decoration: line-through;
+  text-decoration-color: rgb(235 240 235 / 0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tailored-change { transition: none; }
+}

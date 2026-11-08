@@ -56,7 +56,14 @@ struct StartPracticeButton: View {
             await model.watch(using: service)
         }
         .sheet(isPresented: $isPairing) {
-            NavigationStack { PairHeadsetView(link: link) }
+            NavigationStack {
+                PairHeadsetView(link: link)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { isPairing = false }
+                        }
+                    }
+            }
         }
     }
 
@@ -103,7 +110,7 @@ struct StartPracticeButton: View {
             if let sendFailure {
                 Text(sendFailure)
                     .font(.footnote)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Theme.negative)
             }
         }
         .padding(16)
@@ -128,7 +135,7 @@ struct StartPracticeButton: View {
     private var sent: some View {
         Label("Sent to your headset", systemImage: "checkmark.circle.fill")
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.green)
+            .foregroundStyle(Theme.positive)
             .padding(.horizontal, 20)
             .padding(.vertical, 9)
             .background(Theme.raised, in: .capsule)

@@ -1,11 +1,13 @@
 import { Hono } from "hono";
 import type { AppContext } from "../env";
 import { claimCooldown } from "../memory/cooldowns";
-import { buildDebrief } from "../voice/debrief";
+import { finalReport, latestDraft, refreshDraft } from "../voice/draft";
+import { saveReport } from "../replay/store";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany, UnknownPosting } from "../voice/session";
+import { notifyAfterWrite } from "../notifications/generate";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns } from "../voice/store";
 import { DIFFICULTIES, type Difficulty, VOICE_MODES, type VoiceMode } from "../voice/types";
 
@@ -67,6 +69,8 @@ export function voiceRouter() {
 
     const score = await scoreTurn(c.env, { question: body.question, answer: body.answer, durationMs });
     await addTurn(c.env, c.var.sessionId, session.id, { question: body.question, answer: body.answer, score });
+    // the report is rebuilt while the next question is asked, so it is ready the moment the interview ends
+    c.executionCtx.waitUntil(refreshDraft(c.env, c.var.sessionId, session));
     return c.json(score);
   });
 
@@ -92,9 +96,18 @@ export function voiceRouter() {
     const turns = await listTurns(c.env, userId, session.id);
     if (turns.length === 0) return c.json({ error: "nothing was said in this session yet" }, 400);
 
-    // one model call over the stored turns; the same debrief on the phone and in the headset
-    await finishSession(c.env, userId, session.id);
-    return c.json(await buildDebrief(c.env, session.plan, turns));
+    // the same debrief on the phone and in the headset; usually the live draft, so no model call is left to wait on
+    const debrief = await finalReport(c.env, userId, session, turns);
+    await finishSession(c.env, userId, session.id, debrief.overall);
+    await saveReport(c.env, userId, session.id, debrief);
+    notifyAfterWrite(c.env, userId, (work) => c.executionCtx.waitUntil(work));
+    return c.json(debrief);
+  });
+
+  // a preview of the report so far; the final word is still /finish
+  router.get("/sessions/:id/report", async (c) => {
+    const draft = await latestDraft(c.env, c.var.sessionId, c.req.param("id"));
+    return draft ? c.json(draft) : c.json({ error: "no report yet" }, 404);
   });
 
   router.get("/sessions/:id", async (c) => {

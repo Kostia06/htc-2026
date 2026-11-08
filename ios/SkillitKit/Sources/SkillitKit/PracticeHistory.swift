@@ -13,7 +13,7 @@ public struct PracticeSessionSummary: Codable, Hashable, Sendable, Identifiable 
     public let status: Status
     public let createdAt: String
     public let finishedAt: String?
-    /// Average over every scored quality of every turn, 1 to 5. Missing until a turn was scored.
+    /// 0 to 100, the same number the report showed. Missing until a turn was scored.
     public let score: Double?
     public let turnCount: Int
 
@@ -63,9 +63,11 @@ public struct PracticeTurn: Decodable, Equatable, Sendable, Identifiable {
         idx
     }
 
-    /// Mean of the scored qualities, 1 to 5; nil when this turn was not scored.
-    public var averageScore: Double? {
-        scores.isEmpty ? nil : scores.values.reduce(0, +) / Double(scores.count)
+    /// This answer out of 100, mapped like the report: the lowest 1-5 rating is 0, the highest 100. Nil when unscored.
+    public var score: Int? {
+        guard !scores.isEmpty else { return nil }
+        let average = scores.values.reduce(0, +) / Double(scores.count)
+        return Int(((average - 1) / 4 * 100).rounded())
     }
 
     public init(

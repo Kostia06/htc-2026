@@ -3,11 +3,14 @@
 // lists the resume builder, the web's own tool; on phones it opens from Profile, so Profile stays lit there.
 import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Route } from 'lucide-react'
+import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Route, Signpost } from 'lucide-react'
 import { Spinner } from '../ui/Button'
+import { Bell } from '../features/notifications/Bell'
 
+// Crossroads is sidebar-only like Resume: on phones it opens from its step on the road, keeping the tab bar at five
 const TABS = [
-  { to: '/roadmap', label: 'Roadmap', icon: Route },
+  { to: '/roadmap', label: 'Road', icon: Route },
+  { to: '/crossroads', label: 'Crossroads', icon: Signpost, sidebarOnly: true },
   { to: '/for-you', label: 'For you', icon: GalleryVerticalEnd },
   { to: '/practice', label: 'Practice', icon: Glasses },
   { to: '/companies', label: 'Companies', icon: Building2 },
@@ -67,6 +70,8 @@ export function Shell() {
           ))}
         </nav>
       </aside>
+
+      <Bell />
 
       <div className="shell__content">
         {/* a tab's first visit loads its code; the sidebar and tab bar stay put meanwhile */}

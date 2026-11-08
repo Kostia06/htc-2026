@@ -37,6 +37,20 @@ describe("live instructions", () => {
     expect(text).toMatch(/what exactly|which tool|how many|what was your part/i);
   });
 
+  it("asks what they meant when an answer wouldn't make sense to an ordinary listener", () => {
+    const text = interview();
+    expect(text).toMatch(/ordinary listener/i);
+    expect(text).toMatch(/jargon|acronym/i);
+    expect(text).toMatch(/cut off|trailed off/i);
+    expect(text).toMatch(/what do you mean by/i);
+  });
+
+  it("follows up on most answers instead of jumping straight to the next question", () => {
+    const text = interview();
+    expect(text).toMatch(/at least one follow-up/i);
+    expect(text).toMatch(/only skip the follow-up/i);
+  });
+
   it("never writes stage directions or bracketed audio tags, which end up in the transcript", () => {
     expect(interview()).toMatch(/never write anything in square brackets/i);
   });

@@ -13,6 +13,7 @@ struct PracticeSessionDetailView: View {
 
     let session: PracticeSessionSummary
     let service: any PracticeHistoryService
+    let replayService: any ReplayService
 
     var body: some View {
         ScrollView {
@@ -32,6 +33,14 @@ struct PracticeSessionDetailView: View {
                             .frame(maxWidth: 220)
                     }
                 case let .ready(detail):
+                    if !detail.turns.isEmpty {
+                        NavigationLink {
+                            ReplayView(sessionId: session.id, service: replayService)
+                        } label: {
+                            ReplayEntryLabel()
+                        }
+                        .buttonStyle(.plain)
+                    }
                     if detail.turns.isEmpty {
                         Text("Nothing was said in this session.").foregroundStyle(.secondary).skillitCard()
                     }
@@ -65,9 +74,9 @@ struct PracticeSessionDetailView: View {
             Spacer()
             if let score = session.score {
                 VStack(alignment: .trailing, spacing: 0) {
-                    Text(score.formatted(.number.precision(.fractionLength(1))))
+                    Text(score.formatted(.number.precision(.fractionLength(0))))
                         .font(.system(.largeTitle, design: .rounded).bold())
-                    Text("of 5").font(.caption).foregroundStyle(.secondary)
+                    Text("of 100").font(.caption).foregroundStyle(.secondary)
                 }
             }
         }
@@ -92,8 +101,8 @@ private struct TurnCard: View {
             HStack(alignment: .top) {
                 Text(turn.question).font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
                 Spacer(minLength: 12)
-                if let average = turn.averageScore {
-                    Text(average.formatted(.number.precision(.fractionLength(1))))
+                if let score = turn.score {
+                    Text(score, format: .number)
                         .font(.system(.title3, design: .rounded).bold())
                         .monospacedDigit()
                 }

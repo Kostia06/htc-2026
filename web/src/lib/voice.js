@@ -11,7 +11,8 @@ export function readCredentials(raw) {
 }
 
 /**
- * Starts the call. `on` gets: state('connecting'|'listening'|'speaking'|'thinking'), line(speaker, text), ended(), failed(message).
+ * Starts the call. `on` gets: state('connecting'|'listening'|'speaking'|'thinking'), line(speaker, text), ended(), failed(message),
+ * and optionally conversation(id) once ElevenLabs names the call.
  * Returns { stop, level } where level() is the loudness of whoever is talking, 0–1.
  */
 export async function startVoice(rawCredentials, on) {
@@ -41,7 +42,10 @@ export async function startVoice(rawCredentials, on) {
       connectionType: 'webrtc',
       overrides: credentials.overrides,
       dynamicVariables: credentials.dynamicVariables,
-      onConnect: () => setState('speaking'),
+      onConnect: ({ conversationId } = {}) => {
+        setState('speaking')
+        if (conversationId) on.conversation?.(conversationId)
+      },
       onModeChange: ({ mode: next }) => setState(next === 'speaking' ? 'speaking' : 'listening'),
       onMessage: ({ message, role, source }) => {
         const speaker = (role ?? (source === 'ai' ? 'agent' : 'user')) === 'agent' ? 'agent' : 'person'
@@ -75,6 +79,16 @@ export async function startVoice(rawCredentials, on) {
       }
     },
   }
+}
+
+/**
+ * The interviewer's goodbye after the last planned question (VoiceSession+Questions.swift). Hanging up once it
+ * is said saves the paid seconds the agent would sit waiting for silence. A question is never a goodbye.
+ */
+export function isSignOff(line, questionNumber, questionCount) {
+  const spoken = line.replace(/\[[^\]]*\]/g, '')
+  if (!questionCount || questionNumber !== questionCount || spoken.includes('?')) return false
+  return /\b(good\s?)?bye\b/i.test(spoken)
 }
 
 /**

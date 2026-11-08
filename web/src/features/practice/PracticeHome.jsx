@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
 import { ChartLine, Glasses, MessagesSquare, UserRoundSearch } from 'lucide-react'
+import { useApp } from '../../app/context'
 import { readPref, writePref } from '../../lib/cache'
 import { Segmented } from '../../ui/Controls'
 import { NavRow, Page, PageHeader } from '../../ui/Layout'
@@ -11,7 +12,9 @@ import './practice.css'
 
 export default function PracticeHome() {
   const navigate = useNavigate()
+  const { profile } = useApp()
   const [role, setRole] = useState('')
+  const targetRoles = profile?.targetRoles ?? []
   const [difficulty, setDifficulty] = useState(() => readPref('practiceDifficulty', 'standard'))
   const note = DIFFICULTIES.find((d) => d.id === difficulty)?.note
 
@@ -30,6 +33,24 @@ export default function PracticeHome() {
     <Page className="practice">
       <PageHeader title="Practice" large />
       <div className="practice__stack">
+        {/* InterviewTargetPicker.swift's summary line, with the profile's target roles one tap away */}
+        <div className="practice__target">
+          <p className="t-subhead c-2">You're practising for</p>
+          <p className="t-title3">{role.trim() || 'A general interview'}</p>
+          {targetRoles.length > 0 && (
+            <div className="practice__roles">
+              {targetRoles.map((r) => {
+                const isOn = role.trim() === r
+                return (
+                  <button key={r} type="button" className={`chip t-subhead${isOn ? ' is-on' : ''}`} aria-pressed={isOn} onClick={() => setRole(isOn ? '' : r)}>
+                    {r}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         <div className="card practice__field">
           <input
             className="practice__input t-body"

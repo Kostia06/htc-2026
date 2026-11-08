@@ -6,6 +6,7 @@ protocol VoicePracticeService {
     func startVoiceSession(_ request: VoiceSessionRequest) async throws(SkillitError) -> VoiceSession
     func submitTurn(_ turn: VoiceTurn, in sessionId: String) async throws(SkillitError) -> TurnFeedback
     func finishVoiceSession(_ sessionId: String) async throws(SkillitError) -> SessionDebrief
+    func attachConversation(_ conversationId: String, to sessionId: String) async throws(SkillitError)
 }
 
 extension SkillitClient: VoicePracticeService {}
@@ -33,6 +34,8 @@ struct PreviewVoicePractice: VoicePracticeService {
         try? await Task.sleep(for: .seconds(1.2))
         return .sample
     }
+
+    func attachConversation(_: String, to _: String) async throws(SkillitError) {}
 
     private static let generalQuestions = [
         PracticeQuestion(text: "Tell me about a project you're proud of, from start to finish.", source: .behavioral),

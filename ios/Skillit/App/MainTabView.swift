@@ -41,16 +41,16 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selection) {
             Tab(Section.roadmap.title, systemImage: Section.roadmap.symbol, value: .roadmap) {
-                RoadmapView().toolbarVisibility(.hidden, for: .tabBar)
+                RoadmapView().toolbarVisibility(.hidden, for: .tabBar).clearsAskBar()
             }
             Tab(Section.forYou.title, systemImage: Section.forYou.symbol, value: .forYou) {
-                ForYouView().toolbarVisibility(.hidden, for: .tabBar)
+                ForYouView().toolbarVisibility(.hidden, for: .tabBar).clearsAskBar()
             }
             Tab(Section.practice.title, systemImage: Section.practice.symbol, value: .practice) {
-                PracticeView().toolbarVisibility(.hidden, for: .tabBar)
+                PracticeView().toolbarVisibility(.hidden, for: .tabBar).clearsAskBar()
             }
             Tab(Section.profile.title, systemImage: Section.profile.symbol, value: .profile) {
-                ProfileView().toolbarVisibility(.hidden, for: .tabBar)
+                ProfileView().toolbarVisibility(.hidden, for: .tabBar).clearsAskBar()
             }
         }
         .overlay {
@@ -61,11 +61,22 @@ struct MainTabView: View {
                     .onTapGesture { isAsking = false }
             }
         }
-        .safeAreaInset(edge: .bottom) {
+        .overlay(alignment: .bottom) {
             AskSkillitBar(selection: $selection, isAsking: $isAsking, onOpenPosting: { openedPosting = $0 })
         }
         .sheet(item: $openedPosting) { posting in
             PostingView(posting: posting)
         }
+        .handlesNotifications()
+    }
+}
+
+private extension View {
+    /// Each tab scrolls under the floating bar; this keeps its last rows clear of it.
+    /// Safe-area insets and padding get swallowed by the system tab container, but
+    /// content margins travel down the environment to every List and ScrollView in
+    /// the tab, pushed screens included.
+    func clearsAskBar() -> some View {
+        contentMargins(.bottom, AskSkillitBar.reservedHeight, for: .scrollContent)
     }
 }

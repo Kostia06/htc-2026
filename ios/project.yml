@@ -36,6 +36,8 @@ targets:
       path: Skillit/Resources/Skillit.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
+        # Push Notifications capability; distribution signing swaps in "production" for TestFlight and the App Store
+        aps-environment: development
     settings:
       base:
         # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
@@ -63,8 +65,11 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said.
+        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said, and keeps a recording you can replay.
         NSSpeechRecognitionUsageDescription: Skillit turns what you say into text so a quick update can be applied to your roadmap and profile.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false
+        # background app refresh checks for new notifications when APNs isn't set up; must match NotificationRefresh
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.kostiailn.skillit.notifications.refresh]

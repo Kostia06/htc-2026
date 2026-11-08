@@ -32,11 +32,10 @@ enum ResumeArea: String, Identifiable, CaseIterable {
     }
 }
 
-/// Edits one area in a sheet; changes land in the binding as you type and are saved when the sheet closes.
+/// Edits one area in a sheet; changes land in the binding as you type, and the presenter saves them when the sheet closes.
 struct ResumeSectionEditor: View {
     let area: ResumeArea
     @Binding var resume: Resume
-    let onDone: () -> Void
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -59,10 +58,7 @@ struct ResumeSectionEditor: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        onDone()
-                        dismiss()
-                    }
+                    Button("Done") { dismiss() }
                     .fontWeight(.semibold)
                 }
             }

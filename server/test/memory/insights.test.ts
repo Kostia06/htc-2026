@@ -41,6 +41,15 @@ describe("company insights", () => {
     expect(three?.questions.find((q) => q.text === "Tell me about yourself")?.count).toBe(3);
   });
 
+  it("counts people, not reports: one person's three reports stay hidden", async () => {
+    for (const i of [1, 2, 3]) {
+      await env.DB.prepare(
+        "INSERT INTO experiences (id, company_id, role, questions_json, is_seeded, created_at, contributor) VALUES (?, 'c1', 'Junior Developer', ?, 0, ?, 'same-person')",
+      ).bind(`s${i}`, JSON.stringify(["Why us?"]), new Date().toISOString()).run();
+    }
+    expect((await getCompanyInsights(env, "acme"))?.questions).toEqual([]);
+  });
+
   it("shows seeded example questions, flagged, without counting them as reports", async () => {
     for (const i of [1, 2, 3]) await addExperience(i, 1);
     const out = await getCompanyInsights(env, "acme");

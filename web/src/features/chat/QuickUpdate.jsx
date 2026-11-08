@@ -9,7 +9,7 @@ import { Sheet } from '../../ui/Sheet'
 import { useDictation } from './useDictation'
 import './chat.css'
 
-const OPENING = "What's new? One line is enough, I'll update your roadmap and profile."
+const OPENING = "What's new? One line is enough, I'll update your road and profile."
 const PROFILE_CHANGES = ['add_project', 'add_experience', 'add_skill', 'remove_skill', 'add_target_role']
 
 let nextId = 0

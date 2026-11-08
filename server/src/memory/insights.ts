@@ -9,7 +9,7 @@ const HALF_LIFE_DAYS = 90;
 const DAY_MS = 86_400_000;
 
 type Fact = { kind: string; text: string; source_url: string; fetched_at: string };
-type ExpRow = { questions_json: string; is_seeded: number; created_at: string };
+type ExpRow = { id: string; questions_json: string; is_seeded: number; created_at: string; contributor: string | null };
 type Question = { text: string; count: number; example: boolean; last_reported_at: string | null };
 type Tally = Question & { weight: number };
 
@@ -52,14 +52,16 @@ export async function getCompanyInsights(env: Env, slug: string, role?: string) 
     .all<Fact>();
 
   const roleFilter = role ? " AND lower(role) = lower(?)" : "";
-  const stmt = db(env).prepare(`SELECT questions_json, is_seeded, created_at FROM experiences WHERE company_id = ?${roleFilter}`);
+  const stmt = db(env).prepare(`SELECT id, questions_json, is_seeded, created_at, contributor FROM experiences WHERE company_id = ?${roleFilter}`);
   const { results: rows } = await (role ? stmt.bind(company.id, role) : stmt.bind(company.id)).all<ExpRow>();
 
   const real = rows.filter((r) => !r.is_seeded);
   const seeded = rows.filter((r) => r.is_seeded);
+  // people, not reports: one person sending three reports must not unlock what three people said
+  const people = new Set(real.map((r) => r.contributor ?? r.id)).size;
   // free-text tips and formats are never returned: they're one person's words, easy to recognise
   const now = Date.now();
-  const questions = [...(real.length >= MIN_REPORTS ? tally(real, false, now) : []), ...tally(seeded, true, now)].sort(byRank).map(forDisplay);
+  const questions = [...(people >= MIN_REPORTS ? tally(real, false, now) : []), ...tally(seeded, true, now)].sort(byRank).map(forDisplay);
 
   return { company, facts, reportCount: real.length, questions };
 }

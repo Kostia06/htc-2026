@@ -12,7 +12,7 @@ const posting = (id: string, title: string): JobPosting => ({
   title,
   company: "Acme",
   location: "Calgary, Alberta",
-  posted_at: "2026-11-01T10:00:00Z",
+  posted_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
   description: "React and TypeScript",
   url: `https://www.adzuna.ca/details/${id}`,
   ...ADZUNA_ATTRIBUTION,
@@ -38,10 +38,11 @@ function backgroundWork() {
 type Item = { id: string; kind: string; title: string; why: string; source: string; attribution?: unknown };
 type Page = { items: Item[]; nextCursor: string | null; building: boolean; builtAt: string | null; section: string };
 
-async function getFeed(token: string, cursor?: string, section?: string) {
+async function getFeed(token: string, cursor?: string, section?: string, refresh = false) {
   const query = new URLSearchParams();
   if (cursor !== undefined) query.set("cursor", cursor);
   if (section !== undefined) query.set("section", section);
+  if (refresh) query.set("refresh", "1");
   const work = backgroundWork();
   const res = await app.request(`/?${query}`, { headers: { Authorization: `Bearer ${token}` } }, env, work.ctx);
   await work.settle();
@@ -54,6 +55,15 @@ async function person(targetRoles: string[]) {
   await updateProfile(env, id, { targetRoles, skills: [{ name: "React", source: "self-reported" }] });
   return { token, id };
 }
+
+// the profile is dated earlier too, or the feed would count as stale for being older than the profile
+const builtAgo = (userId: string, minutes: number) => {
+  const at = (extra: number) => new Date(Date.now() - (minutes + extra) * 60_000).toISOString();
+  return env.DB.batch([
+    env.DB.prepare("UPDATE feed_state SET built_at = ? WHERE user_id = ?").bind(at(0), userId),
+    env.DB.prepare("UPDATE user_profiles SET updated_at = ? WHERE user_id = ?").bind(at(1), userId),
+  ]);
+};
 
 beforeEach(async () => {
   searches = [];
@@ -97,16 +107,29 @@ describe("GET /api/feed", () => {
     }
   });
 
-  it("serves a fresh feed without searching again, and rebuilds once it is over six hours old", async () => {
+  it("serves a fresh feed without searching again, and rebuilds in the background once its jobs are over an hour old", async () => {
     const { token, id } = await person(["Junior developer"]);
     await getFeed(token);
+    await builtAgo(id, 50);
     await getFeed(token);
     expect(searches).toHaveLength(1);
 
-    await env.DB.prepare("UPDATE feed_state SET built_at = ? WHERE user_id = ?").bind(new Date(Date.now() - 7 * 3_600_000).toISOString(), id).run();
+    await builtAgo(id, 61);
     const stale = await getFeed(token);
     expect(stale.body.items).toHaveLength(20);
     expect(stale.body.building).toBe(true);
+    expect(searches).toHaveLength(2);
+  });
+
+  it("rebuilds on pull to refresh unless the feed was built moments ago", async () => {
+    const { token, id } = await person(["Junior developer"]);
+    await getFeed(token);
+    await getFeed(token, undefined, undefined, true);
+    expect(searches).toHaveLength(1);
+
+    await builtAgo(id, 10);
+    const pulled = await getFeed(token, undefined, undefined, true);
+    expect(pulled.body.building).toBe(true);
     expect(searches).toHaveLength(2);
   });
 

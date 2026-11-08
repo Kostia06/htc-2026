@@ -1,32 +1,69 @@
 import SkillitKit
 import SwiftUI
 
-/// The fallback sign-in: type an email, then the six-digit code Supabase sends to it.
+/// Email sign-in: a password by default, or a six-digit code emailed by Supabase for anyone without one.
 struct EmailEntry: View {
     @Environment(AppModel.self) private var app
     @Bindable var model: SignInModel
-    @FocusState private var isFocused: Bool
+    let signedIn: () -> Void
+    @FocusState private var focus: Field?
+
+    enum Field { case email, password }
 
     var body: some View {
         VStack(spacing: 12) {
+            Picker("Mode", selection: $model.passwordMode) {
+                ForEach(SignInModel.PasswordMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            if let notice = model.notice {
+                Text(notice)
+                    .font(.footnote)
+                    .foregroundStyle(Theme.positive)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             TextField("you@example.com", text: $model.typedEmail)
                 .textContentType(.emailAddress)
                 .keyboardType(.emailAddress)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                .submitLabel(.send)
-                .focused($isFocused)
-                .onSubmit(send)
+                .submitLabel(.next)
+                .focused($focus, equals: .email)
+                .onSubmit { focus = .password }
                 .skillitField()
-            PrimaryButton(title: "Send code", isWorking: model.isWorking, isEnabled: model.canSendCode, action: send)
-            Button("Back") { model.step = .choosing }
+            SecureField(passwordPrompt, text: $model.typedPassword)
+                .textContentType(model.passwordMode == .signUp ? .newPassword : .password)
+                .submitLabel(.go)
+                .focused($focus, equals: .password)
+                .onSubmit(submit)
+                .skillitField()
+            PrimaryButton(
+                title: model.passwordMode.rawValue, isWorking: model.isWorking, isEnabled: model.canSubmitPassword, action: submit
+            )
+            Button("Email me a code instead", action: sendCode)
                 .frame(maxWidth: .infinity, minHeight: 44)
+                .disabled(!model.canSendCode)
+            Button("Back") { model.step = .choosing }
+                .frame(maxWidth: .infinity, minHeight: 36)
                 .foregroundStyle(.secondary)
         }
-        .onAppear { isFocused = true }
+        .onAppear { focus = .email }
     }
 
-    private func send() {
+    private var passwordPrompt: String {
+        model.passwordMode == .signUp ? "Password (\(SignInModel.minimumNewPassword)+ characters)" : "Password"
+    }
+
+    private func submit() {
+        guard model.canSubmitPassword else { return }
+        Task {
+            if await model.submitPassword(with: app.authenticator) {
+                signedIn()
+            }
+        }
+    }
+
+    private func sendCode() {
         guard model.canSendCode else { return }
         Task { await model.sendCode(with: app.authenticator) }
     }

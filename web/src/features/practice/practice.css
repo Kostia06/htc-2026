@@ -72,6 +72,30 @@
   flex-direction: column;
   gap: 16px;
 }
+.practice__target {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px;
+}
+.practice__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+}
+.practice__roles .chip {
+  padding: 8px 14px;
+  border: 0;
+  font-weight: 500;
+  color: var(--text);
+  white-space: normal;
+  cursor: pointer;
+}
+.practice__roles .chip.is-on {
+  background: var(--action);
+  color: var(--on-action);
+}
 .practice__field {
   padding: 0;
 }

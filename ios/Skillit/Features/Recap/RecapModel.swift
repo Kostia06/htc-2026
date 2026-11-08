@@ -2,9 +2,10 @@ import Foundation
 import Observation
 import SkillitKit
 
-/// One "tell Skillit how it went" conversation: typed or spoken, at most two clarifying questions, then the shared card.
+/// One "tell Skillit how it went" conversation: typed or spoken, a short question back only if something essential
+/// is missing (the server decides how many), then the shared card.
 @Observable
-final class RecapModel {
+final class RecapModel: ChatDraftModel {
     struct Message: Identifiable, Equatable {
         let id = UUID()
         let role: RecapMessage.Role
@@ -15,7 +16,7 @@ final class RecapModel {
 
     let companySlug: String?
     private(set) var messages: [Message] = [Message(role: .skillit, text: RecapModel.opening)]
-    /// Skillit is reading what was said; the purple typing indicator shows.
+    /// Skillit is reading what was said; the typing indicator shows.
     private(set) var isThinking = false
     /// A voice recap is running; the mic button becomes a stop button.
     private(set) var isListening = false
@@ -43,7 +44,8 @@ final class RecapModel {
 
     func sendDraft() async {
         let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { return }
+        // checked before clearing the draft: a send while Skillit is still answering would otherwise lose the text
+        guard !text.isEmpty, !isThinking, !isFinished else { return }
         draft = ""
         await send(text)
     }
@@ -52,6 +54,7 @@ final class RecapModel {
         guard !isThinking, !isFinished else { return }
         let history = messages.map { RecapMessage(role: $0.role, text: $0.text) }
         messages.append(Message(role: .user, text: text))
+        error = nil
         isThinking = true
         defer { isThinking = false }
         do {
@@ -63,7 +66,7 @@ final class RecapModel {
 
     /// Starts the spoken recap: every recognised line lands in the chat as it's said; when the call ends, the transcript goes to the server.
     func startVoice() {
-        guard call == nil, !isFinished else { return }
+        guard call == nil, !isFinished, !isThinking else { return }
         isListening = true
         error = nil
         call = Task { [weak self] in
@@ -74,6 +77,14 @@ final class RecapModel {
 
     func stopVoice() {
         voice.stop()
+    }
+
+    func toggleListening() {
+        if isListening {
+            stopVoice()
+        } else {
+            startVoice()
+        }
     }
 
     private func runVoice() async {

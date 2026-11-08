@@ -60,7 +60,7 @@ export function Memory() {
           <div className="stack">
             <span className="t-headline">Private to you</span>
             <span className="t-subhead c-2">
-              Encrypted with a key only your account holds. Skillit uses these to shape your roadmap and practice. Delete any of them, any time; nothing leaves unless you
+              Encrypted with a key only your account holds. Skillit uses these to shape your road and practice. Delete any of them, any time; nothing leaves unless you
               share a note.
             </span>
           </div>

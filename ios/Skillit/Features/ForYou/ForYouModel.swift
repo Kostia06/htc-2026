@@ -8,12 +8,14 @@ import SkillitKit
 final class ForYouModel {
     private(set) var section: FeedSection = .all
     private(set) var timelines: [FeedSection: FeedTimeline] = [:]
-    /// The server is assembling a fresher feed; shown as a calm row, never as a spinner over the cards.
-    private(set) var isBuilding = false
-    private(set) var isLoadingMore = false
-    private(set) var errorMessage: String?
+    // kept per section: the For you poll keeps running after you switch to Jobs, and its state must not leak there
+    private var buildingSections: Set<FeedSection> = []
+    private var loadingMoreSections: Set<FeedSection> = []
+    private var errors: [FeedSection: String] = [:]
     /// Bumps once per dismissed card, so the view plays one haptic per swipe.
     private(set) var dismissals = 0
+
+    private enum Freshness { case asStored, withNewPostings }
 
     private let cache: FeedCache
     private var refreshTasks: [FeedSection: Task<Void, Never>] = [:]
@@ -32,23 +34,56 @@ final class ForYouModel {
         timelines[section]?.cards ?? []
     }
 
+    /// The card as this section now has it; one unsaved from inside Saved has left the section, so Saved says whether it's kept.
+    func current(_ card: FeedCard) -> FeedCard {
+        if let live = cards.first(where: { $0.id == card.id }) {
+            return live
+        }
+        var copy = card
+        copy.saved = timelines[.saved]?.cards.contains { $0.id == card.id } ?? card.isSaved
+        return copy
+    }
+
     /// False only before this section has ever loaded on this device; that is the one time skeletons show.
     var hasLoaded: Bool {
         timelines[section] != nil
     }
 
+    /// The server is assembling a fresher feed for this section; shown as a calm row, never as a spinner over the cards.
+    var isBuilding: Bool {
+        buildingSections.contains(section)
+    }
+
+    var isLoadingMore: Bool {
+        loadingMoreSections.contains(section)
+    }
+
+    var errorMessage: String? {
+        errors[section]
+    }
+
     func show(_ section: FeedSection) {
         self.section = section
-        errorMessage = nil
     }
 
     /// Joins a refresh already in flight, so the prefetch at launch and the tab appearing don't fetch twice.
     func refresh(using client: SkillitClient) async {
+        await refresh(.asStored, using: client)
+    }
+
+    /// Pull to refresh: the server searches for new postings now instead of waiting for its hourly check.
+    func pullToRefresh(using client: SkillitClient) async {
+        await refresh(.withNewPostings, using: client)
+    }
+
+    private func refresh(_ freshness: Freshness, using client: SkillitClient) async {
         let section = section
         if let running = refreshTasks[section] {
             return await running.value
         }
-        let task = Task { await fetchFirstPage(of: section, using: client) }
+        // a retry shows skeletons (or the cards) again rather than the old error while it waits
+        errors[section] = nil
+        let task = Task { await fetchFirstPage(of: section, freshness, using: client) }
         refreshTasks[section] = task
         await task.value
         refreshTasks[section] = nil
@@ -56,9 +91,11 @@ final class ForYouModel {
 
     func loadMore(using client: SkillitClient) async {
         let section = section
-        guard let cursor = timelines[section]?.nextCursor, !isLoadingMore, refreshTasks[section] == nil else { return }
-        isLoadingMore = true
-        defer { isLoadingMore = false }
+        guard let cursor = timelines[section]?.nextCursor, !loadingMoreSections.contains(section), refreshTasks[section] == nil else {
+            return
+        }
+        loadingMoreSections.insert(section)
+        defer { loadingMoreSections.remove(section) }
         guard let page = try? await client.feed(section: section, cursor: cursor) else { return }
         timelines[section]?.apply(nextPage: page)
         persist(section)
@@ -80,6 +117,30 @@ final class ForYouModel {
                     timelines[key]?.mark(id: card.id, saved: false)
                 }
                 timelines[.saved]?.remove(id: card.id)
+            }
+        }
+    }
+
+    /// The bookmark empties everywhere and the card leaves Saved at once; a refusal puts both back.
+    /// It stays in the feed itself: unsaving is not "not for me".
+    func unsave(_ card: FeedCard, using client: SkillitClient) {
+        guard card.isSaved else { return }
+        let removed = timelines[.saved]?.remove(id: card.id)
+        for key in timelines.keys {
+            timelines[key]?.mark(id: card.id, saved: false)
+        }
+        persist(.all)
+        Task {
+            do {
+                try await client.unsave(cardId: card.id)
+            } catch {
+                for key in timelines.keys {
+                    timelines[key]?.mark(id: card.id, saved: true)
+                }
+                if let removed {
+                    timelines[.saved]?.insert(removed.card, at: removed.index)
+                }
+                persist(.all)
             }
         }
     }
@@ -110,7 +171,9 @@ final class ForYouModel {
         cache.clear()
         timelines = [:]
         section = .all
-        isBuilding = false
+        buildingSections = []
+        loadingMoreSections = []
+        errors = [:]
     }
 
     private func send(_ action: FeedCardAction, for card: FeedCard, using client: SkillitClient, orRevert revert: () -> Void) async {
@@ -123,18 +186,23 @@ final class ForYouModel {
     }
 
     /// While the server builds, ask again every couple of seconds until the new feed lands.
-    private func fetchFirstPage(of section: FeedSection, using client: SkillitClient) async {
-        for _ in 0 ..< Self.maxBuildPolls {
+    private func fetchFirstPage(of section: FeedSection, _ freshness: Freshness, using client: SkillitClient) async {
+        for poll in 0 ..< Self.maxBuildPolls {
             do {
-                let page = try await client.feed(section: section)
+                // only the first request asks for new postings; the polls after it wait for that rebuild
+                let page = if poll == 0, freshness == .withNewPostings {
+                    try await client.refreshedFeed(section: section)
+                } else {
+                    try await client.feed(section: section)
+                }
                 apply(page, to: section)
                 guard page.building else { return }
             } catch {
                 // with cards on screen a failed refresh stays silent; the cached feed is still useful
                 if timelines[section]?.cards.isEmpty ?? true {
-                    errorMessage = error.message
+                    errors[section] = error.message
                 }
-                isBuilding = false
+                buildingSections.remove(section)
                 return
             }
             try? await Task.sleep(for: Self.buildPollInterval)
@@ -142,14 +210,22 @@ final class ForYouModel {
                 return
             }
         }
-        isBuilding = false
+        buildingSections.remove(section)
+        // still building after every poll: show the empty state rather than skeletons that never end
+        if timelines[section] == nil {
+            timelines[section] = FeedTimeline()
+        }
     }
 
     private func apply(_ page: FeedPage, to section: FeedSection) {
         var timeline = timelines[section] ?? FeedTimeline()
         timeline.apply(firstPage: page)
-        isBuilding = page.building
-        errorMessage = nil
+        if page.building {
+            buildingSections.insert(section)
+        } else {
+            buildingSections.remove(section)
+        }
+        errors[section] = nil
         if !page.building || !page.items.isEmpty {
             timelines[section] = timeline
             persist(section)
@@ -178,7 +254,9 @@ final class ForYouModel {
                 model.timelines[.saved] = FeedTimeline(cards: cards.filter(\.isSaved))
             }
             model.section = section
-            model.isBuilding = isBuilding
+            if isBuilding {
+                model.buildingSections.insert(section)
+            }
             return model
         }
     }

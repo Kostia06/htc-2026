@@ -11,7 +11,7 @@ private struct EntryList<Entry: Equatable, Fields: View>: View {
     var body: some View {
         ForEach(entries.indices, id: \.self) { index in
             Section {
-                fields($entries[index])
+                fields($entries.element(at: index, fallback: blank))
             } header: {
                 HStack {
                     Text("\(name) \(index + 1)")
@@ -35,7 +35,7 @@ private struct EntryList<Entry: Equatable, Fields: View>: View {
     }
 }
 
-/// One field per bullet so a newline never has to mean "new bullet"; the last empty one is dropped on save.
+/// One field per bullet so a newline never has to mean "new bullet"; empty ones are dropped when the sheet closes.
 private struct BulletFields: View {
     @Binding var bullets: [String]
 
@@ -43,7 +43,7 @@ private struct BulletFields: View {
         ForEach(bullets.indices, id: \.self) { index in
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("•").foregroundStyle(.secondary)
-                TextField("What you did and what came of it", text: $bullets[index], axis: .vertical)
+                TextField("What you did and what came of it", text: $bullets.element(at: index, fallback: ""), axis: .vertical)
                     .lineLimit(1 ... 4)
             }
         }
@@ -55,7 +55,16 @@ private struct BulletFields: View {
                 .font(.subheadline)
                 .foregroundStyle(Theme.action)
         }
-        .onDisappear { bullets.removeAll { $0.trimmingCharacters(in: .whitespaces).isEmpty } }
+    }
+}
+
+private extension Binding {
+    /// Index bindings outlive a removal by one render; reading past the end then would crash the Form.
+    func element<Element>(at index: Int, fallback: Element) -> Binding<Element> where Value == [Element] {
+        Binding<Element>(
+            get: { wrappedValue.indices.contains(index) ? wrappedValue[index] : fallback },
+            set: { if wrappedValue.indices.contains(index) { wrappedValue[index] = $0 } },
+        )
     }
 }
 

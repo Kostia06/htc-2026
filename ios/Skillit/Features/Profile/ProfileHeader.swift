@@ -18,7 +18,7 @@ struct ProfileHeader: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            Text(profile.targetRoles.first ?? "Pick a target role below")
+            Text(profile.targetRoles.first ?? "Set the role you're aiming for")
                 .font(.system(size: roleSize, weight: .bold, design: .rounded))
                 .contentTransition(.opacity)
             if isEditing {

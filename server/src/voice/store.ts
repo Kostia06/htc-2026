@@ -4,7 +4,7 @@ import { decryptFor, encryptFor } from "../memory/private/crypto";
 import type { TurnScore } from "./score";
 import type { VoiceMode, VoicePlan } from "./types";
 
-const KEEP_DAYS = 30;
+export const KEEP_DAYS = 30;
 
 export type VoiceSession = { id: string; mode: VoiceMode; companySlug: string | null; plan: VoicePlan; status: "active" | "finished"; createdAt: string };
 export type StoredTurn = { idx: number; question: string; answer: string } & TurnScore;
@@ -68,9 +68,10 @@ export async function listTurns(env: Env, userId: string, sessionId: string): Pr
   );
 }
 
-export async function finishSession(env: Env, userId: string, id: string) {
-  await db(env).prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ? WHERE id = ? AND user_id = ?")
-    .bind(new Date().toISOString(), id, userId)
+// overall is the report's 0-100 score, kept so history shows the number the person already saw
+export async function finishSession(env: Env, userId: string, id: string, overall: number | null = null) {
+  await db(env).prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ?, overall = ? WHERE id = ? AND user_id = ?")
+    .bind(new Date().toISOString(), overall, id, userId)
     .run();
 }
 

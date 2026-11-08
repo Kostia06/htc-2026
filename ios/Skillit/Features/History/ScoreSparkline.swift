@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A tiny line of session scores over time, drawn in once when it appears. Scores are on the 1–5 scale people see live.
+/// A tiny line of session scores over time, drawn in once when it appears. Scores are out of 100, like the report.
 struct ScoreSparkline: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drawn: CGFloat = 0
@@ -8,7 +8,7 @@ struct ScoreSparkline: View {
     let scores: [Double]
     var color: Color = Theme.action
 
-    private static let range: ClosedRange<Double> = 1 ... 5
+    private static let range: ClosedRange<Double> = 0 ... 100
 
     var body: some View {
         GeometryReader { proxy in
@@ -35,7 +35,7 @@ struct ScoreSparkline: View {
         }
         .accessibilityElement()
         .accessibilityLabel("Score trend")
-        .accessibilityValue(scores.map { $0.formatted(.number.precision(.fractionLength(1))) }.joined(separator: ", "))
+        .accessibilityValue(scores.map { $0.formatted(.number.precision(.fractionLength(0))) }.joined(separator: ", "))
     }
 
     private func points(in size: CGSize) -> [CGPoint] {

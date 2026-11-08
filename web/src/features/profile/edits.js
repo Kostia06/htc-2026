@@ -1,6 +1,7 @@
 // ProfileEdit.swift: each change is applied to the local copy first and sent to the server as the same patch.
 // Lists are merged in on the server; `remove` takes entries out first. Returns [profile, patch] or null.
 import { sameText } from '../../lib/format'
+import { skillsOf, skillsPatch } from './skillsDraft'
 
 const clean = (text) => {
   const t = (text ?? '').trim()
@@ -55,6 +56,10 @@ export function applyEdit(profile, edit) {
     case 'removeSkill':
       if (!profile.skills.some((s) => sameText(s.name, edit.name))) return null
       return [{ ...profile, skills: profile.skills.filter((s) => !sameText(s.name, edit.name)) }, { remove: { skills: [edit.name] } }]
+    case 'saveSkills': {
+      const patch = skillsPatch(edit.draft)
+      return patch && [{ ...profile, skills: skillsOf(edit.draft) }, patch]
+    }
     case 'saveExperience':
       return save(profile, 'experience', cleanExperience(edit.row), edit.old)
     case 'removeExperience':

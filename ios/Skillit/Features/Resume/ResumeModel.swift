@@ -43,6 +43,13 @@ final class ResumeModel {
         }
     }
 
+    /// Called when a section sheet closes, however it closed (Done or a swipe down), so no edit is left unsaved.
+    func finishEditing(from before: Resume) {
+        resume.dropEmptyBullets()
+        guard resume != before else { return }
+        commit()
+    }
+
     /// The edit is already on screen; this sends it along behind the scenes, one save after another.
     func commit() {
         saveFailed = false
@@ -104,5 +111,23 @@ final class ResumeModel {
             throw .unreadableResponse
         }
         return url
+    }
+}
+
+private extension Resume {
+    /// "Add bullet" leaves a blank field behind if the person never typed in it; it shouldn't reach the PDF.
+    mutating func dropEmptyBullets() {
+        for index in experience.indices {
+            experience[index].bullets.removeAll(where: \.isBlank)
+        }
+        for index in projects.indices {
+            projects[index].bullets.removeAll(where: \.isBlank)
+        }
+    }
+}
+
+private extension String {
+    var isBlank: Bool {
+        trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
