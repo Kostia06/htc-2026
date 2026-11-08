@@ -6,7 +6,7 @@ const WIDTH = 0.66
  * Before the interview: a greeting and Begin. Seated / standing, recenter,
  * captions and the how-to only appear in the headset, where they mean something.
  */
-export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, captionsOn, onCaptions, onBegin, onQuick, error, inXR, reducedMotion, ...props }) {
+export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, captionsOn, onCaptions, hintsOn, onHints, onBegin, onQuick, error, inXR, reducedMotion, ...props }) {
   const height = inXR ? 0.53 : 0.34
   const left = -WIDTH / 2 + space.xl
   const top = height / 2 - space.xl
@@ -49,13 +49,32 @@ export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, capti
               reducedMotion={reducedMotion}
               position={[0.1, -0.072, 0]}
             />
+            {/* talking points beside the desk during the interview; off by default */}
+            <RaisedButton
+              label={hintsOn ? 'Hints on' : 'Hints off'}
+              tone={hintsOn ? 'action' : 'chip'}
+              variant="subhead"
+              width={0.2}
+              height={0.056}
+              radius={0.028}
+              onPress={onHints}
+              reducedMotion={reducedMotion}
+              position={[0.32, -0.072, 0]}
+            />
           </group>
         )}
 
-        {/* the one-minute option sits beside Begin as the quieter key */}
+        {/* the one-minute option sits beside Begin as the quieter key; with the
+            Interview for panel open, its Length row replaces it */}
         <group position={[0, bottom + (inXR ? 0.1 : 0.05), 0.003]}>
-          <RaisedButton label="Quick · 1 min" tone="secondary" variant="subhead" width={inner * 0.36} onPress={onQuick} reducedMotion={reducedMotion} position={[-inner / 2 + inner * 0.18, 0, 0]} />
-          <RaisedButton label="Begin" width={inner * 0.6} onPress={onBegin} reducedMotion={reducedMotion} position={[inner / 2 - inner * 0.3, 0, 0]} />
+          {onQuick ? (
+            <>
+              <RaisedButton label="Quick · 1 min" tone="secondary" variant="subhead" width={inner * 0.36} onPress={onQuick} reducedMotion={reducedMotion} position={[-inner / 2 + inner * 0.18, 0, 0]} />
+              <RaisedButton label="Begin" width={inner * 0.6} onPress={onBegin} reducedMotion={reducedMotion} position={[inner / 2 - inner * 0.3, 0, 0]} />
+            </>
+          ) : (
+            <RaisedButton label="Begin" width={inner} onPress={onBegin} reducedMotion={reducedMotion} />
+          )}
         </group>
         {inXR ? (
           <TextLink label="How it works" onPress={onHowTo} reducedMotion={reducedMotion} position={[0, bottom + 0.02, 0.003]} />

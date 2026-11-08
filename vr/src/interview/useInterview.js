@@ -5,6 +5,7 @@ import { createListener, createSpeaker } from './speech.js'
 import { createVoiceDetector } from './vad.js'
 import { ensureMicrophone, micProblem } from './microphone.js'
 import { voicePathOf } from './voicePath.js'
+import { isLaunch } from './picker.js'
 
 // Phases: idle -> asking -> listening -> scoring -> asking -> ... -> done
 // 'awaiting' only happens when there is no microphone and we fall back to a button.
@@ -312,9 +313,9 @@ export function useInterview(auth = {}) {
         throw new Error(micProblem(mic.reason))
       }
       await speaker.unlock()
-      // A click or key event lands here too; only a phone launch carries a mode.
-      // The Quick button passes only a length.
-      const started = await session.start(launch?.mode || launch?.length ? launch : undefined)
+      // A click or key event lands here too; only a phone launch or the VR
+      // picker's choice (role, posting, company, difficulty, length) is a launch.
+      const started = await session.start(isLaunch(launch) ? launch : undefined)
       if (!alive.current) return
       setMeta(started)
 
@@ -415,6 +416,8 @@ export function useInterview(auth = {}) {
     sessionId: session.sessionId ?? null,
     isStub: session.isStub === true,
     sttSupported: listener.supported,
+    // talking points for the Hints panel (null on example data); display only
+    hintFor: (question) => session.hint?.(question) ?? Promise.resolve(null),
     getAmplitude: () => agentRef.current?.getAmplitude() ?? speaker.getAmplitude(),
     micLevel: () => vad.level,
     actions,

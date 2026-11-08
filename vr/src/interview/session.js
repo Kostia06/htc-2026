@@ -28,7 +28,8 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // `getToken` hands over the headset's bearer token from the keypad sign-in. It
 // is read on every call, so a silent refresh mid-interview just carries on.
-export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, companySlug, role = 'Software Developer' } = {}) {
+// No role means the server picks the profile's first target role, as it does for the phone.
+export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, companySlug, role = null } = {}) {
   let sessionId = null
   let transcript = []
   let scored = 0
@@ -63,7 +64,8 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
       // length 'quick' is the one-minute taster (two questions, no follow-ups); left off, the server runs a full one
       // stepId is the road step this interview finishes; the server marks it done when the session ends
       const extras = Object.fromEntries(['stepId', 'postingId', 'difficulty', 'length'].filter((key) => launch[key]).map((key) => [key, launch[key]]))
-      const body = { mode: 'interview', ...(slug ? { companySlug: slug } : {}), role: launch.role ?? role, ...extras }
+      const chosenRole = launch.role ?? role
+      const body = { mode: 'interview', ...(slug ? { companySlug: slug } : {}), ...(chosenRole ? { role: chosenRole } : {}), ...extras }
       const started = await call('/api/voice/sessions', { method: 'POST', body })
       sessionId = started.sessionId
       transcript = []
@@ -75,7 +77,7 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
 
       return {
         company: started.companySlug ?? slug ?? null,
-        role: body.role,
+        role: body.role ?? null,
         opening: started.opening ?? null,
         question: first,
         // The provider's own realtime voice agent. When present the client talks
@@ -124,6 +126,13 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
 
       if (scoring.status === 'fulfilled') scored++
       return { score: scoring.status === 'fulfilled' ? scoring.value : null, next }
+    },
+
+    // Talking points for the Hints panel; display only, never sent to the interviewer.
+    async hint(question) {
+      if (!sessionId) return null
+      const { points } = await call(`/api/voice/sessions/${sessionId}/hint`, { method: 'POST', body: { question } })
+      return Array.isArray(points) && points.length ? points : null
     },
 
     get sessionId() {

@@ -8,6 +8,10 @@ import { Veil, useFadeSwap } from './Fade.jsx'
 import { MenuPanel } from './ui/MenuPanel.jsx'
 import { Caption } from './ui/Caption.jsx'
 import { HintCard } from './ui/HintCard.jsx'
+import { PickerPanel } from './ui/PickerPanel.jsx'
+import { AnswerHintPanel } from './ui/AnswerHintPanel.jsx'
+import { useAnswerHints, useHintPoints } from '../ui/useAnswerHints.js'
+import { usePicker } from '../interview/usePicker.js'
 import { RecordingBadge } from './RecordingBadge.jsx'
 import { ReviewMoments } from './ReviewMoments.jsx'
 import { useHints } from '../ui/useHints.js'
@@ -39,6 +43,8 @@ const CAPTION = { position: [0, 0.9, -1.15], rotation: [-0.35, 0, 0] }
 const BUTTON = { position: [0, 0.88, -0.58], rotation: [-0.8, 0, 0] }
 // the replay sits opposite the score card, on the right
 const REVIEW_MOMENTS = { position: [0.68, 1.2, -0.95], rotation: [0, -0.55, 0] }
+// right of the desk, tilted up toward the candidate: well clear of his face
+const ANSWER_HINT = { position: [0.5, 1.0, -0.8], rotation: [-0.45, -0.5, 0] }
 // lying on the desk beside the answer key
 const RECORDING_BADGE = { position: [0.25, 0.87, -0.6], rotation: [-0.8, 0, 0] }
 const GREETING_MS = 1800
@@ -62,6 +68,9 @@ export function Scene({ interview, headset, review, captions }) {
   const inXR = useXR((state) => state.session != null)
   const comfort = useComfort(inXR)
   const hints = useHints('headset')
+  const picker = usePicker(headset)
+  const answerHints = useAnswerHints()
+  const hintPoints = useHintPoints(interview, answerHints.on)
   useSpatialVoice(MOUTH)
 
   const signedIn = headset?.phase === 'signedIn'
@@ -127,17 +136,26 @@ export function Scene({ interview, headset, review, captions }) {
               onHowTo={hints.show}
               captionsOn={Boolean(captions?.on)}
               onCaptions={captions?.toggle}
-              onBegin={() => actions.begin()}
-              onQuick={actions.beginQuick}
+              hintsOn={answerHints.on}
+              onHints={answerHints.toggle}
+              onBegin={() => actions.begin(picker.available ? picker.launch : undefined)}
+              onQuick={picker.available ? null : actions.beginQuick}
               error={error}
               inXR={inXR}
               reducedMotion={reducedMotion}
               position={MENU_PANEL.position}
               rotation={MENU_PANEL.rotation}
             />
-            {/* first visit only; once dismissed it stays gone (menu reopens it) */}
-            {inXR && hints.open && (
-              <HintCard onClose={hints.close} reducedMotion={reducedMotion} position={SIDE_PANEL.position} rotation={SIDE_PANEL.rotation} />
+            {picker.available && <PickerPanel picker={picker} reducedMotion={reducedMotion} position={SIDE_PANEL.position} rotation={SIDE_PANEL.rotation} />}
+            {/* first visit only; once dismissed it stays gone (menu reopens it). Right
+                of the menu when the picker has the left, unless a replay is there. */}
+            {inXR && hints.open && !(picker.available && review?.sessionId) && (
+              <HintCard
+                onClose={hints.close}
+                reducedMotion={reducedMotion}
+                position={picker.available ? REVIEW_MOMENTS.position : SIDE_PANEL.position}
+                rotation={picker.available ? REVIEW_MOMENTS.rotation : SIDE_PANEL.rotation}
+              />
             )}
           </>
         )}
@@ -164,6 +182,7 @@ export function Scene({ interview, headset, review, captions }) {
             {buttonProps && (
               <ActionButton {...buttonProps} position={BUTTON.position} rotation={BUTTON.rotation} reducedMotion={reducedMotion} />
             )}
+            {hintPoints && <AnswerHintPanel points={hintPoints} position={ANSWER_HINT.position} rotation={ANSWER_HINT.rotation} />}
             {/* consent, not chatter: the candidate must know the call is recorded */}
             {recording && <RecordingBadge position={RECORDING_BADGE.position} rotation={RECORDING_BADGE.rotation} />}
           </>

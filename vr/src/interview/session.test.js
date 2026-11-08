@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApiSession, createStubSession } from './session.js'
 import { EXAMPLE_QUESTIONS } from './questions.js'
 import { SignedOutError } from '../headset/api.js'
+import { launchOf, targetsOf } from './picker.js'
 
 const DIMENSIONS = ['structure', 'relevance', 'specificity', 'confidence']
 
@@ -206,6 +207,7 @@ function recordingFetch() {
     ['/next', { say: SECOND, kind: 'question' }],
     ['/finish', { summary: 'Solid structure.', prepList: [{ step: 'Add numbers', why: 'Verifiable' }] }],
     ['/conversation', { ok: true }],
+    ['/hint', { points: ['Situation: the backlog', 'Result: [number] hours saved'] }],
     ['/api/voice/sessions', { sessionId: 'sess_1', companySlug: 'acme', opening: OPENING, questions: [{ text: FIRST }, { text: SECOND }] }],
   ]
 
@@ -265,6 +267,27 @@ describe('createApiSession', () => {
     expect(api.calls[0].body).toEqual({ mode: 'interview', companySlug: 'acme', role: 'Designer', length: 'quick' })
     await session().start()
     expect(api.calls.at(-1).body).not.toHaveProperty('length')
+  })
+
+  it('starts the interview the VR picker chose, with the fields the phone sends', async () => {
+    const [posting, role] = targetsOf({ postings: [{ id: 'p1', title: 'Analyst', company: 'ATB' }], targetRoles: ['Barista'] })
+    await createApiSession({ getToken: () => TOKEN, baseUrl: BASE }).start(launchOf({ target: posting, difficulty: 'hard' }))
+    expect(api.calls.at(-1).body).toEqual({ mode: 'interview', role: 'Analyst', difficulty: 'hard', postingId: 'p1' })
+
+    await createApiSession({ getToken: () => TOKEN, baseUrl: BASE }).start(launchOf({ target: role, companySlug: 'helcim', difficulty: 'easy', length: 'quick' }))
+    expect(api.calls.at(-1).body).toEqual({ mode: 'interview', companySlug: 'helcim', role: 'Barista', difficulty: 'easy', length: 'quick' })
+
+    // nothing picked: no role, so the server uses the profile's first target role
+    await createApiSession({ getToken: () => TOKEN, baseUrl: BASE }).start(launchOf())
+    expect(api.calls.at(-1).body).toEqual({ mode: 'interview', difficulty: 'standard' })
+  })
+
+  it('fetches talking points for the current question from the session', async () => {
+    const s = session()
+    expect(await s.hint('Q')).toBeNull() // no session yet, no request
+    await s.start()
+    expect(await s.hint(FIRST)).toEqual(['Situation: the backlog', 'Result: [number] hours saved'])
+    expect(api.of('/hint')[0]).toMatchObject({ url: `${BASE}/api/voice/sessions/sess_1/hint`, method: 'POST', body: { question: FIRST } })
   })
 
   // /turns scores and /next advances. They are fired together so the feedback
