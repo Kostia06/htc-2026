@@ -4,7 +4,7 @@ import { beforeEach } from "vitest";
 
 await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
 
-const TABLES = ["session_mints", "user_memories", "agent_runs", "cache", "company_facts", "experiences", "submission_log", "interview_sessions", "companies", "occupations", "postings", "courses", "host_fetches", "cooldowns"];
+const TABLES = ["session_mints", "user_memories", "agent_runs", "cache", "company_facts", "experiences", "submission_log", "interview_sessions", "companies", "occupations", "postings", "courses", "host_fetches", "cooldowns", "road_pattern_votes", "road_patterns", "path_outcomes"];
 
 beforeEach(async () => {
   await env.DB.batch(TABLES.map((t) => env.DB.prepare(`DELETE FROM ${t}`)));

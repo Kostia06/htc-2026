@@ -2,6 +2,7 @@ import { db } from "../db";
 import type { Env } from "../env";
 import { scrubNames } from "../integrations/gemini";
 import { anonymize } from "../lib/anonymize";
+import { sha256 } from "../lib/hash";
 import { upsertVector } from "./vectors";
 
 const HOURLY_LIMIT = 5;
@@ -75,10 +76,12 @@ export async function submitExperience(env: Env, sessionId: string, submission: 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   const cleanQuestions = questions.map((_, i) => scrubbed[`q${i}`]);
+  // keyed with the server secret, so the column can count people without naming anyone's session
+  const contributor = await sha256(`${env.MEMORY_SECRET}:contributor:${sessionId}`);
   await db(env).batch([
     db(env).prepare(
-      "INSERT INTO experiences (id, company_id, role, questions_json, format, outcome, tips, is_seeded, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)",
-    ).bind(id, company.id, scrubbed.role, JSON.stringify(cleanQuestions), scrubbed.format, scrubbed.outcome, scrubbed.tips, now),
+      "INSERT INTO experiences (id, company_id, role, questions_json, format, outcome, tips, is_seeded, created_at, contributor) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)",
+    ).bind(id, company.id, scrubbed.role, JSON.stringify(cleanQuestions), scrubbed.format, scrubbed.outcome, scrubbed.tips, now, contributor),
     db(env).prepare("INSERT INTO submission_log (session_id, created_at) VALUES (?, ?)").bind(sessionId, now),
   ]);
   await deps.upsertVector(env, `exp:${id}`, `${scrubbed.role}: ${cleanQuestions.join(" | ")}`, { company_id: company.id, kind: "exp" });
