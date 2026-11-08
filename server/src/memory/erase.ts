@@ -25,6 +25,7 @@ export const USER_TABLES = [
   "road_pattern_votes",
   "path_outcomes",
   "user_connections",
+  "recap_voice_sessions",
 ] as const;
 
 export type UserTable = (typeof USER_TABLES)[number];

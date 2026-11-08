@@ -37,6 +37,7 @@ const TABLES = [
   "road_pattern_votes",
   "path_outcomes",
   "user_connections",
+  "recap_voice_sessions",
 ];
 
 async function seed(userId: string) {
@@ -65,6 +66,7 @@ async function seed(userId: string) {
     env.DB.prepare("INSERT INTO notification_settings (user_id, updated_at) VALUES (?, ?)").bind(userId, NOW),
     env.DB.prepare("INSERT INTO user_connections (user_id, provider, account_id, status, created_at, updated_at) VALUES (?, 'github', ?, 'active', ?, ?)").bind(userId, `ca-${tag}`, NOW, NOW),
     env.DB.prepare("INSERT INTO notification_devices (token, user_id, platform, created_at, updated_at) VALUES (?, ?, 'ios', ?, ?)").bind(`tok-${tag}`, userId, NOW, NOW),
+    env.DB.prepare("INSERT INTO recap_voice_sessions (id, user_id, company_slug, created_at) VALUES (?, ?, 'acme', ?)").bind(`rv-${tag}`, userId, NOW),
   ]);
 }
 
