@@ -8,6 +8,7 @@ import { ActionButton, Captions, QuestionPanel, ReviewPanel } from './Panels.jsx
 import { PairingPanel } from './PairingPanel.jsx'
 import { useReducedMotion } from '../ui/useReducedMotion.js'
 import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './seating.js'
+import { toPanelScore, toPanelSummary } from '../interview/scores.js'
 
 // Laid out for a candidate sitting at the near edge of the desk, looking down -Z.
 // These are the values you actually tune while wearing the headset.
@@ -186,7 +187,7 @@ export function Scene({ interview, headset }) {
       {!showPairing && (showReview || phase === 'done') && (
         <ReviewPanel
           result={phase === 'done' ? null : toPanelScore(result)}
-          summary={phase === 'done' ? summary : null}
+          summary={phase === 'done' ? toPanelSummary(summary) : null}
           sample={isStub}
           position={REVIEW_PANEL.position}
           rotation={REVIEW_PANEL.rotation}
@@ -204,19 +205,6 @@ export function Scene({ interview, headset }) {
       )}
     </>
   )
-}
-
-// The Worker returns { scores, delivery, tip }; the panel renders flat keys.
-// Adapting here keeps the panel free of backend shapes.
-function toPanelScore(score) {
-  if (!score) return null
-  const scores = score.scores ?? {}
-  return {
-    ...scores,
-    wpm: score.delivery?.wordsPerMinute ?? 0,
-    fillerWords: score.delivery?.fillerWords ?? 0,
-    tip: score.tip,
-  }
 }
 
 function buttonFor(phase, actions, { heard, micDenied } = {}) {

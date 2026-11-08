@@ -304,12 +304,12 @@ export function QuestionPanel({ phase, question, meta, transcript, error, positi
 
 // ---------------------------------------------------------------- score card
 
-/** An activity-style ring that fills to `value` out of 5. */
+/** An activity-style ring that fills to `value` out of 100. */
 function ScoreRing({ value, position, reducedMotion }) {
   const radius = 0.06
   const thickness = 0.013
   const color = scoreColor(value)
-  const spring = useSpring(value / 5, { stiffness: 60, damping: 11, immediate: reducedMotion })
+  const spring = useSpring(value / 100, { stiffness: 60, damping: 11, immediate: reducedMotion })
   const arc = useRef()
   const cap = useRef()
   const shown = useRef(-1)
@@ -353,10 +353,10 @@ function ScoreRing({ value, position, reducedMotion }) {
         <meshBasicMaterial color={color} toneMapped={false} />
       </mesh>
       <Label size={0.036} anchorX="center" anchorY="middle" position={[0, 0.006, 0.001]}>
-        {value.toFixed(1)}
+        {String(Math.round(value))}
       </Label>
       <Label size={0.014} opacity={SECONDARY} anchorX="center" anchorY="middle" position={[0, -0.024, 0.001]}>
-        out of 5
+        out of 100
       </Label>
     </group>
   )
@@ -376,7 +376,7 @@ function Meter({ label, value, delay, position, reducedMotion }) {
 
   useFrame((_, delta) => {
     started.current += delta
-    const target = started.current > delay || reducedMotion ? Math.max(0, Math.min(1, value / 5)) : 0
+    const target = started.current > delay || reducedMotion ? Math.max(0, Math.min(1, value / 100)) : 0
     const s = spring.current
     if (reducedMotion) s.x = target
     else {
@@ -397,7 +397,7 @@ function Meter({ label, value, delay, position, reducedMotion }) {
         {label.charAt(0).toUpperCase() + label.slice(1)}
       </Label>
       <Label size={0.0155} anchorX="right" anchorY="bottom" position={[width / 2, 0.008, 0]}>
-        {String(value)}
+        {String(Math.round(value))}
       </Label>
       <Shape width={width} height={0.007} radius={0.0035} color={C.track} opacity={0.16} />
       <group ref={fill} position-z={0.0005}>
@@ -407,7 +407,7 @@ function Meter({ label, value, delay, position, reducedMotion }) {
   )
 }
 
-// Renders an AnswerScore (four 1-5 dimensions, pace, filler words, coaching) or
+// Renders an AnswerScore (four dimensions out of 100, pace, filler words, coaching) or
 // the end-of-interview aggregate.
 // `sample` marks scores that come from example data rather than the person's answer.
 // The hackathon rules require made-up numbers to say so; this is where they appear,
@@ -575,7 +575,7 @@ export function ActionButton({ label, hint, onClick, disabled, busy, position, r
 const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0)
 
 function scoreColor(value) {
-  if (value >= 4) return C.green
-  if (value >= 3) return C.orange
+  if (value >= 75) return C.green
+  if (value >= 50) return C.orange
   return C.red
 }

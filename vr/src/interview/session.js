@@ -20,6 +20,7 @@
 
 import { DEFAULT_SCORE, EXAMPLE_QUESTIONS, EXAMPLE_SCORES } from './questions.js'
 import { API_URL, SignedOutError } from '../headset/api.js'
+import { toHundred } from './scores.js'
 
 const STUB_LATENCY_MS = 650
 
@@ -201,6 +202,8 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
     async finish() {
       await wait(200)
       return {
+        // out of 100, like the real debrief
+        overall: overallOf(given),
         summary: 'Your structure is solid. The gap is specifics — every answer needs one number.',
         prepList: [
           { step: 'Write three stories in situation-action-result form', why: 'Structure is what interviewers grade first' },
@@ -212,6 +215,10 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
 }
 
 const clamp = (n) => Math.min(5, Math.max(1, n))
+const overallOf = (scores) => {
+  const ratings = scores.flatMap((score) => Object.values(score.scores))
+  return ratings.length ? Math.round(ratings.reduce((sum, rating) => sum + toHundred(rating), 0) / ratings.length) : 0
+}
 const countFillers = (text) => (text.match(/\b(um+|uh+|erm|like|you know)\b/gi) ?? []).length
 
 // Signed in on the keypad -> the Skillit voice API with that bearer token.
