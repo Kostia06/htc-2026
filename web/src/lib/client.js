@@ -239,6 +239,8 @@ export const notificationsApi = {
 
 // focusStepId: the step a "Mark done" chat is about; the server marks it done whatever the words say
 export const sendUpdate = (message, conversation, focusStepId) => post('/api/updates', { message, conversation, focusStepId })
+/** any document, any time: { reply, applied }; the server reads it and keeps neither the file nor its text */
+export const sendUpdateFile = (file) => upload('/api/updates/file', file)
 
 export const recapApi = {
   /** { reply, done, extracted, shared } */

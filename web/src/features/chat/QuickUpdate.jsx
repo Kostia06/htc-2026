@@ -1,9 +1,10 @@
 // QuickUpdateView.swift: "What's new?" in plain words, typed or spoken. Skillit applies it at once, or asks one
 // question first. With a `focusTitle` it is about one roadmap step ("Mark done"). A pasted job link or ad is
-// imported as a posting instead.
+// imported as a posting instead. The plus menu opens it with a `file` to send (a transcript, certificate, resume)
+// or with `listen` to start on the mic.
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../../app/context'
-import { postingsApi, sendUpdate } from '../../lib/client'
+import { postingsApi, sendUpdate, sendUpdateFile } from '../../lib/client'
 import { announceUpdatesApplied, useStickToBottom } from '../../lib/hooks'
 import { AppliedCard, Bubble, Composer, TypingIndicator } from '../../ui/Chat'
 import { Sheet } from '../../ui/Sheet'
@@ -12,18 +13,20 @@ import { useDictation } from './useDictation'
 import './chat.css'
 
 const OPENING = "What's new? One line is enough, I'll update your road and profile."
-const PROFILE_CHANGES = ['add_project', 'add_experience', 'add_skill', 'remove_skill', 'add_target_role']
+const PROFILE_CHANGES = ['add_project', 'add_experience', 'add_skill', 'remove_skill', 'add_target_role', 'add_education', 'add_certification']
 
 let nextId = 0
 const line = (role, text) => ({ id: ++nextId, role, text })
 
-export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClose }) {
+export default function QuickUpdate({ focusTitle, focusStepId, file, listen, onApplied, onClose }) {
   const app = useApp()
+  // a file from the plus menu is already on its way when the sheet opens: its line is there and Skillit is reading
   const [messages, setMessages] = useState(() => [
     line('raven', focusTitle ? `What did you do for “${focusTitle}”? Type it or tap the mic.` : OPENING),
+    ...(file ? [line('user', `Sent ${file.name}`)] : []),
   ])
   const [applied, setApplied] = useState({})
-  const [thinking, setThinking] = useState(false)
+  const [thinking, setThinking] = useState(Boolean(file))
   const [draft, setDraft] = useState('')
   const [error, setError] = useState(null)
   // where the current update began; the step question goes along with the first answer so Skillit knows the step
@@ -34,19 +37,10 @@ export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClos
   })
   const end = useStickToBottom(messages.length + (thinking ? 1 : 0))
 
-  const send = async (text) => {
-    if (thinking || !text.trim()) return
-    const conversation = latest.current.slice(turnStart.current).map((m) => ({ speaker: m.role === 'user' ? 'user' : 'raven', text: m.text }))
-    setMessages((m) => [...m, line('user', text)])
-    setDraft('')
-    setError(null)
-    setThinking(true)
+  // Skillit's answer (and what it changed) to the line that just went up
+  const answer = async (ask) => {
     try {
-      const posting = detectPosting(text)
-      // a posting is its own receipt: the line says what was read, the applied card what was set up from it
-      const reply = posting
-        ? await postingsApi.import(posting).then((p) => ({ reply: postingReply(p), needsAnswer: false, applied: postingChanges(p) }))
-        : await sendUpdate(text, conversation, focusStepId)
+      const reply = await ask()
       const said = line('raven', reply.reply)
       setMessages((m) => {
         const next = [...m, said]
@@ -66,7 +60,32 @@ export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClos
     }
   }
 
+  const send = (text) => {
+    if (thinking || !text.trim()) return
+    const conversation = latest.current.slice(turnStart.current).map((m) => ({ speaker: m.role === 'user' ? 'user' : 'raven', text: m.text }))
+    setMessages((m) => [...m, line('user', text)])
+    setDraft('')
+    setError(null)
+    setThinking(true)
+    const posting = detectPosting(text)
+    // a posting is its own receipt: the line says what was read, the applied card what was set up from it
+    return answer(() =>
+      posting
+        ? postingsApi.import(posting).then((p) => ({ reply: postingReply(p), needsAnswer: false, applied: postingChanges(p) }))
+        : sendUpdate(text, conversation, focusStepId),
+    )
+  }
+
   const mic = useDictation({ onHeard: setDraft, onFinished: send, onError: setError })
+
+  // the plus menu's File and Voice: started once, when the sheet opens
+  const started = useRef(false)
+  useEffect(() => {
+    if (started.current) return
+    started.current = true
+    if (file) answer(() => sendUpdateFile(file))
+    else if (listen && mic && !mic.listening) mic.onToggle()
+  })
 
   return (
     <Sheet

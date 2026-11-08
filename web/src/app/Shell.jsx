@@ -6,6 +6,7 @@ import { NavLink, Outlet, useLocation } from 'react-router'
 import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Route, Signpost } from 'lucide-react'
 import { Spinner } from '../ui/Button'
 import { Bell } from '../features/notifications/Bell'
+import PlusMenu from '../features/chat/PlusMenu'
 
 // Crossroads is sidebar-only like Resume: on phones it opens from its step on the road, keeping the tab bar at five
 const TABS = [
@@ -72,6 +73,7 @@ export function Shell() {
       </aside>
 
       <Bell />
+      <PlusMenu />
 
       <div className="shell__content">
         {/* a tab's first visit loads its code; the sidebar and tab bar stay put meanwhile */}

@@ -24,6 +24,7 @@ const FeedDetailSheet = lazy(() => import('../features/foryou/FeedDetailSheet'))
 const PracticeHome = lazy(() => import('../features/practice/PracticeHome'))
 const VoiceSession = lazy(() => import('../features/practice/VoiceSession'))
 const PairHeadset = lazy(() => import('../features/practice/PairHeadset'))
+const ConnectedApps = lazy(() => import('../features/connections/ConnectedApps'))
 const history = () => import('../features/practice/History')
 const History = named(history, 'History')
 const SessionDetail = named(history, 'SessionDetail')
@@ -169,6 +170,7 @@ export default function App() {
               <Route path="skills" element={<SkillsEditor />} />
             </Route>
             <Route path="profile/headsets" element={<PairHeadset back={{ to: '/profile', label: 'Profile' }} />} />
+            <Route path="profile/connections" element={<ConnectedApps />} />
             {/* the editors and the PDF moved behind the Profile page's doors */}
             <Route path="profile/experience/*" element={<Moved to="/profile/details/experience" />} />
             <Route path="profile/education/*" element={<Moved to="/profile/details/education" />} />

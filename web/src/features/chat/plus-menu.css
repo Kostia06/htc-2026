@@ -1,0 +1,103 @@
+/* above the phone tab bar; in the corner beside the sidebar on wide screens */
+.plus-menu {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--tabbar-space) + env(safe-area-inset-bottom));
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+@media (min-width: 900px) {
+  .plus-menu {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+.plus-menu__toggle,
+.plus-menu__option {
+  pointer-events: auto;
+}
+.plus-menu__toggle {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: var(--action);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s;
+}
+.plus-menu.is-open .plus-menu__toggle {
+  color: var(--text-2);
+  transform: rotate(45deg);
+}
+
+.plus-menu__options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.plus-menu__options li {
+  /* folded into the button: each option sits its own distance below, small and see-through */
+  transform: translateY(calc(var(--distance) * 64px)) scale(0.4);
+  transform-origin: right center;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+.plus-menu.is-open .plus-menu__options li {
+  transform: none;
+  opacity: 1;
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--order) * 40ms),
+    opacity 0.25s ease calc(var(--order) * 40ms);
+}
+.plus-menu:not(.is-open) .plus-menu__option {
+  pointer-events: none;
+}
+.plus-menu__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.plus-menu__label {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.plus-menu__circle {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  color: var(--action);
+}
+.plus-menu__option:hover .plus-menu__circle,
+.plus-menu__option:focus-visible .plus-menu__circle {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plus-menu__toggle,
+  .plus-menu.is-open .plus-menu__toggle {
+    transform: none;
+  }
+  .plus-menu__options li,
+  .plus-menu.is-open .plus-menu__options li {
+    transform: none;
+    transition: opacity 0.2s ease;
+  }
+}

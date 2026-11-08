@@ -1,8 +1,8 @@
 // ProfileView.swift: kept short on purpose. Who you are and how far along the road you are, the one thing worth
-// doing next, then four doors. Every editor lives one click behind a door; settings sit behind the gear.
+// doing next, then five doors. Every editor lives one click behind a door; settings sit behind the gear.
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { CircleCheck, CornerDownRight, FileText, Flag, Glasses, ListChecks, Pencil, Settings, Signpost } from 'lucide-react'
+import { CircleCheck, CornerDownRight, FileText, Flag, Glasses, Link2, ListChecks, Pencil, Settings, Signpost } from 'lucide-react'
 import { Flash, ThinProgressBar } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import GotTheJobSheet from './GotTheJob'
@@ -23,6 +23,7 @@ export default function Profile() {
   const doors = [
     { to: '/resume', title: 'Resume', icon: FileText, fact: overview.tailored.length ? `Base + ${overview.tailored.length} tailored` : 'Base resume' },
     { to: '/profile/details', title: 'Skills & experience', icon: ListChecks, fact: `${plural(profile.skills.length, 'skill')} · ${plural(profile.experience.length, 'job')}` },
+    { to: '/profile/connections', title: 'Connected apps', icon: Link2, fact: 'GitHub, Notion, Drive and more' },
     { to: '/settings/memory', title: 'Crossroads', icon: Signpost, fact: 'What Skillit remembers' },
     { to: '/profile/headsets', title: 'Headsets', icon: Glasses, fact: overview.headsets == null ? 'Practice in VR' : overview.headsets ? `${overview.headsets} paired` : 'None paired yet' },
   ]
