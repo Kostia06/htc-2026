@@ -74,6 +74,8 @@ final class WorkConnectionsModel {
             if current.status == .notConnected || current.hasFinishedImport {
                 return
             }
+            // signed in: the row shows Connected and the import keeps landing in the background, no spinner
+            if current.isConnected { workingOn = nil }
             try? await Task.sleep(for: .seconds(2))
         }
     }

@@ -39,7 +39,11 @@ export default function BringYourWork({ onChange, onAnyConnected }) {
           if (!latest) continue
           setConnections(latest)
           const current = latest.find((c) => c.id === id)
-          if (current?.status === 'connected' && popup && !popup.closed) popup.close()
+          if (current?.status === 'connected') {
+            if (popup && !popup.closed) popup.close()
+            // signed in: the row says Connected while the import lands in the background, no spinner
+            setWorking(null)
+          }
           // a closed popup with nothing pending means the person gave up
           if (isDone(current) || (popup?.closed && current && !isWaiting(current))) break
         }

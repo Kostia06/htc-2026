@@ -47,7 +47,7 @@ export default function ConnectionRow({ connection: c, busy, onConnect, onDiscon
 }
 
 function statusLine(c) {
-  if (c.status === 'connected') return c.importing ? 'Reading your work…' : c.projects.length ? `${c.projects.length} added to your profile` : 'Connected'
+  if (c.status === 'connected') return c.importing || !c.importedAt ? 'Reading your work…' : c.projects.length ? `${c.projects.length} added to your profile` : 'Connected'
   if (c.status === 'pending') return `Finish signing in on ${c.name}`
   if (c.status === 'revoking') return "Disconnecting didn't finish. Try again."
   return c.reads
