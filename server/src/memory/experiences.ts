@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { scrubNames } from "../integrations/gemini";
 import { anonymize } from "../lib/anonymize";
@@ -41,7 +42,7 @@ function isSubmission(body: unknown): body is ExperienceSubmission {
 
 async function isRateLimited(env: Env, sessionId: string) {
   const since = new Date(Date.now() - 3600_000).toISOString();
-  const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM submission_log WHERE session_id = ? AND created_at > ?")
+  const recent = await db(env).prepare("SELECT COUNT(*) AS n FROM submission_log WHERE session_id = ? AND created_at > ?")
     .bind(sessionId, since)
     .first<{ n: number }>();
   return (recent?.n ?? 0) >= HOURLY_LIMIT;
@@ -55,7 +56,7 @@ export async function submitExperience(env: Env, sessionId: string, submission: 
   const questions = submission.questions.map((q) => q.trim()).filter(Boolean);
   if (!submission.role.trim() || questions.length === 0) return { status: 400, body: { error: "role and at least one question are required" } };
 
-  const company = await env.DB.prepare("SELECT id FROM companies WHERE slug = ?").bind(submission.companySlug).first<{ id: string }>();
+  const company = await db(env).prepare("SELECT id FROM companies WHERE slug = ?").bind(submission.companySlug).first<{ id: string }>();
   if (!company) return { status: 404, body: { error: "unknown company" } };
 
   if (await isRateLimited(env, sessionId)) return { status: 429, body: { error: "too many submissions, try again later" } };
@@ -74,11 +75,11 @@ export async function submitExperience(env: Env, sessionId: string, submission: 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   const cleanQuestions = questions.map((_, i) => scrubbed[`q${i}`]);
-  await env.DB.batch([
-    env.DB.prepare(
+  await db(env).batch([
+    db(env).prepare(
       "INSERT INTO experiences (id, company_id, role, questions_json, format, outcome, tips, is_seeded, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)",
     ).bind(id, company.id, scrubbed.role, JSON.stringify(cleanQuestions), scrubbed.format, scrubbed.outcome, scrubbed.tips, now),
-    env.DB.prepare("INSERT INTO submission_log (session_id, created_at) VALUES (?, ?)").bind(sessionId, now),
+    db(env).prepare("INSERT INTO submission_log (session_id, created_at) VALUES (?, ?)").bind(sessionId, now),
   ]);
   await deps.upsertVector(env, `exp:${id}`, `${scrubbed.role}: ${cleanQuestions.join(" | ")}`, { company_id: company.id, kind: "exp" });
 

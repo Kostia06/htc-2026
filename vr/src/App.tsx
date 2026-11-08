@@ -1,8 +1,15 @@
+import { HeadsetShell, RestoringScreen, useHeadsetSession } from "./headset";
 import { PairingScreen } from "./pairing/PairingScreen";
-import { PracticeMenu } from "./practice/PracticeMenu";
-import { useSession } from "./session/useSession";
 
 export function App() {
-  const { token, signIn, signOut } = useSession();
-  return token ? <PracticeMenu token={token} onSignOut={signOut} /> : <PairingScreen onSignIn={signIn} />;
+  const { state, signIn, signOut } = useHeadsetSession();
+  switch (state.phase) {
+    case "signedOut":
+      return <PairingScreen onSignIn={signIn} />;
+    case "signedIn":
+      return <HeadsetShell session={state.session} onSignOut={signOut} />;
+    case "restoring":
+    case "reconnecting":
+      return <RestoringScreen state={state} />;
+  }
 }

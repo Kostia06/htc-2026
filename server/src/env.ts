@@ -1,6 +1,13 @@
 export type Env = {
   DB: D1Database;
   VECTORS: VectorizeIndex;
+  // "d1" (default) or "postgres": which store db() and vectors() talk to; see README "Database: Supabase"
+  DB_BACKEND?: string;
+  // Postgres backend only: the Hyperdrive binding in production, or a plain connection string for local dev
+  HYPERDRIVE?: Hyperdrive;
+  SUPABASE_DB_URL?: string;
+  // set: POST /admin/reembed-vectors (bearer) rebuilds the vector index from the fact tables; missing: the route is a 404
+  ADMIN_SECRET?: string;
   AI: Ai;
   SESSION_SECRET: string;
   MEMORY_SECRET: string;
@@ -14,7 +21,6 @@ export type Env = {
   VOICE_PROVIDER?: string;
   ELEVENLABS_API_KEY?: string;
   ELEVENLABS_AGENT_ID?: string;
-  ELEVENLABS_NETWORKING_AGENT_ID?: string;
   KEENABLE_API_KEY: string;
   // optional: without them job_postings reports "not configured"
   ADZUNA_APP_ID?: string;

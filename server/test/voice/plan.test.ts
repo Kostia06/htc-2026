@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { emptyProfile } from "../../src/memory/profile/patch";
-import { buildInterviewPlan, buildNetworkingPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
+import { buildInterviewPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
 import { inputs, profile } from "./fixtures";
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
@@ -10,6 +10,19 @@ describe("interview plan", () => {
     const plan = buildInterviewPlan(inputs());
     expect(plan.questions.map((q) => q.source)).toEqual(["resume", "resume", "reported", "technical", "technical"]);
     expect(plan.questions.length).toBeLessThanOrEqual(MAX_QUESTIONS);
+  });
+
+  it("asks about the posting after the resume: what they'd do, what they bring, then the gap", () => {
+    const posting = {
+      requirements: [{ text: "Kubernetes", have: false }, { text: "SQL", have: true }],
+      responsibilities: ["Build dashboards for the lending team.", "Clean and load data"],
+    };
+    const plan = buildInterviewPlan(inputs({ posting }));
+    expect(plan.questions.map((q) => q.source)).toEqual(["resume", "resume", "posting", "posting", "reported"]);
+    expect(plan.questions[2].text).toBe("Here you'd build dashboards for the lending team. When have you done something like that?");
+    expect(plan.questions[3].text).toBe("Here you'd clean and load data. When have you done something like that?");
+    const gaps = buildInterviewPlan(inputs({ posting: { ...posting, responsibilities: [] } })).questions.filter((q) => q.source === "posting");
+    expect(gaps.map((q) => q.text)).toEqual(["SQL is on the posting. Where have you used it?", "Kubernetes is on the posting. How would you get up to speed?"]);
   });
 
   it("keeps every question short and conversational", () => {
@@ -49,20 +62,5 @@ describe("interview plan", () => {
     const plan = buildInterviewPlan(inputs({ role: "entry-level", company: null, reportedQuestions: [], facts: [], profile: emptyProfile() }));
     expect(plan.questions.length).toBe(MAX_QUESTIONS);
     expect(plan.questions.every((q) => q.source === "behavioral")).toBe(true);
-  });
-});
-
-describe("networking plan", () => {
-  it("meets someone from the company and talks about what the company is doing", () => {
-    const plan = buildNetworkingPlan(inputs());
-    expect(plan.persona.company).toBe("Acme");
-    expect(plan.talkingPoints).toContain("Acme opened a Calgary office in 2026.");
-    expect(plan.goals).toHaveLength(3);
-  });
-
-  it("falls back to a Calgary meetup when no company is chosen", () => {
-    const plan = buildNetworkingPlan(inputs({ company: null, facts: [] }));
-    expect(plan.persona.company).toBeNull();
-    expect(plan.talkingPoints.length).toBeGreaterThanOrEqual(3);
   });
 });

@@ -1,0 +1,23 @@
+{
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/RavenClient+Feed.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+Feed.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+Feed.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+Feed.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+Feed.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+Feed.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/RavenClient+HeadsetLink.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetLink.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetLink.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetLink.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetLink.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetLink.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/RavenClient+HeadsetPairing.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetPairing.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetPairing.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetPairing.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetPairing.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RavenClient+HeadsetPairing.swiftdeps"
+  }
+}

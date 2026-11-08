@@ -1,0 +1,274 @@
+/* ---------- builder layout ---------- */
+.builder__grid {
+  display: grid;
+  gap: 20px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding-top: 4px;
+}
+/* wide enough for both: the paper on the left, the tools beside it, staying in view while the paper scrolls */
+@media (min-width: 1200px) {
+  .builder__grid {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+  }
+  .builder__paper { order: 1; }
+  .builder__tools {
+    order: 2;
+    position: sticky;
+    top: 84px;
+  }
+}
+.builder__tools {
+  gap: 16px;
+}
+
+/* ---------- where the resume stands ---------- */
+.builder__status {
+  gap: 12px;
+}
+.builder__status.row {
+  gap: 10px;
+}
+.builder__status--draft {
+  border-color: rgb(227 209 173 / 0.35);
+}
+.builder__from {
+  gap: 8px;
+  align-items: flex-start;
+}
+.builder__from svg {
+  flex: none;
+  margin-top: 2px;
+}
+.builder__actions {
+  gap: 12px;
+  align-items: center;
+}
+.builder__actions .raised-btn {
+  flex: 1;
+}
+.builder__saved {
+  gap: 6px;
+}
+.builder__saved-line,
+.builder__warn {
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- coach and its suggestions ---------- */
+.coach {
+  gap: 14px;
+}
+.coach__intro {
+  gap: 4px;
+}
+.coach__title {
+  gap: 6px;
+  color: var(--agent);
+}
+.coach__company {
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--inset);
+}
+.coach__company select {
+  max-width: 60%;
+  background: none;
+  border: 0;
+  color: var(--text);
+  outline: none;
+}
+.coach__company select:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.deck {
+  gap: 10px;
+}
+.deck__head {
+  justify-content: space-between;
+}
+.suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--inset);
+  border: 1px solid rgb(227 209 173 / 0.35);
+  animation: suggestion-in 0.45s var(--spring);
+}
+@keyframes suggestion-in {
+  from { opacity: 0; transform: translateX(40px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .suggestion { animation: none; }
+}
+.suggestion__where {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.suggestion__before {
+  text-decoration: line-through;
+  text-decoration-color: rgb(235 240 235 / 0.35);
+}
+.suggestion__actions {
+  gap: 12px;
+}
+.suggestion__actions .raised-btn {
+  flex: 1;
+}
+
+/* ---------- paper ---------- */
+.paper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 22px;
+  border-radius: 20px;
+  background: #f7f7f7;
+  color: #1f1f1f;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.35);
+  color-scheme: light;
+}
+.paper--skeleton {
+  background: var(--raised);
+  box-shadow: none;
+  gap: 22px;
+  margin-top: 8px;
+}
+.paper__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  border-radius: 10px;
+  margin: -6px;
+  padding: 6px;
+  transition: opacity 0.15s, background 0.15s;
+}
+.paper__section:hover {
+  background: rgb(0 0 0 / 0.035);
+}
+.paper__section:active {
+  opacity: 0.55;
+}
+.paper__section:focus-visible {
+  outline-color: #5b7d56;
+}
+.paper__name {
+  font: var(--title2);
+}
+.paper__faint {
+  font: var(--caption);
+  color: rgb(0 0 0 / 0.55);
+}
+.paper__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 700 11px/13px var(--font);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #666;
+}
+.paper__header::after {
+  content: '';
+  height: 0.8px;
+  background: #ccc;
+}
+.paper__text {
+  font: var(--footnote);
+}
+.paper__entry {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.paper__entry-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: var(--footnote);
+}
+.paper__entry-head strong {
+  font-weight: 600;
+}
+.paper__entry-head span {
+  font: var(--caption2);
+  color: rgb(0 0 0 / 0.5);
+  white-space: nowrap;
+}
+.paper__bullet {
+  position: relative;
+  padding-left: 12px;
+  font: var(--footnote);
+}
+.paper__bullet::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+}
+.paper__empty {
+  font: var(--footnote);
+  color: #5b7d56;
+  font-weight: 500;
+}
+
+/* ---------- editor and pdf ---------- */
+.resume-entry {
+  gap: 6px;
+}
+.resume-entry__head {
+  align-items: center;
+}
+.resume-entry__dates {
+  border-top: 1px solid var(--hairline);
+}
+.resume-entry__dates .form-sheet__field + .form-sheet__field {
+  border-top: 0;
+  border-left: 1px solid var(--hairline);
+}
+.resume-entry__bullet {
+  padding-left: 28px;
+  background: radial-gradient(circle at 16px 50%, var(--text-3) 2px, transparent 2.5px);
+}
+.resume-entry__add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+  border-top: 1px solid var(--hairline) !important;
+}
+.resume-entry__new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.pdf-sheet .sheet__body {
+  padding: 0;
+}
+.pdf-sheet__status {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.pdf-sheet__frame {
+  flex: 1;
+  width: 100%;
+  min-height: 70vh;
+  border: 0;
+  background: var(--ground);
+}

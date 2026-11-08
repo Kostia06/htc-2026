@@ -9,7 +9,7 @@ export function useKeypad() {
   useEffect(() => {
     if (!checkingCode) return;
     claimCode(checkingCode).then(
-      ({ token }) => dispatch({ type: "claimed", token }),
+      (session) => dispatch({ type: "claimed", session }),
       (error) => dispatch({ type: "failed", problem: problemOf(error) }),
     );
   }, [checkingCode]);

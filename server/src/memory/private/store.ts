@@ -1,3 +1,4 @@
+import { db } from "../../db";
 import type { Env } from "../../env";
 import { anonymize } from "../../lib/anonymize";
 import { decryptFor, encryptFor } from "./crypto";
@@ -30,7 +31,7 @@ async function decryptRows(env: Env, userId: string, rows: MemoryRow[]): Promise
 
 async function loadRows(env: Env, userId: string, kinds?: MemoryKind[]) {
   const kindFilter = kinds?.length ? ` AND kind IN (${kinds.map(() => "?").join(", ")})` : "";
-  const { results } = await env.DB.prepare(`SELECT * FROM user_memories WHERE user_id = ?${kindFilter} ORDER BY created_at DESC`)
+  const { results } = await db(env).prepare(`SELECT * FROM user_memories WHERE user_id = ?${kindFilter} ORDER BY created_at DESC`)
     .bind(userId, ...(kinds ?? []))
     .all<MemoryRow>();
   return results;
@@ -39,16 +40,16 @@ async function loadRows(env: Env, userId: string, kinds?: MemoryKind[]) {
 async function markUsed(env: Env, userId: string, memories: PrivateMemory[], now: string): Promise<PrivateMemory[]> {
   if (memories.length === 0) return [];
   // one statement per row: a single IN (...) would hit D1's 100 bound-parameter cap on large recalls
-  const update = env.DB.prepare("UPDATE user_memories SET uses = uses + 1, last_used_at = ? WHERE user_id = ? AND id = ?");
-  await env.DB.batch(memories.map((m) => update.bind(now, userId, m.id)));
+  const update = db(env).prepare("UPDATE user_memories SET uses = uses + 1, last_used_at = ? WHERE user_id = ? AND id = ?");
+  await db(env).batch(memories.map((m) => update.bind(now, userId, m.id)));
   return memories.map((m) => ({ ...m, uses: m.uses + 1, lastUsedAt: now }));
 }
 
 async function makeRoom(env: Env, userId: string) {
-  const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM user_memories WHERE user_id = ?").bind(userId).first<{ n: number }>();
+  const row = await db(env).prepare("SELECT COUNT(*) AS n FROM user_memories WHERE user_id = ?").bind(userId).first<{ n: number }>();
   const overflow = (row?.n ?? 0) - MAX_MEMORIES_PER_USER + 1;
   if (overflow <= 0) return;
-  await env.DB.prepare(
+  await db(env).prepare(
     `DELETE FROM user_memories WHERE user_id = ? AND id IN (
       SELECT id FROM user_memories WHERE user_id = ? ORDER BY last_used_at ASC, created_at ASC LIMIT ?
     )`,
@@ -79,7 +80,7 @@ export async function remember(env: Env, userId: string, item: { kind: MemoryKin
   await makeRoom(env, userId);
   const id = crypto.randomUUID();
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, text);
-  await env.DB.prepare(
+  await db(env).prepare(
     "INSERT INTO user_memories (id, user_id, kind, ciphertext, iv, created_at, last_used_at, uses) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
   )
     .bind(id, userId, item.kind, sealed.ciphertext, sealed.iv, now, now)
@@ -103,7 +104,7 @@ export async function recall(
 }
 
 export async function forget(env: Env, userId: string, id: string): Promise<boolean> {
-  const res = await env.DB.prepare("DELETE FROM user_memories WHERE id = ? AND user_id = ?").bind(id, userId).run();
+  const res = await db(env).prepare("DELETE FROM user_memories WHERE id = ? AND user_id = ?").bind(id, userId).run();
   return res.meta.changes > 0;
 }
 
@@ -112,7 +113,7 @@ export async function listMemories(env: Env, userId: string): Promise<PrivateMem
 }
 
 export async function findMemory(env: Env, userId: string, id: string): Promise<PrivateMemory | null> {
-  const row = await env.DB.prepare("SELECT * FROM user_memories WHERE id = ? AND user_id = ?").bind(id, userId).first<MemoryRow>();
+  const row = await db(env).prepare("SELECT * FROM user_memories WHERE id = ? AND user_id = ?").bind(id, userId).first<MemoryRow>();
   if (!row) return null;
   const [memory] = await decryptRows(env, userId, [row]);
   return memory;

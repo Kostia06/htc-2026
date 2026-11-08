@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
 import type { DocumentFormat } from "./formats";
@@ -12,14 +13,14 @@ type DocumentRow = { ciphertext: string; iv: string };
 export async function saveDocument(env: Env, userId: string, doc: StoredDocument, now = new Date()): Promise<string> {
   const id = crypto.randomUUID();
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(doc));
-  await env.DB.prepare("INSERT INTO user_documents (id, user_id, ciphertext, iv, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)")
+  await db(env).prepare("INSERT INTO user_documents (id, user_id, ciphertext, iv, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)")
     .bind(id, userId, sealed.ciphertext, sealed.iv, now.toISOString(), new Date(now.getTime() + LIFETIME_MS).toISOString())
     .run();
   return id;
 }
 
 export async function readDocument(env: Env, userId: string, id: string, now = new Date()): Promise<StoredDocument | null> {
-  const row = await env.DB.prepare("SELECT ciphertext, iv FROM user_documents WHERE id = ? AND user_id = ? AND expires_at > ?")
+  const row = await db(env).prepare("SELECT ciphertext, iv FROM user_documents WHERE id = ? AND user_id = ? AND expires_at > ?")
     .bind(id, userId, now.toISOString())
     .first<DocumentRow>();
   if (!row) return null;
@@ -27,11 +28,11 @@ export async function readDocument(env: Env, userId: string, id: string, now = n
 }
 
 export async function deleteDocument(env: Env, userId: string, id: string): Promise<boolean> {
-  const result = await env.DB.prepare("DELETE FROM user_documents WHERE id = ? AND user_id = ?").bind(id, userId).run();
+  const result = await db(env).prepare("DELETE FROM user_documents WHERE id = ? AND user_id = ?").bind(id, userId).run();
   return result.meta.changes > 0;
 }
 
 export async function deleteExpiredDocuments(env: Env, now = new Date()): Promise<number> {
-  const result = await env.DB.prepare("DELETE FROM user_documents WHERE expires_at <= ?").bind(now.toISOString()).run();
+  const result = await db(env).prepare("DELETE FROM user_documents WHERE expires_at <= ?").bind(now.toISOString()).run();
   return result.meta.changes;
 }

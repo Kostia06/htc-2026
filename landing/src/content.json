@@ -1,7 +1,7 @@
 {
   "_readme": "All page copy lives here. Partials reference keys as {{ path.to.key }} (HTML-escaped) or {{{ path.to.key }}} (raw HTML). Any value may contain {brand}, which is replaced with the brand name below.",
-  "brand": "Raven",
-  "wordmark": "raven",
+  "brand": "Skillit",
+  "wordmark": "skillit",
   "links": {
     "_note": "app / login: the product app's sign-up and sign-in screens. {appUrl} comes from APP_URL (landing/.env.local), default /app (same site).",
     "app": "{appUrl}/?mode=signup",
@@ -31,7 +31,7 @@
         "href": "#actions"
       },
       {
-        "label": "Why Raven",
+        "label": "Why Skillit",
         "href": "#why"
       },
       {

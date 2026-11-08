@@ -3,6 +3,7 @@ import { hasReachedLimit, recordAttempt } from "../auth/mint-limit";
 import { claimCode, isPairingCode, offerCode, offerStatus } from "../auth/pairing";
 import { requireSession } from "../auth/session";
 import type { AppContext } from "../env";
+import { headsetNameFrom, registerHeadset } from "../headset/devices";
 
 // only ten thousand codes, so wrong guesses are what's limited; a venue's shared Wi-Fi still gets five per ten minutes
 const WRONG_GUESSES = { attempts: 5, windowMs: 10 * 60 * 1000 };
@@ -19,8 +20,9 @@ pairing.post("/claim", async (c) => {
   if (!isPairingCode(body?.code)) return c.json({ error: "send the 4-digit code from your phone" }, 400);
   if (await hasReachedLimit(c, "pairing-claim", WRONG_GUESSES)) return c.json({ error: "too many wrong codes, wait a few minutes" }, 429);
 
-  const session = await claimCode(c.env, body.code, c.env.SESSION_SECRET);
-  if (session) return c.json(session);
+  const userId = await claimCode(c.env, body.code);
+  // the headset is remembered from here on: it gets a refresh credential alongside the access token
+  if (userId) return c.json(await registerHeadset(c.env, userId, headsetNameFrom(c.req.header("User-Agent")), c.env.SESSION_SECRET));
   await recordAttempt(c, "pairing-claim");
   return c.json({ error: "that code isn't right, check your phone" }, 404);
 });

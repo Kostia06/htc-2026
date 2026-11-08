@@ -1,0 +1,23 @@
+{
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/Recap.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Recap.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Recap.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Recap.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Recap.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Recap.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/RelativeTime.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RelativeTime.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RelativeTime.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RelativeTime.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RelativeTime.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/RelativeTime.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/Resume+Suggestions.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Resume+Suggestions.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Resume+Suggestions.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Resume+Suggestions.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Resume+Suggestions.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/Resume+Suggestions.swiftdeps"
+  }
+}

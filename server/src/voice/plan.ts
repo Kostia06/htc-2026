@@ -1,16 +1,22 @@
 import type { Profile } from "../memory/profile/types";
 import { isShortEnough, resumeQuestions } from "./resume-questions";
 import { technicalQuestions } from "./technical";
-import type { InterviewPlan, NetworkingPlan, PlannedQuestion } from "./types";
+import type { Difficulty, InterviewPlan, PlannedQuestion } from "./types";
 
 export { MAX_WORDS } from "./resume-questions";
 
 // short on purpose: five questions with a follow-up each is a ten-minute conversation
 export const MAX_QUESTIONS = 5;
 const MAX_FROM_RESUME = 2;
+const MAX_FROM_POSTING = 2;
 const MAX_REPORTED = 1;
 const MAX_TECHNICAL = 2;
-const MAX_TALKING_POINTS = 5;
+
+/** The posting the person is preparing for, when the session was started from one. */
+export type PlanPosting = {
+  requirements: { text: string; have: boolean }[];
+  responsibilities: string[];
+};
 
 export type PlanInputs = {
   role: string;
@@ -19,6 +25,8 @@ export type PlanInputs = {
   reportedQuestions: { text: string; last_reported_at: string | null }[];
   facts: { kind: string; text: string }[];
   profile: Profile;
+  difficulty?: Difficulty;
+  posting?: PlanPosting;
 };
 
 const behavioralQuestions = (role: string) => [
@@ -29,10 +37,24 @@ const behavioralQuestions = (role: string) => [
   "What's a project you're really proud of?",
 ];
 
+const unpunctuated = (text: string) => text.trim().replace(/[.;:]+$/, "");
+// responsibilities are written as orders ("Build dashboards"), so they read on from "you'd" once the capital goes
+const asVerbPhrase = (text: string) => unpunctuated(text).replace(/^[A-Z](?![A-Z])/, (c) => c.toLowerCase());
+
+// what they'd do first, then what they bring, then the gap: an interviewer probes the posting's own words.
+// A requirement opens its sentence, so "Kubernetes" and "Experience with SQL" both keep the case they were written in.
+export function postingQuestions(posting: PlanPosting): string[] {
+  return [
+    ...posting.responsibilities.map((r) => `Here you'd ${asVerbPhrase(r)}. When have you done something like that?`),
+    ...posting.requirements.filter((r) => r.have).map((r) => `${unpunctuated(r.text)} is on the posting. Where have you used it?`),
+    ...posting.requirements.filter((r) => !r.have).map((r) => `${unpunctuated(r.text)} is on the posting. How would you get up to speed?`),
+  ];
+}
+
 const planned = (texts: string[], source: PlannedQuestion["source"], max: number): PlannedQuestion[] =>
   texts.filter(isShortEnough).slice(0, max).map((text) => ({ text, source }));
 
-// personal first, so it opens like a real conversation; then what others were asked, then their field
+// personal first, so it opens like a real conversation; then the posting, what others were asked, then their field
 export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
   const reported: PlannedQuestion[] = inputs.reportedQuestions
     .filter((q) => isShortEnough(q.text))
@@ -40,32 +62,10 @@ export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
     .map((q) => ({ text: q.text, source: "reported", reportedIn: q.last_reported_at }));
   const questions = [
     ...planned(resumeQuestions(inputs.profile), "resume", MAX_FROM_RESUME),
+    ...(inputs.posting ? planned(postingQuestions(inputs.posting), "posting", MAX_FROM_POSTING) : []),
     ...reported,
     ...planned(technicalQuestions(inputs.role, inputs.profile), "technical", MAX_TECHNICAL),
     ...planned(behavioralQuestions(inputs.role), "behavioral", MAX_QUESTIONS),
   ].slice(0, MAX_QUESTIONS);
-  return { mode: "interview", role: inputs.role, company: inputs.company?.name ?? null, questions };
-}
-
-const MEETUP_TALKING_POINTS = [
-  "How you got into your field and what you're working on now.",
-  "Which local meetups and events are worth going to in Calgary.",
-  "What the hiring market looks like for people starting out.",
-  "A tool or skill you've picked up recently.",
-];
-
-const NETWORKING_GOALS = [
-  "Introduce yourself in a sentence or two, with what you're aiming for.",
-  "Ask at least one real question about their work.",
-  "Ask for a way to follow up, like connecting online or a coffee chat.",
-];
-
-export function buildNetworkingPlan(inputs: PlanInputs): NetworkingPlan {
-  const company = inputs.company;
-  const persona = company
-    ? { name: "Sam", role: `works on the team at ${company.name}`, company: company.name }
-    : { name: "Sam", role: "works in tech in Calgary and comes to most meetups", company: null };
-  const fromFacts = inputs.facts.filter((fact) => ["about", "news", "tech", "hiring"].includes(fact.kind)).map((fact) => fact.text);
-  const talkingPoints = [...fromFacts, ...MEETUP_TALKING_POINTS].slice(0, MAX_TALKING_POINTS);
-  return { mode: "networking", role: inputs.role, persona, talkingPoints, goals: NETWORKING_GOALS };
+  return { mode: "interview", role: inputs.role, difficulty: inputs.difficulty ?? "standard", company: inputs.company?.name ?? null, questions };
 }

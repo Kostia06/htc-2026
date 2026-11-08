@@ -3,6 +3,7 @@ import { type KeypadEvent, type KeypadState, initialKeypadState, reduceKeypad } 
 
 const run = (events: KeypadEvent[], from: KeypadState = initialKeypadState) => events.reduce(reduceKeypad, from);
 const type = (digits: string): KeypadEvent[] => [...digits].map((digit) => ({ type: "digit", digit }));
+const session = { token: "t0k", expiresAt: "2026-11-08T00:00:00Z" };
 
 describe("keypad", () => {
   it("collects digits until the fourth, then checks the code by itself", () => {
@@ -42,10 +43,10 @@ describe("keypad", () => {
   });
 
   it("signs in with the token from a right code", () => {
-    expect(run([...type("4821"), { type: "claimed", token: "t0k" }])).toEqual({ phase: "signedIn", token: "t0k" });
+    expect(run([...type("4821"), { type: "claimed", session }])).toEqual({ phase: "signedIn", session });
   });
 
   it("drops an answer that arrives when nothing is being checked", () => {
-    expect(run([{ type: "claimed", token: "late" }])).toBe(initialKeypadState);
+    expect(run([{ type: "claimed", session }])).toBe(initialKeypadState);
   });
 });

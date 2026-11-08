@@ -1,6 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "htc-mentor",
+  "workers_dev": true,
+  "routes": [{ "pattern": "api.skillit.study", "custom_domain": true }],
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -8,8 +10,20 @@
     { "binding": "DB", "database_name": "htc_mentor", "database_id": "3d50f23d-80a2-4817-9196-0f1b02152da1", "migrations_dir": "migrations" }
   ],
   "vectorize": [{ "binding": "VECTORS", "index_name": "htc-mentor-vectors" }],
+  // Supabase cutover (README "Database: Supabase"): paste the id from `wrangler hyperdrive create`, then set DB_BACKEND to "postgres"
+  // localConnectionString is a placeholder for tests and plain `wrangler dev`; to run locally against Supabase set
+  // CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE to SUPABASE_DB_URL
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "c8ece9819f6f4d24b1874397fe466e33", "localConnectionString": "postgres://local:local@127.0.0.1:5432/local" },
+  ],
   "ai": { "binding": "AI" },
   "triggers": { "crons": ["0 */6 * * *"] },
-  "vars": { "GEMINI_MODEL": "gemini-3.5-flash", "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite", "GEMINI_LIVE_MODEL": "gemini-3.8-live", "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev" },
+  "vars": {
+    "DB_BACKEND": "postgres",
+    "GEMINI_MODEL": "gemini-3.5-flash",
+    "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite",
+    "GEMINI_LIVE_MODEL": "gemini-3.8-live",
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev,https://vr.skillit.study,https://app.skillit.study,https://skillit.study,https://www.skillit.study"
+  },
   "observability": { "enabled": true }
 }

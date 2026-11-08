@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectField, templateUnit } from "../../src/roadmap/templates";
+import { detectField, personFor, templateSteps } from "../../src/roadmap/templates";
 import { STEP_KINDS } from "../../src/roadmap/types";
 
 describe("detectField", () => {
@@ -15,26 +15,40 @@ describe("detectField", () => {
   });
 });
 
-describe("templateUnit", () => {
-  it("never runs out: any index gives a unit of steps with every field filled", () => {
+describe("templateSteps", () => {
+  it("never runs out: any position gives a full step, and the same person gets the same steps", () => {
     for (const goal of ["Software developer", "Accountant", "Illustrator", "Nurse", "Chef"]) {
-      for (const index of [0, 1, 2, 7, 40]) {
-        const unit = templateUnit(goal, index);
-        expect(unit.source).toBe("template");
-        expect(unit.steps.length).toBeGreaterThanOrEqual(3);
-        for (const step of unit.steps) {
-          expect(STEP_KINDS).toContain(step.kind);
-          expect(step.title && step.why && step.estimate).toBeTruthy();
-          expect(step.id).toMatch(/^st_/);
-        }
+      const person = personFor(goal, []);
+      const steps = templateSteps(person, 0, 40);
+      expect(steps).toHaveLength(40);
+      for (const step of steps) {
+        expect(STEP_KINDS).toContain(step.kind);
+        expect(step.title && step.why && step.detail && step.estimate && step.label).toBeTruthy();
       }
+      expect(templateSteps(person, 5, 3)).toEqual(steps.slice(5, 8));
     }
   });
 
-  it("ties each reason to the goal and is the same for the same goal and index", () => {
-    const a = templateUnit("Registered nurse", 0);
-    const b = templateUnit("Registered nurse", 0);
-    expect(a.steps.some((s) => s.why.includes("Registered nurse"))).toBe(true);
-    expect(a.steps.map(({ id: _, ...rest }) => rest)).toEqual(b.steps.map(({ id: _, ...rest }) => rest));
+  it("leans on the person's own skill and goal", () => {
+    const steps = templateSteps(personFor("Junior data analyst", ["SQL", "Python"]), 0, 8);
+    expect(steps[0].title).toContain("SQL");
+    expect(steps.some((s) => s.why.includes("Junior data analyst") || s.title.includes("Junior data analyst"))).toBe(true);
+  });
+
+  it("gives interview practice an action the app can launch, and nothing else one", () => {
+    const steps = templateSteps(personFor("Registered nurse", []), 0, 8);
+    const interview = steps.find((s) => s.kind === "interview_practice");
+    expect(interview?.action).toEqual({ type: "interview", role: "Registered nurse" });
+    expect(steps.find((s) => s.kind === "networking_practice")?.action).toBeUndefined();
+    expect(steps.find((s) => s.kind === "event")?.action).toBeUndefined();
+  });
+
+  it("labels from what the person already has", () => {
+    const without = templateSteps(personFor("Software developer", []), 0, 8);
+    const withSkills = templateSteps(personFor("Software developer", ["Git", "SQL"]), 0, 8);
+    const course = (steps: typeof without) => steps.find((s) => s.kind === "course")!;
+    expect(course(without).label).toBe("long_term");
+    expect(course(withSkills).label).toBe("ready_now");
+    expect(without.find((s) => s.kind === "event")?.label).toBe("ready_now");
   });
 });

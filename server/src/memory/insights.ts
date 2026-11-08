@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 
 // one person's report must never be identifiable, so real reports stay hidden below this count
@@ -39,19 +40,19 @@ const byRank = (a: Tally, b: Tally) => Number(a.example) - Number(b.example) || 
 const forDisplay = ({ weight: _, ...question }: Tally): Question => ({ ...question, last_reported_at: reportedMonth(question.last_reported_at) });
 
 export async function getCompanyInsights(env: Env, slug: string, role?: string) {
-  const company = await env.DB.prepare("SELECT id, slug, name, website, last_researched_at FROM companies WHERE slug = ?")
+  const company = await db(env).prepare("SELECT id, slug, name, website, last_researched_at FROM companies WHERE slug = ?")
     .bind(slug)
     .first<{ id: string; slug: string; name: string; website: string | null; last_researched_at: string | null }>();
   if (!company) return null;
 
-  const { results: facts } = await env.DB.prepare(
+  const { results: facts } = await db(env).prepare(
     "SELECT kind, text, source_url, fetched_at FROM company_facts WHERE company_id = ? ORDER BY fetched_at DESC LIMIT 30",
   )
     .bind(company.id)
     .all<Fact>();
 
   const roleFilter = role ? " AND lower(role) = lower(?)" : "";
-  const stmt = env.DB.prepare(`SELECT questions_json, is_seeded, created_at FROM experiences WHERE company_id = ?${roleFilter}`);
+  const stmt = db(env).prepare(`SELECT questions_json, is_seeded, created_at FROM experiences WHERE company_id = ?${roleFilter}`);
   const { results: rows } = await (role ? stmt.bind(company.id, role) : stmt.bind(company.id)).all<ExpRow>();
 
   const real = rows.filter((r) => !r.is_seeded);
