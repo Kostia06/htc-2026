@@ -19,17 +19,16 @@ struct ProfileView: View {
                         .listRowBackground(Color.clear)
                         .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
                 }
+                Section {
+                    ResumeCard(service: resumeService)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
+                }
                 if isRefreshing, app.profile.isEmpty {
                     loadingSections
                 } else {
                     editableSections
                 }
-                Section {
-                    NavigationLink { ResumeView() } label: {
-                        Label("Resume", systemImage: "doc.text")
-                    }
-                }
-                .listRowBackground(Theme.raised)
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
@@ -124,6 +123,17 @@ struct ProfileView: View {
         if let profile = try? await client.profile() {
             app.profile = profile
         }
+    }
+
+    private var resumeService: any ResumeService {
+        if let client = app.client {
+            return client
+        }
+        #if DEBUG
+            return SampleResume()
+        #else
+            return UnavailableResume()
+        #endif
     }
 }
 

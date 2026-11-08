@@ -2,12 +2,13 @@ import RavenKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// The resume section: a live preview, the coach's suggestions above it, a PDF to share, and the web builder for the rest.
+/// The resume section: a live preview, the coach's suggestions above it, the PDF viewer, and the web builder for the rest.
 /// Meant to be pushed inside a navigation stack (Profile links here).
 struct ResumeView: View {
     @Environment(AppModel.self) private var app
     @State private var model: ResumeModel?
     @State private var editing: ResumeArea?
+    @State private var isViewingPDF = false
 
     init() {}
 
@@ -30,13 +31,13 @@ struct ResumeView: View {
         .toolbar {
             if let model, model.phase == .ready {
                 ToolbarItem(placement: .primaryAction) {
-                    ShareLink(
-                        item: ResumePDF(fetch: { try await model.pdfFile() }),
-                        preview: SharePreview("Resume.pdf", image: Image(systemName: "doc.richtext"))
-                    ) {
-                        Label("Download PDF", systemImage: "arrow.down.doc")
-                    }
+                    Button("View PDF", systemImage: "doc.richtext") { isViewingPDF = true }
                 }
+            }
+        }
+        .sheet(isPresented: $isViewingPDF) {
+            if let model {
+                ResumePDFViewer { () async throws(RavenError) -> URL in try await model.pdfFile() }
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -147,17 +148,6 @@ struct ResumeView: View {
         #else
             return UnavailableResume()
         #endif
-    }
-}
-
-/// The PDF is fetched only when the share sheet asks for it, so opening the sheet costs nothing until then.
-nonisolated struct ResumePDF: Transferable {
-    let fetch: @Sendable () async throws -> URL
-
-    static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(exportedContentType: .pdf) { pdf in
-            try await SentTransferredFile(pdf.fetch())
-        }
     }
 }
 
