@@ -37,6 +37,10 @@ struct VoiceSessionView: View {
                 Button("End", action: end)
                     .buttonStyle(.glass)
             }
+            if model.questionCount > 0 {
+                InterviewProgress(number: model.questionNumber, total: model.questionCount)
+                    .transition(.opacity)
+            }
             Spacer()
             questionText
             VoiceBar(state: model.voiceState, level: model.level)
@@ -47,6 +51,7 @@ struct VoiceSessionView: View {
             Spacer()
         }
         .padding(24)
+        .animation(.easeInOut(duration: 0.3), value: model.questionCount)
     }
 
     /// Quiet proof that scoring is happening without pulling attention from the question.
