@@ -165,7 +165,7 @@ export default function ForYou() {
             error ??
             (section === 'saved'
               ? 'Swipe a card right, or tap the bookmark, to keep it here.'
-              : "Add the roles you're aiming for in Profile and Raven will find things that fit.")
+              : "Add the roles you're aiming for in Profile and Skillit will find things that fit.")
           }
         />
       )}

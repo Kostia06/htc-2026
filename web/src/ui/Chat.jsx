@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react'
 import { ArrowUp, CircleCheck, Mic, Square } from 'lucide-react'
 
-/** Raven on the left in a raised bubble; the person on the right in sage. */
+/** Skillit on the left in a raised bubble; the person on the right in sage. */
 export function Bubble({ from, children }) {
   return (
     <div className={`bubble-row bubble-row--${from}`}>
@@ -14,7 +14,7 @@ export function Bubble({ from, children }) {
 export function TypingIndicator() {
   return (
     <div className="bubble-row bubble-row--raven">
-      <div className="bubble bubble--raven typing" role="status" aria-label="Raven is typing">
+      <div className="bubble bubble--raven typing" role="status" aria-label="Skillit is typing">
         <span />
         <span />
         <span />

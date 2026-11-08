@@ -1,4 +1,4 @@
-// Dates and small text helpers, matching RavenKit's RelativeTime and the iOS formatters.
+// Dates and small text helpers, matching SkillitKit's RelativeTime and the iOS formatters.
 
 export const parseDate = (iso) => {
   if (!iso) return null

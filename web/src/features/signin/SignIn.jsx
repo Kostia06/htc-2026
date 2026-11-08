@@ -10,7 +10,7 @@ const APPLE = import.meta.env.VITE_APPLE_SIGNIN === '1'
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 
 const COPY = {
-  choosing: ['Your next role, one step at a time.', "Raven learns what you've done and plans the shortest path to the job you want."],
+  choosing: ['Your next role, one step at a time.', "Skillit learns what you've done and plans the shortest path to the job you want."],
   email: ["What's your email?", "We'll send you a six-digit code. No password to remember."],
   code: ['Check your inbox.', null],
 }
@@ -47,7 +47,7 @@ export default function SignIn() {
   }
 
   const sendCode = async () => {
-    const sent = await attempt("Raven couldn't send a code to that address. Try again in a minute.", () =>
+    const sent = await attempt("Skillit couldn't send a code to that address. Try again in a minute.", () =>
       supabase.auth.signInWithOtp({ email: typedEmail, options: { shouldCreateUser: true } }),
     )
     if (sent) {
@@ -63,7 +63,7 @@ export default function SignIn() {
     )
 
   const apple = () =>
-    attempt("Raven couldn't sign you in with Apple. Try again or use your email.", () =>
+    attempt("Skillit couldn't sign you in with Apple. Try again or use your email.", () =>
       supabase.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` } }),
     )
 
@@ -79,9 +79,9 @@ export default function SignIn() {
       <div className="signin__panel">
         <a className="signin__brand" href="/">
           <span className="sidebar__mark" aria-hidden>
-            R
+            S
           </span>
-          <span className="sidebar__word">raven</span>
+          <span className="sidebar__word">skillit</span>
         </a>
 
         <div className="signin__copy" key={step}>

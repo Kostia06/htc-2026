@@ -1,7 +1,7 @@
 // Loading, empty and passing states: Skeleton.swift, ThinProgressBar.swift, ContentUnavailableView, the "Saved" flash.
 import { useEffect } from 'react'
 
-/** Capsules 10px tall; the bar at `highlighted` is sand so the screen reads as Raven working. Pass -1 for none. */
+/** Capsules 10px tall; the bar at `highlighted` is sand so the screen reads as Skillit working. Pass -1 for none. */
 export function SkeletonLines({ widths = [0.9, 0.7, 0.8, 0.5], highlighted = 2 }) {
   return (
     <div className="skeleton" role="progressbar" aria-label="Loading">

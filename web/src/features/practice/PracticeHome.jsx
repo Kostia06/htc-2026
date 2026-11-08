@@ -1,5 +1,5 @@
 // PracticeView.swift: an optional company or role, how hard the interviewer pushes, the interview card, and the
-// ways in to VR, telling Raven about a real interview, and past sessions.
+// ways in to VR, telling Skillit about a real interview, and past sessions.
 import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
 import { ChartLine, Glasses, MessagesSquare, UserRoundSearch } from 'lucide-react'
@@ -58,7 +58,7 @@ export default function PracticeHome() {
 
         <div className="practice__links">
           <NavRow icon={Glasses} label="Practice in VR" to="/practice/vr" />
-          <NavRow icon={MessagesSquare} label="Tell Raven about a real interview" to="/practice/recap" />
+          <NavRow icon={MessagesSquare} label="Tell Skillit about a real interview" to="/practice/recap" />
           <NavRow icon={ChartLine} label="Past sessions" to="/practice/history" />
         </div>
       </div>

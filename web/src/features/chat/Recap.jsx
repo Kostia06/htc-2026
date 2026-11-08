@@ -1,5 +1,5 @@
 // RecapView.swift + RecapModel.swift: "How it went", typed or spoken. At most two clarifying questions, then the
-// card of what Raven understood and whether the questions were shared anonymously.
+// card of what Skillit understood and whether the questions were shared anonymously.
 import { useEffect, useRef, useState } from 'react'
 import { HelpCircle, Lock, UsersRound } from 'lucide-react'
 import { recapApi } from '../../lib/client'
@@ -171,7 +171,7 @@ function SharedCard({ result }) {
       <p className="t-footnote c-2">
         {result.shared
           ? 'Names and contact details were removed. Others preparing for the same interview will see the questions.'
-          : 'Nothing went public. You can tell Raven more any time.'}
+          : 'Nothing went public. You can tell Skillit more any time.'}
       </p>
     </section>
   )

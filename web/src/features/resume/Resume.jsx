@@ -1,4 +1,4 @@
-// ResumeView.swift: Raven's suggestions one at a time, then the resume as a sheet of paper; tap a section to edit it.
+// ResumeView.swift: Skillit's suggestions one at a time, then the resume as a sheet of paper; tap a section to edit it.
 // Every change saves in the background, one save after another.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
@@ -55,7 +55,7 @@ export default function Resume() {
       const found = (await resumeApi.improve()).filter((s) => textAt(resumeRef.current, s.path) !== null)
       setSuggestions(found)
       setDirection(null)
-      if (!found.length) setNote('Raven read it through and has nothing to tighten up right now.')
+      if (!found.length) setNote('Skillit read it through and has nothing to tighten up right now.')
     } catch (e) {
       setNote(e.message)
     } finally {
@@ -99,7 +99,7 @@ export default function Resume() {
             <section className="stack deck">
               <div className="row deck__head">
                 <h2 className="t-headline c-agent row deck__title">
-                  <PenLine size={17} strokeWidth={2.4} aria-hidden /> Raven suggests
+                  <PenLine size={17} strokeWidth={2.4} aria-hidden /> Skillit suggests
                 </h2>
                 <span className="t-subhead mono c-2">{suggestions.length} left</span>
               </div>
@@ -121,7 +121,7 @@ export default function Resume() {
         <div className="resume-page__bottom">
           <RaisedButton variant="agent" onClick={improve} disabled={improving}>
             <PenLine size={19} strokeWidth={2.4} className={improving ? 'shimmering' : ''} aria-hidden />
-            {improving ? 'Raven is reading your resume…' : 'Improve with Raven'}
+            {improving ? 'Skillit is reading your resume…' : 'Improve with Skillit'}
           </RaisedButton>
         </div>
       )}
