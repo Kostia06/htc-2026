@@ -91,7 +91,7 @@ export function StepSheet() {
   )
 }
 
-/** "What did you do?" for one step; Raven marks it done itself and only asks if it must. */
+/** "What did you do?" for one step; Skillit marks it done itself and only asks if it must. */
 export function MarkDoneSheet() {
   const navigate = useNavigate()
   const { reload } = useOutletContext()

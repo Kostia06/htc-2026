@@ -1,4 +1,4 @@
-// MemoryView.swift and ShareMemorySheet.swift: what Raven remembers, grouped by kind. Delete any of it; share a note
+// MemoryView.swift and ShareMemorySheet.swift: what Skillit remembers, grouped by kind. Delete any of it; share a note
 // anonymously with people preparing for the same company.
 import { useCallback, useEffect, useState } from 'react'
 import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router'
@@ -53,14 +53,14 @@ export function Memory() {
   const memories = state.memories ?? []
   return (
     <Page className="settings">
-      <PageHeader title="What Raven remembers" back={{ to: '/settings/privacy', label: 'Your data' }} />
+      <PageHeader title="What Skillit remembers" back={{ to: '/settings/privacy', label: 'Your data' }} />
       <div className="stack settings__stack">
         <div className="card row memory-explainer">
           <ShieldCheck size={22} strokeWidth={2} className="c-agent" aria-hidden />
           <div className="stack">
             <span className="t-headline">Private to you</span>
             <span className="t-subhead c-2">
-              Encrypted with a key only your account holds. Raven uses these to shape your roadmap and practice. Delete any of them, any time; nothing leaves unless you
+              Encrypted with a key only your account holds. Skillit uses these to shape your roadmap and practice. Delete any of them, any time; nothing leaves unless you
               share a note.
             </span>
           </div>
@@ -72,7 +72,7 @@ export function Memory() {
             <RaisedButton onClick={load}>Try again</RaisedButton>
           </ContentUnavailable>
         )}
-        {state.phase === 'ready' && !memories.length && <p className="t-body c-2 memory-empty">Nothing yet. Raven starts remembering as you practise and finish steps.</p>}
+        {state.phase === 'ready' && !memories.length && <p className="t-body c-2 memory-empty">Nothing yet. Skillit starts remembering as you practise and finish steps.</p>}
 
         {KINDS.map(([kind, label, Icon]) => {
           const rows = memories.filter((m) => m.kind === kind)

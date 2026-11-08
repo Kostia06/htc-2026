@@ -1,4 +1,4 @@
-// QuickUpdateView.swift: "What's new?" in plain words, typed or spoken. Raven applies it at once, or asks one
+// QuickUpdateView.swift: "What's new?" in plain words, typed or spoken. Skillit applies it at once, or asks one
 // question first. With a `focusTitle` it is about one roadmap step ("Mark done").
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../../app/context'
@@ -24,7 +24,7 @@ export default function QuickUpdate({ focusTitle, onApplied, onClose }) {
   const [thinking, setThinking] = useState(false)
   const [draft, setDraft] = useState('')
   const [error, setError] = useState(null)
-  // where the current update began; the step question goes along with the first answer so Raven knows the step
+  // where the current update began; the step question goes along with the first answer so Skillit knows the step
   const turnStart = useRef(focusTitle ? 0 : 1)
   const latest = useRef(messages)
   useEffect(() => {

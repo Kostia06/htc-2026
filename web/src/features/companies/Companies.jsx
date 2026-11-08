@@ -1,4 +1,4 @@
-// CompaniesView.swift and CompanyView.swift: the companies Raven has researched, and everything it learned about one:
+// CompaniesView.swift and CompanyView.swift: the companies Skillit has researched, and everything it learned about one:
 // facts by kind with their sources, and questions people were really asked once three have reported.
 import { useCallback, useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate, useParams } from 'react-router'
@@ -62,7 +62,7 @@ export function CompaniesList() {
         <ContentUnavailable
           icon={Building2}
           title={error ? "Couldn't load companies" : 'Nothing researched yet'}
-          description={error ?? 'Raven researches the companies on your roadmap overnight.'}
+          description={error ?? 'Skillit researches the companies on your roadmap overnight.'}
           className="companies__empty"
         >
           <RaisedButton onClick={load}>Try again</RaisedButton>
@@ -184,7 +184,7 @@ export function CompanyView() {
               <p className={`t-subhead medium row company__research is-${research.status}`} role="status">
                 {research.status === 'running' && (
                   <>
-                    <Spinner size={14} /> Raven is researching…
+                    <Spinner size={14} /> Skillit is researching…
                   </>
                 )}
                 {research.status === 'done' && (
@@ -205,11 +205,11 @@ export function CompanyView() {
             Practice an interview
           </RaisedButton>
           <TextButton icon={Hand} onClick={() => navigate('recap')} className="company__recap">
-            I interviewed here, tell Raven
+            I interviewed here, tell Skillit
           </TextButton>
 
           {!facts.length && !questions.length ? (
-            <ContentUnavailable icon={Building2} title="Nothing here yet" description="Raven will read the careers site, recent news and interview reports.">
+            <ContentUnavailable icon={Building2} title="Nothing here yet" description="Skillit will read the careers site, recent news and interview reports.">
               <RaisedButton variant="grey" onClick={refresh} disabled={running}>
                 Refresh research
               </RaisedButton>

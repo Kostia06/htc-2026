@@ -1,4 +1,4 @@
-// The Worker's API, one function per endpoint, the same set the iOS app's RavenClient calls.
+// The Worker's API, one function per endpoint, the same set the iOS app's SkillitClient calls.
 // Every call carries the Supabase access token; a 401 signs the person out, as on iOS.
 import { supabase } from './supabase'
 
@@ -9,7 +9,7 @@ export class ApiError extends Error {
   }
 }
 
-// the messages RavenError.swift shows
+// the messages SkillitError.swift shows
 const SIGNED_OUT = 'You were signed out. Sign in again to continue.'
 const OFFLINE = "You're offline. Check your connection and try again."
 const UNREADABLE = 'Something went wrong on our side. Try again in a moment.'
@@ -71,7 +71,7 @@ export const profileApi = {
   get: () => request('/api/me/profile').then((r) => r.profile),
   /** lists are merged in; `remove` takes entries out first (ProfilePatch) */
   patch: (patch) => request('/api/me/profile', { method: 'PATCH', body: patch }).then((r) => r.profile),
-  /** removes everything Raven keeps about the person */
+  /** removes everything Skillit keeps about the person */
   eraseAll: () => request('/api/me', { method: 'DELETE' }),
 }
 

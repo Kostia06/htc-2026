@@ -1,4 +1,4 @@
-// The onboarding questions, the same list as ios/RavenKit/.../OnboardingQuestion.swift. Each one is a single screen; most answers are a tap.
+// The onboarding questions, the same list as ios/SkillitKit/.../OnboardingQuestion.swift. Each one is a single screen; most answers are a tap.
 //   type: 'resume' (optional upload that pre-fills the rest), 'single' (pick one), 'multi' (pick up to `max`),
 //         'text' (optional short answer)
 //   other: lets people type their own option

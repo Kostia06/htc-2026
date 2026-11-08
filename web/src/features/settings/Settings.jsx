@@ -1,4 +1,4 @@
-// SettingsView.swift and PrivacyView.swift: account, headset, voice, privacy and about; and what Raven keeps,
+// SettingsView.swift and PrivacyView.swift: account, headset, voice, privacy and about; and what Skillit keeps,
 // with the one button that deletes all of it.
 import { useState } from 'react'
 import { Brain, FileLock, FileText, Glasses, Lock, Route, AudioWaveform } from 'lucide-react'
@@ -55,7 +55,7 @@ export function Settings() {
 
         <Group
           header="About"
-          footer="Raven uses AI to read your resume, build your roadmap and run practice conversations. It can get things wrong; check anything before you rely on it."
+          footer="Skillit uses AI to read your resume, build your roadmap and run practice conversations. It can get things wrong; check anything before you rely on it."
         >
           <GroupRow>
             <span className="row settings__labeled">
@@ -67,7 +67,7 @@ export function Settings() {
       </div>
       {confirming && (
         <Confirm
-          title="Sign out of Raven?"
+          title="Sign out of Skillit?"
           message="Your profile stays saved, and paired headsets stay signed in."
           confirmLabel="Sign out"
           onConfirm={() => app.signOut()}
@@ -115,7 +115,7 @@ export function Privacy() {
     <Page className="settings">
       <PageHeader title="Your data" back={{ to: '/settings', label: 'Settings' }} />
       <div className="stack settings__stack">
-        <Group header="What Raven keeps">
+        <Group header="What Skillit keeps">
           {KEPT.map(([Icon, title, detail]) => (
             <GroupRow key={title}>
               <span className="row settings__kept">
@@ -129,16 +129,16 @@ export function Privacy() {
           ))}
         </Group>
 
-        <Group footer="See, delete or anonymously share the notes Raven keeps to personalise your practice.">
+        <Group footer="See, delete or anonymously share the notes Skillit keeps to personalise your practice.">
           <GroupRow to="/settings/memory">
             <span className="row settings__icon-label">
               <Brain size={19} strokeWidth={2} className="c-action" aria-hidden />
-              What Raven remembers about you
+              What Skillit remembers about you
             </span>
           </GroupRow>
         </Group>
 
-        <Group footer="Removes your profile, memories, roadmap, feed and practice sessions from Raven's servers, then signs you out. This can't be undone.">
+        <Group footer="Removes your profile, memories, roadmap, feed and practice sessions from Skillit's servers, then signs you out. This can't be undone.">
           <GroupRow destructive onClick={deleting ? undefined : () => setConfirming(true)}>
             <span className="row settings__icon-label">
               Delete my data
@@ -149,7 +149,7 @@ export function Privacy() {
       </div>
       {confirming && (
         <Confirm
-          title="Delete everything Raven knows about you?"
+          title="Delete everything Skillit knows about you?"
           message="Your profile, memories, roadmap, feed and practice sessions are removed for good, and you're signed out."
           confirmLabel="Delete my data"
           onConfirm={eraseAll}

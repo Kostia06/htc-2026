@@ -46,9 +46,9 @@ export function Shell() {
       <aside className="sidebar glass-strong">
         <div className="sidebar__brand">
           <span className="sidebar__mark" aria-hidden>
-            R
+            S
           </span>
-          <span className="sidebar__word">raven</span>
+          <span className="sidebar__word">skillit</span>
         </div>
         <nav aria-label="Main">
           {TABS.map((tab) => (

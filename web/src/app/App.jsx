@@ -66,7 +66,7 @@ function Gate({ need, children }) {
     return (
       <div className="splash">
         <Ambient />
-        <ContentUnavailable icon={WifiOff} title="Can't reach Raven" description={app.message}>
+        <ContentUnavailable icon={WifiOff} title="Can't reach Skillit" description={app.message}>
           <button type="button" className="glass-prominent" style={{ width: '100%' }} onClick={app.retry}>
             Try again
           </button>
