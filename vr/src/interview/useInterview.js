@@ -3,16 +3,21 @@ import { createCallClock } from './callClock.js'
 import { createSession } from './session.js'
 import { createListener, createSpeaker } from './speech.js'
 import { createVoiceDetector } from './vad.js'
+import { ensureMicrophone, micProblem } from './microphone.js'
+import { voicePathOf } from './voicePath.js'
 
 // Phases: idle -> asking -> listening -> scoring -> asking -> ... -> done
 // 'awaiting' only happens when there is no microphone and we fall back to a button.
 //
-// `auth` is optional: { token, onSignedOut }. With a token the questions and
-// scores come from the Skillit voice API; without one it runs on example data.
-// The token is read through a ref so a silent refresh mid-interview does not
-// rebuild the session and lose its id.
+// `auth` is optional: { token, onSignedOut, isImmersive }. With a token the
+// questions and scores come from the Skillit voice API; without one it runs on
+// example data. The token is read through a ref so a silent refresh
+// mid-interview does not rebuild the session and lose its id. `isImmersive()`
+// says whether an XR session is live, where a mic prompt must never appear.
 export function useInterview(auth = {}) {
-  const { token = null, onSignedOut } = auth
+  const { token = null, onSignedOut, isImmersive } = auth
+  const isImmersiveRef = useRef(isImmersive)
+  isImmersiveRef.current = isImmersive
   const tokenRef = useRef(token)
   tokenRef.current = token
   const onSignedOutRef = useRef(onSignedOut)
@@ -65,6 +70,10 @@ export function useInterview(auth = {}) {
   phaseRef.current = phase
   const listenRef = useRef(() => {})
   const agentRef = useRef(null) // the provider's realtime voice agent, when offered
+  // The agent owns the turn-taking. While it runs, none of the local turn
+  // machinery (Done key, trigger release, /next, the computer voice) may fire:
+  // that is exactly how the computer voice used to talk over ElevenLabs.
+  const [usingAgent, setUsingAgent] = useState(false)
   const scoringRef = useRef([]) // the agent path's turns still being scored; finish waits for them
   const callClock = useMemo(() => createCallClock(), [])
   const [recording, setRecording] = useState(false)
@@ -103,7 +112,7 @@ export function useInterview(auth = {}) {
 
   // Open the mic and let the candidate talk. Ends on its own when they stop.
   const listen = useCallback(async () => {
-    if (!running.current) return
+    if (!running.current || agentRef.current) return
     setTranscript('')
     setHeard(false)
     answerStartedAt.current = performance.now()
@@ -137,6 +146,7 @@ export function useInterview(auth = {}) {
   )
 
   const endTurn = useCallback(async () => {
+    if (agentRef.current) return
     if (phaseRef.current !== 'listening' && phaseRef.current !== 'awaiting') return
     vad.stop()
     setPhase('scoring')
@@ -181,6 +191,18 @@ export function useInterview(auth = {}) {
     async (started) => {
       const { createElevenLabsSession } = await import('./elevenlabs.js')
       scoringRef.current = []
+
+      // No socket, no interview. Say so and go back to the menu; never carry on in the computer voice.
+      const abandon = (agent, message) => {
+        if (!alive.current || agentRef.current !== agent) return
+        agent.disconnect()
+        agentRef.current = null
+        running.current = false
+        setUsingAgent(false)
+        setSpeaking(false)
+        setPhase('idle')
+        setError(`Could not reach the interviewer${message ? ` (${message})` : ''}. Try again.`)
+      }
 
       const agent = createElevenLabsSession({
         signedUrl: started.voice.signedUrl,
@@ -256,13 +278,18 @@ export function useInterview(auth = {}) {
           if (err?.reason === 'denied') {
             setMicDenied(true)
             setError('Microphone blocked. Allow it and start again.')
+          } else if (agentRef.current?.state === 'closed') {
+            abandon(agentRef.current, err?.message)
           }
         },
       })
 
       agentRef.current = agent
+      setUsingAgent(true)
       setPhase('asking')
-      await agent.connect()
+      const connected = await agent.connect()
+      // still retrying: its onState shows "Reconnecting…", and onError ends it if that runs out
+      if (!connected?.ok && agent.state !== 'reconnecting') abandon(agent, connected?.message)
     },
     [callClock, session],
   )
@@ -275,6 +302,15 @@ export function useInterview(auth = {}) {
     setResult(null)
     running.current = true
     try {
+      // The mic before anything that costs credits, and never a prompt inside
+      // the headset: that prompt is what threw the candidate out of VR.
+      const mic = await ensureMicrophone({ immersive: Boolean(isImmersiveRef.current?.()) })
+      if (!alive.current) return
+      // Example data can still be answered with the button; a real interview cannot start blind.
+      if (!mic.ok && (mic.reason === 'needs-2d' || !session.isStub)) {
+        setMicDenied(mic.reason === 'denied')
+        throw new Error(micProblem(mic.reason))
+      }
       await speaker.unlock()
       // A click or key event lands here too; only a phone launch carries a mode.
       // The Quick button passes only a length.
@@ -282,7 +318,9 @@ export function useInterview(auth = {}) {
       if (!alive.current) return
       setMeta(started)
 
-      if (started.voice?.signedUrl) {
+      const path = voicePathOf(started)
+      if (path.kind === 'error') throw new Error(path.message)
+      if (path.kind === 'agent') {
         await beginWithAgent(started)
         return
       }
@@ -309,6 +347,7 @@ export function useInterview(auth = {}) {
     running.current = false
     agentRef.current?.disconnect()
     agentRef.current = null
+    setUsingAgent(false)
     speaker.cancel()
     vad.stop()
     setPhase('idle')
@@ -372,6 +411,7 @@ export function useInterview(auth = {}) {
     muted,
     // the call is being recorded for the replay; the review is looked up by sessionId afterwards
     recording,
+    usingAgent,
     sessionId: session.sessionId ?? null,
     isStub: session.isStub === true,
     sttSupported: listener.supported,

@@ -91,7 +91,10 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
 
   const half = HEIGHT / 2
   const message = messageOf({ status, busy, feedback })
-  const locked = busy || Boolean(feedback?.ok)
+  // A stored sign-in being refreshed is not a signed-out headset: no "Sign in"
+  // ask and no keys until the refresh is refused.
+  const restoring = status === 'restoring'
+  const locked = busy || Boolean(feedback?.ok) || restoring
 
   return (
     <group position={position} rotation={rotation}>
@@ -99,10 +102,10 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
         <Card width={WIDTH} height={HEIGHT}>
           <Logo size={0.07} position={[0, half - space.xl - 0.035, 0.001]} />
           <Label variant="title2" anchorX="center" anchorY="top" position={[0, half - space.xl - 0.085, 0]}>
-            {feedback?.ok ? greeting : 'Sign in to Skillit'}
+            {feedback?.ok ? greeting : restoring ? 'Welcome back' : 'Sign in to Skillit'}
           </Label>
           <Label variant="subhead" tone="text2" anchorX="center" anchorY="top" textAlign="center" maxWidth={WIDTH - space.xl * 2} position={[0, half - space.xl - 0.13, 0]}>
-            {feedback?.ok ? 'Taking you in' : 'On your phone, open Practice, then Practice in VR'}
+            {feedback?.ok ? 'Taking you in' : restoring ? 'One moment' : 'On your phone, open Practice, then Practice in VR'}
           </Label>
 
           <DigitSlots code={code} error={Boolean(feedback?.problem)} ok={Boolean(feedback?.ok)} position={[0, half - 0.33, 0]} />
@@ -126,7 +129,7 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
             )}
           </group>
 
-          {onSkip && !feedback?.ok && (
+          {onSkip && !feedback?.ok && !restoring && (
             <TextLink label="Try with example data instead" onPress={onSkip} position={[0, -half + space.l, 0]} reducedMotion={reducedMotion} />
           )}
         </Card>

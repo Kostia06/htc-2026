@@ -4,6 +4,7 @@
 // playback side so the avatar's lip sync can read real speech energy instead of
 // the procedural envelope.
 
+import { openMicrophone } from './microphone.js'
 import { connectToSpeakers } from './spatialAudio.js'
 
 export const MIC_SAMPLE_RATE = 16000
@@ -203,13 +204,12 @@ export function createMicCapture({ sampleRate = MIC_SAMPLE_RATE, onAudio = null 
     }
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
+      // a clone of the stream granted in 2D before VR, so no prompt mid-session
+      stream = await openMicrophone({
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
       })
     } catch (err) {
       const denied = err?.name === 'NotAllowedError' || err?.name === 'SecurityError'

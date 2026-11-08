@@ -57,7 +57,7 @@ function stageOf({ showPairing, phase }) {
 // `review` (useInterviewReview) is the replay of a finished or phone-chosen
 // session, shown beside the summary or the menu; never during an interview.
 export function Scene({ interview, headset, review, captions }) {
-  const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording } = interview
+  const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording, usingAgent } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const comfort = useComfort(inXR)
@@ -82,7 +82,7 @@ export function Scene({ interview, headset, review, captions }) {
   // easiest way to put the candidate off.
   const showReview = useRecent(resultAt, REVIEW_VISIBLE_MS) && phase !== 'listening'
 
-  const buttonProps = buttonFor(phase, actions, { micDenied })
+  const buttonProps = buttonFor(phase, actions, { micDenied, usingAgent })
 
   return (
     <>
@@ -129,6 +129,7 @@ export function Scene({ interview, headset, review, captions }) {
               onCaptions={captions?.toggle}
               onBegin={() => actions.begin()}
               onQuick={actions.beginQuick}
+              error={error}
               inXR={inXR}
               reducedMotion={reducedMotion}
               position={MENU_PANEL.position}
@@ -191,7 +192,10 @@ export function Scene({ interview, headset, review, captions }) {
 
 // Only the two moments the candidate has to act: start answering, and say
 // they are done. While he talks or while scoring, nothing is shown at all.
-function buttonFor(phase, actions, { micDenied } = {}) {
+// The ElevenLabs agent hears when an answer ends by itself, so it gets no key:
+// a Done there used to run the local /next turn in the computer voice.
+function buttonFor(phase, actions, { micDenied, usingAgent } = {}) {
+  if (usingAgent) return null
   switch (phase) {
     case 'awaiting':
       return {

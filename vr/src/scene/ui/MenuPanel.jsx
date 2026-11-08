@@ -6,7 +6,7 @@ const WIDTH = 0.66
  * Before the interview: a greeting and Begin. Seated / standing, recenter,
  * captions and the how-to only appear in the headset, where they mean something.
  */
-export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, captionsOn, onCaptions, onBegin, onQuick, inXR, reducedMotion, ...props }) {
+export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, captionsOn, onCaptions, onBegin, onQuick, error, inXR, reducedMotion, ...props }) {
   const height = inXR ? 0.53 : 0.34
   const left = -WIDTH / 2 + space.xl
   const top = height / 2 - space.xl
@@ -20,8 +20,16 @@ export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, capti
         <Label variant="title2" anchorX="left" anchorY="top" position={[left + 0.08, top - 0.004, 0]}>
           {name ? `Hi ${name}` : 'Interview practice'}
         </Label>
-        <Label variant="subhead" tone="text2" anchorX="left" anchorY="top" position={[left + 0.08, top - 0.05, 0]}>
-          Begin when you are ready.
+        {/* why the last Begin did not start (mic, connection); otherwise the invitation */}
+        <Label
+          variant={error ? 'footnote' : 'subhead'}
+          tone={error ? 'negative' : 'text2'}
+          anchorX="left"
+          anchorY="top"
+          maxWidth={inner - 0.08}
+          position={[left + 0.08, top - 0.05, 0]}
+        >
+          {error ?? 'Begin when you are ready.'}
         </Label>
 
         {inXR && (

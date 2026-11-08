@@ -38,6 +38,12 @@ export function Overlay({ interview, headset, captions, onEnterVR, vrSupported }
         {/* The permanent key strip is gone (the first-run card explains the
             controls); only a real problem gets a line here. */}
         {!sttSupported && <span className="chip">Speech-to-text is unavailable in this browser</span>}
+        {/* why Begin did not start (microphone, connection) */}
+        {phase === 'idle' && interview.error && (
+          <span className="chip" role="alert">
+            {interview.error}
+          </span>
+        )}
 
         {/* Captions are opt-in (the Captions button); off, the lines stay in the
             accessibility tree so a screen reader still announces each question. */}

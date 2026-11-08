@@ -1,3 +1,5 @@
+import { openMicrophone } from './microphone.js'
+
 // Voice activity detection: decides when the candidate starts and stops talking
 // so the interview needs no push-to-talk. A real interview has no buttons.
 //
@@ -122,9 +124,7 @@ export function createVoiceDetector(options = {}) {
     async start() {
       if (!stream) {
         try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-          })
+          stream = await openMicrophone()
         } catch (err) {
           state = 'idle'
           return {

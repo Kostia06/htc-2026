@@ -7,6 +7,7 @@ import { Scene } from './scene/Scene.jsx'
 import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './scene/seating.js'
 import { Overlay } from './ui/Overlay.jsx'
 import { useInterview } from './interview/useInterview.js'
+import { enterImmersive } from './interview/microphone.js'
 import { useHeadsetSession } from './headset/useHeadsetSession.js'
 import { useLaunchPolling } from './headset/useLaunchPolling.js'
 import { color } from './theme/tokens.js'
@@ -16,9 +17,18 @@ import { useCaptions } from './ui/useCaptions.js'
 export default function App() {
   // Controllers, hands and their rays are the store's defaults, which mount only
   // for input sources of a live XR session: the desktop view never shows them.
-  const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false }), [])
+  //
+  // offerSession off: by default the store offers the Quest Browser an
+  // immersive-ar (passthrough) session, which the browser's own button starts.
+  // The office is a full VR room, and only our Enter VR press asks for the
+  // microphone in 2D first, so that press is the only way in.
+  const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false, offerSession: false }), [])
   const headset = useHeadsetSession()
-  const interview = useInterview({ token: headset.token, onSignedOut: headset.signOut })
+  const interview = useInterview({
+    token: headset.token,
+    onSignedOut: headset.signOut,
+    isImmersive: () => store.getState().session != null,
+  })
   const vrSupported = useVRSupport()
   const review = useInterviewReview(interview, headset)
   const captions = useCaptions()
@@ -85,7 +95,7 @@ export default function App() {
         headset={headset}
         vrSupported={vrSupported}
         captions={captions}
-        onEnterVR={() => store.enterVR()}
+        onEnterVR={() => enterImmersive(() => store.enterVR())}
       />
     </>
   )
@@ -108,12 +118,13 @@ function useVRSupport() {
 
 // The Quest app opens this page as an immersive app (?app=quest), which shows only passthrough
 // unless the page enters VR itself. It runs inside <XR>, so the renderer is already bound to the
-// store and the first VR frame draws the office.
+// store and the first VR frame draws the office. The microphone is asked for first, while the
+// page is still flat: the same prompt inside VR would end the session.
 function QuestAutoEnter({ store }) {
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('app') !== 'quest') return
     const timer = setTimeout(() => {
-      store.enterVR().catch((error) => console.warn('auto enter VR failed', error))
+      enterImmersive(() => store.enterVR())
     }, 300)
     return () => clearTimeout(timer)
   }, [store])
