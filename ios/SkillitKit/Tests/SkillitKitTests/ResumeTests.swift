@@ -91,12 +91,18 @@ extension StubbedNetworkTests {
             #expect(String(bytes: improveBody, encoding: .utf8) == #"{"section":"summary"}"#)
         }
 
-        @Test func `downloads the PDF bytes through the given session`() async throws {
-            StubProtocol.routes.withLock { $0["GET /api/resume/pdf"] = (200, "%PDF-1.4 fake") }
+        @Test func `downloads the file bytes in the chosen layout`() async throws {
+            StubProtocol.routes.withLock {
+                $0["GET /api/resume/pdf"] = (200, "%PDF-1.4 fake")
+                $0["GET /api/resume/tailored/t1/docx"] = (200, "PK fake")
+            }
             let configuration = URLSessionConfiguration.ephemeral
             configuration.protocolClasses = [StubProtocol.self]
-            let data = try await client.resumePDF(using: URLSession(configuration: configuration))
+            let session = URLSession(configuration: configuration)
+            let data = try await client.resumeFile(.pdf, template: .plain, using: session)
             #expect(String(bytes: data, encoding: .utf8)?.hasPrefix("%PDF") == true)
+            let word = try await client.tailoredResumeFile(id: "t1", .docx, template: .skillit, using: session)
+            #expect(String(bytes: word, encoding: .utf8) == "PK fake")
         }
     }
 }

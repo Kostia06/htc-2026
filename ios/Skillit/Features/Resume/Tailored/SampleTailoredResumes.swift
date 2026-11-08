@@ -72,8 +72,8 @@
 
         func deleteTailoredResume(id _: String) async throws(SkillitError) {}
 
-        func tailoredPDFData(id _: String) async throws(SkillitError) -> Data {
-            try await SampleResume().resumePDFData()
+        func tailoredFileData(id _: String, _ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> Data {
+            try await SampleResume().resumeFileData(format, template: template)
         }
 
         func postings() async throws(SkillitError) -> [JobPosting] {

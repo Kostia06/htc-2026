@@ -2,13 +2,14 @@ import SkillitKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// The resume section: a live preview, the coach's suggestions above it, the PDF viewer, and the web builder for the rest.
+/// The resume section: the coach's suggestions, one preview drawn like the PDF, tailored versions, and the export.
+/// Everything else (LinkedIn review, the web builder) waits in the toolbar menu.
 /// Meant to be pushed inside a navigation stack (Profile links here).
 struct ResumeView: View {
     @Environment(AppModel.self) private var app
     @State private var model: ResumeModel?
     @State private var editing: ResumeArea?
-    @State private var isViewingPDF = false
+    @State private var isExporting = false
     @State private var isReviewingLinkedin = false
     /// The resume as it was when a section sheet opened, so closing it saves only real changes.
     @State private var beforeEditing: Resume?
@@ -34,14 +35,24 @@ struct ResumeView: View {
         .toolbar {
             if let model, model.phase == .ready {
                 ToolbarItem(placement: .primaryAction) {
-                    Button("View PDF", systemImage: "doc.richtext") { isViewingPDF = true }
+                    Button("Export", systemImage: "square.and.arrow.up") { isExporting = true }
+                }
+                ToolbarItem(placement: .secondaryAction) {
+                    Button("Review my LinkedIn", systemImage: "person.text.rectangle") { isReviewingLinkedin = true }
+                }
+                ToolbarItem(placement: .secondaryAction) {
+                    Link(destination: ResumeLinks.webBuilder) {
+                        Label("Open the web builder", systemImage: "arrow.up.right.square")
+                    }
                 }
             }
         }
         .sheet(isPresented: $isReviewingLinkedin) { LinkedinReviewView() }
-        .sheet(isPresented: $isViewingPDF) {
+        .sheet(isPresented: $isExporting) {
             if let model {
-                ResumePDFViewer { () async throws(SkillitError) -> URL in try await model.pdfFile() }
+                ResumeExportView(templateKey: "resume.template.base") { format, template async throws(SkillitError) -> URL in
+                    try await model.file(format, template: template)
+                }
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -102,32 +113,15 @@ struct ResumeView: View {
                 beforeEditing = model.resume
                 editing = area
             }
-            TailoredResumesSection(service: app.tailoredResumeService)
-                .padding(.top, 8)
-            footer(model)
-        }
-    }
-
-    private func footer(_ model: ResumeModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
             if model.saveFailed {
                 Label("Your last change didn't save. Pull to refresh or edit again.", systemImage: "exclamationmark.triangle")
                     .font(.footnote)
                     .foregroundStyle(Theme.negative)
             }
-            Button("Review my LinkedIn", systemImage: "person.text.rectangle") { isReviewingLinkedin = true }
-                .font(.footnote)
-            Link(destination: ResumeLinks.webBuilder) {
-                Label("Open the web builder", systemImage: "arrow.up.right.square")
-                    .font(.footnote)
-            }
-            .tint(.secondary)
-            Text("The full builder is on the web, still being built. Changes you make here show up there too.")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+            TailoredResumesSection(service: app.tailoredResumeService)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
         }
-        .padding(.bottom, 8)
-        .sensoryFeedback(.success, trigger: model.acceptedCount)
     }
 
     private func improveButton(_ model: ResumeModel) -> some View {
@@ -147,6 +141,7 @@ struct ResumeView: View {
         .padding(.top, 8)
         .background(Theme.ground.opacity(0.92))
         .animation(.spring(duration: 0.3), value: model.isImproving)
+        .sensoryFeedback(.success, trigger: model.acceptedCount)
         .sensoryFeedback(.impact(weight: .medium), trigger: model.isImproving) { _, running in running }
     }
 

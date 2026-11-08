@@ -15,7 +15,7 @@ struct TailoredResumesSection: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Tailored resumes")
                 .font(.headline)
-            Text("A copy of your resume adapted to one job. Your base resume stays as it is.")
+            Text("One copy per job. Your base resume stays as it is.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             if model.loadFailed {

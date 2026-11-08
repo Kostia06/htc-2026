@@ -101,10 +101,10 @@ final class ResumeModel {
         suggestions.removeAll { $0.id == suggestion.id }
     }
 
-    /// Downloads the PDF to a temp file the share sheet can hand on.
-    func pdfFile() async throws(SkillitError) -> URL {
-        let data = try await service.resumePDFData()
-        let url = URL.temporaryDirectory.appending(path: "Resume.pdf")
+    /// Downloads the file to a temp location the share sheet can hand on.
+    func file(_ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> URL {
+        let data = try await service.resumeFileData(format, template: template)
+        let url = URL.temporaryDirectory.appending(path: "Resume.\(format.fileExtension)")
         do {
             try data.write(to: url, options: .atomic)
         } catch {

@@ -6,7 +6,7 @@ struct TailoredResumeView: View {
     let model: TailoredResumeModel
     var onDeleted: () -> Void = {}
     @Environment(\.dismiss) private var dismiss
-    @State private var isViewingPDF = false
+    @State private var isExporting = false
     @State private var isConfirmingDelete = false
 
     var body: some View {
@@ -31,14 +31,17 @@ struct TailoredResumeView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            Button("View PDF") { isViewingPDF = true }
+            Button("Export", systemImage: "square.and.arrow.up") { isExporting = true }
                 .buttonStyle(.raised)
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .background(Theme.ground.opacity(0.92))
         }
-        .sheet(isPresented: $isViewingPDF) {
-            ResumePDFViewer { () async throws(SkillitError) -> URL in try await model.pdfFile() }
+        // the layout is remembered per job: some postings want the plain page
+        .sheet(isPresented: $isExporting) {
+            ResumeExportView(templateKey: "resume.template.\(model.tailored.id)") { format, template async throws(SkillitError) -> URL in
+                try await model.file(format, template: template)
+            }
         }
         .confirmationDialog("Delete this tailored resume?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) { Task { await delete() } }

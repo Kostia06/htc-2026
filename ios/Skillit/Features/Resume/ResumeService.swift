@@ -6,12 +6,12 @@ protocol ResumeService: Sendable {
     func resume() async throws(SkillitError) -> SavedResume
     func saveResume(_ resume: Resume) async throws(SkillitError) -> Resume
     func improveResume(section: Resume.Section?) async throws(SkillitError) -> [ResumeSuggestion]
-    func resumePDFData() async throws(SkillitError) -> Data
+    func resumeFileData(_ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> Data
 }
 
 extension SkillitClient: ResumeService {
-    func resumePDFData() async throws(SkillitError) -> Data {
-        try await resumePDF(using: .shared)
+    func resumeFileData(_ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> Data {
+        try await resumeFile(format, template: template, using: .shared)
     }
 }
 
@@ -29,12 +29,12 @@ struct UnavailableResume: ResumeService {
         throw .offline
     }
 
-    func resumePDFData() async throws(SkillitError) -> Data {
+    func resumeFileData(_: ResumeFileFormat, template _: ResumeTemplate) async throws(SkillitError) -> Data {
         throw .offline
     }
 }
 
 enum ResumeLinks {
-    /// The web resume builder a teammate is still building; swap in its real address when it ships.
-    static let webBuilder = URL(string: "https://raven-vr.ilnkostia-dev.workers.dev/resume")!
+    /// The web app's resume builder (the `/resume` route in web/src/app/App.jsx).
+    static let webBuilder = URL(string: "https://app.skillit.study/resume")!
 }

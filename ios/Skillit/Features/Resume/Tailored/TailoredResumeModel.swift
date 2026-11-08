@@ -33,9 +33,9 @@ final class TailoredResumeModel {
         }
     }
 
-    func pdfFile() async throws(SkillitError) -> URL {
-        let data = try await service.tailoredPDFData(id: tailored.id)
-        let url = URL.temporaryDirectory.appending(path: "Resume - \(tailored.company).pdf")
+    func file(_ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> URL {
+        let data = try await service.tailoredFileData(id: tailored.id, format, template: template)
+        let url = URL.temporaryDirectory.appending(path: "Resume - \(tailored.company).\(format.fileExtension)")
         do {
             try data.write(to: url, options: .atomic)
         } catch {

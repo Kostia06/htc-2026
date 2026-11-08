@@ -24,24 +24,6 @@ public extension SkillitClient {
     func deleteTailoredResume(id: String) async throws(SkillitError) {
         let _: DeletedResponse = try await send(authorized("DELETE", "api/resume/tailored/\(id)"))
     }
-
-    /// The tailored copy as a one-page PDF. Fetched through `session` so previews and tests can stub it.
-    func tailoredResumePDF(id: String, using session: URLSession = .shared) async throws(SkillitError) -> Data {
-        let request = try await authorized("GET", "api/resume/tailored/\(id)/pdf")
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(for: request)
-        } catch {
-            throw .offline
-        }
-        guard let http = response as? HTTPURLResponse else { throw .unreadableResponse }
-        switch http.statusCode {
-        case 200 ..< 300: return data
-        case 401: throw .unauthorized
-        default: throw .rejected(status: http.statusCode, message: "The PDF couldn't be made. Try again.")
-        }
-    }
 }
 
 private struct TailorBody: Encodable {

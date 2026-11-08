@@ -69,7 +69,9 @@
             return Self.suggestions
         }
 
-        func resumePDFData() async throws(SkillitError) -> Data {
+        func resumeFileData(_ format: ResumeFileFormat, template _: ResumeTemplate) async throws(SkillitError) -> Data {
+            // only the server writes Word files; samples have nothing real to hand over
+            guard format == .pdf else { throw .rejected(status: 501, message: "Word files need the server.") }
             // a real one-page PDF: the viewer rejects files PDFKit can't open, as a hand-written stub would be
             let page = CGRect(x: 0, y: 0, width: 612, height: 792)
             return UIGraphicsPDFRenderer(bounds: page).pdfData { context in

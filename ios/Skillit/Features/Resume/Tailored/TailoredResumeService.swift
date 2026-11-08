@@ -8,13 +8,13 @@ protocol TailoredResumeService: Sendable {
     func tailoredResume(id: String) async throws(SkillitError) -> TailoredResume
     func setChange(_ changeId: String, accepted: Bool, in tailoredId: String) async throws(SkillitError) -> TailoredResume
     func deleteTailoredResume(id: String) async throws(SkillitError)
-    func tailoredPDFData(id: String) async throws(SkillitError) -> Data
+    func tailoredFileData(id: String, _ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> Data
     func postings() async throws(SkillitError) -> [JobPosting]
 }
 
 extension SkillitClient: TailoredResumeService {
-    func tailoredPDFData(id: String) async throws(SkillitError) -> Data {
-        try await tailoredResumePDF(id: id, using: .shared)
+    func tailoredFileData(id: String, _ format: ResumeFileFormat, template: ResumeTemplate) async throws(SkillitError) -> Data {
+        try await tailoredResumeFile(id: id, format, template: template, using: .shared)
     }
 }
 
@@ -40,7 +40,7 @@ struct UnavailableTailoredResumes: TailoredResumeService {
         throw .offline
     }
 
-    func tailoredPDFData(id _: String) async throws(SkillitError) -> Data {
+    func tailoredFileData(id _: String, _: ResumeFileFormat, template _: ResumeTemplate) async throws(SkillitError) -> Data {
         throw .offline
     }
 

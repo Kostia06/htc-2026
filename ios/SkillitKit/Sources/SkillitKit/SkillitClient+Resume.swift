@@ -17,24 +17,6 @@ public extension SkillitClient {
         let response: ImproveResponse = try await send(authorized("POST", "api/resume/improve", json: ImproveBody(section: section)))
         return response.suggestions
     }
-
-    /// The one-page PDF as bytes. Fetched through `session` so previews and tests can stub it.
-    func resumePDF(using session: URLSession = .shared) async throws(SkillitError) -> Data {
-        let request = try await authorized("GET", "api/resume/pdf")
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(for: request)
-        } catch {
-            throw .offline
-        }
-        guard let http = response as? HTTPURLResponse else { throw .unreadableResponse }
-        switch http.statusCode {
-        case 200 ..< 300: return data
-        case 401: throw .unauthorized
-        default: throw .rejected(status: http.statusCode, message: "The PDF couldn't be made. Try again.")
-        }
-    }
 }
 
 private struct ImproveBody: Encodable { let section: Resume.Section? }
