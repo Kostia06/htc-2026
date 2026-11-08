@@ -21,6 +21,7 @@
 		3D26C1D4F7221A9E4F9DA0A1 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81767F4472E5DBE4FB5A4C45 /* AppModel.swift */; };
 		4B59DD81FE264919D0522006 /* DemoVoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE286E7FB0D44FC5704345C6 /* DemoVoiceEngine.swift */; };
 		53FC654DE120776F10315F07 /* VoiceBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C0E783C2F58157DE7F73E7 /* VoiceBar.swift */; };
+		657D526B7C598E00855EFC3D /* RaisedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */; };
 		6CBB9DEC63B3CA2F3FBE446D /* VoicePracticeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1EDE27464E6189D9D9867C /* VoicePracticeService.swift */; };
 		7EED5812A692E4DE79AEADFF /* PairHeadsetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AC7984EFC40408CB45471D /* PairHeadsetView.swift */; };
 		8791C194D103DCCD7E951C4C /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98E02BB20641AC87CD9C677 /* SignInView.swift */; };
@@ -49,6 +50,7 @@
 		0C69EB42B2A0E56ED3B1078B /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		11527DF7976BB3AB34B60C69 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		17B637648F387CCF0004BA92 /* Skeleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton.swift; sourceTree = "<group>"; };
+		1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedButtonStyle.swift; sourceTree = "<group>"; };
 		24CF4743C4F931060411684C /* DraftReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftReviewView.swift; sourceTree = "<group>"; };
 		42C0E783C2F58157DE7F73E7 /* VoiceBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceBar.swift; sourceTree = "<group>"; };
 		4482678CC07BA0D02BD40D7D /* VoiceSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSessionView.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 		E6BAFA4968507B931F86B28D /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */,
 				17B637648F387CCF0004BA92 /* Skeleton.swift */,
 				C367F1F41FFEE4F0094C3478 /* Theme.swift */,
 			);
@@ -339,6 +342,7 @@
 				F89F694693F805600EB575E2 /* PracticeView.swift in Sources */,
 				A1862D157A56668845371D64 /* ProfileView.swift in Sources */,
 				1A7BD70FC25091010A4D129F /* QRScannerView.swift in Sources */,
+				657D526B7C598E00855EFC3D /* RaisedButtonStyle.swift in Sources */,
 				993420658B57E577A89FCB56 /* RavenApp.swift in Sources */,
 				28FB685D9FEFA8EB988846FA /* RoadmapView.swift in Sources */,
 				AA9242D5466CCE2C6214961E /* RootView.swift in Sources */,
