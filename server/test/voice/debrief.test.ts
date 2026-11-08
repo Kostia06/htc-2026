@@ -64,8 +64,8 @@ describe("buildDebrief", () => {
     serveModel(null, 400);
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const debrief = await buildDebrief(env, buildInterviewPlan(inputs()), [turn(), turn({ idx: 1, question: "Q2", scores: { structure: 1 } })]);
-    expect(debrief.overall).toBe(Math.round((80 + 20) / 2));
-    expect(debrief.perQuestion.map((q) => q.score)).toEqual([80, 20]);
+    expect(debrief.overall).toBe(Math.round((75 + 0) / 2));
+    expect(debrief.perQuestion.map((q) => q.score)).toEqual([75, 0]);
     expect(debrief.improvements[0].moment).toBe("Q2");
     expect(warn).toHaveBeenCalled();
   });
@@ -85,7 +85,8 @@ describe("normalizeDebrief", () => {
       },
       turns,
     );
-    expect(debrief.overall).toBe(100);
+    // 140 clamps to 100, then can't exceed what the answers earned: mean(0, 50) + 5
+    expect(debrief.overall).toBe(30);
     expect(debrief.verdict).toBe("ok");
     expect(debrief.strengths).toHaveLength(3);
     expect(debrief.improvements).toEqual(fallbackDebrief(turns).improvements);
@@ -97,7 +98,31 @@ describe("normalizeDebrief", () => {
   });
 
   it("scores a turn out of 100 from the Jev dimensions", () => {
-    expect(turnScore({ scores: { a: 5, b: 3 } })).toBe(80);
+    // 1–5 maps onto 0–100, so the lowest rating is 0, not 20
+    expect(turnScore({ scores: { a: 5, b: 3 } })).toBe(75);
+    expect(turnScore({ scores: { a: 1, b: 1 } })).toBe(0);
     expect(turnScore({ scores: {} })).toBeNull();
+  });
+
+  describe("non-answers", () => {
+    const yeah = (idx: number) =>
+      turn({ idx, question: `Q${idx}`, answer: "Yeah.", scores: { structure: 2, relevance: 2 }, delivery: { words: 1, fillerWords: 0, wordsPerMinute: 60 } });
+
+    it("score near zero even when the model is generous", () => {
+      const turns = [yeah(0), yeah(1), yeah(2)];
+      const debrief = normalizeDebrief({ ...modelReply, overall: 40, perQuestion: turns.map(() => ({ score: 40, oneLineFeedback: "ok" })) }, turns);
+      expect(debrief.overall).toBeLessThanOrEqual(10);
+      expect(debrief.perQuestion.every((q) => q.score <= 10)).toBe(true);
+    });
+
+    it("score near zero in the fallback too", () => {
+      expect(fallbackDebrief([yeah(0), yeah(1)]).overall).toBeLessThanOrEqual(10);
+    });
+
+    it("pull the overall down in proportion when only some answers are real", () => {
+      const turns = [turn(), yeah(1), yeah(2), yeah(3)];
+      const debrief = normalizeDebrief({ ...modelReply, overall: 80 }, turns);
+      expect(debrief.overall).toBeLessThan(40);
+    });
   });
 });
