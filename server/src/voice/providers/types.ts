@@ -7,7 +7,10 @@ export type VoiceCredentials =
   | { kind: "gemini-live"; token: string; model: string }
   | {
       kind: "elevenlabs";
+      // browser SDK (WebSocket)
       signedUrl: string;
+      // Swift SDK (WebRTC); voice over the signed URL is not supported there
+      conversationToken: string;
       // ElevenLabs takes the prompt from the client at connect time; the agent must allow these overrides
       overrides: { agent: { prompt: { prompt: string }; firstMessage: string } };
     };

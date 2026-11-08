@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { Hono } from "hono";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { voiceRouter } from "../../src/api/voice";
 import { issueSession, requireSession, verifySession } from "../../src/auth/session";
 import type { AppContext } from "../../src/env";
@@ -8,7 +8,6 @@ import { deps as jev } from "../../src/integrations/jev";
 import { updateProfile } from "../../src/memory/profile/store";
 import { deps as followUpModel } from "../../src/voice/follow-up";
 import { deps as liveToken } from "../../src/voice/providers/gemini";
-import { call, fakeDeps } from "../agents/fakes";
 import { profile } from "../voice/fixtures";
 
 const realLive = liveToken.fetch;
@@ -29,14 +28,22 @@ afterEach(() => {
   liveToken.fetch = realLive;
   jev.fetch = realJev;
   followUpModel.fetch = realFollowUp;
+  vi.unstubAllGlobals();
 });
 
-const debriefReplies = [call("finish", { summary: "Solid start.", prepList: [{ step: "Practise STAR", why: "answers lacked results" }] })];
+const debriefReply = {
+  overall: 64,
+  verdict: "Solid start.",
+  strengths: [{ quote: "built an API", why: "concrete" }],
+  improvements: [{ moment: "Q1", said: "I built an API.", better: "Add who used it.", example: "I built an API that 2,000 staff used daily." }],
+  perQuestion: [{ question: "Q1", score: 64, oneLineFeedback: "Add the result." }],
+  nextSteps: ["Add a number.", "Run it again."],
+};
 
-function voiceApp(replies = debriefReplies) {
+function voiceApp() {
   const app = new Hono<AppContext>();
   app.use("*", requireSession);
-  app.route("/", voiceRouter(() => fakeDeps({ replies }).deps));
+  app.route("/", voiceRouter());
   return app;
 }
 
@@ -89,12 +96,13 @@ describe("/api/voice", () => {
   });
 
   it("finishes with a debrief and refuses more turns afterwards", async () => {
+    vi.stubGlobal("fetch", async () => Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify(debriefReply) }] } }] }));
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
     await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API.", durationMs: 3000 });
     const finished = await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {});
     expect(finished.status).toBe(200);
-    expect(await finished.json()).toMatchObject({ summary: "Solid start." });
+    expect(await finished.json()).toEqual(debriefReply);
     expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q", answer: "A", durationMs: 1 })).status).toBe(409);
   });
 

@@ -1,14 +1,12 @@
 import { Hono } from "hono";
-import type { AgentDeps, Platform } from "../agents/core/types";
-import { liveDeps } from "../agents/live";
-import { orchestrate, type Task } from "../agents/orchestrator";
-import type { AppContext, Env } from "../env";
+import type { AppContext } from "../env";
 import { claimCooldown } from "../memory/cooldowns";
+import { buildDebrief } from "../voice/debrief";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany } from "../voice/session";
-import { addTurn, countSessionsSince, findSession, finishSession, listTurns, type StoredTurn, type VoiceSession } from "../voice/store";
+import { addTurn, countSessionsSince, findSession, finishSession, listTurns } from "../voice/store";
 import { VOICE_MODES, type VoiceMode } from "../voice/types";
 
 const SESSIONS_PER_HOUR = 10;
@@ -16,8 +14,6 @@ const MAX_ANSWER = 4000;
 const MAX_TRANSCRIPT_LINES = 80;
 // a real turn takes seconds of speech; faster than this is a loop or a script, not a person
 const NEXT_LINE_COOLDOWN_MS = 1000;
-
-type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 
 const isText = (value: unknown, max: number): value is string => typeof value === "string" && value.trim().length > 0 && value.length <= max;
 const optionalText = (value: unknown) => (typeof value === "string" && value.trim() ? value.trim().slice(0, 100) : undefined);
@@ -30,21 +26,7 @@ function parseTranscript(value: unknown): TranscriptLine[] | null {
   return valid ? value.map((line) => ({ speaker: line.speaker, text: line.text })) : null;
 }
 
-const averageOutOfTen = (turn: StoredTurn) => {
-  const values = Object.values(turn.scores);
-  return values.length ? Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 2) : 5;
-};
-
-function debriefTask(session: VoiceSession, turns: StoredTurn[], userId: string, platform: Platform): Task {
-  const role = session.plan.role;
-  if (session.mode === "networking") {
-    return { skillId: "networking-recap", platform, userId, input: { role, exchanges: turns.map(({ question, answer, tip }) => ({ question, answer, tip })) } };
-  }
-  const answers = turns.map((t) => ({ question: t.question, answer: t.answer, score: averageOutOfTen(t), feedback: t.tip }));
-  return { skillId: "interview-debrief", platform, userId, input: { company: session.companySlug ?? undefined, role, answers } };
-}
-
-export function voiceRouter(makeDeps: MakeDeps) {
+export function voiceRouter() {
   const router = new Hono<AppContext>();
 
   router.post("/sessions", async (c) => {
@@ -99,14 +81,10 @@ export function voiceRouter(makeDeps: MakeDeps) {
     if (!session) return c.json({ error: "unknown session" }, 404);
     const turns = await listTurns(c.env, userId, session.id);
     if (turns.length === 0) return c.json({ error: "nothing was said in this session yet" }, 400);
-    const body = await c.req.json<{ platform?: unknown }>().catch(() => ({}) as { platform?: unknown });
-    const platform: Platform = body.platform === "vr" ? "vr" : "app";
 
+    // one model call over the stored turns; the same debrief on the phone and in the headset
     await finishSession(c.env, userId, session.id);
-    const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
-    const run = await orchestrate(makeDeps(c.env, waitUntil), debriefTask(session, turns, userId, platform));
-    if (run.status === "failed") return c.json({ error: "the session was saved but the debrief could not be made" }, 502);
-    return c.json(run.output);
+    return c.json(await buildDebrief(c.env, session.plan, turns));
   });
 
   router.get("/sessions/:id", async (c) => {
@@ -119,4 +97,4 @@ export function voiceRouter(makeDeps: MakeDeps) {
   return router;
 }
 
-export const voice = voiceRouter(liveDeps);
+export const voice = voiceRouter();
