@@ -1,0 +1,121 @@
+.settings__stack {
+  gap: 28px;
+  padding-top: 8px;
+}
+.settings__labeled {
+  gap: 12px;
+  width: 100%;
+}
+.settings__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.settings__icon-label {
+  gap: 12px;
+}
+.settings__kept {
+  gap: 14px;
+  align-items: flex-start;
+}
+.settings__kept svg {
+  flex: none;
+  margin-top: 2px;
+}
+.settings__kept .stack {
+  gap: 2px;
+}
+.memory-explainer {
+  gap: 14px;
+  align-items: flex-start;
+}
+.memory-explainer svg {
+  flex: none;
+}
+.memory-explainer .stack {
+  gap: 4px;
+}
+.memory-empty {
+  padding: 0 4px;
+}
+.memory-head {
+  gap: 5px;
+}
+.memory-row {
+  align-items: flex-start;
+}
+.memory-row__actions {
+  gap: 2px;
+  margin: -6px -8px -6px 0;
+}
+.memory-row__btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--text-2);
+  transition: background 0.15s, color 0.15s;
+}
+.memory-row__btn.c-agent {
+  color: var(--agent);
+}
+.memory-row__btn:hover {
+  background: rgb(255 255 255 / 0.05);
+}
+.memory-row__btn.is-delete:hover {
+  color: var(--negative);
+}
+@media (hover: hover) {
+  .memory-row__actions {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .memory-row:hover .memory-row__actions,
+  .memory-row:focus-within .memory-row__actions {
+    opacity: 1;
+  }
+}
+.share-note {
+  display: flex;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.share-fields {
+  margin-top: 16px;
+}
+.share-picker {
+  gap: 12px;
+  display: flex;
+}
+.share-picker select {
+  background: none;
+  border: 0;
+  color: var(--text-2);
+  font: var(--body);
+  max-width: 60%;
+  outline: none;
+}
+.share-footnote {
+  gap: 8px;
+  align-items: flex-start;
+  padding-top: 6px;
+}
+.share-footnote svg {
+  flex: none;
+  margin-top: 2px;
+}
+.share-sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+  text-align: center;
+  animation: pop-in 0.4s var(--spring);
+}
+.share-sent .raised-btn {
+  max-width: 220px;
+}
