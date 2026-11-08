@@ -27,7 +27,7 @@ describe("POST /admin/reembed-vectors", () => {
     await env.DB.batch([
       env.DB.prepare("INSERT INTO companies (id, slug, name) VALUES ('c1', 'acme', 'Acme')"),
       env.DB.prepare("INSERT INTO company_facts (id, company_id, kind, text, source_url, fetched_at, content_hash) VALUES ('f1', 'c1', 'about', 'anvils', 'u', '2026', 'h1')"),
-      env.DB.prepare("INSERT INTO experiences (id, company_id, role, questions_json, created_at) VALUES ('e1', 'c1', 'Analyst', '[\"Why us?\"]', '2026')"),
+      env.DB.prepare("INSERT INTO experiences (id, company_id, role, questions_json, created_at) VALUES ('e1', 'c1', 'Analyst', '[\"Why us\"]', '2026')"),
     ]);
     const { index, upserted } = fakeVectors();
     const res = await post("/admin/reembed-vectors?limit=50", { Authorization: "Bearer s3cret" }, { ...env, ADMIN_SECRET: "s3cret", VECTORS: index });

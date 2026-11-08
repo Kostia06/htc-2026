@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { voiceProvider, type StartedVoice } from "../voice/providers";
 
@@ -21,7 +22,7 @@ export type RecapVoiceStart = { sessionId: string; opening: string } & StartedVo
 export async function startRecapVoice(env: Env, userId: string, company?: { slug: string; name: string }): Promise<RecapVoiceStart> {
   const started = await voiceProvider(env).startSession(env, { mode: "interview", instructions: recapInstructions(company?.name), opening: RECAP_OPENING });
   const sessionId = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO recap_voice_sessions (id, user_id, company_slug, created_at) VALUES (?, ?, ?, ?)")
+  await db(env).prepare("INSERT INTO recap_voice_sessions (id, user_id, company_slug, created_at) VALUES (?, ?, ?, ?)")
     .bind(sessionId, userId, company?.slug ?? null, new Date().toISOString())
     .run();
   return { sessionId, opening: RECAP_OPENING, ...started };
@@ -31,12 +32,12 @@ export type RecapVoiceSession = { id: string; companySlug?: string; finishedAt: 
 
 /** Only the owner's row comes back: user_id is in the WHERE, not checked afterwards. */
 export async function findRecapVoice(env: Env, userId: string, id: string): Promise<RecapVoiceSession | null> {
-  const row = await env.DB.prepare("SELECT id, company_slug, finished_at FROM recap_voice_sessions WHERE id = ? AND user_id = ?")
+  const row = await db(env).prepare("SELECT id, company_slug, finished_at FROM recap_voice_sessions WHERE id = ? AND user_id = ?")
     .bind(id, userId)
     .first<{ id: string; company_slug: string | null; finished_at: string | null }>();
   return row ? { id: row.id, companySlug: row.company_slug ?? undefined, finishedAt: row.finished_at } : null;
 }
 
 export async function finishRecapVoice(env: Env, userId: string, id: string) {
-  await env.DB.prepare("UPDATE recap_voice_sessions SET finished_at = ? WHERE id = ? AND user_id = ?").bind(new Date().toISOString(), id, userId).run();
+  await db(env).prepare("UPDATE recap_voice_sessions SET finished_at = ? WHERE id = ? AND user_id = ?").bind(new Date().toISOString(), id, userId).run();
 }

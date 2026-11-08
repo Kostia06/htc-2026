@@ -1,3 +1,4 @@
+import { db } from "../db";
 import { Hono } from "hono";
 import type { AppContext } from "../env";
 
@@ -7,7 +8,7 @@ export const companies = new Hono<AppContext>();
 
 // every researched company, freshest research first; counts only, the facts themselves come from /api/memory/:slug
 companies.get("/", async (c) => {
-  const { results } = await c.env.DB.prepare(
+  const { results } = await db(c.env).prepare(
     `SELECT c.slug, c.name, c.last_researched_at,
        (SELECT COUNT(*) FROM company_facts f WHERE f.company_id = c.id) AS fact_count,
        (SELECT COUNT(*) FROM experiences e WHERE e.company_id = c.id AND e.is_seeded = 0) AS reported_count

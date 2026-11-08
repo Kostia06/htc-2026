@@ -13,7 +13,7 @@ import { claimFetchSlot } from "../src/memory/host-fetches";
 import { getCompanyInsights } from "../src/memory/insights";
 import { forget, listMemories, recall, remember } from "../src/memory/private/store";
 import { deleteProfile, getProfile, updateProfile } from "../src/memory/profile/store";
-import { countUnits, loadUnits, progress, saveUnit, setStepStatus } from "../src/roadmap/store";
+import { countSteps, insertSteps, loadCompleted, loadOpen, setStepStatus } from "../src/roadmap/store";
 import { addTurn, countSessionsSince, createSession, deleteOldSessions, findSession, finishSession, listTurns } from "../src/voice/store";
 import { openTestDatabase } from "./pglite";
 
@@ -27,7 +27,7 @@ beforeAll(async () => {
 });
 afterAll(() => db.pg.close());
 beforeEach(async () => {
-  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "roadmap_units", "feed_items", "feed_state", "memory_vectors"];
+  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "feed_items", "feed_state", "memory_vectors"];
   await db.pg.exec(tables.map((t) => `DELETE FROM ${t}`).join("; "));
 });
 
@@ -103,8 +103,8 @@ describe("pairing", () => {
     const offer = await offerCode(env, "alice", NOW);
     expect(offer.code).toMatch(/^\d{4}$/);
     expect(await offerStatus(env, "alice", offer.code, NOW)).toBe("waiting");
-    expect(await claimCode(env, offer.code, env.SESSION_SECRET, NOW)).not.toBeNull();
-    expect(await claimCode(env, offer.code, env.SESSION_SECRET, NOW)).toBeNull();
+    expect(await claimCode(env, offer.code, NOW)).not.toBeNull();
+    expect(await claimCode(env, offer.code, NOW)).toBeNull();
     expect(await offerStatus(env, "alice", offer.code, NOW)).toBe("claimed");
     expect(await deleteExpiredPairings(env, new Date(NOW.getTime() + 3 * 60_000))).toBe(1);
   });
@@ -140,17 +140,17 @@ describe("voice sessions", () => {
 });
 
 describe("roadmap", () => {
-  const unit = { title: "Unit 1", steps: [{ id: "s1", title: "Read" }, { id: "s2", title: "Build" }] } as never;
+  const step = (title: string) => ({ kind: "project", title, why: "w", detail: "d", estimate: "1 hr", label: "ready_now" }) as never;
 
-  it("saves units once, tracks step status and sums progress", async () => {
-    expect(await saveUnit(env, "alice", 0, unit)).toBe(true);
-    expect(await saveUnit(env, "alice", 0, unit)).toBe(false);
-    expect(await countUnits(env, "alice")).toBe(1);
-    expect(await setStepStatus(env, "alice", "s1", "done")).toBe(true);
-    expect(await setStepStatus(env, "bob", "s1", "done")).toBe(false);
-    expect((await loadUnits(env, "alice", 0, 5))[0].steps.map((s) => s.status)).toEqual(["done", "todo"]);
-    expect(await progress(env, "alice")).toEqual({ done: 1, total: 2, thisWeek: 1 });
-    expect(await progress(env, "bob")).toEqual({ done: 0, total: 0, thisWeek: 0 });
+  it("inserts steps once per position, tracks status with a note and counts progress", async () => {
+    expect(await insertSteps(env, "alice", 0, [step("Read"), step("Build")], "template")).toBe(true);
+    expect(await insertSteps(env, "alice", 0, [step("Read")], "template")).toBe(false);
+    const [first] = await loadOpen(env, "alice", 0, 5);
+    expect((await setStepStatus(env, "alice", first.id, "done", "built it"))?.status).toBe("done");
+    expect(await setStepStatus(env, "bob", first.id, "done", undefined)).toBeNull();
+    expect((await loadCompleted(env, "alice"))[0].note).toBe("built it");
+    expect(await countSteps(env, "alice")).toEqual({ total: 2, done: 1, open: 1 });
+    expect(await countSteps(env, "bob")).toEqual({ total: 0, done: 0, open: 0 });
   });
 });
 
@@ -161,13 +161,13 @@ describe("feed", () => {
     await releaseClaim(env, "alice");
     expect(await claimRebuild(env, "alice", NOW)).toBe(true);
     const cards = Array.from({ length: 3 }, (_, i) => ({ id: `card${i}` }) as never);
-    await saveFeed(env, "alice", cards, NOW);
-    const page = await readFeed(env, "alice", 0, 2);
+    await saveFeed(env, "alice", { jobs: cards, events: [], hackathons: [], courses: [] } as never, NOW);
+    const page = await readFeed(env, "alice", "jobs", 0, 2);
     expect(page.cards.length).toBe(2);
     expect(page.hasMore).toBe(true);
     expect(page.state.builtAt).toBe(NOW.toISOString());
     expect(isStale(page.state, NOW)).toBe(false);
-    expect((await readFeed(env, "nobody", 0, 2)).state.builtAt).toBeNull();
+    expect((await readFeed(env, "nobody", "jobs", 0, 2)).state.builtAt).toBeNull();
     expect(await staleFeedOwners(env, new Date(NOW.getTime() + 7 * 3_600_000), 10)).toEqual(["alice"]);
   });
 });
@@ -178,7 +178,7 @@ describe("garbage collection", () => {
     await db.pg.exec("INSERT INTO company_facts (id, company_id, kind, text, source_url, fetched_at, content_hash) VALUES ('old', 'c1', 'about', 'x', 'u', '2020-01-01', 'h')");
     await db.pg.exec("INSERT INTO cache (key, value, expires_at) VALUES ('k', 'v', '2020-01-01')");
     const deleteVectors = vi.spyOn(gcDeps, "deleteVectors").mockResolvedValue();
-    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 0, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, voiceSessionsDeleted: 0 });
+    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 0, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, voiceSessionsDeleted: 0 });
     expect(deleteVectors).toHaveBeenCalledWith(env, ["fact:old"]);
   });
 });

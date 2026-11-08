@@ -29,7 +29,6 @@ export const PRIMARY_KEYS: Record<string, string[]> = {
   user_documents: ["id"],
   voice_sessions: ["id"],
   voice_turns: ["session_id", "idx"],
-  roadmap_units: ["user_id", "idx"],
   roadmap_steps: ["id"],
   feed_items: ["user_id", "position"],
   feed_state: ["user_id"],
@@ -98,6 +97,15 @@ const addLiteral = (masked: Masked, text: string) => {
   masked.literals.push(`'${text.replace(/'/g, "''")}'`);
   return token(masked.literals.length - 1);
 };
+
+// only the simple `$.key` form maps cleanly onto ->>; anything deeper still fails loudly below
+function translateJsonExtract(masked: Masked) {
+  masked.code = masked.code.replace(/\bjson_extract\s*\(\s*([\w."]+)\s*,\s*(\u0001\d+\u0002)\s*\)/gi, (whole, column: string, path: string) => {
+    const index = Number(/\d+/.exec(path)?.[0]);
+    const key = /^'\$\.(\w+)'$/.exec(masked.literals[index] ?? "")?.[1];
+    return key ? `(${column}::jsonb ->> ${addLiteral(masked, key)})` : whole;
+  });
+}
 
 // SQLite's strftime directives → to_char patterns; letters in the format must be quoted for to_char
 const STRFTIME: Record<string, string> = { Y: "YYYY", m: "MM", d: "DD", H: "HH24", M: "MI", S: "SS", f: "SS.MS", j: "DDD", "%": "%" };
@@ -204,6 +212,7 @@ export type TranslateOptions = { ddl?: boolean };
 /** One SQLite statement → one Postgres statement. Throws UnsupportedSql for anything it cannot translate faithfully. */
 export function translate(sql: string, options: TranslateOptions = {}): string {
   const masked = mask(sql);
+  translateJsonExtract(masked);
   const unsupported = UNSUPPORTED_FUNCTIONS.exec(masked.code) ?? (options.ddl ? null : UNSUPPORTED_CLAUSES.exec(masked.code));
   if (unsupported) throw new UnsupportedSql(unsupported[1], sql);
   const alias = MIXED_CASE_ALIAS.exec(masked.code);

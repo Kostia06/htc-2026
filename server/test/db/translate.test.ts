@@ -59,6 +59,16 @@ describe("translate: inserts", () => {
 });
 
 describe("translate: functions and keywords", () => {
+  it("reads a top-level JSON field with ->> so json_extract queries work on Postgres", () => {
+    expect(translate("SELECT card FROM feed_items WHERE user_id = ?1 AND json_extract(card, '$.id') = ?2")).toBe(
+      "SELECT card FROM feed_items WHERE user_id = $1 AND (card::jsonb ->> 'id') = $2",
+    );
+  });
+
+  it("still refuses json_extract paths it can't express simply", () => {
+    expect(() => translate("SELECT json_extract(card, '$.a[0].b') FROM t")).toThrow(UnsupportedSql);
+  });
+
   it("formats datetime('now') as the same ISO-like text SQLite produces", () => {
     expect(translate("SELECT datetime('now')")).toBe("SELECT to_char(now() at time zone 'utc', 'YYYY-MM-DD HH24:MI:SS')");
     expect(translate("SELECT datetime('now', '-7 days')")).toBe("SELECT to_char(now() at time zone 'utc' - interval '7 days', 'YYYY-MM-DD HH24:MI:SS')");
@@ -94,7 +104,6 @@ describe("translate: functions and keywords", () => {
       "SELECT last_insert_rowid()",
       "SELECT julianday('now')",
       "SELECT group_concat(a) FROM t",
-      "SELECT json_extract(card, '$.id') FROM feed_items",
       "SELECT changes()",
       "PRAGMA foreign_keys = ON",
       "SELECT a FROM t WHERE a GLOB('x*')",

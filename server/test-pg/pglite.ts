@@ -7,7 +7,10 @@ import { withDatabase } from "../src/db";
 import { type Executor, postgresDatabase } from "../src/db/postgres";
 import type { Row } from "../src/db/types";
 
-const SCHEMA = fileURLToPath(new URL("../../supabase/migrations/2026110801_raven_schema.sql", import.meta.url));
+// applied in order, exactly like Supabase applies its migrations folder
+const SCHEMA = ["2026110801_raven_schema.sql", "2026110802_raven_features.sql"].map((name) =>
+  fileURLToPath(new URL(`../../supabase/migrations/${name}`, import.meta.url)),
+);
 
 // same number handling as the postgres.js executor: int8 and numeric come back as numbers, like D1
 const PARSERS = { 20: Number, 1700: Number };
@@ -29,7 +32,7 @@ export async function openTestDatabase() {
   const pg = new PGlite({ extensions: { vector }, parsers: PARSERS });
   // Supabase has these roles; PGlite does not, and the schema revokes from them
   await pg.exec("CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;");
-  await pg.exec(readFileSync(SCHEMA, "utf8"));
+  for (const file of SCHEMA) await pg.exec(readFileSync(file, "utf8"));
   const database = postgresDatabase(pgliteExecutor(pg));
   const env = withDatabase({ MEMORY_SECRET: "test-memory-secret", SESSION_SECRET: "test-secret" } as Env, database);
   return { pg, database, env };

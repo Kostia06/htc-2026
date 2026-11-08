@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { VOICE_MODES, type VoiceMode } from "../voice/types";
 
@@ -36,7 +37,7 @@ export function parseLaunch(body: unknown): Launch | null {
 
 export async function queueLaunch(env: Env, userId: string, launch: Launch, now = new Date()) {
   const expiresAt = new Date(now.getTime() + LAUNCH_LIFETIME_MS).toISOString();
-  await env.DB.prepare(
+  await db(env).prepare(
     `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (user_id) DO UPDATE SET mode = excluded.mode, company_slug = excluded.company_slug, role = excluded.role, step_id = excluded.step_id, created_at = excluded.created_at, expires_at = excluded.expires_at`,
   )
@@ -47,7 +48,7 @@ export async function queueLaunch(env: Env, userId: string, launch: Launch, now 
 
 /** Removes and returns the person's pending launch; of two headsets polling, only one gets it. */
 export async function takeLaunch(env: Env, userId: string, now = new Date()): Promise<Launch | null> {
-  const row = await env.DB.prepare("DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id")
+  const row = await db(env).prepare("DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id")
     .bind(userId, now.toISOString())
     .first<{ mode: VoiceMode; company_slug: string | null; role: string | null; step_id: string | null }>();
   if (!row) return null;
@@ -73,6 +74,6 @@ export async function waitForLaunch(env: Env, userId: string, waitMs: number, no
 }
 
 export async function deleteExpiredLaunches(env: Env, now = new Date()) {
-  const result = await env.DB.prepare("DELETE FROM headset_launches WHERE expires_at <= ?").bind(now.toISOString()).run();
+  const result = await db(env).prepare("DELETE FROM headset_launches WHERE expires_at <= ?").bind(now.toISOString()).run();
   return result.meta.changes;
 }

@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 
 const OFFER_LIFETIME_MS = 2 * 60 * 1000;
@@ -25,9 +26,9 @@ export async function offerCode(env: Env, userId: string, now = new Date()): Pro
   await deleteExpiredPairings(env, now);
   for (let draw = 0; draw < MAX_DRAWS; draw++) {
     const code = randomCode();
-    const [, inserted] = await env.DB.batch([
-      env.DB.prepare("DELETE FROM pairing_offers WHERE user_id = ?").bind(userId),
-      env.DB.prepare("INSERT INTO pairing_offers (user_id, code, status, created_at, expires_at) VALUES (?, ?, 'waiting', ?, ?) ON CONFLICT DO NOTHING").bind(
+    const [, inserted] = await db(env).batch([
+      db(env).prepare("DELETE FROM pairing_offers WHERE user_id = ?").bind(userId),
+      db(env).prepare("INSERT INTO pairing_offers (user_id, code, status, created_at, expires_at) VALUES (?, ?, 'waiting', ?, ?) ON CONFLICT DO NOTHING").bind(
         userId,
         code,
         now.toISOString(),
@@ -41,7 +42,7 @@ export async function offerCode(env: Env, userId: string, now = new Date()): Pro
 
 // conditional update: two headsets typing the same code can't both win. Returns whose code it was.
 export async function claimCode(env: Env, code: string, now = new Date()): Promise<string | null> {
-  const row = await env.DB.prepare("UPDATE pairing_offers SET status = 'claimed' WHERE code = ? AND status = 'waiting' AND expires_at > ? RETURNING user_id")
+  const row = await db(env).prepare("UPDATE pairing_offers SET status = 'claimed' WHERE code = ? AND status = 'waiting' AND expires_at > ? RETURNING user_id")
     .bind(code, now.toISOString())
     .first<{ user_id: string }>();
   return row?.user_id ?? null;
@@ -49,7 +50,7 @@ export async function claimCode(env: Env, code: string, now = new Date()): Promi
 
 // someone else's code reads as expired, so the endpoint can't be used to find live codes
 export async function offerStatus(env: Env, userId: string, code: string, now = new Date()): Promise<OfferStatus> {
-  const row = await env.DB.prepare("SELECT status, expires_at FROM pairing_offers WHERE user_id = ? AND code = ?")
+  const row = await db(env).prepare("SELECT status, expires_at FROM pairing_offers WHERE user_id = ? AND code = ?")
     .bind(userId, code)
     .first<{ status: "waiting" | "claimed"; expires_at: string }>();
   if (!row) return "expired";
@@ -58,6 +59,6 @@ export async function offerStatus(env: Env, userId: string, code: string, now = 
 }
 
 export async function deleteExpiredPairings(env: Env, now = new Date()) {
-  const result = await env.DB.prepare("DELETE FROM pairing_offers WHERE expires_at <= ?").bind(now.toISOString()).run();
+  const result = await db(env).prepare("DELETE FROM pairing_offers WHERE expires_at <= ?").bind(now.toISOString()).run();
   return result.meta.changes;
 }
