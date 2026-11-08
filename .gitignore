@@ -65,3 +65,11 @@ swift-generated-sources/
 landing/pnpm-lock.yaml
 .env
 .tts-cache/
+
+# swift and xcode build output, anywhere
+**/.build/
+ios/build/
+# leftovers swift and xcode tools drop in the repo root
+TemporaryDirectory.*/
+_*.lock
+swift-generated-sources/
