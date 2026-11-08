@@ -48,3 +48,33 @@ describe("applyPatch", () => {
     expect(applyPatch(emptyProfile(), { skills }).skills).toHaveLength(50);
   });
 });
+
+describe("applyPatch with removals", () => {
+  const seeded = () =>
+    applyPatch(emptyProfile(), {
+      targetRoles: ["Data analyst", "Developer"],
+      skills: [{ name: "Python", source: "resume" }, { name: "SQL", source: "self-reported" }],
+      experience: [{ role: "Co-op", org: "ATB", start: "May 2026" }],
+      education: [{ school: "UCalgary", program: "BSc CS" }],
+    });
+
+  it("removes chips by name, ignoring case", () => {
+    const after = applyPatch(seeded(), { remove: { targetRoles: ["data ANALYST"], skills: ["sql"] } });
+    expect(after.targetRoles).toEqual(["Developer"]);
+    expect(after.skills.map((s) => s.name)).toEqual(["Python"]);
+  });
+
+  it("removes experience and education by identity, then adds the edited row", () => {
+    const after = applyPatch(seeded(), {
+      remove: { experience: [{ role: "Co-op", org: "ATB", start: "May 2026" }], education: [{ school: "UCalgary", program: "BSc CS" }] },
+      experience: [{ role: "Developer Co-op", org: "ATB", start: "May 2026" }],
+    });
+    expect(after.experience).toEqual([{ role: "Developer Co-op", org: "ATB", start: "May 2026" }]);
+    expect(after.education).toEqual([]);
+  });
+
+  it("keeps a removal-only patch and drops an empty one", () => {
+    expect(parsePatch({ remove: { skills: ["Python"] }, junk: true })).toEqual({ remove: { skills: ["Python"] } });
+    expect(parsePatch({ remove: { nothing: [] } })).toEqual({});
+  });
+});
