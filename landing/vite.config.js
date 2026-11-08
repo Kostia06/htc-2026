@@ -21,8 +21,12 @@ function expand(html, depth = 0) {
 const CONTENT = path.resolve(import.meta.dirname, 'src/content.json');
 const ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
-// where the product app lives; "Get my plan" and "Sign in" link into its sign-up / sign-in screens
-let APP_URL = 'http://localhost:5173';
+// where the product app lives; "Get my plan" and "Sign in" link into its sign-up / sign-in screens.
+// Same site under /app by default; set APP_URL in .env.local for an app on another domain.
+let APP_URL = '/app';
+
+// the web app's dev server (web/, base /app/); this server forwards /app and /api to it
+const WEB_DEV = 'http://localhost:5173';
 
 /** Replace {{ key.path }} (escaped) and {{{ key.path }}} (raw) with values from src/content.json. */
 function fill(html) {
@@ -50,11 +54,28 @@ function htmlPartials() {
   };
 }
 
+/** /app without the slash would miss the web app's base; send it to /app/. */
+function appSlash() {
+  return {
+    name: 'app-slash',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url !== '/app' && !req.url.startsWith('/app?')) return next();
+        res.writeHead(302, { Location: req.url.replace('/app', '/app/') }).end();
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   APP_URL = loadEnv(mode, process.cwd(), '').APP_URL || APP_URL;
   return {
-    plugins: [htmlPartials()],
-    server: { port: 5180, strictPort: true },
+    plugins: [htmlPartials(), appSlash()],
+    server: {
+      port: 5180,
+      strictPort: true,
+      proxy: { '/app/': { target: WEB_DEV, ws: true }, '/api': { target: WEB_DEV } },
+    },
     preview: { port: 4173, strictPort: true },
   };
 });

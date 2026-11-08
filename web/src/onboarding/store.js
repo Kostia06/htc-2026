@@ -71,7 +71,7 @@ export async function uploadResume(file) {
   const json = await res.json().catch(() => ({}))
   if (res.status === 401) throw new Error("the server didn't accept your sign-in")
   if (!res.ok || !json.draft) throw new Error(json.error ?? 'the resume could not be read')
-  return json // { documentId, summary, draft, missing }
+  return json // { documentId, summary, draft, missing, droppedClaims }
 }
 
 const ROLE_HINTS = [
