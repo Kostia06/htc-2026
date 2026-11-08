@@ -104,7 +104,7 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
         <Panel width={WIDTH} height={HEIGHT}>
           <Text font={FONT_BOLD} fontSize={0.04} color={INK} anchorX="center" anchorY="top"
             position={[0, half - 0.04, 0]}>
-            {feedback?.ok ? greeting : 'Sign in to Raven'}
+            {feedback?.ok ? greeting : 'Sign in to Skillit'}
           </Text>
           <Text font={FONT} fontSize={0.021} color={MUTED} anchorX="center" anchorY="top" maxWidth={WIDTH - 0.08}
             position={[0, half - 0.092, 0]} textAlign="center">

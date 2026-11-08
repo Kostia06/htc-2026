@@ -41,6 +41,6 @@ export function messageFor(problem) {
     case 'offline':
       return 'You are offline'
     default:
-      return 'Could not reach Raven, try again'
+      return 'Could not reach Skillit, try again'
   }
 }

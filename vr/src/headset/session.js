@@ -12,8 +12,8 @@ export const REFRESH_MARGIN_MS = 5 * 60 * 1000
 export const RETRY_AFTER_FAILURE_MS = 30_000
 const MIN_REFRESH_DELAY_MS = 10_000
 
-// Same key as the 2D sign-in page on main, so a headset that signed in there
-// stays signed in here and vice versa.
+// The key the earlier 2D sign-in page used, so a headset that signed in there
+// stays signed in after this page replaced it. Do not rename it.
 export const STORAGE_KEY = 'raven.headset'
 
 export const isLive = (session, now) => Date.parse(session.expiresAt) > now.getTime()
