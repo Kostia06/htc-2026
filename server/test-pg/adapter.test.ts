@@ -17,7 +17,7 @@ describe("schema", () => {
         "agent_runs", "cache", "companies", "company_facts", "cooldowns", "courses", "experiences", "feed_actions", "feed_items", "feed_state",
         "headset_devices", "headset_launches", "host_fetches", "interview_sessions", "memory_vectors", "occupations", "pairing_offers", "postings",
         "recap_voice_sessions", "roadmap_steps", "session_mints", "submission_log", "user_documents", "user_memories", "user_profiles",
-        "user_postings", "user_resumes", "voice_sessions", "voice_turns",
+        "user_postings", "user_resumes", "user_tailored_resumes", "voice_sessions", "voice_turns",
       ].sort(),
     );
     const { rows } = await pg.query<{ tablename: string; rowsecurity: boolean }>("SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public'");

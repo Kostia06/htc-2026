@@ -29,6 +29,7 @@ const TABLES = [
   "headset_devices",
   "headset_launches",
   "user_postings",
+  "user_tailored_resumes",
 ];
 
 async function seed(userId: string) {
@@ -49,6 +50,7 @@ async function seed(userId: string) {
     env.DB.prepare("INSERT INTO headset_devices (id, user_id, name, refresh_hash, refresh_expires_at, created_at, last_seen_at) VALUES (?, ?, 'Quest 3', 'h', ?, ?, ?)").bind(`h-${tag}`, userId, NOW, NOW, NOW),
     env.DB.prepare("INSERT INTO headset_launches (user_id, mode, created_at, expires_at) VALUES (?, 'interview', ?, ?)").bind(userId, NOW, NOW),
     env.DB.prepare("INSERT INTO user_postings (id, user_id, company_slug, ciphertext, iv, created_at) VALUES (?, ?, 'acme', 'c', 'i', ?)").bind(`p-${tag}`, userId, NOW),
+    env.DB.prepare("INSERT INTO user_tailored_resumes (id, user_id, posting_id, ciphertext, iv, created_at, updated_at) VALUES (?, ?, 'po', 'c', 'i', ?, ?)").bind(`t-${tag}`, userId, NOW, NOW),
   ]);
 }
 
