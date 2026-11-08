@@ -6,10 +6,11 @@ import { Room } from './Room.jsx'
 import { Interviewer } from './Interviewer.jsx'
 import { ActionButton, Captions, QuestionPanel, ReviewPanel } from './Panels.jsx'
 import { useReducedMotion } from '../ui/useReducedMotion.js'
+import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './seating.js'
 
 // Laid out for a candidate sitting at the near edge of the desk, looking down -Z.
 // These are the values you actually tune while wearing the headset.
-const INTERVIEWER = { position: [0, 0, -1.63], rotation: [0, 0, 0] }
+const INTERVIEWER = { position: [0, 0, INTERVIEWER_Z], rotation: [0, 0, 0] }
 const QUESTION_PANEL = { position: [0.54, 1.2, -1.02], rotation: [-0.1, -0.45, 0] }
 const REVIEW_PANEL = { position: [-0.56, 1.22, -0.98], rotation: [-0.1, 0.47, 0] }
 const BUTTON = { position: [0, 0.9, -0.56], rotation: [-0.8, 0, 0] }
@@ -22,7 +23,6 @@ const REVIEW_VISIBLE_MS = 6000
 // candidate dial it in with the thumbstick and remember it.
 const HEIGHT_KEY = 'aim.heightOffset'
 const HEIGHT_RANGE = [-0.8, 1.0]
-const INTERVIEWER_EYE_Y = 1.19 // measured from the rig's head bone
 
 function useHeightOffset(inXR) {
   const [offset, setOffset] = useState(() => {
@@ -102,7 +102,7 @@ function useHeightOffset(inXR) {
 }
 
 export function Scene({ interview }) {
-  const { phase, question, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, heard, micDenied, getAmplitude, actions } = interview
+  const { phase, question, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, heard, micDenied, getAmplitude, actions, isStub } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const { offset: heightOffset, measured, calibrated } = useHeightOffset(inXR)
@@ -153,14 +153,17 @@ export function Scene({ interview }) {
         error={error}
         position={QUESTION_PANEL.position}
         rotation={QUESTION_PANEL.rotation}
+        reducedMotion={reducedMotion}
       />
 
       {(showReview || phase === 'done') && (
         <ReviewPanel
-          result={phase === 'done' ? null : result}
+          result={phase === 'done' ? null : toPanelScore(result)}
           summary={phase === 'done' ? summary : null}
+          sample={isStub}
           position={REVIEW_PANEL.position}
           rotation={REVIEW_PANEL.rotation}
+          reducedMotion={reducedMotion}
         />
       )}
 
@@ -176,35 +179,42 @@ export function Scene({ interview }) {
   )
 }
 
+// The Worker returns { scores, delivery, tip }; the panel renders flat keys.
+// Adapting here keeps the panel free of backend shapes.
+function toPanelScore(score) {
+  if (!score) return null
+  const scores = score.scores ?? {}
+  return {
+    ...scores,
+    wpm: score.delivery?.wordsPerMinute ?? 0,
+    fillerWords: score.delivery?.fillerWords ?? 0,
+    tip: score.tip,
+  }
+}
+
 function buttonFor(phase, actions, { heard, micDenied } = {}) {
   switch (phase) {
     case 'idle':
-      return {
-        label: 'Begin',
-        hint: 'Trigger / A  ·  click thumbstick to re-level your eye height',
-        onClick: actions.begin,
-        accent: '#2f7d5b',
-      }
+      return { label: 'Begin', hint: 'Pull the trigger or press A', onClick: actions.begin }
     case 'asking':
-      return { label: 'Speaking…', hint: 'Wait for the question', disabled: true, onClick: () => {} }
+      return { label: 'Listen', disabled: true, busy: true, onClick: () => {} }
     case 'awaiting':
       return {
         label: 'Answer',
         hint: micDenied ? 'Microphone blocked — press to answer' : 'Press to answer',
         onClick: actions.startAnswer,
-        accent: '#2f6f8a',
       }
     case 'listening':
       return {
-        label: heard ? 'Listening…' : 'Go ahead',
+        label: heard ? 'Listening' : 'Go ahead',
         hint: heard ? 'Pause when you are finished' : 'Just start talking',
         onClick: actions.stopAnswer,
-        accent: '#8a4a3a',
+        tone: 'red',
       }
-    case 'done':
-      return { label: 'Again', hint: 'Trigger / A', onClick: actions.restart, accent: '#2f7d5b' }
     case 'scoring':
-      return { label: 'Thinking…', disabled: true, onClick: () => {} }
+      return { label: 'Thinking', disabled: true, busy: true, onClick: () => {} }
+    case 'done':
+      return { label: 'Practice again', hint: 'Trigger or A', onClick: actions.restart, tone: 'green' }
     default:
       return null
   }
@@ -258,7 +268,6 @@ function useControllerInput({ phase, actions }) {
     if (advance) {
       if (current === 'idle') actions.begin()
       else if (current === 'awaiting') actions.startAnswer()
-      else if (current === 'review') actions.ask()
       else if (current === 'done') actions.restart()
     } else if (current === 'listening') {
       actions.stopAnswer()

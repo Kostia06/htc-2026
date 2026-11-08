@@ -4,6 +4,7 @@ import { OrbitControls, Preload } from '@react-three/drei'
 import { XR, createXRStore } from '@react-three/xr'
 import * as THREE from 'three'
 import { Scene } from './scene/Scene.jsx'
+import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './scene/seating.js'
 import { Overlay } from './ui/Overlay.jsx'
 import { useInterview } from './interview/useInterview.js'
 
@@ -24,7 +25,8 @@ export default function App() {
         shadows="percentage"
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
-        camera={{ position: [0, 1.22, 0.1], fov: 62, near: 0.05, far: 60 }}
+        // the candidate's seat, eyes level with the interviewer's
+        camera={{ position: [0, INTERVIEWER_EYE_Y, 0.1], fov: 62, near: 0.05, far: 60 }}
         onCreated={({ gl, scene }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping
           gl.toneMappingExposure = 1.05
@@ -38,7 +40,8 @@ export default function App() {
         {/* Desktop preview only: inside XR the headset drives the camera and
             these controls are inert. */}
         <OrbitControls
-          target={[0, 1.12, -1.35]}
+          // his face, a little below the eyes so his hands on the table stay in frame
+          target={[0, INTERVIEWER_EYE_Y - 0.1, INTERVIEWER_Z]}
           enablePan={false}
           minDistance={0.4}
           maxDistance={2.4}

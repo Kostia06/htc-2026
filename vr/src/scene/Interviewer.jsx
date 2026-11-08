@@ -3,7 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js'
-import { applyIdle, buildRig, hasMorph, lookAt, setMorph } from './avatarRig.js'
+import { AVATAR_SINK, applyIdle, buildRig, hasMorph, lookAt, setMorph } from './avatarRig.js'
+import { applyArms, createBodyMotion, headOffsets, leanOf, updateBodyMotion } from './bodyMotion.js'
 import { ALL_VISEMES, createFaceDriver, textToVisemes } from './lipSync.js'
 
 // Oculus visemes give the best mouth shapes, but most surviving avatar vendors
@@ -29,15 +30,16 @@ const ARKIT_SHAPES = [
   'mouthStretchLeft', 'mouthStretchRight', 'mouthSmileLeft', 'mouthSmileRight',
 ]
 
-// Ready Player Me rigs are authored standing with their feet on y=0, so the whole
-// model drops by roughly a seat height to sit in the chair. That is a property of
-// the rig, not of the scene, so callers pass the chair position and this handles it.
-const AVATAR_SINK = -0.41
 
+// The built-in figure stands in only when the GLB can't be loaded. It used to be
+// the loading placeholder too, and a copy of it outlived the load: it sits in the
+// same chair, so its wider torso, arms and hands showed through beside the real
+// avatar once his arms rested forward. The GLB is preloaded, so loading shows
+// nothing for a moment instead.
 export function Interviewer(props) {
   return (
     <AvatarBoundary fallback={<Figure {...props} />}>
-      <Suspense fallback={<Figure {...props} />}>
+      <Suspense fallback={null}>
         <AvatarModel {...props} />
       </Suspense>
     </AvatarBoundary>
@@ -71,6 +73,7 @@ function AvatarModel({ position = [0, 0, 0], rotation = [0, 0, 0], speaking, spe
   }, [rig])
 
   const gaze = useRef(new THREE.Vector3())
+  const body = useMemo(() => createBodyMotion(), [])
   const time = useRef(0)
 
   // Drive the mouth from the actual words rather than a generic envelope.
@@ -87,14 +90,18 @@ function AvatarModel({ position = [0, 0, 0], rotation = [0, 0, 0], speaking, spe
     time.current += dt
     const t = time.current
 
-    applyIdle(rig, t, reducedMotion ? 0.25 : 1)
-
-    // Hold eye contact, glancing away briefly so it does not stare.
-    gaze.current.copy(camera.position)
-    if (Math.sin(t * 0.23) > 0.93) gaze.current.x += 0.5
-    lookAt(rig, gaze.current, dt, 1)
-
+    const scale = reducedMotion ? 0.25 : 1
     const amplitude = speaking ? (getAmplitude?.() ?? null) : null
+    updateBodyMotion(body, dt, { speaking, listening, amplitude, scale })
+    applyIdle(rig, t, scale, leanOf(body) * scale)
+    applyArms(rig, body)
+
+    // Hold eye contact, glancing away briefly so it does not stare; people glance
+    // away more while they talk than while they listen.
+    gaze.current.copy(camera.position)
+    if (Math.sin(t * 0.23) > (speaking ? 0.8 : 0.93)) gaze.current.x += 0.5
+    lookAt(rig, gaze.current, dt, 1, headOffsets(body, scale))
+
     const frame = face.update(dt, { speaking, amplitude, listening })
 
     if (hasVisemes) {

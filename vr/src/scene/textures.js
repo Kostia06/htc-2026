@@ -598,6 +598,217 @@ export function makeSkyTexture(options = {}) {
 }
 
 // ---------------------------------------------------------------------------
+// Office decor: paintings, a framed certificate, book spines
+// ---------------------------------------------------------------------------
+
+const PALETTES = {
+  dusk: ['#2f3e55', '#c8743f', '#e8b878', '#8a5a44', '#f1e3c8'],
+  sage: ['#55684f', '#a3b18a', '#dad7c3', '#3a4a3f', '#c99f6e'],
+  coast: ['#24445c', '#4f7f99', '#9ec3cf', '#e9e2d0', '#c76b4a'],
+}
+
+// Soft dabs of paint: many translucent strokes so a flat fill reads as canvas.
+function brushFill(ctx, rng, x, y, w, h, color, { strokes = 260, size = 18, alpha = 0.16 } = {}) {
+  const [r, g, b] = rgb(color)
+  for (let i = 0; i < strokes; i++) {
+    const cx = x + rng() * w
+    const cy = y + rng() * h
+    const len = size * (0.6 + rng())
+    const shade = (rng() - 0.5) * 34
+    ctx.strokeStyle = `rgba(${clamp255(r + shade)},${clamp255(g + shade)},${clamp255(b + shade)},${alpha})`
+    ctx.lineWidth = size * (0.25 + rng() * 0.5)
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    const angle = (rng() - 0.5) * 0.9
+    ctx.moveTo(cx - Math.cos(angle) * len, cy - Math.sin(angle) * len)
+    ctx.lineTo(cx + Math.cos(angle) * len, cy + Math.sin(angle) * len)
+    ctx.stroke()
+  }
+}
+
+/**
+ * A painting for the wall. `style` is 'landscape' (layered hills under a sky)
+ * or 'abstract' (stacked colour fields, the kind every office buys). Same seed,
+ * same picture.
+ */
+export function makePaintingTexture(options = {}) {
+  const { style = 'abstract', palette = 'dusk', width = 384, height = 512, seed = 11 } = options
+  return memo(`painting|${style}|${palette}|${width}|${height}|${seed}`, () => {
+    const canvas = makeCanvas(width, height)
+    const ctx = context2d(canvas)
+    const rng = createRng(seed)
+    const colors = PALETTES[palette] ?? PALETTES.dusk
+
+    if (style === 'landscape') {
+      const horizon = height * (0.42 + rng() * 0.1)
+      const sky = ctx.createLinearGradient(0, 0, 0, horizon)
+      sky.addColorStop(0, colors[0])
+      sky.addColorStop(1, colors[4])
+      ctx.fillStyle = sky
+      ctx.fillRect(0, 0, width, horizon + 4)
+      brushFill(ctx, rng, 0, 0, width, horizon, colors[4], { strokes: 180, size: 22, alpha: 0.08 })
+      // hills, back to front, each darker and more saturated
+      for (let layer = 0; layer < 4; layer++) {
+        const base = horizon + layer * (height - horizon) * 0.22
+        const color = colors[[2, 1, 3, 0][layer]]
+        ctx.fillStyle = color
+        ctx.beginPath()
+        ctx.moveTo(0, height)
+        const phase = rng() * 6
+        const amp = 18 + rng() * 34
+        for (let x = 0; x <= width; x += 8) {
+          ctx.lineTo(x, base - amp * Math.sin(x / (60 + layer * 25) + phase) - amp * 0.4 * Math.sin(x / 23 + phase * 2))
+        }
+        ctx.lineTo(width, height)
+        ctx.fill()
+        brushFill(ctx, rng, 0, base - amp, width, height - base + amp, color, { strokes: 120, size: 14, alpha: 0.12 })
+      }
+    } else {
+      ctx.fillStyle = colors[4]
+      ctx.fillRect(0, 0, width, height)
+      brushFill(ctx, rng, 0, 0, width, height, colors[4], { strokes: 400, size: 26, alpha: 0.1 })
+      // three or four soft-edged fields, stacked with a little air between
+      const fields = 3 + Math.floor(rng() * 2)
+      const margin = width * 0.1
+      let y = height * 0.08
+      const span = height * 0.84
+      for (let i = 0; i < fields; i++) {
+        const h = (span / fields) * (0.7 + rng() * 0.35)
+        brushFill(ctx, rng, margin, y, width - margin * 2, h, colors[i % 4], { strokes: 700, size: 20, alpha: 0.22 })
+        y += h + span * 0.04
+      }
+    }
+    return finish(canvas, { wrapT: THREE.ClampToEdgeWrapping })
+  })
+}
+
+/** A framed certificate: cream paper, a title bar, lines of "text" and a seal. */
+export function makeCertificateTexture(options = {}) {
+  const { width = 512, height = 384, seed = 5 } = options
+  return memo(`certificate|${width}|${height}|${seed}`, () => {
+    const canvas = makeCanvas(width, height)
+    const ctx = context2d(canvas)
+    const rng = createRng(seed)
+    ctx.fillStyle = '#f4efe2'
+    ctx.fillRect(0, 0, width, height)
+    ctx.strokeStyle = '#a88c4d'
+    ctx.lineWidth = 6
+    ctx.strokeRect(18, 18, width - 36, height - 36)
+    ctx.fillStyle = '#3b3a36'
+    ctx.fillRect(width * 0.22, height * 0.16, width * 0.56, 16)
+    for (let i = 0; i < 5; i++) {
+      const w = width * (0.35 + rng() * 0.3)
+      ctx.globalAlpha = 0.55
+      ctx.fillRect((width - w) / 2, height * (0.34 + i * 0.075), w, 6)
+    }
+    ctx.globalAlpha = 1
+    ctx.fillStyle = '#b5893a'
+    ctx.beginPath()
+    ctx.arc(width * 0.78, height * 0.78, 30, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#3b3a36'
+    ctx.fillRect(width * 0.16, height * 0.8, width * 0.28, 3)
+    return finish(canvas, { wrapT: THREE.ClampToEdgeWrapping })
+  })
+}
+
+/**
+ * The wrap-around label of a water bottle. The wordmark sits at u = 0.5, which is
+ * the front once the label cylinder starts at theta = PI; small print on the back.
+ */
+export function makeBottleLabelTexture(options = {}) {
+  const { brand = 'SkilliT', width = 1024, height = 300 } = options
+  return memo(`bottle-label|${brand}|${width}|${height}`, () => {
+    const canvas = makeCanvas(width, height)
+    const ctx = context2d(canvas)
+    const sans = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+
+    const sky = ctx.createLinearGradient(0, 0, 0, height)
+    sky.addColorStop(0, '#ffffff')
+    sky.addColorStop(1, '#e3f1fa')
+    ctx.fillStyle = sky
+    ctx.fillRect(0, 0, width, height)
+
+    // two soft waves across the lower half, all the way round
+    for (const [y, color] of [[0.7, 'rgba(84,160,214,0.35)'], [0.8, 'rgba(24,96,170,0.55)']]) {
+      ctx.fillStyle = color
+      ctx.beginPath()
+      ctx.moveTo(0, height)
+      for (let x = 0; x <= width; x += 8) ctx.lineTo(x, height * y + Math.sin((x / width) * Math.PI * 6) * height * 0.035)
+      ctx.lineTo(width, height)
+      ctx.fill()
+    }
+    ctx.fillStyle = '#12437a'
+    ctx.fillRect(0, 0, width, height * 0.05)
+
+    // front
+    const cx = width / 2
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillStyle = '#12437a'
+    ctx.font = `700 ${Math.round(height * 0.36)}px ${sans}`
+    ctx.fillText(brand, cx, height * 0.5)
+    ctx.font = `600 ${Math.round(height * 0.075)}px ${sans}`
+    ctx.fillStyle = '#2b6aa6'
+    ctx.fillText('PURE SPRING WATER', cx, height * 0.64)
+    ctx.font = `500 ${Math.round(height * 0.06)}px ${sans}`
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText('500 mL', cx, height * 0.93)
+
+    // back: a small panel of print and a recycling mark
+    for (const back of [width * 0.06, width * 0.94]) {
+      ctx.fillStyle = 'rgba(18,67,122,0.55)'
+      for (let i = 0; i < 6; i++) ctx.fillRect(back - width * 0.05, height * (0.18 + i * 0.06), width * (i === 5 ? 0.06 : 0.1), 3)
+    }
+    ctx.strokeStyle = 'rgba(18,67,122,0.6)'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.arc(width * 0.18, height * 0.4, height * 0.05, 0, Math.PI * 2)
+    ctx.stroke()
+
+    return finish(canvas, { wrapT: THREE.ClampToEdgeWrapping, anisotropy: 8 })
+  })
+}
+
+/**
+ * One shelf of books as a single texture with alpha: spines of different widths,
+ * heights and colours, the odd one leaning. One plane per shelf instead of a mesh
+ * per book keeps the bookcase to a handful of draw calls.
+ */
+export function makeBookSpinesTexture(options = {}) {
+  const { width = 512, height = 128, seed = 3 } = options
+  return memo(`books|${width}|${height}|${seed}`, () => {
+    const canvas = makeCanvas(width, height)
+    const ctx = context2d(canvas)
+    const rng = createRng(seed)
+    const colors = ['#6d2e2e', '#2f4a63', '#3e5a3c', '#c9b48a', '#272a2f', '#8a6a3a', '#5a4a6a', '#d8d2c4', '#9c4a2c']
+    let x = 4
+    while (x < width - 10) {
+      if (rng() < 0.08) {
+        x += 18 + rng() * 30 // a gap, or a book lying down
+        continue
+      }
+      const w = 10 + rng() * 16
+      const h = height * (0.62 + rng() * 0.36)
+      const color = colors[Math.floor(rng() * colors.length)]
+      ctx.fillStyle = color
+      ctx.fillRect(x, height - h, w, h)
+      // a band or two near the top of the spine, like a printed title
+      ctx.fillStyle = rng() < 0.5 ? 'rgba(232,214,160,0.75)' : 'rgba(0,0,0,0.25)'
+      ctx.fillRect(x + 2, height - h + h * 0.12, w - 4, 3)
+      if (rng() < 0.6) ctx.fillRect(x + 2, height - h + h * 0.3, w - 4, 5)
+      // shade the edge so neighbours don't merge
+      ctx.fillStyle = 'rgba(0,0,0,0.22)'
+      ctx.fillRect(x + w - 2, height - h, 2, h)
+      x += w + 1
+    }
+    const texture = finish(canvas, { wrapT: THREE.ClampToEdgeWrapping })
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    return texture
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Derived data maps (bonus)
 // ---------------------------------------------------------------------------
 //
