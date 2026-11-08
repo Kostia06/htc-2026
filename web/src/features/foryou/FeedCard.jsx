@@ -2,6 +2,7 @@
 // dismiss on touch screens; on a desktop the dismiss button shows on hover.
 import { useRef } from 'react'
 import { Bookmark, Calendar, Clock, DollarSign, Leaf, X } from 'lucide-react'
+import { safeUrl } from '../../lib/client'
 import { Chip } from '../../ui/Controls'
 import { cardDate, feedKind, whenText } from './kinds'
 
@@ -126,6 +127,19 @@ export default function FeedCard({ card, inSaved, onOpen, onSave, onDismiss }) {
             {when && <Chip icon={cardDate(card) ? Calendar : Clock}>{when}</Chip>}
             {card.salary && <Chip icon={DollarSign}>{card.salary.replace(/^\$/, '')}</Chip>}
           </div>
+          {/* Adzuna's terms ask for the credit wherever its listings are shown, not only at the end of the list */}
+          {card.attribution && safeUrl(card.attribution.url) && (
+            <a
+              href={card.attribution.url}
+              target="_blank"
+              rel="noreferrer"
+              className="feed-card__credit t-caption c-2"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              {card.attribution.label}
+            </a>
+          )}
         </div>
         <button
           type="button"

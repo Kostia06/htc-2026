@@ -156,6 +156,11 @@
 .bookmark:active {
   transform: scale(0.85);
 }
+.feed-card__credit {
+  align-self: flex-start;
+  text-decoration: none;
+}
+.feed-card__credit:hover { text-decoration: underline; }
 .feed-card__chips {
   display: flex;
   flex-wrap: wrap;
