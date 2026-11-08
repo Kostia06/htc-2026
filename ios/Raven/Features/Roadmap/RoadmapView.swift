@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// The home screen: progress at the top, the next few steps as cards, what's done by day, and the rest of the path below.
+/// The home screen: progress at the top and the winding path of steps below it.
 struct RoadmapView: View {
     @Environment(AppModel.self) private var app
     @State private var model: RoadmapModel?
@@ -41,7 +41,7 @@ struct RoadmapView: View {
             }
         case let .ready(page):
             if let model {
-                RoadmapList(model: model, page: page, onStart: startPractice)
+                RoadmapPath(model: model, page: page, onStart: startPractice)
             }
         }
     }
@@ -97,98 +97,4 @@ struct PracticeLaunch: Identifiable {
     var id: String {
         step.id
     }
-}
-
-private struct RoadmapList: View {
-    let model: RoadmapModel
-    let page: RoadmapPage
-    let onStart: (RoadmapStep) -> Void
-
-    @Namespace private var steps
-    @State private var position = ScrollPosition()
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    private static let upNextCount = 3
-    private static let doneAnchor = "done"
-
-    var body: some View {
-        @Bindable var model = model
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 28) {
-                ProgressCard(goal: page.goal, progress: page.progress)
-                section("Up next") {
-                    ForEach(page.next.prefix(Self.upNextCount)) { step in
-                        StepCard(step: step, style: .full) { act(on: step) }
-                            .matchedGeometryEffect(id: step.id, in: steps)
-                            .transition(.scale(scale: 0.96).combined(with: .opacity))
-                    }
-                }
-                if !page.completed.isEmpty {
-                    CompletedSection(days: page.completed, namespace: steps)
-                        .id(Self.doneAnchor)
-                }
-                if page.next.count > Self.upNextCount {
-                    section("Later") {
-                        ForEach(page.next.dropFirst(Self.upNextCount)) { step in
-                            StepCard(step: step, style: .compact) { act(on: step) }
-                                .matchedGeometryEffect(id: step.id, in: steps)
-                                .transition(.scale(scale: 0.96).combined(with: .opacity))
-                                .onAppear {
-                                    if step.id == page.next.last?.id {
-                                        Task { await model.loadMore() }
-                                    }
-                                }
-                        }
-                    }
-                }
-                if page.nextCursor != nil {
-                    MoreStepsSkeleton(failed: model.loadMoreFailed) { Task { await model.loadMore() } }
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-        }
-        .scrollPosition($position)
-        .refreshable { await model.load() }
-        .sensoryFeedback(.success, trigger: page.progress.done) { old, new in new > old }
-        .sheet(item: $model.finishing) { step in
-            MarkDoneSheet(step: step) { note in
-                withAnimation(animation) { model.complete(step, note: note) }
-            }
-        }
-        #if DEBUG
-        .task { applyDemo() }
-        #endif
-    }
-
-    private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.title3.bold())
-            content()
-        }
-    }
-
-    private func act(on step: RoadmapStep) {
-        if step.isPractice {
-            onStart(step)
-        } else {
-            model.finishing = step
-        }
-    }
-
-    private var animation: Animation {
-        reduceMotion ? .easeOut(duration: 0.2) : .spring(duration: 0.5)
-    }
-
-    #if DEBUG
-        /// `-RavenRoadmapDemo sheet` opens the mark-done sheet for the first step; `done` scrolls to what's finished. For screenshots.
-        private func applyDemo() {
-            switch UserDefaults.standard.string(forKey: "RavenRoadmapDemo") {
-            case "sheet": model.finishing = page.next.first { !$0.isPractice }
-            case "done": position.scrollTo(id: Self.doneAnchor, anchor: .top)
-            default: break
-            }
-        }
-    #endif
 }
