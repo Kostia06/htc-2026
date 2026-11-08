@@ -250,7 +250,11 @@ describe('createApiSession', () => {
 
     const started = await s.start()
 
-    expect(started).toEqual({ company: 'acme', role: 'Designer', opening: OPENING, question: FIRST })
+    // `voice` carries the provider's realtime agent credentials when the server
+    // offers one, and `questions` the full planned list.
+    expect(started).toMatchObject({ company: 'acme', role: 'Designer', opening: OPENING, question: FIRST })
+    expect(started.questions).toEqual(expect.arrayContaining([FIRST]))
+    expect(started).toHaveProperty('voice')
     expect(api.calls[0].url).toBe(`${BASE}/api/session`)
     expect(api.calls[0].method).toBe('POST')
     expect(api.calls[0].headers.authorization).toBeUndefined() // nothing to send yet

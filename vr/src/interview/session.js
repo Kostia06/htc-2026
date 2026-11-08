@@ -71,6 +71,12 @@ export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Softw
         role,
         opening: started.opening ?? null,
         question: first,
+        // The provider's own realtime voice agent. When present the client talks
+        // to it directly and it handles speech in, the model, and speech out —
+        // the same agent the phone app uses, so both sound identical. The signed
+        // URL carries its own auth; no key ever reaches this app.
+        voice: started.provider ? { provider: started.provider, ...started.credentials } : null,
+        questions: (started.questions ?? []).map((q) => q.text),
       }
     },
 
@@ -130,6 +136,8 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
         role,
         opening: `Hi, thanks for coming in. We're meeting about the ${role} role. Ready to start?`,
         question: EXAMPLE_QUESTIONS[index++].text,
+        voice: null,
+        questions: EXAMPLE_QUESTIONS.map((q) => q.text),
         isSeeded: true,
       }
     },
