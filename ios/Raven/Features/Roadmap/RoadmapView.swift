@@ -14,7 +14,9 @@ struct RoadmapView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.ground)
         }
-        .fullScreenCover(item: $practice, onDismiss: finishPractice) { VoiceSessionView(model: $0.session) }
+        .fullScreenCover(item: $practice, onDismiss: finishPractice) { launch in
+            VoiceSessionView(model: launch.session, onPracticeAgain: { startPractice(launch.step) })
+        }
         .task {
             guard model == nil else { return }
             let model = RoadmapModel(service: service)
@@ -48,7 +50,7 @@ struct RoadmapView: View {
         guard let action = step.action else { return }
         let mode: PracticeMode = action.type == .interview ? .interview : .networking
         let request = VoiceSessionRequest(mode: mode, companySlug: action.companySlug, role: action.role)
-        let session = VoiceSessionModel(request: request, service: voiceService, engine: LocalVoiceEngine())
+        let session = VoiceSessionModel(request: request, service: voiceService, engine: voiceEngine)
         let launch = PracticeLaunch(step: step, session: session)
         lastPractice = launch
         practice = launch
@@ -56,10 +58,10 @@ struct RoadmapView: View {
 
     /// A session that reached its summary counts as the step done; one closed early leaves the step as it was.
     private func finishPractice() {
-        guard let launch = lastPractice, case let .finished(summary) = launch.session.phase else { return }
+        guard let launch = lastPractice, case let .finished(debrief) = launch.session.phase else { return }
         lastPractice = nil
         withAnimation(.spring(duration: 0.5)) {
-            model?.complete(launch.step, note: String(summary.summary.prefix(160)))
+            model?.complete(launch.step, note: String("Scored \(debrief.overall)/100. \(debrief.verdict)".prefix(160)))
         }
     }
 
@@ -74,12 +76,16 @@ struct RoadmapView: View {
         #endif
     }
 
-    /// screenshots run without a signed-in client; they get the offline session instead of the server
+    // without a signed-in client (previews) there is no server to start a real voice session
     private var voiceService: any VoicePracticeService {
         if let client = app.client {
             return client
         }
-        return OfflineVoicePractice()
+        return PreviewVoicePractice()
+    }
+
+    private var voiceEngine: any VoiceEngine {
+        app.client == nil ? PreviewVoiceEngine() : ElevenLabsVoiceEngine()
     }
 }
 
