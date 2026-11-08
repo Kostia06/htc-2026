@@ -1,8 +1,9 @@
 // MainTabView.swift for a browser: the five tabs as a glass sidebar on wide screens, and as a floating glass
-// tab bar on phones that shrinks while scrolling down (tabBarMinimizeBehavior(.onScrollDown)).
+// tab bar on phones that shrinks while scrolling down (tabBarMinimizeBehavior(.onScrollDown)). The sidebar also
+// lists the resume builder, the web's own tool; on phones it opens from Profile, so Profile stays lit there.
 import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { Building2, CircleUserRound, GalleryVerticalEnd, Glasses, Route } from 'lucide-react'
+import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Route } from 'lucide-react'
 import { Spinner } from '../ui/Button'
 
 const TABS = [
@@ -10,10 +11,15 @@ const TABS = [
   { to: '/for-you', label: 'For you', icon: GalleryVerticalEnd },
   { to: '/practice', label: 'Practice', icon: Glasses },
   { to: '/companies', label: 'Companies', icon: Building2 },
-  { to: '/profile', label: 'Profile', icon: CircleUserRound, also: ['/settings'] },
+  { to: '/resume', label: 'Resume', icon: FileText, sidebarOnly: true },
+  { to: '/profile', label: 'Profile', icon: CircleUserRound, also: ['/settings', '/resume'] },
 ]
+const SIDEBAR = TABS
+const TABBAR = TABS.filter((tab) => !tab.sidebarOnly)
 
-const isActive = (tab, pathname) => [tab.to, ...(tab.also ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`))
+const matches = (tab, pathname) => [tab.to, ...(tab.also ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`))
+/** The first tab in the list that claims the path, so Resume wins over Profile wherever both are shown. */
+const activeTab = (tabs, pathname) => tabs.find((tab) => matches(tab, pathname))
 
 export function Ambient() {
   return (
@@ -27,6 +33,8 @@ export function Ambient() {
 export function Shell() {
   const { pathname } = useLocation()
   const [minimized, setMinimized] = useState(false)
+  const sidebarActive = activeTab(SIDEBAR, pathname)
+  const tabbarActive = activeTab(TABBAR, pathname)
 
   useEffect(() => {
     let last = window.scrollY
@@ -51,8 +59,8 @@ export function Shell() {
           <span className="sidebar__word">skillit</span>
         </div>
         <nav aria-label="Main">
-          {TABS.map((tab) => (
-            <NavLink key={tab.to} to={tab.to} className={() => `sidebar__item${isActive(tab, pathname) ? ' is-active' : ''}`}>
+          {SIDEBAR.map((tab) => (
+            <NavLink key={tab.to} to={tab.to} className={() => `sidebar__item${tab === sidebarActive ? ' is-active' : ''}`}>
               <tab.icon size={20} strokeWidth={2.1} aria-hidden />
               {tab.label}
             </NavLink>
@@ -74,11 +82,11 @@ export function Shell() {
       </div>
 
       <nav className={`tabbar glass-strong${minimized ? ' is-minimized' : ''}`} aria-label="Main">
-        {TABS.map((tab) => (
+        {TABBAR.map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}
-            className={() => `tabbar__item${isActive(tab, pathname) ? ' is-active' : ''}`}
+            className={() => `tabbar__item${tab === tabbarActive ? ' is-active' : ''}`}
             onClick={() => setMinimized(false)}
           >
             <tab.icon size={22} strokeWidth={2.1} aria-hidden />

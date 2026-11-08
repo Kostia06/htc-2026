@@ -1,56 +1,115 @@
-.resume-page {
-  padding-bottom: calc(var(--tabbar-space) + 96px);
-}
-@media (min-width: 900px) {
-  .resume-page { padding-bottom: 120px; }
-}
-.resume-page__stack {
+/* ---------- builder layout ---------- */
+.builder__grid {
+  display: grid;
   gap: 20px;
-  padding-top: 4px;
-}
-.resume-page__warn {
-  gap: 6px;
-}
-.resume-page__bottom {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--tabbar-space) - 4px);
-  z-index: 10;
-  padding: 8px 20px 12px;
-  background: linear-gradient(transparent, rgb(15 19 17 / 0.92) 30%);
-}
-.resume-page__bottom .raised-btn {
   max-width: 680px;
   margin: 0 auto;
+  padding-top: 4px;
 }
-@media (min-width: 900px) {
-  .resume-page__bottom {
-    left: var(--sidebar);
-    bottom: 0;
-    padding: 12px 40px 20px;
+/* wide enough for both: the paper on the left, the tools beside it, staying in view while the paper scrolls */
+@media (min-width: 1200px) {
+  .builder__grid {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+  }
+  .builder__paper { order: 1; }
+  .builder__tools {
+    order: 2;
+    position: sticky;
+    top: 84px;
   }
 }
+.builder__tools {
+  gap: 16px;
+}
 
-/* ---------- suggestions ---------- */
-.deck {
+/* ---------- where the resume stands ---------- */
+.builder__status {
   gap: 12px;
+}
+.builder__status.row {
+  gap: 10px;
+}
+.builder__status--draft {
+  border-color: rgb(227 209 173 / 0.35);
+}
+.builder__from {
+  gap: 8px;
+  align-items: flex-start;
+}
+.builder__from svg {
+  flex: none;
+  margin-top: 2px;
+}
+.builder__actions {
+  gap: 12px;
+  align-items: center;
+}
+.builder__actions .raised-btn {
+  flex: 1;
+}
+.builder__saved {
+  gap: 6px;
+}
+.builder__saved-line,
+.builder__warn {
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- coach and its suggestions ---------- */
+.coach {
+  gap: 14px;
+}
+.coach__intro {
+  gap: 4px;
+}
+.coach__title {
+  gap: 6px;
+  color: var(--agent);
+}
+.coach__company {
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--inset);
+}
+.coach__company select {
+  max-width: 60%;
+  background: none;
+  border: 0;
+  color: var(--text);
+  outline: none;
+}
+.coach__company select:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.deck {
+  gap: 10px;
 }
 .deck__head {
   justify-content: space-between;
 }
-.deck__title {
-  gap: 6px;
-}
 .suggestion {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border-color: rgb(227 209 173 / 0.35);
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--inset);
+  border: 1px solid rgb(227 209 173 / 0.35);
   animation: suggestion-in 0.45s var(--spring);
 }
 @keyframes suggestion-in {
   from { opacity: 0; transform: translateX(40px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .suggestion { animation: none; }
 }
 .suggestion__where {
   text-transform: uppercase;

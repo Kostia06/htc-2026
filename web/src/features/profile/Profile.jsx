@@ -62,7 +62,7 @@ export default function Profile() {
         <ProfileHeader profile={profile} onHeadline={(text) => edit({ type: 'headline', text })} />
 
         <Group>
-          <GroupRow to="/profile/resume" className="resume-row">
+          <GroupRow to="/resume" className="resume-row">
             <span className="row resume-row__inner">
               <PageThumbnail />
               <span className="stack">

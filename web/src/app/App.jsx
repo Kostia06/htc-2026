@@ -1,7 +1,7 @@
 // Every screen has its own URL under /app. Sheets are child routes drawn over their screen, so a link opens them
 // directly and the back button closes them. RootView.swift's phases decide which part of the tree is reachable.
 import { lazy, Suspense } from 'react'
-import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router'
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigate, useParams } from 'react-router'
 import { WifiOff } from 'lucide-react'
 import { Spinner } from '../ui/Button'
 import { ContentUnavailable } from '../ui/Feedback'
@@ -83,6 +83,13 @@ function Gate({ need, children }) {
   return <Navigate to={location.state?.from ?? HOME} replace />
 }
 
+/** An old address: sends it on to `to`, keeping the rest of the path and the query. */
+function Moved({ to }) {
+  const { '*': rest } = useParams()
+  const { search } = useLocation()
+  return <Navigate to={`${to}${rest ? `/${rest}` : ''}${search}`} replace />
+}
+
 function PracticeRecap() {
   const navigate = useNavigate()
   return <Recap onClose={() => navigate('/practice')} />
@@ -153,9 +160,11 @@ export default function App() {
               <Route path="education/:index" element={<EducationForm />} />
               <Route path="pdf" element={<PdfSheet back="/profile" />} />
             </Route>
-            <Route path="profile/resume" element={<Resume />}>
+            <Route path="profile/resume/*" element={<Moved to="/resume" />} />
+
+            <Route path="resume" element={<Resume />}>
               <Route path="edit/:section" element={<SectionEditor />} />
-              <Route path="pdf" element={<PdfSheet back="/profile/resume" />} />
+              <Route path="pdf" element={<PdfSheet back="/resume" />} />
             </Route>
 
             <Route path="settings" element={<Settings />} />
