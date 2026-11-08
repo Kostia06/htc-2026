@@ -23,6 +23,13 @@ export default function App() {
   const review = useInterviewReview(interview, headset)
   const captions = useCaptions()
 
+  // The Quest app opens this page as an immersive app (?app=quest), which closes unless
+  // the page goes into VR straight away; the browser allows it without a tap there.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('app') !== 'quest') return
+    store.enterVR().catch((error) => console.warn('auto enter VR failed', error))
+  }, [store])
+
   // "Practice in VR" on the phone queues a launch; pick it up while the room is
   // idle and start that interview. Paused during one so a second tap cannot
   // restart it. A launch naming a past session opens its review instead.
