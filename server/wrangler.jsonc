@@ -9,11 +9,11 @@
   ],
   "vectorize": [{ "binding": "VECTORS", "index_name": "htc-mentor-vectors" }],
   // Supabase cutover (README "Database: Supabase"): paste the id from `wrangler hyperdrive create`, then set DB_BACKEND to "postgres"
-  // "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<hyperdrive id>" }],
+  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "c8ece9819f6f4d24b1874397fe466e33" }],
   "ai": { "binding": "AI" },
   "triggers": { "crons": ["0 */6 * * *"] },
   "vars": {
-    "DB_BACKEND": "d1",
+    "DB_BACKEND": "postgres",
     "GEMINI_MODEL": "gemini-3.5-flash",
     "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite",
     "GEMINI_LIVE_MODEL": "gemini-3.8-live",
