@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApiSession, createStubSession } from './session.js'
 import { EXAMPLE_QUESTIONS } from './questions.js'
+import { SignedOutError } from '../headset/api.js'
 
 const DIMENSIONS = ['structure', 'relevance', 'specificity', 'confidence']
 
@@ -205,7 +206,6 @@ function recordingFetch() {
     ['/next', { say: SECOND, kind: 'question' }],
     ['/finish', { summary: 'Solid structure.', prepList: [{ step: 'Add numbers', why: 'Verifiable' }] }],
     ['/api/voice/sessions', { sessionId: 'sess_1', companySlug: 'acme', opening: OPENING, questions: [{ text: FIRST }, { text: SECOND }] }],
-    ['/api/session', { token: TOKEN }],
   ]
 
   const fetch = vi.fn(async (url, init = {}) => {
@@ -226,25 +226,22 @@ function recordingFetch() {
 describe('createApiSession', () => {
   let api
   let realFetch
-  let realStorage
 
   beforeEach(() => {
     api = recordingFetch()
     realFetch = globalThis.fetch
-    realStorage = globalThis.localStorage
     globalThis.fetch = api.fetch
-    // start() caches the token in localStorage, which the node test env lacks.
-    globalThis.localStorage = { store: {}, setItem() {}, getItem: () => null }
   })
 
   afterEach(() => {
     globalThis.fetch = realFetch
-    globalThis.localStorage = realStorage
   })
 
-  const session = () => createApiSession({ baseUrl: BASE, companySlug: 'acme', role: 'Designer' })
+  // The token is the headset's, from the keypad sign-in.
+  const session = (options = {}) =>
+    createApiSession({ getToken: () => TOKEN, baseUrl: BASE, companySlug: 'acme', role: 'Designer', ...options })
 
-  it('mints a token and authorizes every voice call with it', async () => {
+  it('authorizes every voice call with the headset token', async () => {
     const s = session()
     expect(s.isStub).toBe(false)
 
@@ -255,9 +252,7 @@ describe('createApiSession', () => {
     expect(started).toMatchObject({ company: 'acme', role: 'Designer', opening: OPENING, question: FIRST })
     expect(started.questions).toEqual(expect.arrayContaining([FIRST]))
     expect(started).toHaveProperty('voice')
-    expect(api.calls[0].url).toBe(`${BASE}/api/session`)
-    expect(api.calls[0].method).toBe('POST')
-    expect(api.calls[0].headers.authorization).toBeUndefined() // nothing to send yet
+    expect(api.calls[0].url).toBe(`${BASE}/api/voice/sessions`)
 
     const voice = api.calls.filter((c) => c.url.includes('/api/voice/'))
     expect(voice.length).toBeGreaterThan(0)
@@ -307,7 +302,6 @@ describe('createApiSession', () => {
       api.calls.push({ url, method: init.method, body: init.body ? JSON.parse(init.body) : null, headers: init.headers ?? {} })
       if (url.endsWith('/turns')) return { ok: true, status: 200, json: async () => ({ scores: {}, delivery: { words: 28, fillerWords: 0, wordsPerMinute: null }, tip: '' }) }
       if (url.endsWith('/next')) return { ok: true, status: 200, json: async () => ({ say: SECOND, kind: 'follow_up' }) }
-      if (url.endsWith('/api/session')) return { ok: true, status: 200, json: async () => ({ token: TOKEN }) }
       return { ok: true, status: 200, json: async () => ({ sessionId: 'sess_1', opening: OPENING, questions: [{ text: FIRST }] }) }
     })
 
@@ -345,5 +339,24 @@ describe('createApiSession', () => {
     expect(api.of('/finish')[0].body).toEqual({ platform: 'vr' })
     expect(summary).toBe('Solid structure.')
     expect(prepList).toEqual([{ step: 'Add numbers', why: 'Verifiable' }])
+  })
+
+  it('starts the interview the phone asked for', async () => {
+    await session().start({ mode: 'interview', companySlug: 'atb', role: 'Data Analyst' })
+
+    expect(api.of('/api/voice/sessions')[0].body).toEqual({ mode: 'interview', companySlug: 'atb', role: 'Data Analyst' })
+  })
+
+  it('refuses to call the API before the headset has signed in', async () => {
+    await expect(session({ getToken: () => null }).start()).rejects.toBeInstanceOf(SignedOutError)
+    expect(api.calls).toHaveLength(0)
+  })
+
+  it('signs the headset out when the server no longer knows its token', async () => {
+    api.fetch.mockImplementation(async () => ({ ok: false, status: 401, json: async () => ({}) }))
+    const onSignedOut = vi.fn()
+
+    await expect(session({ onSignedOut }).start()).rejects.toBeInstanceOf(SignedOutError)
+    expect(onSignedOut).toHaveBeenCalledOnce()
   })
 })

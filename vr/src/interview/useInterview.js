@@ -5,8 +5,26 @@ import { createVoiceDetector } from './vad.js'
 
 // Phases: idle -> asking -> listening -> scoring -> asking -> ... -> done
 // 'awaiting' only happens when there is no microphone and we fall back to a button.
-export function useInterview() {
-  const session = useMemo(() => createSession(), [])
+//
+// `auth` is optional: { token, onSignedOut }. With a token the questions and
+// scores come from the Skillit voice API; without one it runs on example data.
+// The token is read through a ref so a silent refresh mid-interview does not
+// rebuild the session and lose its id.
+export function useInterview(auth = {}) {
+  const { token = null, onSignedOut } = auth
+  const tokenRef = useRef(token)
+  tokenRef.current = token
+  const onSignedOutRef = useRef(onSignedOut)
+  onSignedOutRef.current = onSignedOut
+
+  const signedIn = Boolean(token)
+  const session = useMemo(
+    () =>
+      createSession(
+        signedIn ? { getToken: () => tokenRef.current, onSignedOut: () => onSignedOutRef.current?.() } : {},
+      ),
+    [signedIn],
+  )
   const speaker = useMemo(() => createSpeaker(), [])
   const listener = useMemo(() => createListener(), [])
 
@@ -215,14 +233,17 @@ export function useInterview() {
     [session],
   )
 
-  const begin = useCallback(async () => {
+  // `launch` is what the phone sent ({ companySlug, role }); the Begin button
+  // and the keyboard call this with nothing.
+  const begin = useCallback(async (launch) => {
     setError(null)
     setSummary(null)
     setResult(null)
     running.current = true
     try {
       await speaker.unlock()
-      const started = await session.start()
+      // A click or key event lands here too; only a phone launch carries a mode.
+      const started = await session.start(launch?.mode ? launch : undefined)
       if (!alive.current) return
       setMeta(started)
 

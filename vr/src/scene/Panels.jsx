@@ -10,8 +10,8 @@ import * as THREE from 'three'
 // Sizes are metres. At the ~1.1 m reading distance in this scene, body text below
 // about 0.02 m stops being legible through the Quest's lenses.
 
-const FONT = '/fonts/Inter-Regular.woff'
-const FONT_BOLD = '/fonts/Inter-SemiBold.woff'
+export const FONT = '/fonts/Inter-Regular.woff'
+export const FONT_BOLD = '/fonts/Inter-SemiBold.woff'
 
 const C = {
   tint: '#14171c', // the smoke in the glass
@@ -27,6 +27,11 @@ const C = {
   grey: '#ffffff',
 }
 const SECONDARY = 0.62
+
+// The sign-in keypad (PairingPanel.jsx) is drawn in these.
+export const INK = '#f4f6fa'
+export const MUTED = '#9aa6b8'
+export const GOOD = C.green
 
 // Matches the Worker's interview scoring keys.
 const DIMENSIONS = ['structure', 'relevance', 'specificity', 'confidence']

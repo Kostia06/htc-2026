@@ -1,19 +1,31 @@
 // 2D chrome around the canvas. Invisible once the headset takes over, so this is
 // for the desktop preview, the judges watching the cast, and screen readers.
-export function Overlay({ interview, onEnterVR, vrSupported }) {
+export function Overlay({ interview, headset, onEnterVR, vrSupported }) {
   const { phase, caption, question, sttSupported, transcript } = interview
+  const signedIn = headset?.phase === 'signedIn'
 
   return (
     <div className="overlay">
-      {/* No app chrome over the room: the only control is the way into the
-          headset, and only where there is one. M still mutes; sample scores are
-          labelled on the score panel itself. */}
-      {vrSupported && (
+      {/* Almost no app chrome over the room: the way into the headset, where
+          there is one, and a way to sign this device out. Signing in happens on
+          the keypad in the room. M still mutes; sample scores are labelled on the
+          score panel itself. */}
+      {(vrSupported || signedIn) && (
         <header className="bar">
           <div className="bar-actions">
-            <button type="button" className="primary" onClick={onEnterVR}>
-              Enter VR
-            </button>
+            {signedIn && (
+              <>
+                <span className="chip">Signed in{headset.session?.deviceName ? ` · ${headset.session.deviceName}` : ''}</span>
+                <button type="button" className="ghost" onClick={headset.signOut}>
+                  Sign out
+                </button>
+              </>
+            )}
+            {vrSupported && (
+              <button type="button" className="primary" onClick={onEnterVR}>
+                Enter VR
+              </button>
+            )}
           </div>
         </header>
       )}

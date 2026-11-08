@@ -3,7 +3,8 @@
 //
 // The VR scene talks to the backend through this module and nothing else.
 //
-//   start()        -> { company, role, opening, question, isStub }
+//   start(launch?) -> { company, role, opening, question, isStub }
+//                     `launch` is what the phone queued ({ companySlug, role })
 //   submitAnswer({ question, answer, durationMs })
 //                  -> { score, next: { say, kind } }
 //   finish()       -> { summary, prepList }
@@ -18,27 +19,34 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { DEFAULT_SCORE, EXAMPLE_QUESTIONS, EXAMPLE_SCORES } from './questions.js'
+import { API_URL, SignedOutError } from '../headset/api.js'
 
-const API_URL = import.meta.env?.VITE_API_URL || 'https://htc-mentor.ilnkostia-dev.workers.dev'
 const STUB_LATENCY_MS = 650
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Software Developer' } = {}) {
-  let token = null
+// `getToken` hands over the headset's bearer token from the keypad sign-in. It
+// is read on every call, so a silent refresh mid-interview just carries on.
+export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, companySlug, role = 'Software Developer' } = {}) {
   let sessionId = null
   let transcript = []
   let scored = 0
 
   async function call(path, { method = 'GET', body } = {}) {
+    const token = getToken?.()
+    if (!token) throw new SignedOutError('Sign in on the keypad first.')
     const response = await fetch(`${baseUrl}${path}`, {
       method,
       headers: {
         ...(body ? { 'content-type': 'application/json' } : {}),
-        ...(token ? { authorization: `Bearer ${token}` } : {}),
+        authorization: `Bearer ${token}`,
       },
       body: body ? JSON.stringify(body) : undefined,
     })
+    if (response.status === 401) {
+      onSignedOut?.()
+      throw new SignedOutError('This headset needs to sign in again.')
+    }
     const data = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(data.error || `${method} ${path} failed (${response.status})`)
     return data
@@ -46,32 +54,13 @@ export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Softw
 
   const said = (text) => transcript.push({ speaker: 'interviewer', text })
 
-  async function mintToken() {
-    const auth = await call('/api/session', { method: 'POST' })
-    if (typeof localStorage !== 'undefined') localStorage.setItem('aim.token', auth.token)
-    return auth.token
-  }
-
   return {
     isStub: false,
 
-    async start() {
-      // Reuse a stored token. Minting is capped at 10/hour per IP, which a few
-      // demo rehearsals will burn through — and the failure reads as the app
-      // being broken rather than rate limited.
-      token = typeof localStorage !== 'undefined' ? localStorage.getItem('aim.token') : null
-      if (!token) token = await mintToken()
-
-      const body = { mode: 'interview', ...(companySlug ? { companySlug } : {}), role }
-      let started
-      try {
-        started = await call('/api/voice/sessions', { method: 'POST', body })
-      } catch (err) {
-        // A stored token can be stale or belong to a pairing that has expired.
-        if (!/\(401\)/.test(err.message)) throw err
-        token = await mintToken()
-        started = await call('/api/voice/sessions', { method: 'POST', body })
-      }
+    async start(launch = {}) {
+      const slug = launch.companySlug ?? companySlug
+      const body = { mode: 'interview', ...(slug ? { companySlug: slug } : {}), role: launch.role ?? role }
+      const started = await call('/api/voice/sessions', { method: 'POST', body })
       sessionId = started.sessionId
       transcript = []
       scored = 0
@@ -81,8 +70,8 @@ export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Softw
       if (first) said(first)
 
       return {
-        company: started.companySlug ?? companySlug ?? null,
-        role,
+        company: started.companySlug ?? slug ?? null,
+        role: body.role,
         opening: started.opening ?? null,
         question: first,
         // The provider's own realtime voice agent. When present the client talks
@@ -152,13 +141,15 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
   return {
     isStub: true,
 
-    async start() {
+    // A phone launch may name a company/role; the stub shows them and asks
+    // the same example questions regardless.
+    async start(launch = {}) {
       await wait(200)
       index = 0
       given.length = 0
       return {
-        company,
-        role,
+        company: launch.companySlug ?? company,
+        role: launch.role ?? role,
         opening: `Hi, thanks for coming in. We're meeting about the ${role} role. Ready to start?`,
         question: EXAMPLE_QUESTIONS[index++].text,
         voice: null,
@@ -223,7 +214,9 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
 const clamp = (n) => Math.min(5, Math.max(1, n))
 const countFillers = (text) => (text.match(/\b(um+|uh+|erm|like|you know)\b/gi) ?? []).length
 
-export const createSession = (options = {}) =>
-  import.meta.env?.VITE_USE_STUB === 'true'
-    ? createStubSession(options)
-    : createApiSession(options)
+// Signed in on the keypad -> the Skillit voice API with that bearer token.
+// Not signed in (the candidate chose example data), or VITE_USE_STUB -> the stub.
+export function createSession({ getToken, ...options } = {}) {
+  if (getToken && import.meta.env?.VITE_USE_STUB !== 'true') return createApiSession({ getToken, ...options })
+  return createStubSession(options)
+}
