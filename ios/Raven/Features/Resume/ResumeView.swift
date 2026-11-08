@@ -124,7 +124,7 @@ struct ResumeView: View {
             Task { await model.improve() }
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: "sparkles")
+                Image(systemName: "pencil.line")
                     .symbolEffect(.pulse, isActive: model.isImproving)
                 Text(model.isImproving ? "Raven is reading your resume…" : "Improve with Raven")
                     .contentTransition(.interpolate)

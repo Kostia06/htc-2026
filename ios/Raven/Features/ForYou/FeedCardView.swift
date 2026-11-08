@@ -14,14 +14,12 @@ struct FeedCardView: View {
             details
         }
         .ravenCard()
-        .overlay(alignment: .leading) {
-            Capsule()
-                .fill(card.kind.tint)
-                .frame(width: 4)
-                .padding(.vertical, 18)
-        }
         .contentShape(.rect(cornerRadius: 20))
         .onTapGesture(perform: onOpen)
+        .contextMenu {
+            Button(card.isSaved ? "Unsave" : "Save", systemImage: card.isSaved ? "bookmark.slash" : "bookmark", action: onSave)
+            Button("Not for me", systemImage: "hand.thumbsdown", role: .destructive, action: onDismiss)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityAction(named: "Details", onOpen)
     }
@@ -41,9 +39,9 @@ struct FeedCardView: View {
                 Spacer(minLength: 4)
                 actions
             }
-            Label(card.why, systemImage: "sparkle")
+            Text(card.why)
                 .font(.footnote)
-                .foregroundStyle(Theme.agent)
+                .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .padding(.top, 2)
             HStack(spacing: 6) {
@@ -66,18 +64,21 @@ struct FeedCardView: View {
         }
     }
 
+    // just the bookmark on the card; dismissing lives in the swipe and the long-press menu
     private var actions: some View {
-        HStack(spacing: 2) {
-            CardActionButton(
-                symbol: card.isSaved ? "bookmark.fill" : "bookmark",
-                label: card.isSaved ? "Saved" : "Save",
-                tint: card.isSaved ? Theme.action : .secondary,
-                action: onSave,
-            )
-            .symbolEffect(.bounce, value: card.isSaved)
-            .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
-            CardActionButton(symbol: "xmark", label: "Dismiss", tint: .secondary, action: onDismiss)
+        Button(action: onSave) {
+            Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
+                .font(.body.weight(.medium))
+                .foregroundStyle(card.isSaved ? Theme.action : Color(white: 0.5))
+                .frame(width: 32, height: 32)
+                .contentShape(.rect)
+                .contentTransition(.symbolEffect(.replace))
         }
+        // borderless keeps the bookmark its own tap target inside a List row
+        .buttonStyle(.borderless)
+        .symbolEffect(.bounce, value: card.isSaved)
+        .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
+        .accessibilityLabel(card.isSaved ? "Saved" : "Save")
     }
 
     /// A real date reads as a day; a label such as "ongoing" is shown as the source gave it.
@@ -89,27 +90,6 @@ struct FeedCardView: View {
             return card.kind == .job ? "Posted \(day)" : day
         }
         return card.when?.capitalized
-    }
-}
-
-private struct CardActionButton: View {
-    let symbol: String
-    let label: String
-    let tint: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: symbol)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(tint)
-                .frame(width: 30, height: 30)
-                .background(Color(white: 0.14), in: .circle)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        // borderless keeps each button its own tap target inside a List row
-        .buttonStyle(.borderless)
-        .accessibilityLabel(label)
     }
 }
 

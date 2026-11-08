@@ -11,7 +11,7 @@ struct SuggestionDeck: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("Raven suggests", systemImage: "sparkles")
+                Label("Raven suggests", systemImage: "pencil.line")
                     .font(.headline)
                     .foregroundStyle(Theme.agent)
                 Spacer()

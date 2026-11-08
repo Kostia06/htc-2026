@@ -17,7 +17,7 @@ struct MainTabView: View {
             Tab("Roadmap", systemImage: "point.topleft.down.to.point.bottomright.curvepath", value: .roadmap) {
                 RoadmapView()
             }
-            Tab("For you", systemImage: "sparkles", value: .forYou) {
+            Tab("For you", systemImage: "rectangle.stack.fill", value: .forYou) {
                 ForYouView()
             }
             Tab("Practice", systemImage: "visionpro", value: .practice) {

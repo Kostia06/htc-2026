@@ -1,9 +1,11 @@
 import SwiftUI
 
-/// Raven's palette, taken from the landing site: near-black ground, one orange for actions, purple for anything the agent is doing.
+/// Raven's palette: near-black ground, lavender for actions, mint for anything the agent is doing.
 enum Theme {
-    static let action = Color(red: 1.0, green: 0.29, blue: 0.11)
-    static let agent = Color(red: 0.49, green: 0.36, blue: 0.98)
+    static let action = Color(red: 0.73, green: 0.65, blue: 1.0)
+    /// Lavender is light, so text and icons sitting on it are dark rather than white.
+    static let onAction = Color(red: 0.08, green: 0.05, blue: 0.16)
+    static let agent = Color(red: 0.40, green: 0.86, blue: 0.76)
     static let ground = Color(red: 0.03, green: 0.03, blue: 0.03)
     static let raised = Color(white: 0.09)
     static let hairline = Color(white: 1, opacity: 0.08)

@@ -4,7 +4,7 @@ import SwiftUI
 struct FinishingUpView: View {
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "sparkles")
+            Image(systemName: "checkmark.circle")
                 .font(.largeTitle)
                 .foregroundStyle(Theme.agent)
                 .symbolEffect(.pulse)
