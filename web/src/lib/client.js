@@ -171,13 +171,22 @@ function formWith(file) {
   return form
 }
 
-/** GitHub, read-only through the server: { configured, status, projects, suggestions, importing }. Never a token. */
+// provider ids come from the server, but they still go into a path: anything but a plain slug is refused
+const providerPath = (id) => {
+  if (!/^[a-z0-9]+$/.test(id)) throw new Error('Unknown connection')
+  return `/api/connections/${id}`
+}
+
+/**
+ * "Bring your work", read-only through the server. Each connection is
+ * { id, name, category, reads, configured, status, projects, suggestions, importing }. Never a token.
+ */
 export const connectionsApi = {
-  github: () => request('/api/connections').then((r) => r.github),
+  list: () => request('/api/connections').then((r) => r.connections ?? []),
   /** the hosted sign-in to open; returnTo must be one of our own origins */
-  connectGithub: (returnTo) => post('/api/connections/github', { returnTo }).then((r) => r.url),
-  importGithub: () => post('/api/connections/github/import').then((r) => r.github),
-  disconnectGithub: () => request('/api/connections/github', { method: 'DELETE' }).then((r) => r.github),
+  connect: (id, returnTo) => post(providerPath(id), { returnTo }).then((r) => r.url),
+  reimport: (id) => post(`${providerPath(id)}/import`).then((r) => r.connection),
+  disconnect: (id) => request(providerPath(id), { method: 'DELETE' }).then((r) => r.connection),
 }
 
 async function pdfBlob(path) {

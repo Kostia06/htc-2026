@@ -1,8 +1,14 @@
-.gh { gap: 10px; }
-.gh__head { gap: 12px; align-items: center; }
-.gh__projects { gap: 8px; padding-left: 34px; margin: 0; list-style: none; }
-.gh__idea { gap: 6px; align-items: flex-start; color: var(--agent); }
-.gh__note { gap: 6px; align-items: center; }
+.work { gap: 12px; }
+.work__search { gap: 8px; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 12px; background: var(--inset); border: 1px solid var(--hairline); }
+.work__search:focus-within { border-color: rgb(168 199 163 / 0.5); }
+.work__search input { background: none; border: 0; outline: none; color: inherit; min-width: 0; }
+.work__clear { display: grid; place-items: center; min-width: 32px; min-height: 32px; background: none; border: 0; cursor: pointer; }
+.work__list { gap: 16px; margin: 0; padding: 0; list-style: none; }
+.work__row { gap: 10px; }
+.work__head { gap: 12px; align-items: center; }
+.work__projects { gap: 8px; padding-left: 34px; margin: 0; list-style: none; }
+.work__idea { gap: 6px; align-items: flex-start; color: var(--agent); }
+.work__note { gap: 6px; align-items: center; }
 
 .li { gap: 12px; }
 .li__list { gap: 12px; }

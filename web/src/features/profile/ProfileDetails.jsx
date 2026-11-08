@@ -5,7 +5,7 @@ import { Outlet } from 'react-router'
 import { CircleCheck, CirclePlus, Pencil, Plus, X } from 'lucide-react'
 import { Flash, SkeletonLines } from '../../ui/Feedback'
 import { Group, GroupRow, Page, PageHeader } from '../../ui/Layout'
-import GithubConnect from '../connections/GithubConnect'
+import BringYourWork from '../connections/BringYourWork'
 import LinkedinReview from '../connections/LinkedinReview'
 import { useProfileEdit } from './useProfile'
 import './profile.css'
@@ -73,9 +73,9 @@ export default function ProfileDetails() {
               <AddRow to="/profile/details/education/new">Add education</AddRow>
             </Group>
 
-            <Group header="Connected accounts">
+            <Group header="Bring your work" footer="Each one is optional. Disconnecting removes only what that service added.">
               <GroupRow>
-                <GithubConnect />
+                <BringYourWork />
               </GroupRow>
             </Group>
 
