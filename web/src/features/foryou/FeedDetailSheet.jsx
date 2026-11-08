@@ -1,8 +1,8 @@
 // FeedDetailSheet.swift at /for-you/:cardId: why it fits, the facts, the listing's own description, and one way out.
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router'
 import { Bookmark, Check } from 'lucide-react'
-import { safeUrl } from '../../lib/client'
+import { feedApi, safeUrl } from '../../lib/client'
 import { capitalized } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
 import { ExpandableText, FactGrid } from '../../ui/Controls'
@@ -16,12 +16,29 @@ export default function FeedDetailSheet() {
   const [params] = useSearchParams()
   const { cardId } = useParams()
   const { findCard, toggleSaved, loaded } = useOutletContext()
-  const card = findCard(decodeURIComponent(cardId))
+  const id = decodeURIComponent(cardId)
+  // a notification can point at a card past the loaded pages; that one is fetched on its own
+  const [fetched, setFetched] = useState(null)
+  const listed = findCard(id)
+  const card = listed ?? (fetched?.id === id ? fetched : null)
   const close = () => navigate({ pathname: '/for-you', search: params.toString() })
 
   useEffect(() => {
-    if (loaded && !card) navigate({ pathname: '/for-you', search: params.toString() }, { replace: true })
-  }, [loaded, card, navigate, params])
+    if (!loaded || listed) return undefined
+    let live = true
+    feedApi
+      .item(id)
+      .then((item) => live && setFetched(item))
+      .catch(() => live && navigate({ pathname: '/for-you', search: params.toString() }, { replace: true }))
+    return () => {
+      live = false
+    }
+  }, [loaded, listed, id, navigate, params])
+
+  const toggle = () => {
+    toggleSaved(card)
+    if (!listed) setFetched({ ...card, saved: !card.saved })
+  }
 
   if (!card)
     return (
@@ -48,7 +65,7 @@ export default function FeedDetailSheet() {
       label={card.title}
       footer={
         <div className="row feed-sheet__footer">
-          <RaisedButton variant="secondary" className="feed-sheet__save" onClick={() => toggleSaved(card)} aria-label={card.saved ? 'Remove from Saved' : 'Save'}>
+          <RaisedButton variant="secondary" className="feed-sheet__save" onClick={toggle} aria-label={card.saved ? 'Remove from Saved' : 'Save'}>
             <Bookmark size={20} strokeWidth={2.2} fill={card.saved ? 'currentColor' : 'none'} className={card.saved ? 'c-action' : ''} aria-hidden />
           </RaisedButton>
           <RaisedButton disabled={!url} onClick={() => url && window.open(url, '_blank', 'noopener')}>

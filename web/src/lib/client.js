@@ -111,6 +111,8 @@ export const feedApi = {
   /** The first page, asking the server to search for new postings now; it rebuilds behind the answer */
   fresh: (section = 'all') => request('/api/feed', { query: { section, refresh: 1 }, timeout: 15000 }),
   act: (cardId, action) => post(`/api/feed/items/${cardId}`, { action }, { timeout: 15000 }),
+  /** One card by id, for a notification that points at a card the loaded pages don't hold */
+  item: (cardId) => request(`/api/feed/items/${encodeURIComponent(cardId)}`),
 }
 
 export const voiceApi = {
