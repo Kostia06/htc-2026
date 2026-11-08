@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { diversify, sectionsFrom } from "../../src/feed/sections";
 import type { FeedCard, FeedKind } from "../../src/feed/types";
 
-const card = (id: string, kind: FeedKind): FeedCard => ({ id, kind, title: id, org: "Org", why: "Open to everyone", url: `https://example.org/${id}`, source: "Test" });
+const card = (id: string, kind: FeedKind): FeedCard => ({ id, kind, title: id, org: "Org", why: "Open to everyone", reasons: [], url: `https://example.org/${id}`, source: "Test" });
 const kinds = (cards: FeedCard[]) => cards.map((c) => c.kind[0]).join("");
 
 describe("feed sections", () => {

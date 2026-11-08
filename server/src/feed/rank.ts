@@ -1,4 +1,4 @@
-import { FIELD_LABELS } from "./fields";
+import { reasonsFor } from "./reasons";
 import type { Candidate, FeedCard, FeedCriteria, FeedField, FeedKind } from "./types";
 
 const DAY_MS = 86_400_000;
@@ -12,7 +12,6 @@ const FALLBACK_WHY: Record<FeedKind, string> = { job: "Open to apply", course: "
 
 const wordsOf = (text: string) => text.toLowerCase().match(/[a-z0-9+#]+/g) ?? [];
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const shortDay = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
 // every meaningful word of the role appears in the title: "Junior developer" fits "Junior Software Developer"
 function matchingRole(title: string, roles: string[]) {
@@ -25,8 +24,6 @@ function matchingRole(title: string, roles: string[]) {
 
 // whole words only, so "Java" doesn't match "JavaScript"; "+" and "#" count as word characters for C++ and C#
 const mentions = (text: string, skill: string) => new RegExp(`(^|[^a-z0-9+#])${escape(skill.toLowerCase())}($|[^a-z0-9+#])`).test(text.toLowerCase());
-
-const listed = (names: string[]) => (names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`);
 
 // the person's own field wins; an item open to any field counts a little for everyone
 function matchingField(candidate: Candidate, criteria: FeedCriteria): FeedField | undefined {
@@ -59,21 +56,11 @@ function score(candidate: Candidate, criteria: FeedCriteria, now: Date) {
   if (age <= 7) points += WEIGHT.week;
   else if (age <= 30) points += WEIGHT.month;
 
-  const why = role
-    ? `Fits your goal: ${role}`
-    : skills.length > 0
-      ? `Uses ${listed(skills)} from your profile`
-      : field && field !== "general"
-        ? `In your field: ${FIELD_LABELS[field]}`
-        : near
-          ? `Near you in ${criteria.location}`
-          : until !== undefined && until <= UPCOMING_DAYS
-            ? `Coming up ${shortDay.format(Date.parse(candidate.startsAt ?? ""))}`
-            : age <= 7
-              ? "Posted this week"
-              : FALLBACK_WHY[candidate.card.kind];
+  const reasons = reasonsFor(candidate, criteria, { role, skills, field, near, daysUntil: until, upcomingDays: UPCOMING_DAYS });
+  // with nothing personal to say, the line says something true about the item instead
+  const why = reasons[0] ?? (age <= 7 ? "Posted this week" : FALLBACK_WHY[candidate.card.kind]);
   // ties go to whatever is soonest or freshest
-  return { points, why, order: until ?? age };
+  return { points, why, reasons, order: until ?? age };
 }
 
 export function rankCandidates(candidates: Candidate[], criteria: FeedCriteria, now: Date): FeedCard[] {
@@ -82,5 +69,5 @@ export function rankCandidates(candidates: Candidate[], criteria: FeedCriteria, 
   return unique
     .map((candidate) => ({ candidate, ...score(candidate, criteria, now) }))
     .sort((a, b) => b.points - a.points || a.order - b.order || 0)
-    .map(({ candidate, why }) => ({ ...candidate.card, why }));
+    .map(({ candidate, why, reasons }) => ({ ...candidate.card, why, reasons }));
 }

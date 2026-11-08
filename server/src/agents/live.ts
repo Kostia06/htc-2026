@@ -19,6 +19,12 @@ import type { AgentDeps } from "./core/types";
 
 const ROBOTS_TTL_SECONDS = 6 * 3600;
 
+// one robots.txt read per site every six hours, shared by the agents and the feed's page enrichment
+export const liveRobotsServices = (env: Env): Pick<AgentDeps["services"], "fetchRobots" | "claimFetchSlot"> => ({
+  fetchRobots: (origin) => cached(env, `robots:${origin}`, ROBOTS_TTL_SECONDS, () => fetchRobotsTxt(origin, USER_AGENT)),
+  claimFetchSlot: (host, delaySeconds) => claimFetchSlot(env, host, delaySeconds),
+});
+
 // mode ANY makes Gemini answer with a tool call every turn, so a run can only end through finish or the step limit
 function geminiModel(env: Env, systemPrompt: string): Model {
   return (contents, declarations) =>
@@ -39,8 +45,7 @@ export function liveDeps(env: Env, waitUntil: (work: Promise<unknown>) => void):
     services: {
       search: (query) => keenableSearch(env, query),
       fetchPage: (url) => keenableFetch(env, url),
-      fetchRobots: (origin) => cached(env, `robots:${origin}`, ROBOTS_TTL_SECONDS, () => fetchRobotsTxt(origin, USER_AGENT)),
-      claimFetchSlot: (host, delaySeconds) => claimFetchSlot(env, host, delaySeconds),
+      ...liveRobotsServices(env),
       claimCooldown: (scope, key, cooldownMs) => claimCooldown(env, scope, key, cooldownMs),
       jobPostings: (query) => adzunaSearch(env, query),
       hackerNews: (query) => hackerNewsSearch(query),

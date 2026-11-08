@@ -45,4 +45,22 @@ extension StubbedNetworkTests {
     let card = try JSONDecoder().decode(FeedCard.self, from: json)
     #expect(card.summary == "Build dashboards in Power BI.")
     #expect(card.salary == "$55,000–$65,000")
+    #expect(card.reasons == nil)
+    #expect(card.level == nil)
+}
+
+@Test func feedCardDecodesTheReasonsAndWhatThePageSaidAboutTheItem() throws {
+    let json = Data(#"""
+    {"id":"hackathon:hacked","kind":"hackathon","title":"HackED Beta","org":"CompE Club","why":"Fits your goal: Junior developer",
+     "reasons":["Fits your goal: Junior developer","Beginner friendly, good first hackathon","Uses AI like you do"],
+     "summary":"A weekend hackathon for students new to hacking.","level":"beginner","format":"24-hour, in person",
+     "highlights":["Free to enter","Prizes for top teams"],"url":"https://hacked.compeclub.com/","source":"Curated"}
+    """#.utf8)
+    let card = try JSONDecoder().decode(FeedCard.self, from: json)
+    #expect(card.reasons?.count == 3)
+    #expect(card.reasons?.first == card.why)
+    #expect(card.level == "beginner")
+    #expect(card.format == "24-hour, in person")
+    #expect(card.highlights == ["Free to enter", "Prizes for top teams"])
+    #expect(card.summary?.hasPrefix("A weekend hackathon") == true)
 }

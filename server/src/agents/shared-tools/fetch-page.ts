@@ -1,7 +1,7 @@
 import { crawlDelaySeconds, isAllowed } from "../../lib/robots";
 import { fetchBlockReason } from "../../lib/source-policy";
 import { USER_AGENT } from "../../lib/user-agent";
-import type { ToolContext, ToolDefinition } from "../core/types";
+import type { Services, ToolContext, ToolDefinition } from "../core/types";
 import { text } from "./args";
 import { UNTRUSTED_NOTE, wrapUntrusted } from "./untrusted";
 
@@ -17,15 +17,18 @@ export function pageKey(url: string) {
   }
 }
 
-// Keenable's /fetch serves pages from its own crawl whatever the site says, so our check is the one that counts
-async function robotsRefusal(url: string, ctx: ToolContext) {
+export type RobotsServices = Pick<Services, "fetchRobots" | "claimFetchSlot">;
+
+// Keenable's /fetch serves pages from its own crawl whatever the site says, so our check is the one that counts.
+// Shared with the feed's page enrichment, which reads pages outside any agent run
+export async function robotsRefusal(url: string, services: RobotsServices) {
   const { origin, hostname, pathname, search } = new URL(url);
-  const robots = await ctx.services.fetchRobots(origin);
+  const robots = await services.fetchRobots(origin);
   if (robots === null) return "robots.txt could not be read";
   const path = `${pathname}${search}`;
   // fetched on our behalf, so the page has to be allowed for everyone, not just our bot
   if (!isAllowed(robots, USER_AGENT, path) || !isAllowed(robots, "*", path)) return "robots.txt disallows";
-  if (!(await ctx.services.claimFetchSlot(hostname, crawlDelaySeconds(robots, USER_AGENT)))) {
+  if (!(await services.claimFetchSlot(hostname, crawlDelaySeconds(robots, USER_AGENT)))) {
     return "site's crawl-delay has not passed; try another page";
   }
   return null;
@@ -43,7 +46,7 @@ export const fetchPage: ToolDefinition = {
     if (ctx.triedPages.has(key)) return { skipped: true, reason: "already tried this page" };
     ctx.triedPages.add(key);
 
-    const refusal = await robotsRefusal(url, ctx);
+    const refusal = await robotsRefusal(url, ctx.services);
     if (refusal) return { skipped: true, reason: refusal };
     try {
       const page = (await ctx.services.fetchPage(url)).slice(0, PAGE_LIMIT);
