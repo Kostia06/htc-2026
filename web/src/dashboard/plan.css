@@ -108,7 +108,15 @@
   color: #a3a3a3;
   font: inherit;
   font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
+
+.pl__check:hover { border-color: #fe4a23; color: #f5f5f5; }
+
+.pl__card.is-done { border-color: #171717; opacity: 0.6; }
+.pl__card.is-done .pl__check { border-color: #fe4a23; background: #fe4a23; color: #0b0b0b; }
+.pl__card.is-done h3 { text-decoration: line-through; text-decoration-color: #555; }
 
 .pl__body {
   flex: 1;
@@ -264,5 +272,6 @@
 @media (prefers-reduced-motion: reduce) {
   .pl,
   .pl__card,
+  .pl__check,
   .pl__links span { animation: none; transition: none; }
 }
