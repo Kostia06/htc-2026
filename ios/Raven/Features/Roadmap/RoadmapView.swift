@@ -7,12 +7,23 @@ struct RoadmapView: View {
     @State private var model: RoadmapModel?
     @State private var practice: PracticeLaunch?
     @State private var lastPractice: PracticeLaunch?
+    @State private var isUpdating = false
 
     var body: some View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.ground)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Update", systemImage: "plus.bubble") { isUpdating = true }
+                            .labelStyle(.titleAndIcon)
+                    }
+                }
+        }
+        .sheet(isPresented: $isUpdating) {
+            // anything Raven applied is on the server already; the roadmap just needs reading again
+            QuickUpdateView(onApplied: { _ in Task { await model?.load() } })
         }
         .fullScreenCover(item: $practice, onDismiss: finishPractice) { launch in
             VoiceSessionView(model: launch.session, onPracticeAgain: { startPractice(launch.step) })

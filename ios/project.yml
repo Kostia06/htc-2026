@@ -64,6 +64,7 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSMicrophoneUsageDescription: Raven listens while you answer practice questions so the interviewer can respond to what you said.
+        NSSpeechRecognitionUsageDescription: Raven turns what you say into text so a quick update can be applied to your roadmap and profile.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false

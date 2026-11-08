@@ -29,6 +29,8 @@
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Raven listens while you answer practice questions so the interviewer can respond to what you said.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Raven turns what you say into text so a quick update can be applied to your roadmap and profile.</string>
 	<key>RavenAPIURL</key>
 	<string>$(RAVEN_API_URL)</string>
 	<key>SupabasePublishableKey</key>
