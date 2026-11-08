@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
 import { Environment, Lightformer } from '@react-three/drei'
 import * as THREE from 'three'
-import { BoardroomTable, CeilingLight, Credenza, OfficeChair, WallDisplay } from './Furniture.jsx'
+import { BoardroomTable, CeilingLight, Credenza, OfficeChair } from './Furniture.jsx'
+import { Bookcase, Certificate, FileHolder, Painting, Plant, TablePlant, WallClock, WaterBottle } from './Decor.jsx'
+import { INTERVIEWER_CHAIR_Z } from './seating.js'
 import {
   makeCarpetTexture,
   makeNormalMap,
@@ -40,20 +42,15 @@ export function Room() {
 
       <BoardroomTable position={[0, 0, -0.95]} width={2.9} depth={1.15} map={tex.wood} />
 
-      {/* The interviewer's chair, plus two empty ones so the room reads as a
-          boardroom rather than a two-person booth. Chairs are 35 meshes each,
-          so the count stays deliberately low. */}
-      <OfficeChair position={[0, 0, -1.95]} fabric="#2f343c" />
-      <OfficeChair position={[-1.2, 0, -1.9]} rotation={[0, 0.2, 0]} fabric="#2f343c" />
-      <OfficeChair position={[1.2, 0, -1.9]} rotation={[0, -0.2, 0]} fabric="#2f343c" />
+      {/* One interviewer, one chair. */}
+      <OfficeChair position={[0, 0, INTERVIEWER_CHAIR_Z]} fabric="#2f343c" />
 
-      <WallDisplay position={[0, 1.62, Z_MIN + 0.06]} width={1.6} height={0.94} />
       <Credenza position={[-1.95, 0, Z_MIN + 0.26]} width={1.7} />
+      <OfficeDecor />
 
       <CeilingLight position={[-0.9, WALL_H, -1.1]} />
       <CeilingLight position={[1.1, WALL_H, 0.3]} />
 
-      <Tabletop />
     </>
   )
 }
@@ -252,28 +249,37 @@ function Outside({ sky, facade }) {
   )
 }
 
-// What the interviewer has in front of them.
-function Tabletop() {
-  const top = 0.752
+// Somebody's office rather than a showroom. The wall straight behind the
+// interviewer's head stays plain on purpose: a calm background is what keeps the
+// face readable, so the art sits to either side of it and on the left wall.
+function OfficeDecor() {
+  const onBackWall = Z_MIN + 0.02
+  const onLeftWall = X_MIN + 0.02
   return (
     <group>
-      <mesh position={[-0.34, top, -1.08]} rotation={[-Math.PI / 2, 0, 0.14]} receiveShadow>
-        <planeGeometry args={[0.21, 0.29]} />
-        <meshStandardMaterial color="#f7f4ee" roughness={0.92} />
-      </mesh>
-      <mesh position={[-0.34, top + 0.002, -1.12]} rotation={[-Math.PI / 2, 0, 0.14]}>
-        <boxGeometry args={[0.14, 0.004, 0.012]} />
-        <meshStandardMaterial color="#2b2f36" roughness={0.5} />
-      </mesh>
+      {/* above the credenza */}
+      <Painting style="landscape" palette="coast" seed={21} width={1.0} height={0.62} position={[-1.95, 1.58, onBackWall]} />
+      <Plant size={0.32} seed={4} pot="#3d3f44" position={[-2.5, 0.727, Z_MIN + 0.26]} />
 
-      <mesh position={[0.46, top + 0.047, -1.02]} castShadow>
-        <cylinderGeometry args={[0.038, 0.033, 0.095, 18]} />
-        <meshStandardMaterial color="#f2f0ec" roughness={0.25} />
-      </mesh>
-      <mesh position={[0.5, top + 0.05, -1.02]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.025, 0.006, 8, 16, Math.PI]} />
-        <meshStandardMaterial color="#f2f0ec" roughness={0.25} />
-      </mesh>
+      {/* framed qualifications to his right, a clock to his left */}
+      <Certificate seed={5} position={[-0.78, 1.72, onBackWall]} />
+      <Certificate seed={9} position={[-0.78, 1.38, onBackWall]} />
+      <WallClock position={[0.82, 1.9, onBackWall + 0.02]} />
+
+      <Bookcase position={[1.75, 0, Z_MIN + 0.17]} />
+      <Plant size={1.05} seed={2} position={[2.42, 0, Z_MIN + 0.62]} />
+      <Plant size={0.95} seed={8} pot="#c9c2b6" position={[-2.62, 0, Z_MIN + 0.95]} />
+
+      {/* left wall: a pair of paintings the candidate sees when they glance away */}
+      <Painting style="abstract" palette="dusk" seed={13} width={0.55} height={0.75} rotation={[0, Math.PI / 2, 0]} position={[onLeftWall, 1.55, -1.75]} />
+      <Painting style="abstract" palette="sage" seed={17} width={0.55} height={0.75} rotation={[0, Math.PI / 2, 0]} position={[onLeftWall, 1.55, -0.85]} />
+
+      {/* on the table: a file sorter with the plant beside it, a bottle of water each */}
+      <FileHolder position={[0.8, 0.745, -1.08]} rotation={[0, -0.3, 0]} />
+      <TablePlant position={[1.04, 0.745, -0.9]} />
+      {/* his, label turned a little toward you; yours, label facing you */}
+      <WaterBottle position={[0.38, 0.745, -1.3]} rotation={[0, -0.5, 0]} />
+      <WaterBottle position={[0.27, 0.745, -0.62]} rotation={[0, -0.15, 0]} />
     </group>
   )
 }

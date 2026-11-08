@@ -97,19 +97,6 @@ export function BoardroomTable({ width = 2.8, depth = 1.3, map, ...props }) {
         </group>
       ))}
 
-      {/* Cable grommets. Tiny, but every real boardroom table has them. */}
-      {[-width * 0.17, width * 0.17].map((x, i) => (
-        <group key={i} position={[x, 0, 0]}>
-          <mesh position={[0, TABLE_H - 0.003, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.042, 0.007, 6, 18]} />
-            <meshStandardMaterial color="#3a3d42" roughness={0.55} metalness={0.7} />
-          </mesh>
-          <mesh position={[0, TABLE_H - 0.008, 0]}>
-            <cylinderGeometry args={[0.042, 0.042, 0.004, 16]} />
-            <meshStandardMaterial color="#1b1d21" roughness={0.8} />
-          </mesh>
-        </group>
-      ))}
     </group>
   )
 }

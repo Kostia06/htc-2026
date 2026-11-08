@@ -1,31 +1,22 @@
 // 2D chrome around the canvas. Invisible once the headset takes over, so this is
 // for the desktop preview, the judges watching the cast, and screen readers.
 export function Overlay({ interview, onEnterVR, vrSupported }) {
-  const { phase, caption, question, isStub, sttSupported, muted, transcript, actions } = interview
+  const { phase, caption, question, sttSupported, transcript } = interview
 
   return (
     <div className="overlay">
-      <header className="bar">
-        <div className="brand">
-          <span className="dot" aria-hidden="true" />
-          AI Mentor — Interview Room
-        </div>
-        <div className="bar-actions">
-          {isStub && <span className="chip chip-warn">Example data</span>}
-          <button type="button" className="ghost" onClick={actions.toggleMute} aria-pressed={muted}>
-            {muted ? 'Voice off' : 'Voice on'}
-          </button>
-          <button
-            type="button"
-            className="primary"
-            onClick={onEnterVR}
-            disabled={!vrSupported}
-            title={vrSupported ? 'Open in the headset' : 'No WebXR device detected'}
-          >
-            {vrSupported ? 'Enter VR' : 'VR unavailable'}
-          </button>
-        </div>
-      </header>
+      {/* No app chrome over the room: the only control is the way into the
+          headset, and only where there is one. M still mutes; sample scores are
+          labelled on the score panel itself. */}
+      {vrSupported && (
+        <header className="bar">
+          <div className="bar-actions">
+            <button type="button" className="primary" onClick={onEnterVR}>
+              Enter VR
+            </button>
+          </div>
+        </header>
+      )}
 
       <div className="bottom">
         <div className="hints">

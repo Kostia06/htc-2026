@@ -8,6 +8,12 @@
 // vendor-locked in the first place. resolveBones() normalises them instead.
 
 import * as THREE from 'three'
+import { buildArms } from './bodyMotion.js'
+
+// The rig is authored standing with its feet on y=0, so the whole model drops by
+// about a seat height to sit in the chair. Measured against the mesh with
+// scripts/mesh-probe.mjs: feet flat on the floor, seat on the cushion.
+export const AVATAR_SINK = -0.33
 
 // Tuned against an RPM halfbody-compatible fullbody rig. Values are radians.
 // Live-tweak from the console in dev: window.__rig.pose.LeftUpLeg.x = -1.3
@@ -29,11 +35,8 @@ export const SEATED_POSE = {
   LeftFoot: { nod: 0.12 },
   RightFoot: { nod: 0.12 },
 
-  // Left empty on purpose: the GLB is exported in an A-pose, so the arms already
-  // hang correctly and any offset here fights the baked pose. Posing them onto
-  // the table looked worse than letting them rest.
-  LeftShoulder: {},
-  RightShoulder: {},
+  // Arms are not posed here: bodyMotion.js places them with IK so the forearms
+  // rest on the table instead of hanging through it.
 }
 
 // Canonical name -> the spellings seen in the wild. Matching is case-insensitive
@@ -133,7 +136,19 @@ function resolveAxes(bone) {
 }
 
 export function buildRig(root) {
+  // The pose below is added on top of the bones' current rotation, so building
+  // twice on one model would double it. React StrictMode does exactly that (it
+  // runs useMemo twice in dev): thighs turned 163 degrees, knees at the chest.
+  // Start every build from the rotations the file shipped with.
+  root.traverse((node) => {
+    if (!node.isBone) return
+    node.userData.bindQuaternion ??= node.quaternion.clone()
+    node.quaternion.copy(node.userData.bindQuaternion)
+  })
+  root.updateMatrixWorld(true)
+
   const bones = resolveBones(root)
+  const gaze = captureGaze(root, bones)
   const morphMeshes = []
 
   root.traverse((node) => {
@@ -166,8 +181,10 @@ export function buildRig(root) {
   for (const [name, bone] of Object.entries(bones)) {
     rest[name] = bone.rotation.clone()
   }
+  const restQuaternion = Object.fromEntries(Object.entries(bones).map(([name, bone]) => [name, bone.quaternion.clone()]))
+  const arms = buildArms(root, bones)
 
-  return { bones, morphMeshes, rest, axes, axesByBone, pose: SEATED_POSE }
+  return { root, bones, morphMeshes, rest, restQuaternion, axes, axesByBone, arms, gaze, pose: SEATED_POSE }
 }
 
 // Morph target naming is as inconsistent as bone naming. The same ARKit shape
@@ -216,72 +233,105 @@ export function hasMorph(morphMeshes, name) {
   return morphMeshes.some((mesh) => morphIndex(mesh).get(key) !== undefined)
 }
 
-// Breathing, weight shifts and a settling sway. Amplitudes are small on purpose:
-// in a headset, motion that looks subtle on a monitor reads as twitchy.
-export function applyIdle(rig, t, scale = 1) {
+// Breathing, weight shifts and a settling sway. Amplitudes stay small: in a
+// headset, motion that looks subtle on a monitor reads as twitchy. Two
+// unrelated frequencies per channel so the loop never visibly repeats.
+// `lean` tips the upper body forward (radians), e.g. to lean in while listening.
+export function applyIdle(rig, t, scale = 1, lean = 0) {
   const { bones, rest, axesByBone } = rig
-  if (scale <= 0) return
+  if (scale <= 0 && !lean) return
   const ax = (name) => axesByBone[name] ?? IDENTITY_AXES
-  const breath = Math.sin(t * 1.15) * scale // ~11 breaths/min
-  const sway = Math.sin(t * 0.37) * scale
+  const breath = (Math.sin(t * 1.15) * 0.8 + Math.sin(t * 0.53 + 0.4) * 0.2) * scale // ~11 breaths/min
+  const sway = (Math.sin(t * 0.37) + Math.sin(t * 0.13 + 2.1) * 0.6) * scale
   const drift = Math.sin(t * 0.21 + 1.3) * scale
 
-  setSemantic(bones.Spine, rest.Spine, { nod: breath * 0.012, turn: sway * 0.015 }, ax('Spine'))
-  setSemantic(bones.Spine1, rest.Spine1, { nod: breath * 0.016, turn: sway * 0.012 }, ax('Spine1'))
-  setSemantic(bones.Spine2, rest.Spine2, { nod: breath * 0.01, tilt: drift * 0.01 }, ax('Spine2'))
-  setSemantic(bones.LeftShoulder, rest.LeftShoulder, { tilt: breath * 0.02 }, ax('LeftShoulder'))
-  setSemantic(bones.RightShoulder, rest.RightShoulder, { tilt: -breath * 0.02 }, ax('RightShoulder'))
+  setSemantic(bones.Spine, rest.Spine, { nod: breath * 0.015 + lean * 0.4, turn: sway * 0.02, tilt: drift * 0.012 }, ax('Spine'))
+  setSemantic(bones.Spine1, rest.Spine1, { nod: breath * 0.02 + lean * 0.35, turn: sway * 0.015 }, ax('Spine1'))
+  setSemantic(bones.Spine2, rest.Spine2, { nod: breath * 0.012 + lean * 0.25, tilt: drift * 0.012 }, ax('Spine2'))
+  setSemantic(bones.Neck, rest.Neck, { nod: -lean * 0.5 - breath * 0.008 }, ax('Neck'))
+  setSemantic(bones.LeftShoulder, rest.LeftShoulder, { tilt: breath * 0.03 }, ax('LeftShoulder'))
+  setSemantic(bones.RightShoulder, rest.RightShoulder, { tilt: -breath * 0.03 }, ax('RightShoulder'))
 }
 
-// Turns the head and eyes toward a world point, clamped so the neck never
-// snaps past a plausible range.
-const _local = new THREE.Vector3()
-const _world = new THREE.Vector3()
-const _parentQ = new THREE.Quaternion()
-const MAX_YAW = 0.5
-const MAX_PITCH = 0.3
+// Eye contact. Aiming is done in the room's frame, from the direction the face
+// pointed in the file's standing pose (looking straight ahead). The old version
+// measured "up" in the neck's frame; this rig's neck leans ~20 degrees forward,
+// so a target level with his eyes read as above him and he lifted his chin 17
+// degrees at everyone.
+const HEAD_SHARE = 0.75 // the head turns most of the way; the eyes finish the job
+const MAX_YAW = 0.6
+const MAX_PITCH = 0.35
+const MAX_EYE_YAW = 0.3
+const MAX_EYE_PITCH = 0.2
 
-export function lookAt(rig, target, delta, weight = 1) {
-  const head = rig.bones.Head
-  const parent = head?.parent
-  if (!head || !parent) return
+const _from = new THREE.Vector3()
+const _to = new THREE.Vector3()
+const _up = new THREE.Vector3()
+const _right = new THREE.Vector3()
+const _flatFrom = new THREE.Vector3()
+const _flatTo = new THREE.Vector3()
+const _pos = new THREE.Vector3()
+const _restWorld = new THREE.Quaternion()
+const _parentWorld = new THREE.Quaternion()
+const _yaw = new THREE.Quaternion()
+const _pitch = new THREE.Quaternion()
+const _roll = new THREE.Quaternion()
+const _goal = new THREE.Quaternion()
 
-  // Aim in world space, then write through the rig's own axis convention. The
-  // old version set rotation.y/.x directly, which turned a Biped head sideways.
-  _world.setFromMatrixPosition(head.matrixWorld)
-  _local.copy(target).sub(_world)
-  parent.getWorldQuaternion(_parentQ)
-  _local.applyQuaternion(_parentQ.invert())
-
-  const axes = rig.axesByBone?.Head ?? rig.axes
-  const right = _local[axes.nod.axis] * axes.nod.sign
-  const up = _local[axes.turn.axis] * axes.turn.sign
-  const forward = _local[axes.tilt.axis] * axes.tilt.sign
-
-  const turn = THREE.MathUtils.clamp(Math.atan2(right, forward), -MAX_YAW, MAX_YAW)
-  const nod = THREE.MathUtils.clamp(
-    -Math.atan2(up, Math.hypot(right, forward)),
-    -MAX_PITCH,
-    MAX_PITCH,
-  )
-
-  const ease = 1 - Math.pow(0.001, delta) // frame-rate independent smoothing
-  easeSemantic(head, rig.rest.Head, { turn: turn * weight, nod: nod * weight }, axes, ease)
-
-  for (const eyeName of ['LeftEye', 'RightEye']) {
-    const eye = rig.bones[eyeName]
-    if (!eye) continue
-    easeSemantic(eye, rig.rest[eyeName], { turn: turn * 0.45, nod: nod * 0.4 }, rig.axesByBone?.[eyeName] ?? axes, ease)
+function captureGaze(root, bones) {
+  root.updateMatrixWorld(true)
+  const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(root.getWorldQuaternion(new THREE.Quaternion()))
+  const gaze = {}
+  for (const name of ['Head', 'LeftEye', 'RightEye']) {
+    const bone = bones[name]
+    if (!bone) continue
+    const inverse = bone.getWorldQuaternion(new THREE.Quaternion()).invert()
+    gaze[name] = { face: forward.clone().applyQuaternion(inverse) }
   }
+  return gaze
 }
 
-function easeSemantic(bone, base, offset, axes, ease) {
-  if (!bone || !base) return
-  for (const key of ['nod', 'turn', 'tilt']) {
-    const amount = offset[key]
-    if (amount === undefined) continue
-    const { axis, sign } = axes[key]
-    bone.rotation[axis] = THREE.MathUtils.lerp(bone.rotation[axis], base[axis] + amount * sign, ease)
+// Rotation (yaw about room-up, then pitch) that turns `from` toward `to`, scaled and clamped.
+function aimRotation(out, from, to, up, share, maxYaw, maxPitch, extraPitch = 0) {
+  _flatFrom.copy(from).projectOnPlane(up).normalize()
+  _flatTo.copy(to).projectOnPlane(up).normalize()
+  const yaw = Math.atan2(up.dot(_right.crossVectors(_flatFrom, _flatTo)), _flatFrom.dot(_flatTo))
+  const pitch = Math.asin(THREE.MathUtils.clamp(to.dot(up), -1, 1)) - Math.asin(THREE.MathUtils.clamp(from.dot(up), -1, 1))
+  _yaw.setFromAxisAngle(up, THREE.MathUtils.clamp(yaw * share, -maxYaw, maxYaw))
+  // pitch about the face's own left-right axis once it has turned; positive looks up
+  _right.copy(_flatFrom).applyQuaternion(_yaw).cross(up).normalize()
+  _pitch.setFromAxisAngle(_right, THREE.MathUtils.clamp(pitch * share - extraPitch, -maxPitch, maxPitch))
+  return out.copy(_pitch).multiply(_yaw)
+}
+
+function aimBone(rig, name, target, up, share, maxYaw, maxPitch, ease, extra = {}) {
+  const bone = rig.bones[name]
+  const gaze = rig.gaze?.[name]
+  if (!bone || !gaze) return
+  bone.parent.getWorldQuaternion(_parentWorld)
+  _restWorld.copy(_parentWorld).multiply(rig.restQuaternion[name])
+  _from.copy(gaze.face).applyQuaternion(_restWorld)
+  bone.getWorldPosition(_pos)
+  _to.copy(target).sub(_pos).normalize()
+  aimRotation(_goal, _from, _to, up, share, maxYaw, maxPitch, extra.nod ?? 0)
+  if (extra.tilt) _goal.premultiply(_roll.setFromAxisAngle(_to, extra.tilt))
+  // world goal back into the bone's local space, then ease toward it
+  _goal.multiply(_restWorld).premultiply(_parentWorld.invert())
+  bone.quaternion.slerp(_goal, ease)
+  bone.updateMatrixWorld(true)
+}
+
+// `extra.nod` dips the chin (radians, positive = down) and `extra.tilt` rolls the
+// head, on top of eye contact.
+export function lookAt(rig, target, delta, weight = 1, extra = {}) {
+  if (!rig.bones.Head) return
+  rig.root.updateMatrixWorld(true)
+  _up.set(0, 1, 0).applyQuaternion(rig.root.getWorldQuaternion(_roll))
+  const ease = 1 - Math.pow(0.001, delta) // frame-rate independent smoothing
+  aimBone(rig, 'Head', target, _up, HEAD_SHARE * weight, MAX_YAW, MAX_PITCH, ease, extra)
+  // eyes start from wherever the head ended up and close the remaining gap
+  for (const eye of ['LeftEye', 'RightEye']) {
+    aimBone(rig, eye, target, _up, weight, MAX_EYE_YAW, MAX_EYE_PITCH, 1 - Math.pow(0.00001, delta))
   }
 }
 
