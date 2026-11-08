@@ -1,22 +1,23 @@
 import { useState } from 'react'
 import { toSlug, voice } from '../lib/agent'
 import { useSkill } from './useSkill'
-import { Problem, Steps, Thinking, Updated } from './ui'
+import { PageHead, Problem, Steps, Thinking, Updated } from './ui'
+import './interview.css'
 
 const SOURCES = { reported: 'Asked recently', resume: 'From your resume', technical: 'Technical', behavioral: 'Common question' }
 
 function CompanyRole({ company, setCompany, role, setRole, companyRequired, idPrefix }) {
   return (
-    <div className="db__pair">
-      <label className="ob__field">
-        <span>Company{companyRequired ? '' : ' (optional)'}</span>
-        <input id={`${idPrefix}-company`} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. ATB Financial" maxLength={100} />
-      </label>
+    <>
       <label className="ob__field">
         <span>Role</span>
         <input id={`${idPrefix}-role`} value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Junior data analyst" maxLength={100} />
       </label>
-    </div>
+      <label className="ob__field">
+        <span>Company{companyRequired ? '' : <em className="iv__opt"> (optional)</em>}</span>
+        <input id={`${idPrefix}-company`} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. ATB Financial" maxLength={100} />
+      </label>
+    </>
   )
 }
 
@@ -38,47 +39,62 @@ export function InterviewPrep({ userId, stamp, defaultRole, onPractice }) {
   }
 
   return (
-    <div className="db__panel">
-      <p className="db__intro">Raven picks five questions for a company, starting with ones real candidates were asked there, then fills in with your weak spots.</p>
-      <form className="db__form" onSubmit={prepare}>
+    <div className="pg__grid">
+      <form className="pg__side pg__card iv__setup" onSubmit={prepare}>
+        <h2>Set up</h2>
         <CompanyRole company={company} setCompany={setCompany} role={role} setRole={setRole} companyRequired idPrefix="prep" />
-        <button type="submit" className="ob__next" disabled={busy || !toSlug(company)}>{busy ? 'Preparing…' : 'Prepare me'}</button>
+        <button type="submit" className="ob__next" disabled={busy || !toSlug(company)}>{busy ? 'Preparing…' : output ? 'Prepare again' : 'Prepare me'}</button>
+        <p className="pg__label">Five questions for one company, starting with ones real candidates were asked there.</p>
       </form>
 
-      {busy && <Thinking>Raven is reading what candidates report and what it knows about you…</Thinking>}
-      <Problem error={state.status === 'error' && unknownCompany(state.error, company)} onRetry={state.error?.status === 404 ? null : prepare} />
+      <section className="pg__main" aria-label="Questions to prepare">
+        {busy && <Thinking>Raven is reading what candidates report and what it knows about you…</Thinking>}
+        <Problem error={state.status === 'error' && unknownCompany(state.error, company)} onRetry={state.error?.status === 404 ? null : prepare} />
 
-      {output && !busy && (
-        <>
-          {output.focus?.length > 0 && (
-            <div className="db__chips">
-              <span className="db__muted">Work on:</span>
-              {output.focus.map((f) => <span key={f} className="db__chip">{f}</span>)}
-            </div>
-          )}
-          <ol className="db__questions">
-            {output.questions?.map((q, i) => (
-              <li key={i}>
-                <p>{q.text}</p>
-                {q.reported && <span className="db__tag">Reported by real candidates</span>}
-                {q.why && <span className="db__muted">{q.why}</span>}
-              </li>
-            ))}
-          </ol>
-          <div className="db__row">
-            <button type="button" className="ob__next" onClick={() => onPractice({ company, role })}>Practise an interview</button>
-            <Updated at={state.at} onRefresh={prepare} busy={busy} />
+        {!output && !busy && (
+          <div className="pg__card pg__card--dashed">
+            <h2>Name a company to start</h2>
+            <p className="pg__muted">Raven picks five questions, starting with ones real candidates were asked there, then fills in with your weak spots.</p>
           </div>
-        </>
-      )}
+        )}
+
+        {output && !busy && (
+          <div className="pg__card iv__prep">
+            <h2>Five questions to prepare</h2>
+            {output.focus?.length > 0 && (
+              <div className="db__chips">
+                <span className="pg__label">Work on</span>
+                {output.focus.map((f) => <span key={f} className="db__chip">{f}</span>)}
+              </div>
+            )}
+            <ol className="iv__questions">
+              {output.questions?.map((q, i) => (
+                <li key={i}>
+                  <span className="iv__n">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="iv__q">
+                    <span>{q.text}</span>
+                    {q.why && <span className="iv__why">{q.why}</span>}
+                  </span>
+                  {q.reported && <span className="pg__pill">Asked of real candidates</span>}
+                </li>
+              ))}
+            </ol>
+            <div className="db__row">
+              <button type="button" className="ob__next" onClick={() => onPractice({ company, role })}>Practise these out loud</button>
+              <Updated at={state.at} onRefresh={prepare} busy={busy} />
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   )
 }
 
-function Scores({ result }) {
+function Scores({ result, n }) {
   const entries = Object.entries(result.scores ?? {})
   return (
-    <div className="db__feedback" aria-live="polite">
+    <div className="pg__card pg__card--dashed iv__scores" aria-live="polite">
+      <span className="pg__label">Question {n} · how it scored</span>
       {entries.length > 0 && (
         <dl className="db__scores">
           {entries.map(([k, v]) => (
@@ -89,8 +105,13 @@ function Scores({ result }) {
           ))}
         </dl>
       )}
-      {result.tip && <p><strong>Tip:</strong> {result.tip}</p>}
-      {result.delivery?.fillerWords > 0 && <p className="db__muted">Filler words: {result.delivery.fillerWords}</p>}
+      {result.tip && (
+        <div className="iv__tip">
+          <span className="pg__label">Tighten</span>
+          <p>{result.tip}</p>
+        </div>
+      )}
+      {result.delivery?.fillerWords > 0 && <p className="pg__label">Filler words: {result.delivery.fillerWords}</p>}
     </div>
   )
 }
@@ -164,77 +185,115 @@ export function Practice({ defaultRole, preset }) {
     setError(null)
   }
 
-  if (debrief) {
-    return (
-      <div className="db__panel">
-        <h3 className="db__h3">How it went</h3>
-        <p className="db__lead">{debrief.summary}</p>
-        <h3 className="db__h3">Before the real one</h3>
-        <Steps items={debrief.prepList} />
-        {debrief.savedToMemory > 0 && (
-          <p className="db__muted">Raven noted {debrief.savedToMemory} pattern{debrief.savedToMemory === 1 ? '' : 's'} to work on next time. See them under "What Raven knows".</p>
-        )}
-        <button type="button" className="ob__next db__start" onClick={reset}>Practise again</button>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return (
-      <div className="db__panel">
-        <p className="db__intro">A mock interview you answer by typing. Raven asks questions planned from your profile (and the company, if you name one), scores each answer and debriefs you at the end. For a spoken interview, use the iOS app or the Quest headset.</p>
-        <form className="db__form" onSubmit={start}>
-          <CompanyRole company={company} setCompany={setCompany} role={role} setRole={setRole} idPrefix="practice" />
-          <button type="submit" className="ob__next" disabled={busy === 'start'}>{busy === 'start' ? 'Planning questions…' : 'Start the interview'}</button>
-        </form>
-        <Problem error={error} />
-      </div>
-    )
-  }
+  const total = session?.questions?.length ?? 0
 
   return (
-    <div className="db__panel">
-      <div className="ob__top">
-        <span>Question {index + 1} of {session.questions.length}</span>
-        <div className="ob__bar" role="progressbar" aria-valuemin={0} aria-valuemax={session.questions.length} aria-valuenow={index + 1} aria-label="Interview progress">
-          <i style={{ width: `${((index + 1) / session.questions.length) * 100}%` }} />
-        </div>
-      </div>
-      {index === 0 && session.opening && <p className="db__muted">{session.opening}</p>}
-      <div className="db__asked">
-        <p>{question.text}</p>
-        {SOURCES[question.source] && <span className="db__tag">{SOURCES[question.source]}</span>}
-      </div>
-
-      <form className="db__form" onSubmit={submit}>
-        <label className="ob__sr" htmlFor="practice-answer">Your answer</label>
-        <textarea
-          id="practice-answer"
-          className="db__answer"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          placeholder="Answer as you would out loud. Try: the situation, what you did, how it turned out."
-          rows={7}
-          maxLength={4000}
-          readOnly={Boolean(answered)}
-        />
-        {!answered && (
-          <button type="submit" className="ob__next" disabled={busy === 'turn' || !answer.trim()}>{busy === 'turn' ? 'Scoring…' : 'Submit answer'}</button>
-        )}
+    <div className="pg__grid">
+      <form className="pg__side pg__card iv__setup" onSubmit={start}>
+        <h2>Set up</h2>
+        <CompanyRole company={company} setCompany={setCompany} role={role} setRole={setRole} idPrefix="practice" />
+        <button type="submit" className={session ? 'db__ghost' : 'ob__next'} disabled={!!busy}>
+          {busy === 'start' ? 'Planning questions…' : session ? 'Restart interview' : 'Start the interview'}
+        </button>
+        <p className="pg__label">Typed answers, scored one by one. For a spoken interview, use the iOS app or the Quest headset.</p>
       </form>
 
-      {answered && <Scores result={answered} />}
-      <Problem error={error} />
-
-      <div className="db__row">
-        {answered && !last && <button type="button" className="ob__next" onClick={next}>Next question</button>}
-        {results.some(Boolean) && (
-          <button type="button" className={answered && last ? 'ob__next' : 'db__ghost'} onClick={finish} disabled={busy === 'finish'}>
-            {busy === 'finish' ? 'Writing your debrief…' : last && answered ? 'Finish and debrief' : 'End early and debrief'}
-          </button>
+      <section className="pg__main" aria-label="Mock interview">
+        {!session && !debrief && (
+          <div className="pg__card pg__card--dashed">
+            <h2>A mock interview you answer by typing</h2>
+            <p className="pg__muted">Raven asks questions planned from your profile (and the company, if you name one), scores each answer and debriefs you at the end.</p>
+          </div>
         )}
+
+        {debrief && (
+          <div className="pg__card">
+            <span className="pg__label">How it went</span>
+            <p className="iv__summary">{debrief.summary}</p>
+            <span className="pg__label">Before the real one</span>
+            <Steps items={debrief.prepList} />
+            {debrief.savedToMemory > 0 && (
+              <p className="pg__label">Raven noted {debrief.savedToMemory} pattern{debrief.savedToMemory === 1 ? '' : 's'} to work on next time. See them under You.</p>
+            )}
+            <button type="button" className="ob__next db__start" onClick={reset}>Practise again</button>
+          </div>
+        )}
+
+        {session && !debrief && (
+          <>
+            <div className="pg__row-head">
+              <span className="pg__label">Question {index + 1} of {total}</span>
+              <div className="iv__progress" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={index + 1} aria-label="Interview progress">
+                {session.questions.map((_, i) => <i key={i} className={i < index || (i === index && answered) ? 'is-done' : i === index ? 'is-now' : ''} />)}
+              </div>
+            </div>
+
+            <form className="pg__card iv__ask" onSubmit={submit}>
+              {SOURCES[question.source] && <span className="pg__pill">{SOURCES[question.source]}</span>}
+              {index === 0 && session.opening && <p className="pg__muted">{session.opening}</p>}
+              <h2 className="iv__question">{question.text}</h2>
+              <label className="ob__field" htmlFor="practice-answer"><span>Your answer</span></label>
+              <textarea
+                id="practice-answer"
+                className="db__answer"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Type as you would say it. Try: the situation, what you did, how it turned out."
+                rows={6}
+                maxLength={4000}
+                readOnly={Boolean(answered)}
+              />
+              <div className="iv__actions">
+                {results.some(Boolean) && !(answered && last) ? (
+                  <button type="button" className="iv__quiet" onClick={finish} disabled={busy === 'finish'}>
+                    {busy === 'finish' ? 'Writing your debrief…' : 'End early and debrief'}
+                  </button>
+                ) : <span />}
+                {!answered && (
+                  <button type="submit" className="ob__next" disabled={busy === 'turn' || !answer.trim()}>{busy === 'turn' ? 'Scoring…' : 'Submit answer'}</button>
+                )}
+                {answered && !last && <button type="button" className="ob__next" onClick={next}>Next question</button>}
+                {answered && last && (
+                  <button type="button" className="ob__next" onClick={finish} disabled={busy === 'finish'}>{busy === 'finish' ? 'Writing your debrief…' : 'Finish and debrief'}</button>
+                )}
+              </div>
+            </form>
+
+            {answered && <Scores result={answered} n={index + 1} />}
+            {busy === 'finish' && <Thinking>Raven is looking for patterns across your answers…</Thinking>}
+          </>
+        )}
+        <Problem error={error} />
+      </section>
+    </div>
+  )
+}
+
+const MODES = [
+  ['prep', 'Prep questions'],
+  ['mock', 'Mock interview'],
+]
+
+/** Prep and the mock interview on one page; both stay mounted so switching modes keeps what's in progress. */
+export default function Interview({ mode, onMode, userId, stamp, defaultRole, preset, onPractice }) {
+  return (
+    <div className="pg">
+      <PageHead
+        title="Practise for the exact role."
+        lead="Questions start with ones real candidates were asked, then fill in with your weak spots. Prefer speaking? Use the iOS app or the Quest headset."
+      >
+        <div className="iv__modes" role="group" aria-label="Mode">
+          {MODES.map(([id, label]) => (
+            <button key={id} type="button" className={mode === id ? 'is-on' : ''} aria-pressed={mode === id} onClick={() => onMode(id)}>{label}</button>
+          ))}
+        </div>
+      </PageHead>
+      <div hidden={mode !== 'prep'}>
+        <InterviewPrep userId={userId} stamp={stamp} defaultRole={defaultRole} onPractice={onPractice} />
       </div>
-      {busy === 'finish' && <Thinking>Raven is looking for patterns across your answers…</Thinking>}
+      <div hidden={mode !== 'mock'}>
+        <Practice key={preset?.key ?? 'practice'} defaultRole={defaultRole} preset={preset} />
+      </div>
     </div>
   )
 }
