@@ -50,6 +50,14 @@ describe("A2A, end to end", () => {
     expect(prompts).toEqual([]);
   });
 
+  it("rejects tailor requirements without a topic up front instead of crashing after the model call", async () => {
+    const change = { action: "rewrite", path: "summary", before: "Built a small booking app for a campus club.", after: "Built a booking app.", why: "Plainer.", requirement: 1 };
+    const { send, prompts } = setup([call("finish", { changes: [change] })]);
+    const input = { ...fixtures["resume-tailor"].input, requirements: [{ text: "React", required: true }] };
+    expect((await send("a2a-u6", "resume-tailor", input)).error?.code).toBe(-32602);
+    expect(prompts).toEqual([]);
+  });
+
   it("reports a failed run with a fixed message, never the model's error", async () => {
     const { send, deps } = setup();
     deps.model = () => async () => {

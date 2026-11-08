@@ -12,7 +12,7 @@ export const fixtures: Record<string, SkillFixture> = {
   "onboarding-prefill": { input: { text: "Jane, SAIT, Python." }, output: { targetRoles: [], skills: [] } },
   "resume-coach": { input: { resume, targetRole: "junior developer" }, output: { suggestions: [] } },
   "resume-tailor": {
-    input: { resume, requirements: [{ text: "React", required: true }], title: "Developer", companyName: "Acme" },
+    input: { resume, requirements: [{ text: "React", topic: "react", required: true }], title: "Developer", companyName: "Acme" },
     output: { changes: [] },
   },
   "github-projects": { input: { repos: [] }, output: { projects: [] } },

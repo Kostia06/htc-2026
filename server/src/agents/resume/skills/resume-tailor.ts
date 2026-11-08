@@ -38,7 +38,15 @@ naming what the posting asks for in its own words (never "requirement 1" or any 
     type: "object",
     properties: {
       resume: { type: "object" },
-      requirements: { type: "array", items: { type: "object" } },
+      // grounding reads every requirement's topic, so one without it is turned away here rather than failing the run
+      requirements: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: { text: { type: "string" }, topic: { type: "string" }, required: { type: "boolean" } },
+          required: ["text", "topic", "required"],
+        },
+      },
       profileText: { type: "string", maxLength: 4000 },
       title: { type: "string", maxLength: 120 },
       companyName: { type: "string", maxLength: 120 },
