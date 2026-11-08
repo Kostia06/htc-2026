@@ -3,6 +3,8 @@ import type { AgentDeps, Platform } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
 import { orchestrate, type Task } from "../agents/orchestrator";
 import type { AppContext, Env } from "../env";
+import { claimCooldown } from "../memory/cooldowns";
+import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany } from "../voice/session";
@@ -11,11 +13,22 @@ import { VOICE_MODES, type VoiceMode } from "../voice/types";
 
 const SESSIONS_PER_HOUR = 10;
 const MAX_ANSWER = 4000;
+const MAX_TRANSCRIPT_LINES = 80;
+// a real turn takes seconds of speech; faster than this is a loop or a script, not a person
+const NEXT_LINE_COOLDOWN_MS = 1000;
 
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 
 const isText = (value: unknown, max: number): value is string => typeof value === "string" && value.trim().length > 0 && value.length <= max;
 const optionalText = (value: unknown) => (typeof value === "string" && value.trim() ? value.trim().slice(0, 100) : undefined);
+
+function parseTranscript(value: unknown): TranscriptLine[] | null {
+  if (!Array.isArray(value) || value.length > MAX_TRANSCRIPT_LINES) return null;
+  const valid = value.every(
+    (line) => SPEAKERS.includes(line?.speaker) && typeof line?.text === "string" && line.text.length <= 1000,
+  );
+  return valid ? value.map((line) => ({ speaker: line.speaker, text: line.text })) : null;
+}
 
 const averageOutOfTen = (turn: StoredTurn) => {
   const values = Object.values(turn.scores);
@@ -63,6 +76,21 @@ export function voiceRouter(makeDeps: MakeDeps) {
     const score = await scoreTurn(c.env, { mode: session.mode, question: body.question, answer: body.answer, durationMs });
     await addTurn(c.env, c.var.sessionId, session.id, { question: body.question, answer: body.answer, score });
     return c.json(score);
+  });
+
+  // what the interviewer says next: a quick follow-up or the next planned question, decided in about a second
+  router.post("/sessions/:id/next", async (c) => {
+    const userId = c.var.sessionId;
+    const session = await findSession(c.env, userId, c.req.param("id"));
+    if (!session) return c.json({ error: "unknown session" }, 404);
+    if (session.status === "finished") return c.json({ error: "this session has ended" }, 409);
+    const body = await c.req.json<{ answer?: unknown; transcript?: unknown }>().catch(() => null);
+    const transcript = parseTranscript(body?.transcript);
+    if (!body || typeof body.answer !== "string" || body.answer.length > MAX_ANSWER || !transcript) {
+      return c.json({ error: "send the answer and the transcript so far" }, 400);
+    }
+    if (!(await claimCooldown(c.env, "voice-next", userId, NEXT_LINE_COOLDOWN_MS))) return c.json({ error: "one moment, still thinking" }, 429);
+    return c.json(await nextLine(c.env, session.plan, { answer: body.answer, transcript }));
   });
 
   router.post("/sessions/:id/finish", async (c) => {
