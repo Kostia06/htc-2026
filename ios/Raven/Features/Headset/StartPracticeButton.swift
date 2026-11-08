@@ -70,7 +70,7 @@ struct StartPracticeButton: View {
         } label: {
             Text("Start")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.onAction)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 9)
                 .background(Theme.action, in: .capsule)

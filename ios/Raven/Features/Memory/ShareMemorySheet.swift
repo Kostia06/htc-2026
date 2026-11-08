@@ -86,7 +86,7 @@ struct ShareMemorySheet: View {
                         Text("Share")
                     }
                 }
-                .buttonStyle(.raised(Theme.agent))
+                .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
                 .disabled(!canSend)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
@@ -102,7 +102,7 @@ struct ShareMemorySheet: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill").font(.system(size: 64)).foregroundStyle(Theme.agent)
             Text("Thanks — this helps the next person").font(.title3.bold()).multilineTextAlignment(.center)
-            Button("Done") { dismiss() }.buttonStyle(.raised(Theme.agent)).frame(maxWidth: 220)
+            Button("Done") { dismiss() }.buttonStyle(.raised(Theme.agent, foreground: Theme.onAction)).frame(maxWidth: 220)
         }
         .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

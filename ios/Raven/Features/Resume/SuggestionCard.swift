@@ -67,7 +67,7 @@ struct SuggestionCard: View {
                 Button("Skip", action: onSkip)
                     .buttonStyle(.raised(Color(white: 0.22)))
                 Button("Accept", action: onAccept)
-                    .buttonStyle(.raised(Theme.agent))
+                    .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
             }
         }
         .ravenCard()

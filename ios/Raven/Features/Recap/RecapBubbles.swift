@@ -16,7 +16,7 @@ struct RecapBubble: View {
             }
             Text(message.text)
                 .font(.body)
-                .foregroundStyle(isRaven ? Color.primary : Color.white)
+                .foregroundStyle(isRaven ? Color.primary : Theme.onAction)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
                 .background(isRaven ? Theme.raised : Theme.action, in: .rect(cornerRadius: 20))

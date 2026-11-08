@@ -5,10 +5,11 @@ import SwiftUI
 extension FeedCard.Kind {
     var tint: Color {
         switch self {
-        case .job: Color(red: 0.30, green: 0.62, blue: 1.0)
-        case .event: Color(red: 0.25, green: 0.80, blue: 0.55)
-        case .hackathon: Theme.agent
-        case .course: Color(red: 1.0, green: 0.78, blue: 0.25)
+        // pastels to sit beside the lavender and mint, never louder than them
+        case .job: Color(red: 0.66, green: 0.80, blue: 1.0)
+        case .event: Color(red: 1.0, green: 0.80, blue: 0.68)
+        case .hackathon: Color(red: 1.0, green: 0.73, blue: 0.86)
+        case .course: Color(red: 1.0, green: 0.92, blue: 0.64)
         }
     }
 

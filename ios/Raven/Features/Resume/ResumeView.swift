@@ -130,7 +130,7 @@ struct ResumeView: View {
                     .contentTransition(.interpolate)
             }
         }
-        .buttonStyle(.raised(Theme.agent))
+        .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
         .disabled(model.isImproving)
         .padding(.horizontal, 20)
         .padding(.top, 8)
