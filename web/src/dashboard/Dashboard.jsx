@@ -2,48 +2,17 @@ import { useEffect, useState } from 'react'
 import { memories as memoryApi } from '../lib/agent'
 import { supabase } from '../lib/supabase'
 import { InterviewPrep, Practice } from './Interview'
+import Plan from './Plan'
 import Recommendations from './Recommendations'
 import ResumeBuilder from './Resume'
-import { pruneResults, useSkill } from './useSkill'
-import { Problem, Steps, Thinking, Updated } from './ui'
+import { pruneResults } from './useSkill'
+import { Problem } from './ui'
 import '../onboarding/onboarding.css'
 import './dashboard.css'
 
 const list = (v) => (Array.isArray(v) ? v : v ? [v] : [])
 const realRoles = (answers) => list(answers.roles).filter((r) => r !== 'Not sure yet')
 const isStudent = (answers) => ['High school', 'University or college'].includes(answers.stage)
-
-/** career-snapshot: the first thing someone sees after onboarding, run automatically from the profile they just saved. */
-function Plan({ userId, stamp, onGo }) {
-  const [state, run] = useSkill({ userId, stamp, key: 'career-snapshot', skill: 'career-snapshot', auto: true })
-  const busy = state.status === 'loading'
-  const output = state.output
-
-  return (
-    <div className="db__panel">
-      {busy && !output && <Thinking>Raven is reading your profile and building your plan…</Thinking>}
-      <Problem error={state.status === 'error' && state.error} onRetry={() => run()} />
-      {output && (
-        <>
-          <h3 className="db__h3">Roles to aim for</h3>
-          <div className="db__chips">
-            {output.targetRoles?.map((r) => <span key={r} className="db__chip db__chip--strong">{r}</span>)}
-          </div>
-          <h3 className="db__h3">Your next steps</h3>
-          <Steps items={output.nextSteps} />
-          <Updated at={state.at} onRefresh={() => run()} busy={busy} />
-          {busy && <Thinking>Refreshing your plan…</Thinking>}
-        </>
-      )}
-      <div className="db__shortcuts">
-        <button type="button" onClick={() => onGo('resume')}><strong>Polish your resume</strong><span>Sharper wording, nothing made up</span></button>
-        <button type="button" onClick={() => onGo('jobs')}><strong>Jobs you could apply for</strong><span>Real postings, checked against your profile</span></button>
-        <button type="button" onClick={() => onGo('prep')}><strong>Prepare for an interview</strong><span>Questions candidates were asked</span></button>
-        <button type="button" onClick={() => onGo('practice')}><strong>Practise an interview</strong><span>Scored answers and a debrief</span></button>
-      </div>
-    </div>
-  )
-}
 
 const KINDS = { goal: 'Goals', skill: 'Strengths', weakness: 'Working on', preference: 'Preferences', note: 'Notes' }
 
@@ -139,7 +108,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   }
 
   const tabs = [
-    { id: 'plan', label: 'Your plan', title: 'Your plan', render: () => <Plan userId={userId} stamp={stamp} onGo={go} /> },
+    { id: 'plan', label: 'Plan', title: 'Your plan', bare: true, render: () => <Plan userId={userId} stamp={stamp} first={first} role={role} onGo={go} /> },
     { id: 'resume', label: 'Resume', title: 'Your resume', render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
     {
       id: 'jobs',
