@@ -11,7 +11,8 @@ import { liteDeps } from "./recap";
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 type Options = { hourlyLimit?: number };
 
-const HOURLY_LIMIT = 20;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 const MAX_URL = 2000;
 
 const isHttpUrl = (value: unknown): value is string => {

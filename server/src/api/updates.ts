@@ -15,9 +15,11 @@ type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => Agent
 type Options = { timeoutMs?: number; hourlyLimit?: number; fileTimeoutMs?: number; hourlyFileLimit?: number };
 
 const MAX_MESSAGE = 2000;
-const HOURLY_LIMIT = 60;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 // each file costs a document read on top of the update, so fewer of them
-const HOURLY_FILE_LIMIT = 20;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_FILE_LIMIT = Number.POSITIVE_INFINITY;
 
 // every update is one recorded agent run, so the run log is the rate limiter
 async function isRateLimited(env: Env, userId: string, limit: number, skill = "quick-update") {

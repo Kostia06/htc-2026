@@ -5,7 +5,8 @@ import { anonymize } from "../lib/anonymize";
 import { sha256 } from "../lib/hash";
 import { upsertVector } from "./vectors";
 
-const HOURLY_LIMIT = 5;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 const MAX_QUESTIONS = 15;
 const MAX_LEN = 500;
 

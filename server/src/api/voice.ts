@@ -17,7 +17,8 @@ import { notifyAfterWrite } from "../notifications/generate";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns, type TurnTiming } from "../voice/store";
 import { DIFFICULTIES, type Difficulty, type InterviewLength, LENGTHS, VOICE_MODES, type VoiceMode } from "../voice/types";
 
-const SESSIONS_PER_HOUR = 10;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const SESSIONS_PER_HOUR = Number.POSITIVE_INFINITY;
 const MAX_ANSWER = 4000;
 const MAX_TRANSCRIPT_LINES = 80;
 // a real turn takes seconds of speech; faster than this is a loop or a script, not a person

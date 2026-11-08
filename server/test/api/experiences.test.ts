@@ -49,10 +49,9 @@ describe("POST /api/experiences", () => {
     expect(res.status).toBe(400);
   });
 
-  it("limits a session to 5 submissions per hour", async () => {
+  it("has no hourly cap on submissions for now", async () => {
     const token = await issueSession(env.SESSION_SECRET);
-    for (let i = 0; i < 5; i++) expect((await post(token)).status).toBe(201);
-    expect((await post(token)).status).toBe(429);
+    for (let i = 0; i < 6; i++) expect((await post(token)).status).toBe(201);
   });
 
   it("anonymizes the role too", async () => {

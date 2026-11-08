@@ -291,7 +291,8 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", companySlug: "nobody" })).status).toBe(404);
     const statuses: number[] = [];
     for (let i = 0; i < 11; i++) statuses.push((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).status);
-    expect(statuses.at(-1)).toBe(429);
+    // no hourly cap on practice for now
+    expect(statuses.at(-1)).toBe(201);
   });
 
   it("says the next line for the owner only, at most once a second", async () => {

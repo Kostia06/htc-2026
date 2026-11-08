@@ -18,9 +18,11 @@ import type { TailoredContent, TailoredResume } from "../resume/tailor/types";
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 type Options = { hourlyLimit?: number };
 
-const HOURLY_LIMIT = 10;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 // a pasted posting is imported first, which is its own model call with the postings endpoint's limit
-const IMPORT_HOURLY_LIMIT = 20;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const IMPORT_HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 
 async function runsInLastHour(env: Env, userId: string, skill: string) {
   const since = new Date(Date.now() - 3600_000).toISOString();

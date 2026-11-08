@@ -15,7 +15,8 @@ type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => Agent
 type Options = { hourlyLimit?: number };
 
 const MAX_MESSAGE = 1000;
-const HOURLY_LIMIT = 30;
+// no usage cap for now (hackathon demo); set a number to bring one back
+const HOURLY_LIMIT = Number.POSITIVE_INFINITY;
 
 // every question is one recorded agent run, so the run log is the rate limiter
 async function isRateLimited(env: Env, userId: string, limit: number) {
