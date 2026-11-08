@@ -8,6 +8,7 @@ import { onboardingApi, RESUME_ACCEPT } from '../../lib/client'
 import { RaisedButton } from '../../ui/Button'
 import { OptionTile } from '../../ui/Controls'
 import { draftToAnswers, isAnswered, toProfile } from './answers'
+import AccountsStep from './AccountsStep'
 import { visibleQuestions } from './questions'
 import './onboarding.css'
 
@@ -144,6 +145,7 @@ export default function Onboarding() {
           <p className="t-body c-2">{q.hint}</p>
           <div className="ob__answer">
             {q.type === 'resume' && <ResumeChoice onFile={read} onSkip={goForward} />}
+            {q.type === 'accounts' && <AccountsStep onNext={goForward} />}
             {q.type === 'single' && <SingleChoice question={q} value={value} onPick={pickSingle} />}
             {q.type === 'multi' && <MultiChoice question={q} value={value ?? []} onChange={answer} />}
             {q.type === 'text' && <TextFields question={q} value={value ?? {}} onChange={answer} onSubmit={isLast ? finish : goForward} />}
@@ -156,7 +158,7 @@ export default function Onboarding() {
         </div>
       </main>
 
-      {q.type !== 'resume' && (
+      {q.type !== 'resume' && q.type !== 'accounts' && (
         <footer className="ob__bar">
           {canSkip && (
             <button type="button" className="ob__skip t-headline c-2" onClick={isLast ? finish : goForward}>

@@ -101,11 +101,13 @@
 		87A0CC953176A70F28CD646B /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BFBC9CFAE8A5F325ED58780 /* MainTabView.swift */; };
 		87CEF293DB9AB256CA685F82 /* NotificationBell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D9930C010DF1C7BCA98111 /* NotificationBell.swift */; };
 		87F146D3B7CE0BD21DA3BE9C /* FinishingUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2241155FCAD6ED7AEB6D727C /* FinishingUpView.swift */; };
+		88AA7F6AA230806BAB131C1F /* AccountsStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76EA101189762DF575BC010B /* AccountsStep.swift */; };
 		8923BBD5674CF5CBEB371802 /* RecapVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5EB2EBCA7C1E10D2F91DE9 /* RecapVoice.swift */; };
 		8B38C61320F73A0D6BF6E00B /* DemoHeadsetIssuer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B30FA9A74413AABD60B9D6 /* DemoHeadsetIssuer.swift */; };
 		8BDEADA3A13F4BAFE77222AE /* DebugScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1D24DEBBBB8FCB9F116699 /* DebugScreen.swift */; };
 		8CE6B79F97E7B4595D5E881D /* FeedDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DC4DFB55A0D171642620DF /* FeedDetailSheet.swift */; };
 		8E9A0E86DAA9A25DB3141823 /* SkillsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28063CA8CDE81D5FFCE5882 /* SkillsEditor.swift */; };
+		8F82E125A9227B8639A59CC3 /* GithubConnectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3384D6B02E430830785399F0 /* GithubConnectRow.swift */; };
 		923E19E8F4028356FF3AA338 /* Skeleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C64B7C98F8A2987EBDB0D9 /* Skeleton.swift */; };
 		93F038E4B13DF7E12FDF9313 /* TrailStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C35934AEC18B388415F95 /* TrailStrip.swift */; };
 		967FC182F027D48351B8FBCA /* RecapBubbles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D83394F42B6C946BDD40B95 /* RecapBubbles.swift */; };
@@ -147,6 +149,8 @@
 		C5F60B61FA7389E98D4D3BA4 /* ElevenLabsVoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617B7D2FC68DA52D4D1D645 /* ElevenLabsVoiceEngine.swift */; };
 		C6E361503FE5FA60759C509D /* PracticeHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023362126EA217591D45F919 /* PracticeHistoryService.swift */; };
 		C72A8F587A777B83F6F3B900 /* VoiceBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF9F2DF6F57E7E2660A7247 /* VoiceBar.swift */; };
+		C998FEC1B5D232BD5671DC18 /* LinkedinReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1AAD26C15FC711EE090093C /* LinkedinReviewView.swift */; };
+		CA6DEEB82DD23A89FB38ACC4 /* GithubConnectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB5A6D720008E828906B833 /* GithubConnectModel.swift */; };
 		CAAA2B5529AE851EBF4AA407 /* InterviewProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */; };
 		CC3C6001A923B5BDB51AC160 /* AskSkillitBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD517E4271FD64BF495E1F45 /* AskSkillitBar.swift */; };
 		CC8FB30CE3520BBAA412AECA /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267152696FF0F8DFFE6B08EA /* Theme.swift */; };
@@ -195,6 +199,7 @@
 		07F840A6A0B6D1B6B11792D5 /* ForYouModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForYouModel.swift; sourceTree = "<group>"; };
 		089B0D464E2E3A6B695ADA5E /* RoadmapStep+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoadmapStep+Display.swift"; sourceTree = "<group>"; };
 		096EC30D3287A58BFCA0F36D /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		0BB5A6D720008E828906B833 /* GithubConnectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubConnectModel.swift; sourceTree = "<group>"; };
 		0DE8D719177E981357331EB8 /* DemoHeadsetLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoHeadsetLink.swift; sourceTree = "<group>"; };
 		0ED5047FA091D718D2D5B30C /* ReplayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayModel.swift; sourceTree = "<group>"; };
 		1327C3A823E19D2846B61F38 /* TailoredResumeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailoredResumeService.swift; sourceTree = "<group>"; };
@@ -228,6 +233,7 @@
 		32D64B43DC50023B60D98700 /* RoadmapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapService.swift; sourceTree = "<group>"; };
 		333D44B93582F36132C49F7C /* StartPracticeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartPracticeButton.swift; sourceTree = "<group>"; };
 		3354E42023BF3F591557FC1A /* CrossroadsAskModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossroadsAskModel.swift; sourceTree = "<group>"; };
+		3384D6B02E430830785399F0 /* GithubConnectRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubConnectRow.swift; sourceTree = "<group>"; };
 		3413554FC1DE0935453AC768 /* PostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingView.swift; sourceTree = "<group>"; };
 		342FE55B3DDD303CBA46FFAC /* LocalNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotifier.swift; sourceTree = "<group>"; };
 		34D9930C010DF1C7BCA98111 /* NotificationBell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationBell.swift; sourceTree = "<group>"; };
@@ -271,6 +277,7 @@
 		73A9D0AFB591B9E2E3381C73 /* PostingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingsModel.swift; sourceTree = "<group>"; };
 		73DE6D6FB32CF66E83348404 /* EmailCodeForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCodeForm.swift; sourceTree = "<group>"; };
 		7589915EEE8B52466D53E369 /* CrossroadsAskBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossroadsAskBar.swift; sourceTree = "<group>"; };
+		76EA101189762DF575BC010B /* AccountsStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsStep.swift; sourceTree = "<group>"; };
 		77B30FA9A74413AABD60B9D6 /* DemoHeadsetIssuer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoHeadsetIssuer.swift; sourceTree = "<group>"; };
 		7A6AF72C2EDC5A4DE0C7142F /* SampleNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleNotifications.swift; sourceTree = "<group>"; };
 		7C310A5F09A32090E1EC8704 /* PracticeSessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSessionDetailView.swift; sourceTree = "<group>"; };
@@ -305,6 +312,7 @@
 		AC1FF73BC7EBD9DE06FB6C57 /* SampleTailoredResumes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleTailoredResumes.swift; sourceTree = "<group>"; };
 		ACA36DDB00640AF168A9EEF5 /* RecapModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapModel.swift; sourceTree = "<group>"; };
 		B087004AD788E345840EF333 /* PathNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathNode.swift; sourceTree = "<group>"; };
+		B1AAD26C15FC711EE090093C /* LinkedinReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedinReviewView.swift; sourceTree = "<group>"; };
 		B4475A386131EA20D47A0691 /* VoiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEngine.swift; sourceTree = "<group>"; };
 		B56D29EB0DC4130F32278D0A /* JunctionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunctionRow.swift; sourceTree = "<group>"; };
 		B5771EBB65B086758DD9FA8B /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
@@ -649,6 +657,7 @@
 		8E5A6AEE4C191EFFA9FA8D0D /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				76EA101189762DF575BC010B /* AccountsStep.swift */,
 				F7C7F6A617F4EE6FB295352F /* ChoiceQuestion.swift */,
 				2241155FCAD6ED7AEB6D727C /* FinishingUpView.swift */,
 				A75E59061519B1EBADF317EF /* FlowLayout.swift */,
@@ -682,6 +691,7 @@
 			children = (
 				EEB5457771B693ACCC375225 /* AskSkillit */,
 				51D9D80E7D2AE366B815C0BF /* Companies */,
+				D6337842E16764CFE2DB4417 /* Connections */,
 				07E9038B72C9BC2AA2A2048A /* Crossroads */,
 				79C5EC9CC6E9B39F6B27D0AA /* ForYou */,
 				9FCDDA63E5A27C4913626F90 /* Headset */,
@@ -712,6 +722,16 @@
 				FFD86E61A90D39A200B683E1 /* ScoreSparkline.swift */,
 			);
 			path = History;
+			sourceTree = "<group>";
+		};
+		D6337842E16764CFE2DB4417 /* Connections */ = {
+			isa = PBXGroup;
+			children = (
+				0BB5A6D720008E828906B833 /* GithubConnectModel.swift */,
+				3384D6B02E430830785399F0 /* GithubConnectRow.swift */,
+				B1AAD26C15FC711EE090093C /* LinkedinReviewView.swift */,
+			);
+			path = Connections;
 			sourceTree = "<group>";
 		};
 		DB619D6B5BEC93C738635A35 /* Resume */ = {
@@ -849,6 +869,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88AA7F6AA230806BAB131C1F /* AccountsStep.swift in Sources */,
 				26596839BC1013E594E59AB1 /* AppDelegate.swift in Sources */,
 				6C65D012AE98AFF2066343F6 /* AppModel.swift in Sources */,
 				0E17DE1CB3B5F6E0B238F0FA /* AppliedCard.swift in Sources */,
@@ -893,6 +914,8 @@
 				10BA3832CB76F838159CC0F5 /* FlowLayout.swift in Sources */,
 				2EF20558BE92C1D7A0FF12E4 /* ForYouModel.swift in Sources */,
 				3EAA67F51E647E08668C555F /* ForYouView.swift in Sources */,
+				CA6DEEB82DD23A89FB38ACC4 /* GithubConnectModel.swift in Sources */,
+				8F82E125A9227B8639A59CC3 /* GithubConnectRow.swift in Sources */,
 				A819580519B2DA7164CD32BB /* GotTheJobSheet.swift in Sources */,
 				3CFE2F6D6A6124D529D84351 /* HeadsetDevicesList.swift in Sources */,
 				601100FB91A45E5B43BF66C9 /* HeadsetLinkModel.swift in Sources */,
@@ -901,6 +924,7 @@
 				CAAA2B5529AE851EBF4AA407 /* InterviewProgress.swift in Sources */,
 				0C87D9A36A74FA2005CA073C /* InterviewTargetPicker.swift in Sources */,
 				11942991E887179EAAE9E708 /* JunctionRow.swift in Sources */,
+				C998FEC1B5D232BD5671DC18 /* LinkedinReviewView.swift in Sources */,
 				6A27C3B80B93F9D3C45122DD /* LocalNotifier.swift in Sources */,
 				87A0CC953176A70F28CD646B /* MainTabView.swift in Sources */,
 				BA53D254EC82997FA06CB5D5 /* MemoryService.swift in Sources */,

@@ -31,7 +31,7 @@ struct OnboardingFlow: View {
         }
         .background(Theme.ground)
         .safeAreaInset(edge: .bottom) {
-            if model.question.id != "resume" {
+            if !["resume", "accounts"].contains(model.question.id) {
                 bottomBar
             }
         }

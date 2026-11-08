@@ -9,6 +9,7 @@ struct ResumeView: View {
     @State private var model: ResumeModel?
     @State private var editing: ResumeArea?
     @State private var isViewingPDF = false
+    @State private var isReviewingLinkedin = false
     /// The resume as it was when a section sheet opened, so closing it saves only real changes.
     @State private var beforeEditing: Resume?
 
@@ -37,6 +38,7 @@ struct ResumeView: View {
                 }
             }
         }
+        .sheet(isPresented: $isReviewingLinkedin) { LinkedinReviewView() }
         .sheet(isPresented: $isViewingPDF) {
             if let model {
                 ResumePDFViewer { () async throws(SkillitError) -> URL in try await model.pdfFile() }
@@ -113,6 +115,8 @@ struct ResumeView: View {
                     .font(.footnote)
                     .foregroundStyle(Theme.negative)
             }
+            Button("Review my LinkedIn", systemImage: "person.text.rectangle") { isReviewingLinkedin = true }
+                .font(.footnote)
             Link(destination: ResumeLinks.webBuilder) {
                 Label("Open the web builder", systemImage: "arrow.up.right.square")
                     .font(.footnote)

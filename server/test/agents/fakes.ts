@@ -38,6 +38,7 @@ export function fakeMemory(seed: Pick<PrivateMemory, "kind" | "text">[] = []): F
     items,
     profile: vi.fn(async () => profile),
     updateProfile: vi.fn(async (patch) => (profile = applyPatch(profile, patch))),
+    githubProjects: vi.fn(async () => []),
     recall: vi.fn(async (opts = {}) =>
       items
         .filter((m) => !opts.kinds || opts.kinds.includes(m.kind))

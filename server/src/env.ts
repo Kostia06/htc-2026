@@ -40,6 +40,10 @@ export type Env = {
   APNS_TOPIC?: string;
   // "sandbox" (default, for Xcode builds) or "production" (TestFlight and App Store)
   APNS_ENV?: string;
+  // set: people can connect GitHub (read-only) through Composio; missing: /api/connections reports "not configured"
+  COMPOSIO_API_KEY?: string;
+  // the Composio auth config for the GitHub toolkit; missing: the project's first enabled GitHub auth config is used
+  COMPOSIO_GITHUB_AUTH_CONFIG_ID?: string;
 };
 
 export type AppContext = { Bindings: Env; Variables: { sessionId: string } };

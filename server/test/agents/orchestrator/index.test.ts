@@ -10,7 +10,7 @@ describe("orchestrate", () => {
     const { deps, toolNames } = fakeDeps({ memory: fakeMemory(), replies: [call("finish", snapshot)] });
     const result = await orchestrate(deps, { skillId: "career-snapshot", platform: "app", userId: "u1", input: {} });
     expect(result).toMatchObject({ status: "done", output: snapshot });
-    expect(toolNames[0]).toEqual(["recall", "company_insights", "finish"]);
+    expect(toolNames[0]).toEqual(["recall", "company_insights", "github_profile", "finish"]);
     for (const name of toolNames[0].filter((n) => n !== "finish")) expect(careerAgent.tools[name]).toBeDefined();
   });
 

@@ -16,3 +16,24 @@ export const sampleResume: Resume = {
   projects: [{ name: "Budget tracker", bullets: ["Built a budgeting app with SwiftUI"], link: "" }],
   skills: ["Python", "SQL", "SwiftUI"],
 };
+
+// what LinkedIn's "Save to PDF" reads as, contact block included
+export const linkedinPdfText = [
+  "Contact",
+  "jordan.lee@example.com",
+  "(403) 555-0199",
+  "www.linkedin.com/in/jordan-lee-123 (LinkedIn)",
+  "github.com/jordanlee (Portfolio)",
+  "Top Skills",
+  "Python",
+  "Excel",
+  "Jordan Lee",
+  "Student at University of Calgary",
+  "Summary",
+  "I like computers and want a job in tech.",
+  "Experience",
+  "Calgary Co-op",
+  "Cashier",
+  "Helped customers at the till.",
+  "See https://jordan.dev for more.",
+].join("\n");

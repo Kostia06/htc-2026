@@ -184,3 +184,6 @@
   .ob__scroll { padding-top: 40px; }
   .ob__bar { padding-bottom: 40px; }
 }
+
+/* the accounts step: a plain card for the GitHub row and the LinkedIn review */
+.ob__panel { padding: 16px; background: var(--raised); border: 1px solid var(--hairline); border-radius: 16px; }

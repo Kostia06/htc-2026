@@ -4,7 +4,7 @@ import type { AppContext } from "../env";
 
 const DEFAULT_ORIGINS = "http://localhost:5173";
 
-const allowedOrigins = (list: string | undefined) =>
+export const allowedOrigins = (list: string | undefined) =>
   (list ?? DEFAULT_ORIGINS)
     .split(",")
     .map((origin) => origin.trim())
