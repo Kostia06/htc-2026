@@ -15,7 +15,7 @@ const MAX_MESSAGE = 4000;
 const optionalSlug = (value: unknown) => (typeof value === "string" && value.trim() ? value.trim().slice(0, 100) : undefined);
 
 // a recap is a short read of a short chat: the lite model answers in about a second, the main one is the fallback
-function liteDeps(env: Env, waitUntil: (work: Promise<unknown>) => void): AgentDeps {
+export function liteDeps(env: Env, waitUntil: (work: Promise<unknown>) => void): AgentDeps {
   const lite = env.GEMINI_FALLBACK_MODEL ?? env.GEMINI_MODEL;
   return liveDeps({ ...env, GEMINI_MODEL: lite, GEMINI_FALLBACK_MODEL: env.GEMINI_MODEL }, waitUntil);
 }

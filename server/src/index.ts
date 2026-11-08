@@ -22,6 +22,7 @@ import { research } from "./api/research";
 import { resume } from "./api/resume";
 import { roadmap } from "./api/roadmap";
 import { session } from "./api/session";
+import { updates } from "./api/updates";
 import { requireSession } from "./auth/session";
 import { scopeDb } from "./db";
 import type { AppContext, Env } from "./env";
@@ -63,6 +64,7 @@ app.route("/api/feed", feed);
 app.route("/api/roadmap", roadmap);
 app.route("/api/resume", resume);
 app.route("/api/recap", recap);
+app.route("/api/updates", updates);
 // outside the /api CORS and session middleware: the card is public, /a2a checks its own session, /admin its secret
 app.route("/admin", admin);
 app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));
