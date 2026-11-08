@@ -214,7 +214,8 @@ export function Scene({ interview, headset, review, captions }) {
 // The ElevenLabs agent hears when an answer ends by itself, so it gets no key:
 // a Done there used to run the local /next turn in the computer voice.
 function buttonFor(phase, actions, { micDenied, usingAgent } = {}) {
-  if (usingAgent) return null
+  // the agent hears when an answer ends; the only key it needs is a way out
+  if (usingAgent) return phase === 'asking' || phase === 'listening' ? { label: 'End interview', onClick: actions.endInterview, tone: 'red' } : null
   switch (phase) {
     case 'awaiting':
       return {

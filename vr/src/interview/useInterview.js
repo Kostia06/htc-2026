@@ -188,6 +188,25 @@ export function useInterview(auth = {}) {
   // The provider's own agent does speech-to-text, the model and speech-out over
   // one socket, so none of our speech stack runs on this path. It is the same
   // agent the phone app uses, so both sound and behave identically.
+  // Ends the ElevenLabs call, whether the agent hung up or the person pressed End interview,
+  // then shows the report the server built while they talked.
+  const finishAgentCall = useCallback(async () => {
+    if (!alive.current || !running.current) return
+    running.current = false
+    agentRef.current?.disconnect()
+    agentRef.current = null
+    setSpeaking(false)
+    setPhase('done')
+    await Promise.all(scoringRef.current)
+    if (!scoringRef.current.length) return
+    try {
+      const final = await session.finish()
+      if (alive.current) setSummary(final)
+    } catch (err) {
+      if (alive.current) setError(err.message ?? 'Could not get the report.')
+    }
+  }, [session])
+
   const beginWithAgent = useCallback(
     async (started) => {
       const { createElevenLabsSession } = await import('./elevenlabs.js')
@@ -258,22 +277,7 @@ export function useInterview(auth = {}) {
           scoringRef.current.push(scoring)
         },
         // The agent hung up: release the mic and show the report, which the server built during the interview.
-        onEnded: async () => {
-          if (!alive.current || !running.current) return
-          running.current = false
-          agentRef.current?.disconnect()
-          agentRef.current = null
-          setSpeaking(false)
-          setPhase('done')
-          await Promise.all(scoringRef.current)
-          if (!scoringRef.current.length) return
-          try {
-            const final = await session.finish()
-            if (alive.current) setSummary(final)
-          } catch (err) {
-            if (alive.current) setError(err.message ?? 'Could not get the report.')
-          }
-        },
+        onEnded: () => finishAgentCall(),
         onError: (err) => {
           if (!alive.current) return
           if (err?.reason === 'denied') {
@@ -292,7 +296,7 @@ export function useInterview(auth = {}) {
       // still retrying: its onState shows "Reconnecting…", and onError ends it if that runs out
       if (!connected?.ok && agent.state !== 'reconnecting') abandon(agent, connected?.message)
     },
-    [callClock, session],
+    [callClock, finishAgentCall, session],
   )
 
   // `launch` is what the phone sent ({ companySlug, role }); the Begin button
@@ -391,8 +395,8 @@ export function useInterview(auth = {}) {
   }, [begin, endTurn, restart])
 
   const actions = useMemo(
-    () => ({ begin, beginQuick, advance, startAnswer: listen, stopAnswer: endTurn, restart, toggleMute }),
-    [begin, beginQuick, advance, listen, endTurn, restart, toggleMute],
+    () => ({ begin, beginQuick, advance, startAnswer: listen, stopAnswer: endTurn, endInterview: finishAgentCall, restart, toggleMute }),
+    [begin, beginQuick, advance, listen, endTurn, finishAgentCall, restart, toggleMute],
   )
 
   return {

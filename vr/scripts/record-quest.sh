@@ -31,6 +31,6 @@ raw="$name.mkv"; out="$name.mp4"
 # Quest 3 draws both eyes side by side (4128x2208); keep the left eye so the video isn't doubled.
 echo "Recording to $out. Press Ctrl+C to stop."
 scrcpy --no-window --crop="${CROP:-2064:2208:0:0}" --max-fps=60 --video-bit-rate=16M \
-  --audio-source=playback --audio-dup --record="$raw" || true
+  --audio-source=playback --audio-dup --no-audio-playback --record="$raw" || true
 ffmpeg -loglevel error -y -i "$raw" -c copy "$out" && rm -f "$raw" || out="$raw"
 echo "Saved $out"

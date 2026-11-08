@@ -62,6 +62,8 @@ ${DIFFICULTY[plan.difficulty ?? "standard"]}
 
 ${TURN_RULES}
 
+If the candidate asks to stop or end the interview, thank them in one short sentence, say goodbye, and use the end_call tool.
+
 ${SAFETY_RULES}`;
 }
 
