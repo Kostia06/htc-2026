@@ -1,159 +1,156 @@
-// ResumeView.swift: Skillit's suggestions one at a time, then the resume as a sheet of paper; tap a section to edit it.
-// Every change saves in the background, one save after another.
-import { useCallback, useEffect, useRef, useState } from 'react'
+// The resume builder at /resume: the resume as a sheet of paper (tap a section to edit it), where it stands against
+// the saved copy, importing from a file, the coach's rewrites and the PDF. On wide screens the paper and the tools
+// sit side by side.
+import { useRef } from 'react'
 import { Outlet, useNavigate } from 'react-router'
-import { FileText, PenLine, TriangleAlert } from 'lucide-react'
-import { resumeApi } from '../../lib/client'
-import { RaisedButton } from '../../ui/Button'
+import { CircleCheck, FileText, FileUp, TriangleAlert, UserRound } from 'lucide-react'
+import { relative } from '../../lib/format'
+import { RESUME_ACCEPT } from '../../lib/client'
+import { RaisedButton, Spinner, TextButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonLines } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
-import { applySuggestion, labelFor, normalizeResume, textAt } from './resumeDoc'
+import Coach from './Coach'
 import ResumePaper from './ResumePaper'
+import { useResume } from './useResume'
 import './resume.css'
-
-const ADD_NUMBER = '[add number]'
 
 export default function Resume() {
   const navigate = useNavigate()
-  const [state, setState] = useState({ phase: 'loading' })
-  const [suggestions, setSuggestions] = useState([])
-  const [note, setNote] = useState(null)
-  const [improving, setImproving] = useState(false)
-  const [saveFailed, setSaveFailed] = useState(false)
-  const [direction, setDirection] = useState(null)
-  const queue = useRef(Promise.resolve())
-  const resumeRef = useRef(null)
-  useEffect(() => {
-    resumeRef.current = state.resume
-  })
+  const doc = useResume()
+  const picker = useRef(null)
+  const { resume } = doc
+  const canExport = doc.source === 'saved' && doc.saving !== 'failed'
 
-  const load = useCallback(
-    () =>
-      resumeApi.load().then(
-        (r) => setState({ phase: 'ready', resume: normalizeResume(r.resume) }),
-        (e) => setState((s) => (s.resume ? s : { phase: 'failed', message: e.message })),
-      ),
-    [],
-  )
-  useEffect(() => {
-    load()
-  }, [load])
-
-  /** Shows the change at once and queues the save behind any still running. */
-  const update = useCallback((next) => {
-    setState((s) => ({ ...s, resume: next }))
-    setSaveFailed(false)
-    queue.current = queue.current
-      .then(() => resumeApi.save(next))
-      .catch(() => setSaveFailed(true))
-  }, [])
-
-  const improve = async () => {
-    setImproving(true)
-    setNote(null)
-    try {
-      const found = (await resumeApi.improve()).filter((s) => textAt(resumeRef.current, s.path) !== null)
-      setSuggestions(found)
-      setDirection(null)
-      if (!found.length) setNote('Skillit read it through and has nothing to tighten up right now.')
-    } catch (e) {
-      setNote(e.message)
-    } finally {
-      setImproving(false)
-    }
-  }
-
-  const next = (accept) => {
-    const [current, ...rest] = suggestions
-    if (accept) {
-      const applied = applySuggestion(resumeRef.current, current)
-      if (applied) update(applied)
-    }
-    setDirection('out')
-    setSuggestions(rest)
-  }
-
-  const resume = state.resume
   return (
-    <Page className="resume-page">
+    <Page wide className="builder">
       <PageHeader
         title="Resume"
-        back={{ to: '/profile', label: 'Profile' }}
-        actions={resume && <BarButton icon={FileText} label="View PDF" onClick={() => navigate('/profile/resume/pdf')} />}
+        large
+        actions={
+          resume && (
+            <>
+              <BarButton icon={FileUp} label="Import" showLabel onClick={() => picker.current?.click()} disabled={doc.importing} />
+              <BarButton icon={FileText} label="PDF" showLabel onClick={() => navigate('/resume/pdf')} disabled={!canExport} />
+            </>
+          )
+        }
       />
-      {state.phase === 'loading' && (
+      <input
+        ref={picker}
+        type="file"
+        accept={RESUME_ACCEPT}
+        hidden
+        onChange={(e) => {
+          doc.importFile(e.target.files?.[0])
+          e.target.value = '' // so picking the same file again still counts as a change
+        }}
+      />
+
+      {doc.phase === 'loading' && (
         <div className="paper paper--skeleton">
           <SkeletonLines widths={[0.5, 0.3]} highlighted={-1} />
           <SkeletonLines widths={[0.9, 0.8, 0.6]} highlighted={-1} />
           <SkeletonLines widths={[0.7, 0.9, 0.85, 0.4]} highlighted={2} />
         </div>
       )}
-      {state.phase === 'failed' && (
-        <ContentUnavailable icon={FileText} title="Couldn't load your resume" description={state.message}>
-          <RaisedButton onClick={load}>Try again</RaisedButton>
+
+      {doc.phase === 'failed' && (
+        <ContentUnavailable icon={FileText} title="Couldn't load your resume" description={doc.message}>
+          <RaisedButton onClick={doc.load}>Try again</RaisedButton>
         </ContentUnavailable>
       )}
+
       {resume && (
-        <div className="stack resume-page__stack">
-          {suggestions.length > 0 && (
-            <section className="stack deck">
-              <div className="row deck__head">
-                <h2 className="t-headline c-agent row deck__title">
-                  <PenLine size={17} strokeWidth={2.4} aria-hidden /> Skillit suggests
-                </h2>
-                <span className="t-subhead mono c-2">{suggestions.length} left</span>
-              </div>
-              <SuggestionCard key={suggestions[0].path} resume={resume} suggestion={suggestions[0]} entering={direction === 'out'} onSkip={() => next(false)} onAccept={() => next(true)} />
-            </section>
-          )}
-          {!suggestions.length && note && <p className="t-footnote c-2">{note}</p>}
-
-          <ResumePaper resume={resume} onEdit={(section) => navigate(`/profile/resume/edit/${section}`)} />
-
-          {saveFailed && (
-            <p className="t-footnote c-action row resume-page__warn">
-              <TriangleAlert size={15} strokeWidth={2.4} aria-hidden /> Your last change didn&rsquo;t save. Reload or edit again.
-            </p>
-          )}
+        <div className="builder__grid">
+          <aside className="stack builder__tools">
+            <Status doc={doc} onImport={() => picker.current?.click()} />
+            {/* a new resume (another file, or a discard) starts the coach over; saving a draft doesn't */}
+            <Coach key={doc.generation} resume={resume} onApply={doc.update} />
+          </aside>
+          <div className="builder__paper">
+            <ResumePaper resume={resume} onEdit={(section) => navigate(`/resume/edit/${section}`)} />
+          </div>
         </div>
       )}
-      {resume && (
-        <div className="resume-page__bottom">
-          <RaisedButton variant="agent" onClick={improve} disabled={improving}>
-            <PenLine size={19} strokeWidth={2.4} className={improving ? 'shimmering' : ''} aria-hidden />
-            {improving ? 'Skillit is reading your resume…' : 'Improve with Skillit'}
-          </RaisedButton>
-        </div>
-      )}
-      <Outlet context={{ resume, update }} />
+
+      <Outlet context={{ resume, update: doc.update }} />
     </Page>
   )
 }
 
-/** SuggestionCard.swift: where it lands, the old line struck through, the rewrite, and why. */
-function SuggestionCard({ resume, suggestion, entering, onSkip, onAccept }) {
-  const parts = suggestion.after.split(ADD_NUMBER)
+/** Where the resume on screen came from and whether it's kept: a file to check, the profile, or the saved copy. */
+function Status({ doc, onImport }) {
+  if (doc.importing)
+    return (
+      <section className="card row builder__status" role="status">
+        <Spinner />
+        <p className="t-subhead">Skillit is reading your file…</p>
+      </section>
+    )
+
+  const importProblem = doc.importError && (
+    <p className="t-footnote c-negative row builder__warn">
+      <TriangleAlert size={15} strokeWidth={2.4} aria-hidden /> {doc.importError}
+    </p>
+  )
+
+  if (doc.source === 'upload')
+    return (
+      <section className="card stack builder__status builder__status--draft">
+        <p className="t-subhead">
+          Read from <strong>{doc.file.name}</strong>. Check it, then save. Nothing is kept until you do.
+          {doc.file.droppedClaims > 0 &&
+            ` Skillit left out ${doc.file.droppedClaims} skill${doc.file.droppedClaims === 1 ? '' : 's'} it couldn't find in the file.`}
+        </p>
+        <div className="row builder__actions">
+          <RaisedButton onClick={doc.save} busy={doc.saving === 'saving'}>
+            Save as my resume
+          </RaisedButton>
+          <TextButton onClick={doc.discard}>Discard</TextButton>
+        </div>
+        {doc.saving === 'failed' && <p className="t-footnote c-negative">That didn&rsquo;t save. Try again.</p>}
+      </section>
+    )
+
+  if (doc.source === 'profile')
+    return (
+      <section className="card stack builder__status">
+        <p className="t-subhead row builder__from">
+          <UserRound size={16} strokeWidth={2.4} aria-hidden /> Laid out from your profile. Save it, or edit any section, to keep it as your resume.
+        </p>
+        <div className="row builder__actions">
+          <RaisedButton onClick={doc.save} busy={doc.saving === 'saving'}>
+            Save
+          </RaisedButton>
+          <TextButton icon={FileUp} onClick={onImport}>
+            Start from a file
+          </TextButton>
+        </div>
+        {importProblem}
+      </section>
+    )
+
   return (
-    <article className={`card suggestion${entering ? ' is-entering' : ''}`}>
-      <p className="t-caption semibold c-2 suggestion__where">{labelFor(resume, suggestion.path)}</p>
-      <p className="t-subhead c-2 suggestion__before">{suggestion.before || textAt(resume, suggestion.path)}</p>
-      <p className="t-body medium">
-        {parts.map((part, i) => (
-          <span key={i}>
-            {part}
-            {i < parts.length - 1 && <span className="c-action">{ADD_NUMBER}</span>}
-          </span>
-        ))}
-      </p>
-      {suggestion.why && <p className="t-footnote c-agent">{suggestion.why}</p>}
-      <div className="row suggestion__actions">
-        <RaisedButton variant="grey" onClick={onSkip}>
-          Skip
-        </RaisedButton>
-        <RaisedButton variant="agent" onClick={onAccept}>
-          Accept
-        </RaisedButton>
-      </div>
-    </article>
+    <div className="stack builder__saved">
+      {doc.saving === 'failed' ? (
+        <p className="t-footnote c-action row builder__warn">
+          <TriangleAlert size={15} strokeWidth={2.4} aria-hidden /> Your last change didn&rsquo;t save.
+          <button type="button" className="t-footnote semibold c-action" onClick={doc.save}>
+            Try again
+          </button>
+        </p>
+      ) : (
+        <p className="t-footnote c-2 row builder__saved-line">
+          {doc.saving === 'saving' ? (
+            'Saving…'
+          ) : (
+            <>
+              <CircleCheck size={14} strokeWidth={2.4} aria-hidden /> Saved{doc.resume.updatedAt ? ` ${relative(doc.resume.updatedAt)}` : ''}. Changes show up in the app too.
+            </>
+          )}
+        </p>
+      )}
+      {importProblem}
+    </div>
   )
 }
