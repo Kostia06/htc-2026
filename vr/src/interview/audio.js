@@ -322,15 +322,17 @@ export function createPlaybackQueue({
   const live = new Set()
   const drained = []
 
+  let heard = false // first chunk logged once, so the headset console shows whether audio arrived
+
   function ensure() {
     if (ctx) return ctx
     const Ctor = contextCtor()
     if (!Ctor) return null
-    try {
-      ctx = new Ctor({ sampleRate })
-    } catch {
-      ctx = new Ctor()
-    }
+    // The device's own rate, not the agent's 16 kHz: each buffer carries its
+    // rate and the browser resamples it. A 16 kHz output context feeding an
+    // HRTF panner was the one unusual graph in the silent Quest sessions.
+    ctx = new Ctor()
+    ctx.onstatechange = () => console.info('[voice] playback context', ctx?.state)
     analyser = ctx.createAnalyser()
     analyser.fftSize = 256
     analyser.smoothingTimeConstant = 0.6
@@ -369,6 +371,13 @@ export function createPlaybackQueue({
       if (!audio) return
       const samples = chunk instanceof Float32Array ? chunk : pcm16ToFloat32(chunk)
       if (!samples.length) return
+      // A context the browser suspended (focus change, entering XR) plays
+      // nothing and freezes its clock; every chunk is a chance to wake it.
+      if (audio.state !== 'running' && audio.state !== 'closed') audio.resume?.()?.catch?.(() => {})
+      if (!heard) {
+        heard = true
+        console.info('[voice] first agent audio', { context: audio.state, deviceRate: audio.sampleRate, chunkRate: sampleRate })
+      }
 
       const buffer = audio.createBuffer(1, samples.length, sampleRate)
       buffer.copyToChannel(samples, 0)

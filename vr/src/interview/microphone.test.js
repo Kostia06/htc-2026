@@ -29,6 +29,18 @@ describe('microphone before VR', () => {
     expect(order).toEqual(['mic', 'xr'])
   })
 
+  it('requests one XR session however often Enter VR is pressed', async () => {
+    let active = false
+    const enter = vi.fn(async () => {
+      active = true
+    })
+    const options = { prime: async () => {}, isActive: () => active }
+    const [a, b] = await Promise.all([enterImmersive(enter, options), enterImmersive(enter, options)])
+    expect([a, b]).toEqual([true, true])
+    expect(await enterImmersive(enter, options)).toBe(true)
+    expect(enter).toHaveBeenCalledTimes(1)
+  })
+
   it('reports a failed enter instead of throwing', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(await enterImmersive(() => Promise.reject(new Error('no activation')), { prime: async () => {} })).toBe(false)

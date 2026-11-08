@@ -95,7 +95,7 @@ export default function App() {
         headset={headset}
         vrSupported={vrSupported}
         captions={captions}
-        onEnterVR={() => enterImmersive(() => store.enterVR())}
+        onEnterVR={() => enterImmersive(() => store.enterVR(), { isActive: () => store.getState().session != null })}
       />
     </>
   )
@@ -124,7 +124,7 @@ function QuestAutoEnter({ store }) {
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('app') !== 'quest') return
     const timer = setTimeout(() => {
-      enterImmersive(() => store.enterVR())
+      enterImmersive(() => store.enterVR(), { isActive: () => store.getState().session != null })
     }, 300)
     return () => clearTimeout(timer)
   }, [store])

@@ -31,11 +31,11 @@ export function connectToSpeakers(ctx, node) {
   }
   const panner = ctx.createPanner()
   panner.panningModel = 'HRTF'
-  // Across a desk, about a metre and a half: keep the fall-off gentle so
-  // leaning back never makes the question hard to hear.
+  // Direction only, no distance fall-off: across a desk the voice must stay at
+  // full level wherever the candidate leans (rolloff 0 keeps the gain at 1).
   panner.distanceModel = 'inverse'
-  panner.refDistance = 1.5
-  panner.rolloffFactor = 0.5
+  panner.refDistance = 1
+  panner.rolloffFactor = 0
   placePanner(panner)
   node.connect(panner)
   panner.connect(ctx.destination)

@@ -75,15 +75,30 @@ export async function openMicrophone(constraints = CONSTRAINTS, nav = globalThis
 // The press that takes the headset into VR: microphone first, in 2D, then the
 // session. A rejected enter (the prompt can outlast the click's activation) is
 // reported, not thrown; the mic is granted by then, so a second press is instant.
-export async function enterImmersive(enter, { prime = primeMicrophone } = {}) {
-  await prime()
-  try {
-    await enter()
-    return true
-  } catch (error) {
-    console.warn('enter VR failed', error)
-    return false
+//
+// One request at a time, and none while a session is live: a second press (or
+// the Quest auto-enter racing the button) used to call requestSession again and
+// fail with "There is already an active, immersive XRSession".
+let entering = null
+
+export function enterImmersive(enter, { prime = primeMicrophone, isActive = () => false } = {}) {
+  if (isActive()) return Promise.resolve(true)
+  if (!entering) {
+    entering = (async () => {
+      await prime()
+      if (isActive()) return true
+      try {
+        await enter()
+        return true
+      } catch (error) {
+        console.warn('enter VR failed', error)
+        return false
+      }
+    })().finally(() => {
+      entering = null
+    })
   }
+  return entering
 }
 
 export function micProblem(reason) {

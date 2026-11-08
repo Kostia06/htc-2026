@@ -318,10 +318,18 @@ describe('audio format negotiation', () => {
     expect(voice.audioFormat).toEqual({ inputRate: 8000, outputRate: 44100 })
   })
 
-  it('builds the playback context at the negotiated output rate', async () => {
+  it('plays at the negotiated rate through a context at the device rate', async () => {
     const { ws } = await connected({}, { agent_output_audio_format: 'pcm_16000' })
     ws.emit(audioEvent([1, 2, 3, 4]))
-    expect(ctxOf('playback').sampleRate).toBe(16000)
+    expect(ctxOf('playback').sampleRate).toBe(48000)
+    expect(ctxOf('playback').played[0].sampleRate).toBe(16000)
+  })
+
+  it('wakes a suspended playback context when audio arrives', async () => {
+    const { ws } = await connected({}, { agent_output_audio_format: 'pcm_16000' })
+    ctxOf('playback').state = 'suspended'
+    ws.emit(audioEvent([1, 2, 3, 4]))
+    expect(ctxOf('playback').state).toBe('running')
   })
 
   it('falls back to the audio.js constants when the server states no format', async () => {
