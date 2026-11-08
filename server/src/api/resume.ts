@@ -30,11 +30,14 @@ export function resumeRouter(makeDeps: MakeDeps) {
     return c.json({ resume: await putResume(c.env, c.var.sessionId, resume), saved: true });
   });
 
-  // suggestions only: nothing changes until the person accepts one and saves
+  // suggestions only: nothing changes until the person accepts one and saves. The builder sends what is on screen,
+  // so unsaved edits are reviewed without being saved; without a resume in the body the stored one is used
   router.post("/improve", async (c) => {
-    const body = await c.req.json<{ section?: unknown; company?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ section?: unknown; company?: unknown; resume?: unknown }>().catch(() => null);
+    const sent = body?.resume === undefined ? null : parseResume(body.resume);
+    if (body?.resume !== undefined && !sent) return c.json({ error: "send the resume as an object" }, 400);
     const userId = c.var.sessionId;
-    const [{ resume }, profile] = await Promise.all([loadResume(c.env, userId), getProfile(c.env, userId)]);
+    const [resume, profile] = await Promise.all([sent ?? loadResume(c.env, userId).then((r) => r.resume), getProfile(c.env, userId)]);
     const input = { resume, targetRole: profile.targetRoles[0], section: asSection(body?.section), company: asSlug(body?.company) };
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
     const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "resume-coach", platform: "app", userId, input });

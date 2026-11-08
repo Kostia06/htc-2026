@@ -80,6 +80,20 @@ describe("/api/resume", () => {
     expect(goal).not.toContain("summary:");
   });
 
+  it("reviews the resume sent in the body without saving it", async () => {
+    const me = user();
+    const { deps, conversations } = fakeDeps({
+      replies: [call("finish", { suggestions: [{ path: "experience[0].bullets[0]", before: "Worked on a Python Flask API", after: "Built a Python Flask API", why: "Verb." }] })],
+    });
+    const request = testApp(deps);
+    const res = await request(me, "POST", "/improve", { resume: sampleResume });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ suggestions: [{ path: "experience[0].bullets[0]" }] });
+    expect(conversations[0][0].parts[0].text ?? "").toContain("Worked on a Python Flask API");
+    expect(await (await request(me, "GET")).json()).toMatchObject({ saved: false });
+    expect((await request(me, "POST", "/improve", { resume: ["nope"] })).status).toBe(400);
+  });
+
   it("answers 502 when the coach does not finish", async () => {
     const request = testApp(fakeDeps({ replies: [{ role: "model", parts: [{ text: "no finish" }] }] }).deps);
     const res = await request(user(), "POST", "/improve", {});
