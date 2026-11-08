@@ -2,7 +2,7 @@ import Foundation
 import Observation
 import RavenKit
 
-/// The loaded part of the roadmap, whether more is on the way, and the step whose card is open.
+/// The loaded roadmap, whether more is on the way, and the step whose "what did you do?" sheet is open.
 @Observable
 final class RoadmapModel {
     enum Phase: Equatable {
@@ -14,7 +14,7 @@ final class RoadmapModel {
     private(set) var phase: Phase = .loading
     private(set) var isLoadingMore = false
     private(set) var loadMoreFailed = false
-    var selectedStepID: String?
+    var finishing: RoadmapStep?
 
     private let service: any RoadmapService
 
@@ -30,41 +30,53 @@ final class RoadmapModel {
         }
     }
 
-    func loadFirstPage() async {
-        phase = .loading
+    /// The first load shows the skeleton; a refresh keeps the page on screen until the new one arrives.
+    func load() async {
+        if page == nil {
+            phase = .loading
+        }
         do {
-            phase = try await .ready(service.roadmap(cursor: nil))
+            phase = try await .ready(service.roadmap(cursor: nil, timeZone: .current))
         } catch {
-            phase = .failed(error.message)
+            if page == nil {
+                phase = .failed(error.message)
+            }
         }
     }
 
-    /// Called when the end of the path scrolls into view; a second call while one is running does nothing.
+    /// Called when the end of the list scrolls into view; a second call while one is running does nothing.
     func loadMore() async {
         guard var current = page, let cursor = current.nextCursor, !isLoadingMore else { return }
         isLoadingMore = true
         loadMoreFailed = false
         defer { isLoadingMore = false }
         do {
-            let next = try await service.roadmap(cursor: cursor)
-            // re-read: a status may have changed while the page was loading
+            let more = try await service.roadmap(cursor: cursor, timeZone: .current)
+            // re-read: a step may have been finished while the page was loading
             current = page ?? current
-            current.append(next)
+            current.append(more)
             phase = .ready(current)
         } catch {
             loadMoreFailed = true
         }
     }
 
-    /// Shows the change at once and puts it back if the server refuses.
-    func setStatus(_ status: RoadmapStep.Status, of stepID: String) async {
-        guard var current = page, let previous = current.setStatus(status, of: stepID) else { return }
+    /// Moves the step into today's completed group at once, then tells the server; a refused change is put back.
+    func complete(_ step: RoadmapStep, note: String?) {
+        guard var current = page, let previous = current.complete(step.id, note: note) else { return }
         phase = .ready(current)
+        Task { await send(.done, for: previous, note: note) }
+    }
+
+    private func send(_ status: RoadmapStep.Status, for previous: RoadmapStep, note: String?) async {
         do {
-            try await service.setStatus(status, ofStep: stepID)
+            let saved = try await service.update(step: previous.id, status: status, note: note)
+            guard var latest = page else { return }
+            latest.replace(saved)
+            phase = .ready(latest)
         } catch {
             guard var latest = page else { return }
-            latest.setStatus(previous, of: stepID)
+            latest.restore(previous)
             phase = .ready(latest)
         }
     }

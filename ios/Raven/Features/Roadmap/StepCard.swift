@@ -1,83 +1,98 @@
 import RavenKit
 import SwiftUI
 
-/// The details of one step, opened under its node with a pointer back up to it.
+/// One open step. `.full` shows what to do and its button; `.compact` is the row further down the list, tapped to act on it.
 struct StepCard: View {
+    enum Style {
+        case full, compact
+    }
+
     let step: RoadmapStep
-    /// How far the node sits from the centre line, so the pointer lines up with it.
-    let pointerOffset: CGFloat
-    let onChange: (RoadmapStep.Status) -> Void
+    let style: Style
+    let onAction: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 8) {
-                LabelChip(label: step.label)
-                Label(step.estimate, systemImage: "clock")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                Spacer(minLength: 0)
-                Image(systemName: step.kind.symbol)
-                    .foregroundStyle(.secondary)
-                    .accessibilityLabel(step.kind.name)
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(step.title)
-                    .font(.title3.bold())
-                Text(step.why)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            actions
-        }
-        .ravenCard()
-        .overlay(alignment: .top) {
-            Pointer()
-                .fill(Theme.raised)
-                .frame(width: 22, height: 11)
-                .offset(x: pointerOffset, y: -10)
+        switch style {
+        case .full: full
+        case .compact: compact
         }
     }
 
-    @ViewBuilder private var actions: some View {
-        switch step.status {
-        case .todo:
-            HStack(spacing: 12) {
-                Button("Start") { onChange(.started) }
-                    .buttonStyle(.raised)
-                Button("Mark done") { onChange(.done) }
-                    .buttonStyle(.raised(Color(white: 0.22)))
+    private var full: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            header
+            if !step.detail.isEmpty {
+                Text(step.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-        case .started:
-            Button("Mark done") { onChange(.done) }
-                .buttonStyle(.raised)
-        case .done, .skipped:
-            Button(step.status == .done ? "Not done yet" : "Bring it back") { onChange(.todo) }
-                .buttonStyle(.raised(Color(white: 0.22)))
+            Button(step.actionTitle, action: onAction)
+                .buttonStyle(step.isPractice ? .raised : .raised(Color(white: 0.22)))
+        }
+        .ravenCard()
+    }
+
+    private var compact: some View {
+        Button(action: onAction) {
+            HStack(spacing: 12) {
+                header
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .ravenCard()
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(step.actionTitle)
+    }
+
+    private var header: some View {
+        HStack(spacing: 12) {
+            KindIcon(kind: step.kind, highlighted: step.isPractice)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(step.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.leading)
+                HStack(spacing: 8) {
+                    if !step.estimate.isEmpty {
+                        Label(step.estimate, systemImage: "clock")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    LabelChip(label: step.label)
+                }
+            }
+            Spacer(minLength: 0)
         }
     }
 }
 
-private struct LabelChip: View {
+struct KindIcon: View {
+    let kind: RoadmapStep.Kind
+    var highlighted = false
+    var size: CGFloat = 40
+
+    var body: some View {
+        Image(systemName: kind.symbol)
+            .font(.system(size: size * 0.42, weight: .semibold))
+            .foregroundStyle(highlighted ? Theme.action : .secondary)
+            .frame(width: size, height: size)
+            .background(highlighted ? Theme.action.opacity(0.15) : Color(white: 0.14), in: .rect(cornerRadius: size * 0.3))
+            .accessibilityLabel(kind.name)
+    }
+}
+
+struct LabelChip: View {
     let label: RoadmapStep.Label
 
     var body: some View {
         Text(label.text)
-            .font(.caption.weight(.semibold))
+            .font(.caption2.weight(.semibold))
             .foregroundStyle(label == .readyNow ? Theme.action : .secondary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
             .background(label == .readyNow ? Theme.action.opacity(0.15) : Color(white: 0.16), in: .capsule)
-    }
-}
-
-private struct Pointer: Shape {
-    nonisolated func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.closeSubpath()
-        }
     }
 }
