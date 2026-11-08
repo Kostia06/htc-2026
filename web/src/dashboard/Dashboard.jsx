@@ -114,17 +114,23 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       id: 'jobs',
       label: 'Jobs',
       title: 'Jobs for you',
+      bare: true,
       render: () => (
         <Recommendations
           userId={userId}
           stamp={stamp}
           skill="recommend-jobs"
           field="query"
+          heading="Jobs, labelled honestly."
           label="What kind of role?"
           placeholder="e.g. junior data analyst in Calgary"
           initial={[roles.join(' or '), answers.where].filter(Boolean).join(', ') || undefined}
-          intro="Real postings, each labelled honestly: ready now, stretch, long term, or can't tell yet. Every requirement is quoted from the posting and checked against your profile."
+          intro="Real postings, each checked against your profile. Every requirement is quoted from the posting, so you can see exactly why it got its label."
           empty="No postings Raven could check came up. Try a broader search."
+          onPractise={(title) => {
+            setPracticePreset({ role: title, key: Date.now() })
+            go('practice')
+          }}
         />
       ),
     },
@@ -133,12 +139,14 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       label: 'Courses',
       title: 'Courses',
       student: true,
+      bare: true,
       render: () => (
         <Recommendations
           userId={userId}
           stamp={stamp}
           skill="recommend-courses"
           field="interest"
+          heading="Courses that move you forward."
           label="What do you want to learn?"
           placeholder="e.g. machine learning"
           initial={answers.school?.program || role || undefined}
@@ -152,12 +160,14 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       label: 'Research',
       title: 'Research opportunities',
       student: true,
+      bare: true,
       render: () => (
         <Recommendations
           userId={userId}
           stamp={stamp}
           skill="recommend-research"
           field="interest"
+          heading="Research you could join."
           label="What research area?"
           placeholder="e.g. human-computer interaction"
           initial={answers.school?.program || undefined}
