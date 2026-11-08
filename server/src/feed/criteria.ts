@@ -1,4 +1,5 @@
 import type { Profile } from "../memory/profile/types";
+import { fieldsOf } from "./fields";
 import type { FeedCriteria } from "./types";
 
 const MAX_ROLES = 3;
@@ -11,12 +12,14 @@ function locationOf(profile: Profile) {
 }
 
 // target roles first; without them the most recent job title stands in, so a half-filled profile still gets a feed
-export function criteriaFrom(profile: Profile): FeedCriteria {
+export function criteriaFrom(profile: Profile, avoidTags: string[] = []): FeedCriteria {
   const roles = profile.targetRoles.length > 0 ? profile.targetRoles : profile.experience.slice(0, 1).map((e) => e.role);
   return {
     roles: roles.map((r) => r.trim()).filter(Boolean).slice(0, MAX_ROLES),
     skills: profile.skills.map((s) => s.name.trim()).filter(Boolean).slice(0, MAX_SKILLS),
     location: locationOf(profile),
+    fields: fieldsOf(profile),
+    avoidTags,
   };
 }
 

@@ -35,11 +35,17 @@ function backgroundWork() {
   return { ctx, settle: () => Promise.all(pending) };
 }
 
-async function getFeed(token: string, cursor?: string) {
+type Item = { id: string; kind: string; title: string; why: string; source: string; attribution?: unknown };
+type Page = { items: Item[]; nextCursor: string | null; building: boolean; builtAt: string | null; section: string };
+
+async function getFeed(token: string, cursor?: string, section?: string) {
+  const query = new URLSearchParams();
+  if (cursor !== undefined) query.set("cursor", cursor);
+  if (section !== undefined) query.set("section", section);
   const work = backgroundWork();
-  const res = await app.request(cursor === undefined ? "/" : `/?cursor=${cursor}`, { headers: { Authorization: `Bearer ${token}` } }, env, work.ctx);
+  const res = await app.request(`/?${query}`, { headers: { Authorization: `Bearer ${token}` } }, env, work.ctx);
   await work.settle();
-  return { status: res.status, body: (await res.json()) as { items: { id: string; title: string; why: string; source: string; attribution?: unknown }[]; nextCursor: string | null; building: boolean; builtAt: string | null } };
+  return { status: res.status, body: (await res.json()) as Page };
 }
 
 async function person(targetRoles: string[]) {
@@ -51,13 +57,13 @@ async function person(targetRoles: string[]) {
 
 beforeEach(async () => {
   searches = [];
-  await env.DB.batch([env.DB.prepare("DELETE FROM feed_items"), env.DB.prepare("DELETE FROM feed_state")]);
+  await env.DB.batch([env.DB.prepare("DELETE FROM feed_items"), env.DB.prepare("DELETE FROM feed_state"), env.DB.prepare("DELETE FROM feed_actions")]);
 });
 
 describe("GET /api/feed", () => {
   it("answers the first request with an empty building page, then serves the built feed", async () => {
     const { token } = await person(["Junior developer"]);
-    expect((await getFeed(token)).body).toEqual({ items: [], nextCursor: null, building: true, builtAt: null });
+    expect((await getFeed(token)).body).toEqual({ items: [], nextCursor: null, building: true, builtAt: null, section: "all" });
 
     const { body } = await getFeed(token);
     expect(body.building).toBe(false);
@@ -65,11 +71,11 @@ describe("GET /api/feed", () => {
     expect(body.items[0].why).toBe("Fits your goal: Junior developer");
   });
 
-  it("pages by cursor without repeating or skipping cards", async () => {
+  it("pages a section by cursor without repeating or skipping cards", async () => {
     const { token } = await person(["Junior developer"]);
     await getFeed(token);
-    const first = await getFeed(token);
-    const second = await getFeed(token, first.body.nextCursor!);
+    const first = await getFeed(token, undefined, "jobs");
+    const second = await getFeed(token, first.body.nextCursor!, "jobs");
     expect(first.body.nextCursor).toBe("20");
     expect(second.body.items).toHaveLength(5);
     expect(second.body.nextCursor).toBeNull();
@@ -84,7 +90,7 @@ describe("GET /api/feed", () => {
   it("labels every job with Adzuna's attribution, linked to adzuna.ca", async () => {
     const { token } = await person(["Junior developer"]);
     await getFeed(token);
-    const { body } = await getFeed(token);
+    const { body } = await getFeed(token, undefined, "jobs");
     for (const item of body.items) {
       expect(item.source).toBe("Adzuna");
       expect(item.attribution).toEqual({ label: "Jobs by Adzuna", url: "https://www.adzuna.ca" });
@@ -120,7 +126,7 @@ describe("GET /api/feed", () => {
     await getFeed(a.token);
     expect((await getFeed(b.token)).body.items).toEqual([]);
     await getFeed(b.token);
-    const titles = (await getFeed(b.token)).body.items.map((i) => i.title);
+    const titles = (await getFeed(b.token, undefined, "jobs")).body.items.map((i) => i.title);
     expect(titles.every((t) => t.startsWith("Nurse"))).toBe(true);
   });
 
