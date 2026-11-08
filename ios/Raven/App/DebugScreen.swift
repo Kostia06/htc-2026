@@ -4,7 +4,7 @@
 
     /// Opens one screen with sample data: launch with `-RavenScreen onboarding` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile, pairHeadset
+        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile, pairHeadset, startPractice
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -24,8 +24,10 @@
             case .summary: SessionSummaryView(summary: .offline, onDone: {})
             case .profile: tabs(.profile)
             case .pairHeadset:
-                NavigationStack { PairHeadsetView(issuer: DemoHeadsetIssuer()) }
+                NavigationStack { PairHeadsetView(issuer: DemoHeadsetIssuer(), link: DemoHeadsetLink()) }
                     .environment(AppModel.preview(profile: .sample))
+            case .startPractice:
+                DebugStartPractice().environment(AppModel.preview(profile: .sample))
             }
         }
 
@@ -39,6 +41,44 @@
             return MainTabView(selection: .forYou).environment(app)
         }
 
+    }
+
+    /// The Start button in each of its states, inside sample step cards like the roadmap's.
+    private struct DebugStartPractice: View {
+        var body: some View {
+            ScrollView {
+                VStack(spacing: 20) {
+                    card("Compact", button: StartPracticeButton(mode: .interview, companySlug: "atb", link: DemoHeadsetLink()) {})
+                    card("Sent", button: StartPracticeButton(mode: .networking, link: DemoHeadsetLink(), initialPhase: .sent) {})
+                    card(
+                        "Open · Quest connected",
+                        button: StartPracticeButton(
+                            mode: .interview, companySlug: "atb", link: DemoHeadsetLink(), initialPhase: .expanded,
+                        ) {},
+                    )
+                    card(
+                        "Open · no headset listening",
+                        button: StartPracticeButton(
+                            mode: .interview, companySlug: "atb", link: DemoHeadsetLink(isConnected: false), initialPhase: .expanded,
+                        ) {},
+                    )
+                }
+                .padding(24)
+            }
+            .background(Theme.ground)
+        }
+
+        private func card(_ state: String, button: StartPracticeButton) -> some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Mock interview with ATB")
+                    .font(.headline)
+                Text(state)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                HStack { button }
+            }
+            .ravenCard()
+        }
     }
 
     /// Holds its model in state so a re-render doesn't start a second session.

@@ -1,6 +1,14 @@
 import { NetworkError, callApi } from "../session/http";
 
-export type HeadsetSession = { token: string; expiresAt: string };
+// a server from before remembered headsets sends only the first two fields; such a session lasts until `expiresAt`
+export type HeadsetSession = {
+  token: string;
+  expiresAt: string;
+  refreshToken?: string;
+  refreshExpiresAt?: string;
+  deviceId?: string;
+  deviceName?: string;
+};
 export type ClaimProblem = "wrong" | "rate_limited" | "offline" | "unavailable";
 
 export class ClaimError extends Error {

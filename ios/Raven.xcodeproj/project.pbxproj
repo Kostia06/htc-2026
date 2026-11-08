@@ -11,6 +11,7 @@
 		108AB9037AE375D65E60C110 /* RavenKit in Frameworks */ = {isa = PBXBuildFile; productRef = F0FE6486CF358F79CDE60065 /* RavenKit */; };
 		15F4DFD0627D77CA56C46E13 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040CF4BC41775E202928EFFF /* SessionSummaryView.swift */; };
 		15FB40CD80E8093907CFFF1F /* VoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B70CCEB565F413BA648954 /* VoiceEngine.swift */; };
+		2094C88A8540C0D1E4A887DC /* StartPracticeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EDE8E3F58131EEF35BCE67 /* StartPracticeButton.swift */; };
 		20B4D248F0E12D3E5D4AB0E0 /* PairHeadsetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBEDAA0497BAAC3DE5494E91 /* PairHeadsetView.swift */; };
 		2721F53A417E3426187BCD67 /* EmailCodeForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75BCD0C638AA6CF8ABBC000 /* EmailCodeForm.swift */; };
 		27A943ABBE5A769DE17C2765 /* CodeCountdownRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69016B176B8B01D7149C9B9B /* CodeCountdownRing.swift */; };
@@ -27,6 +28,7 @@
 		53FC654DE120776F10315F07 /* VoiceBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C0E783C2F58157DE7F73E7 /* VoiceBar.swift */; };
 		5ADA2B21704DE0195A78BF95 /* RoadmapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EBCEACDD0183AC545013605 /* RoadmapModel.swift */; };
 		5FCA72D7821A6ABE5F0AAA44 /* SampleRoadmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0AD0EE40E831CB0ACC877B /* SampleRoadmap.swift */; };
+		645B7E80CEDDB8F5F026A980 /* DemoHeadsetLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4789073C0EC0B28567F61503 /* DemoHeadsetLink.swift */; };
 		657D526B7C598E00855EFC3D /* RaisedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */; };
 		6754A99D3F9607AF86D1CC45 /* OnboardingModel+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1D743FBF4A206C2F24F701 /* OnboardingModel+Debug.swift */; };
 		68F5967F78CC5D0600F41658 /* PathNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1B7BB82D01AF73A92A8811 /* PathNode.swift */; };
@@ -34,6 +36,7 @@
 		6CBB9DEC63B3CA2F3FBE446D /* VoicePracticeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1EDE27464E6189D9D9867C /* VoicePracticeService.swift */; };
 		6D24143E9C6C2C5F2B5756AA /* RoadmapSummaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E0573743DA935890C69FDC /* RoadmapSummaryHeader.swift */; };
 		6DAFA8431B87DD562065FC28 /* QuestionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B392A252C156B5DA397D654 /* QuestionScreen.swift */; };
+		74D2032BA9754D4BE2FF00A5 /* HeadsetLinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069C5DC5E94CD1FEDDAE23AC /* HeadsetLinkModel.swift */; };
 		8791C194D103DCCD7E951C4C /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98E02BB20641AC87CD9C677 /* SignInView.swift */; };
 		890CF7E5CB51608DAE8B5540 /* SpeechListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F8E014CC7C5EB0B4CE5C4E /* SpeechListener.swift */; };
 		8FDA110F1B8BB6D06A097DE5 /* Skeleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B637648F387CCF0004BA92 /* Skeleton.swift */; };
@@ -52,6 +55,7 @@
 		C44BAC94A7F083BFA8371E0B /* OptionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B651BC4C7C51A2EB984EAEC /* OptionButtonStyle.swift */; };
 		CAD056C4AB1F8CF32231B4FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD01354CB3E720485547090 /* Assets.xcassets */; };
 		D1A7BD1942BEE13E17391E00 /* RoadmapStep+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F704ADC6A7006D96384A4 /* RoadmapStep+Display.swift */; };
+		D2CDFADF08D7175677AED177 /* HeadsetDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1971BBE5A965E5A525ACFAE6 /* HeadsetDevicesList.swift */; };
 		D9FB80DA2C8ECC0B12E9AC96 /* HeadsetPairingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC48D18B0375EC0332D68B2F /* HeadsetPairingModel.swift */; };
 		DD64D98DC67C9BA740BAA3EB /* FeedCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7A9ACF429DB3581D822AEB /* FeedCardView.swift */; };
 		DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 838BAF12B32A15EC0FE771C3 /* ForYouView.swift */; };
@@ -68,10 +72,12 @@
 		0384DAB43EB8BBD9D1D696D9 /* ConversationDirector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDirector.swift; sourceTree = "<group>"; };
 		040CF4BC41775E202928EFFF /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		04348238A713441A230661D7 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		069C5DC5E94CD1FEDDAE23AC /* HeadsetLinkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsetLinkModel.swift; sourceTree = "<group>"; };
 		06B70CCEB565F413BA648954 /* VoiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEngine.swift; sourceTree = "<group>"; };
 		0C69EB42B2A0E56ED3B1078B /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		11527DF7976BB3AB34B60C69 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		17B637648F387CCF0004BA92 /* Skeleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton.swift; sourceTree = "<group>"; };
+		1971BBE5A965E5A525ACFAE6 /* HeadsetDevicesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsetDevicesList.swift; sourceTree = "<group>"; };
 		1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedButtonStyle.swift; sourceTree = "<group>"; };
 		2129F310AB13819F9E1B5206 /* RoadmapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapService.swift; sourceTree = "<group>"; };
 		295BB1B089442E062740E342 /* FinishingUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishingUpView.swift; sourceTree = "<group>"; };
@@ -79,6 +85,7 @@
 		3EBCEACDD0183AC545013605 /* RoadmapModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapModel.swift; sourceTree = "<group>"; };
 		42C0E783C2F58157DE7F73E7 /* VoiceBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceBar.swift; sourceTree = "<group>"; };
 		4482678CC07BA0D02BD40D7D /* VoiceSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSessionView.swift; sourceTree = "<group>"; };
+		4789073C0EC0B28567F61503 /* DemoHeadsetLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoHeadsetLink.swift; sourceTree = "<group>"; };
 		4A230E2B44C5F7A39153F093 /* ChoiceQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceQuestion.swift; sourceTree = "<group>"; };
 		4AEC770FA6F78A2034730A77 /* OnboardingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingHeader.swift; sourceTree = "<group>"; };
 		4E30785572F4EBA6E4899939 /* LocalVoiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalVoiceEngine.swift; sourceTree = "<group>"; };
@@ -112,6 +119,7 @@
 		C367F1F41FFEE4F0094C3478 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		CF1EDE27464E6189D9D9867C /* VoicePracticeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePracticeService.swift; sourceTree = "<group>"; };
 		D45F704ADC6A7006D96384A4 /* RoadmapStep+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoadmapStep+Display.swift"; sourceTree = "<group>"; };
+		D8EDE8E3F58131EEF35BCE67 /* StartPracticeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartPracticeButton.swift; sourceTree = "<group>"; };
 		DB7A9ACF429DB3581D822AEB /* FeedCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCardView.swift; sourceTree = "<group>"; };
 		DC1D743FBF4A206C2F24F701 /* OnboardingModel+Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OnboardingModel+Debug.swift"; sourceTree = "<group>"; };
 		EAD01354CB3E720485547090 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -272,8 +280,12 @@
 			children = (
 				69016B176B8B01D7149C9B9B /* CodeCountdownRing.swift */,
 				8F8297953BBBF94EE1738CF6 /* DemoHeadsetIssuer.swift */,
+				4789073C0EC0B28567F61503 /* DemoHeadsetLink.swift */,
+				1971BBE5A965E5A525ACFAE6 /* HeadsetDevicesList.swift */,
+				069C5DC5E94CD1FEDDAE23AC /* HeadsetLinkModel.swift */,
 				FC48D18B0375EC0332D68B2F /* HeadsetPairingModel.swift */,
 				FBEDAA0497BAAC3DE5494E91 /* PairHeadsetView.swift */,
+				D8EDE8E3F58131EEF35BCE67 /* StartPracticeButton.swift */,
 			);
 			path = Headset;
 			sourceTree = "<group>";
@@ -396,6 +408,7 @@
 				44B076489FEAA550A4848D1D /* ConversationDirector.swift in Sources */,
 				B025C41C446F69A388FD0B07 /* DebugScreen.swift in Sources */,
 				69701CB127C56B5D61B18508 /* DemoHeadsetIssuer.swift in Sources */,
+				645B7E80CEDDB8F5F026A980 /* DemoHeadsetLink.swift in Sources */,
 				2721F53A417E3426187BCD67 /* EmailCodeForm.swift in Sources */,
 				FFC323802541E3D96CE18C49 /* FeedCard+Samples.swift in Sources */,
 				DD64D98DC67C9BA740BAA3EB /* FeedCardView.swift in Sources */,
@@ -403,6 +416,8 @@
 				43A7991C53A0E7D1D10AAAB4 /* FlowLayout.swift in Sources */,
 				C0DAC57CCB2A8544D30FEA69 /* ForYouModel.swift in Sources */,
 				DD9E034C811AD9F21DB3AA48 /* ForYouView.swift in Sources */,
+				D2CDFADF08D7175677AED177 /* HeadsetDevicesList.swift in Sources */,
+				74D2032BA9754D4BE2FF00A5 /* HeadsetLinkModel.swift in Sources */,
 				D9FB80DA2C8ECC0B12E9AC96 /* HeadsetPairingModel.swift in Sources */,
 				B8F650DE682DA170D6C58D4E /* LocalVoiceEngine.swift in Sources */,
 				AA512FF797B275C08E38CB20 /* MainTabView.swift in Sources */,
@@ -432,6 +447,7 @@
 				8FDA110F1B8BB6D06A097DE5 /* Skeleton.swift in Sources */,
 				890CF7E5CB51608DAE8B5540 /* SpeechListener.swift in Sources */,
 				2EFF022ED9B3B7F94D767F9B /* SpeechPlayer.swift in Sources */,
+				2094C88A8540C0D1E4A887DC /* StartPracticeButton.swift in Sources */,
 				4BA7053B7CDBCE4A0ECA5F45 /* StepCard.swift in Sources */,
 				A421E174A64F1D5327ED1678 /* Theme.swift in Sources */,
 				0DD3770C52001A9115D5359C /* UnitBanner.swift in Sources */,

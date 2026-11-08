@@ -1,6 +1,6 @@
 import "./pairing.css";
 import { useEffect } from "react";
-import type { ClaimProblem } from "./api";
+import type { ClaimProblem, HeadsetSession } from "./api";
 import { DigitBoxes } from "./DigitBoxes";
 import { Keypad } from "./Keypad";
 import { useKeypad } from "./useKeypad";
@@ -15,15 +15,15 @@ const NOTICE_COPY: Record<ClaimProblem, string> = {
   unavailable: "Raven isn't answering. Enter the code again in a moment.",
 };
 
-export function PairingScreen({ onSignIn }: { onSignIn: (token: string) => void }) {
+export function PairingScreen({ onSignIn }: { onSignIn: (session: HeadsetSession) => void }) {
   const { state, press, backspace } = useKeypad();
-  const signedInToken = state.phase === "signedIn" ? state.token : null;
+  const signedInSession = state.phase === "signedIn" ? state.session : null;
 
   useEffect(() => {
-    if (!signedInToken) return;
-    const timer = setTimeout(() => onSignIn(signedInToken), SUCCESS_PAUSE_MS);
+    if (!signedInSession) return;
+    const timer = setTimeout(() => onSignIn(signedInSession), SUCCESS_PAUSE_MS);
     return () => clearTimeout(timer);
-  }, [signedInToken, onSignIn]);
+  }, [signedInSession, onSignIn]);
 
   if (state.phase === "signedIn") {
     return (

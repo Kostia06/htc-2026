@@ -1,16 +1,16 @@
-import type { ClaimProblem } from "./api";
+import type { ClaimProblem, HeadsetSession } from "./api";
 
 export const CODE_LENGTH = 4;
 
 export type KeypadState =
   | { phase: "entering"; digits: string; notice: ClaimProblem | null; shakes: number }
   | { phase: "checking"; digits: string; shakes: number }
-  | { phase: "signedIn"; token: string };
+  | { phase: "signedIn"; session: HeadsetSession };
 
 export type KeypadEvent =
   | { type: "digit"; digit: string }
   | { type: "backspace" }
-  | { type: "claimed"; token: string }
+  | { type: "claimed"; session: HeadsetSession }
   | { type: "failed"; problem: ClaimProblem };
 
 export const initialKeypadState: KeypadState = { phase: "entering", digits: "", notice: null, shakes: 0 };
@@ -27,7 +27,7 @@ export function reduceKeypad(state: KeypadState, event: KeypadEvent): KeypadStat
     case "backspace":
       return state.phase === "entering" ? { ...state, digits: state.digits.slice(0, -1), notice: null } : state;
     case "claimed":
-      return state.phase === "checking" ? { phase: "signedIn", token: event.token } : state;
+      return state.phase === "checking" ? { phase: "signedIn", session: event.session } : state;
     case "failed": {
       if (state.phase !== "checking") return state;
       // only a wrong code shakes; a network problem says nothing about the digits
