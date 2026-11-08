@@ -25,14 +25,13 @@ export function RaisedButton({
   height = size.buttonHeight,
   radius = radii.button,
   disabled = false,
-  busy = false,
   variant = 'headline',
   children,
   reducedMotion,
   ...props
 }) {
   const { face, ink } = TONES[tone] ?? TONES.action
-  const { hovered, offset, handlers } = usePressable({ onPress, disabled: disabled || busy, reducedMotion })
+  const { hovered, offset, handlers } = usePressable({ onPress, disabled, reducedMotion })
   const shownFace = disabled ? color.chip : hovered ? hoverOf(face) : face
   const key = useRef()
   const materials = useMemo(() => [lit(shownFace), lit(ledgeOf(face))], [shownFace, face])
@@ -47,40 +46,14 @@ export function RaisedButton({
         <group ref={key} position-z={depths.key}>
           <mesh geometry={roundedSlab(width, height, radius, depths.key, depths.keyBevel)} material={materials} />
           <group position-z={0.002}>
-            {busy ? (
-              <Dots tone={ink} reducedMotion={reducedMotion} />
-            ) : (
-              children ?? (
-                <Label variant={variant} tone={disabled ? color.text2 : ink} anchorX="center" anchorY="middle">
-                  {label}
-                </Label>
-              )
+            {children ?? (
+              <Label variant={variant} tone={disabled ? color.text2 : ink} anchorX="center" anchorY="middle">
+                {label}
+              </Label>
             )}
           </group>
         </group>
       </group>
-    </group>
-  )
-}
-
-/** Three dots taking turns, for "working on it". Opacity only, nothing scales. */
-export function Dots({ tone = color.text, reducedMotion, ...props }) {
-  const dots = useRef([])
-  useFrame(({ clock }) => {
-    dots.current.forEach((dot, i) => {
-      if (!dot) return
-      const p = reducedMotion ? 1 : (Math.sin(clock.elapsedTime * 5 - i * 0.9) + 1) / 2
-      dot.material.opacity = 0.35 + p * 0.65
-    })
-  })
-  return (
-    <group {...props}>
-      {[0, 1, 2].map((i) => (
-        <mesh key={i} ref={(el) => (dots.current[i] = el)} position={[(i - 1) * 0.02, 0, 0]}>
-          <circleGeometry args={[0.0055, 16]} />
-          <meshBasicMaterial color={tone} transparent toneMapped={false} />
-        </mesh>
-      ))}
     </group>
   )
 }

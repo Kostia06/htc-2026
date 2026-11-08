@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { color } from './tokens.js'
 
 // docs/brand/skillit-logo.svg, drawn with Path2D so the mark needs no image
 // request and stays crisp at any texture size. Keep in step with the SVG.
@@ -53,28 +52,4 @@ function canvasTexture(key, w, h, draw) {
 /** The app icon on a transparent square. */
 export function logoTexture(size = 256) {
   return canvasTexture(`logo${size}`, size, size, (ctx) => drawLogo(ctx, 0, 0, size))
-}
-
-/**
- * A wall screen's idle card: the mark and wordmark on the app's ground colour,
- * like the phone's launch screen. 16:9.
- */
-export function screenTexture({ title = 'Skillit', subtitle = 'Interview practice' } = {}) {
-  return canvasTexture(`screen${title}${subtitle}`, 1024, 576, (ctx, w, h) => {
-    ctx.fillStyle = color.ground
-    ctx.fillRect(0, 0, w, h)
-    const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 10, w * 0.5, h * 0.42, w * 0.55)
-    glow.addColorStop(0, 'rgba(168,199,163,0.16)')
-    glow.addColorStop(1, 'rgba(168,199,163,0)')
-    ctx.fillStyle = glow
-    ctx.fillRect(0, 0, w, h)
-    drawLogo(ctx, w / 2 - 90, h * 0.2, 180)
-    ctx.textAlign = 'center'
-    ctx.fillStyle = color.text
-    ctx.font = '700 72px Inter, system-ui, sans-serif'
-    ctx.fillText(title, w / 2, h * 0.72)
-    ctx.fillStyle = color.text2
-    ctx.font = '400 34px Inter, system-ui, sans-serif'
-    ctx.fillText(subtitle, w / 2, h * 0.82)
-  })
 }

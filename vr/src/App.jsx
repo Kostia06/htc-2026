@@ -9,6 +9,7 @@ import { Overlay } from './ui/Overlay.jsx'
 import { useInterview } from './interview/useInterview.js'
 import { useHeadsetSession } from './headset/useHeadsetSession.js'
 import { useLaunchPolling } from './headset/useLaunchPolling.js'
+import { color } from './theme/tokens.js'
 
 export default function App() {
   const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false }), [])
@@ -45,7 +46,8 @@ export default function App() {
         onCreated={({ gl, scene }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping
           gl.toneMappingExposure = 1.05
-          scene.background = new THREE.Color('#0b0e14')
+          scene.background = new THREE.Color(color.ground)
+          if (import.meta.env.DEV) Object.assign(window, { __gl: gl, __scene: scene }) // draw-call counts from devtools
         }}
       >
         <XR store={store}>
