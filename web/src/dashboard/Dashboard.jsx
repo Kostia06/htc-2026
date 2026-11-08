@@ -225,31 +225,31 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   // course and research picks are UCalgary-specific, so they lead for students and stay reachable for everyone
   const ordered = isStudent(answers) ? tabs : [...tabs.filter((t) => !t.student), ...tabs.filter((t) => t.student)]
 
+  const initial = (first ?? session.user.email ?? '?').charAt(0).toUpperCase()
+
   return (
-    <main className="db">
-      <header className="db__header">
-        <div>
-          <p className="db__muted">{role ? `On the way to ${role}` : 'Your career plan'}</p>
-          <h1 className="db__title">{first ? `Welcome, ${first}` : 'Welcome'}</h1>
-        </div>
-        <button type="button" className="db__ghost" onClick={() => supabase.auth.signOut()}>Sign out</button>
+    <div className="db">
+      <header className="db__bar">
+        <span className="db__logo">raven</span>
+        <nav className="db__nav" aria-label="Sections">
+          {ordered.map((t) => (
+            <button key={t.id} type="button" className={`db__tab${tab === t.id ? ' is-on' : ''}`} aria-current={tab === t.id ? 'page' : undefined} onClick={() => go(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </nav>
+        <button type="button" className="db__avatar" onClick={() => go('profile')} aria-label="Your profile">{initial}</button>
       </header>
 
-      <nav className="db__tabs" aria-label="Sections">
-        {ordered.map((t) => (
-          <button key={t.id} type="button" className={`db__tab${tab === t.id ? ' is-on' : ''}`} aria-current={tab === t.id ? 'page' : undefined} onClick={() => go(t.id)}>
-            {t.label}
-          </button>
+      <main className="db__main">
+        {/* visited panels stay mounted (hidden) so a run in progress isn't lost when switching tabs */}
+        {ordered.filter((t) => visited.has(t.id)).map((t) => (
+          <section key={t.id} className={`db__section${t.bare ? ' db__section--bare' : ''}`} hidden={tab !== t.id} aria-label={t.title}>
+            {!t.bare && <h2 className="db__h2">{t.title}</h2>}
+            {t.render()}
+          </section>
         ))}
-      </nav>
-
-      {/* visited panels stay mounted (hidden) so a run in progress isn't lost when switching tabs */}
-      {ordered.filter((t) => visited.has(t.id)).map((t) => (
-        <section key={t.id} className="db__section" hidden={tab !== t.id} aria-label={t.title}>
-          <h2 className="db__h2">{t.title}</h2>
-          {t.render()}
-        </section>
-      ))}
-    </main>
+      </main>
+    </div>
   )
 }
