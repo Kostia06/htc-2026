@@ -12,6 +12,6 @@ export default defineConfig(({ command, mode }) => {
     // in dev the landing server (5180) forwards /app and /api here, so the app lives under /app/;
     // the build is served from the root of app.skillit.study, where /app/assets would not exist
     base: env.APP_BASE || (command === 'build' ? '/' : '/app/'),
-    server: { port: 5173, strictPort: true, proxy: { '/api': { target, changeOrigin: true, secure: true } } },
+    server: { host: '127.0.0.1', port: 5173, strictPort: true, proxy: { '/api': { target, changeOrigin: true, secure: true } } },
   }
 })
