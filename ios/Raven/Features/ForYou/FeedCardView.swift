@@ -56,6 +56,9 @@ struct FeedCardView: View {
     }
 
     @ViewBuilder private var chips: some View {
+        if card.level == "beginner" {
+            FeedChip(text: "Beginner friendly", systemImage: "leaf")
+        }
         if let when = whenText {
             FeedChip(text: when, systemImage: card.date == nil ? "clock" : "calendar")
         }

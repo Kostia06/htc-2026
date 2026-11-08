@@ -44,7 +44,6 @@
 		4162DBBC4D7AEB0EDE12139A /* MemoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECEBE2F61BCE9CD2E25E793 /* MemoryService.swift */; };
 		43A7991C53A0E7D1D10AAAB4 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 993C57CFF6758829DF0C502C /* FlowLayout.swift */; };
 		446FE469F37501C6B6B6461D /* PrivacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BD1764C52AB4741AB3EC98 /* PrivacyView.swift */; };
-		49F1D20500C009AE22C575C7 /* MarkDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFB0A3EA74ED59054A53ABF /* MarkDoneSheet.swift */; };
 		4B5FE8B109E4D7B6620E4F10 /* PracticeHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A50B43A168A22631F592A0 /* PracticeHistoryService.swift */; };
 		4D1F72B6B9C120A7332B5157 /* FinishingUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295BB1B089442E062740E342 /* FinishingUpView.swift */; };
 		50C9B89B8F52AF24BD0CCD39 /* SkillsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18809402D3CB3276254A9579 /* SkillsSummary.swift */; };
@@ -200,7 +199,6 @@
 		96B4E522EAA7A66B9FC912C9 /* RoadmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapView.swift; sourceTree = "<group>"; };
 		993C57CFF6758829DF0C502C /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 		9CEC8D06DBDD1BDBEF989A0C /* SampleCompanies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCompanies.swift; sourceTree = "<group>"; };
-		9CFB0A3EA74ED59054A53ABF /* MarkDoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkDoneSheet.swift; sourceTree = "<group>"; };
 		9E6E781CF3173872451AD979 /* ElevenLabsVoiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevenLabsVoiceEngine.swift; sourceTree = "<group>"; };
 		9FCA18DBE7BAF347450D8210 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A431565ED520AFE455D00402 /* ThinProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThinProgressBar.swift; sourceTree = "<group>"; };
@@ -428,7 +426,6 @@
 		8E4DF6852FEC5FC62DDC11ED /* Roadmap */ = {
 			isa = PBXGroup;
 			children = (
-				9CFB0A3EA74ED59054A53ABF /* MarkDoneSheet.swift */,
 				5F1B7BB82D01AF73A92A8811 /* PathNode.swift */,
 				4BB9B9515FBD714569B37EE2 /* PathRow.swift */,
 				86AAEF08D89EC976E5A77423 /* ProgressCard.swift */,
@@ -669,7 +666,6 @@
 				D9FB80DA2C8ECC0B12E9AC96 /* HeadsetPairingModel.swift in Sources */,
 				CCA1FB4EB509C8F5C907233A /* InterviewProgress.swift in Sources */,
 				AA512FF797B275C08E38CB20 /* MainTabView.swift in Sources */,
-				49F1D20500C009AE22C575C7 /* MarkDoneSheet.swift in Sources */,
 				C7A0E5B70FF73A548D9A6D47 /* MemoryModel.swift in Sources */,
 				4162DBBC4D7AEB0EDE12139A /* MemoryService.swift in Sources */,
 				324D8C02DD1CDA67C6FF86CE /* MemoryView.swift in Sources */,

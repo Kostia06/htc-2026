@@ -49,9 +49,10 @@ struct RoadmapPath: View {
                 onMarkDone: { close { model.finishing = step } },
             )
         }
+        // "what did you do?" by text or voice; Raven marks the step done itself and only asks if it must
         .sheet(item: $model.finishing) { step in
-            MarkDoneSheet(step: step) { note in
-                withAnimation(.spring(duration: 0.5)) { model.complete(step, note: note) }
+            QuickUpdateView(focusTitle: step.title) { _ in
+                Task { await model.load() }
             }
         }
     }

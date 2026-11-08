@@ -10,13 +10,18 @@ struct FeedDetailSheet: View {
     var body: some View {
         DetailSheet {
             header
-            Label(card.why, systemImage: "target")
-                .font(.subheadline)
-                .foregroundStyle(Theme.agent)
-                .lineLimit(2)
+            FitReasons(reasons: reasons)
             FactGrid(facts: facts)
             if let summary = card.summary {
                 ExpandableText(text: summary)
+            }
+            if let highlights = card.highlights, !highlights.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(highlights, id: \.self) { highlight in
+                        Label(highlight, systemImage: "checkmark")
+                            .font(.subheadline)
+                    }
+                }
             }
             if let tags = card.tags, !tags.isEmpty, card.kind != .job {
                 topics(tags)
@@ -56,7 +61,19 @@ struct FeedDetailSheet: View {
         if let salary = card.salary {
             facts.append(.init(label: "Salary", value: salary))
         }
+        if let level = card.level {
+            facts.append(.init(label: "Level", value: level.capitalized))
+        }
+        if let format = card.format {
+            facts.append(.init(label: "Format", value: format))
+        }
         return facts
+    }
+
+    /// Older cards only carry the one `why` line, so fall back to it.
+    private var reasons: [String] {
+        if let reasons = card.reasons, !reasons.isEmpty { return reasons }
+        return [card.why]
     }
 
     private func topics(_ tags: [String]) -> some View {
@@ -98,5 +115,29 @@ struct FeedDetailSheet: View {
         // a day-only date ("2027-01-26") is parsed as UTC midnight; showing it in local time would say the day before
         let dayOnly = raw.count == 10
         return date.formatted(Date.FormatStyle(timeZone: dayOnly ? .gmt : .current).month(.abbreviated).day())
+    }
+}
+
+/// The personal reasons this card is here, each one a short line Raven worked out from the profile.
+private struct FitReasons: View {
+    let reasons: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Why it fits you")
+                .font(.headline)
+            ForEach(reasons, id: \.self) { reason in
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Theme.agent)
+                        .accessibilityHidden(true)
+                    Text(reason)
+                }
+                .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(Theme.inset, in: .rect(cornerRadius: 16))
     }
 }
