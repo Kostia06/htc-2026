@@ -55,7 +55,7 @@ targets:
     info:
       path: Raven/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Raven
+        CFBundleDisplayName: Skillit
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         RavenAPIURL: $(RAVEN_API_URL)
