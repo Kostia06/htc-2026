@@ -168,6 +168,7 @@ function buildHeaders(
     const headers = new Headers({
         Accept: accept,
         "X-GitHub-Api-Version": GITHUB_API_VERSION,
+        "User-Agent": "Skillit-Career-Suggestor",
     });
 
     // Authentication is optional for public repositories.
