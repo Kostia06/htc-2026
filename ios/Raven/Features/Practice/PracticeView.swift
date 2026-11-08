@@ -7,6 +7,7 @@ struct PracticeView: View {
     @State private var target = ""
     @State private var activeSession: VoiceSessionModel?
     @State private var isPairing = false
+    @State private var isRecapping = false
 
     var body: some View {
         NavigationStack {
@@ -26,12 +27,16 @@ struct PracticeView: View {
                         detail: "Meet someone in the field and keep the conversation going.",
                     )
                     vrLink.padding(.top, 8)
+                    row("Tell Raven about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
+                    NavigationLink { PracticeHistoryView() } label: { rowLabel("Past sessions", systemImage: "chart.line.uptrend.xyaxis") }
+                        .buttonStyle(.plain)
                 }
                 .padding(24)
             }
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
+            .sheet(isPresented: $isRecapping) { RecapView(companySlug: nil, voice: ElevenLabsRecapVoice()) }
             .fullScreenCover(item: $activeSession) { session in
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
@@ -64,20 +69,24 @@ struct PracticeView: View {
     }
 
     private var vrLink: some View {
-        Button {
-            isPairing = true
-        } label: {
-            HStack {
-                Label("Practice in VR", systemImage: "visionpro")
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .foregroundStyle(.primary)
-            .ravenCard()
+        row("Practice in VR", systemImage: "visionpro") { isPairing = true }
+    }
+
+    private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) { rowLabel(title, systemImage: systemImage) }
+            .buttonStyle(.plain)
+    }
+
+    private func rowLabel(_ title: String, systemImage: String) -> some View {
+        HStack {
+            Label(title, systemImage: systemImage)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
         }
-        .buttonStyle(.plain)
+        .foregroundStyle(.primary)
+        .ravenCard()
     }
 
     private func start(_ mode: PracticeMode) {

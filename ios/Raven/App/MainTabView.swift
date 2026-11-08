@@ -9,7 +9,7 @@ struct MainTabView: View {
     }
 
     enum Section: Hashable {
-        case roadmap, forYou, practice, profile
+        case roadmap, forYou, practice, companies, profile
     }
 
     var body: some View {
@@ -22,6 +22,9 @@ struct MainTabView: View {
             }
             Tab("Practice", systemImage: "visionpro", value: .practice) {
                 PracticeView()
+            }
+            Tab("Companies", systemImage: "building.2", value: .companies) {
+                CompaniesTab()
             }
             Tab("Profile", systemImage: "person.crop.circle", value: .profile) {
                 ProfileView()

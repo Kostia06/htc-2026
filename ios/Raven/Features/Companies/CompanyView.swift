@@ -33,9 +33,7 @@ struct CompanyView: View {
                 await model.load()
             }
             .sheet(isPresented: $isSharing) {
-                if let insights = model?.insights {
-                    ShareExperienceSheet(company: insights.company, service: injectedService ?? app.companyService)
-                }
+                RecapView(companySlug: slug, voice: ElevenLabsRecapVoice())
             }
             .sensoryFeedback(.success, trigger: researchFinished)
             .onChange(of: model?.research) { _, research in
@@ -118,7 +116,7 @@ struct CompanyView: View {
                 Image(systemName: "hand.wave").font(.title3).foregroundStyle(Theme.action)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("I interviewed here").font(.headline)
-                    Text("Share how it went, anonymously. It helps the next person.").font(.subheadline).foregroundStyle(.secondary)
+                    Text("Tell Raven how it went. Shared anonymously.").font(.subheadline).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").font(.footnote.bold()).foregroundStyle(.tertiary)

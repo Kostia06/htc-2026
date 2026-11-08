@@ -10,10 +10,15 @@ final class ElevenLabsVoiceEngine: VoiceEngine {
     private var continuation: AsyncStream<VoiceEvent>.Continuation?
 
     func start(_ session: VoiceSession) -> AsyncStream<VoiceEvent> {
+        start(credentials: session.credentials)
+    }
+
+    /// Used directly by anything that has voice credentials but no practice session, like the interview recap.
+    func start(credentials raw: JSONValue) -> AsyncStream<VoiceEvent> {
         AsyncStream { continuation in
             self.continuation = continuation
             continuation.yield(.stateChanged(.connecting))
-            guard let credentials = ElevenLabsCredentials(session.credentials) else {
+            guard let credentials = ElevenLabsCredentials(raw) else {
                 continuation.yield(.failed("This server didn't hand out a voice connection. Try again in a moment."))
                 continuation.finish()
                 return
