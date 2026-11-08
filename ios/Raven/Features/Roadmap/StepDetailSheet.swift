@@ -7,90 +7,101 @@ struct StepDetailSheet: View {
     let onPractice: () -> Void
     let onMarkDone: () -> Void
 
+    private var isDone: Bool {
+        step.status == .done
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 12) {
-                    KindIcon(kind: step.kind, highlighted: true, size: 48)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(step.kind.name)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(step.title)
-                            .font(.title3.bold())
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    header
+                    facts
+                    if isDone, let note = step.note, !note.isEmpty {
+                        block("What you did", text: note, systemImage: "checkmark.seal.fill", tint: Theme.action)
+                    }
+                    if !step.why.isEmpty {
+                        block("Why this step", text: step.why, systemImage: "sparkles", tint: Theme.agent)
+                    }
+                    if !step.detail.isEmpty {
+                        block("How to do it", text: step.detail, systemImage: "list.bullet", tint: .secondary)
                     }
                 }
-                if step.status == .done {
-                    doneSummary
-                } else {
-                    details
-                }
+                .padding(.horizontal, 24)
+                .padding(.top, 28)
+                .padding(.bottom, 16)
             }
-            .padding(24)
+            if !isDone {
+                actions
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 12)
+            }
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.fraction(0.75), .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(Theme.ground)
     }
 
-    private var doneSummary: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(doneLine, systemImage: "checkmark.circle.fill")
-                .font(.headline)
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            KindIcon(kind: step.kind, highlighted: true, size: 64)
+            Text(step.kind.name.uppercased())
+                .font(.caption.weight(.bold))
+                .tracking(1.2)
                 .foregroundStyle(Theme.action)
-            if let note = step.note, !note.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("What you did")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Text(note)
-                        .font(.body)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .ravenCard()
+            Text(step.title)
+                .font(.largeTitle.bold())
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var facts: some View {
+        HStack(spacing: 10) {
+            if isDone {
+                fact(doneLine, systemImage: "checkmark.circle.fill", tint: Theme.action)
+            } else {
+                LabelChip(label: step.label)
+                    .scaleEffect(1.15, anchor: .leading)
+                    .padding(.trailing, 6)
             }
-            if !step.why.isEmpty {
-                Text(step.why)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            if !step.estimate.isEmpty {
+                fact(step.estimate, systemImage: "clock", tint: .secondary)
             }
         }
     }
 
-    private var details: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                LabelChip(label: step.label)
-                if !step.estimate.isEmpty {
-                    Label(step.estimate, systemImage: "clock")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            if !step.why.isEmpty {
-                Text(step.why)
-                    .font(.body)
-            }
-            if !step.detail.isEmpty {
-                Text(step.detail)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            if let action = step.action {
-                StartPracticeButton(
-                    mode: action.type == .interview ? .interview : .networking,
-                    companySlug: action.companySlug,
-                    role: action.role,
-                    stepID: step.id,
-                    onPhone: onPractice,
-                )
-            } else {
-                Button("Mark done", action: onMarkDone)
-                    .buttonStyle(.raised)
-            }
+    private func fact(_ text: String, systemImage: String, tint: Color) -> some View {
+        Label(text, systemImage: systemImage)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(tint)
+    }
+
+    private func block(_ title: String, text: String, systemImage: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: systemImage)
+                .font(.headline)
+                .foregroundStyle(tint)
+            Text(text)
+                .font(.body)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .ravenCard()
+    }
+
+    @ViewBuilder private var actions: some View {
+        if let action = step.action {
+            StartPracticeButton(
+                mode: action.type == .interview ? .interview : .networking,
+                companySlug: action.companySlug,
+                role: action.role,
+                stepID: step.id,
+                onPhone: onPractice,
+            )
+        } else {
+            Button("Mark done", action: onMarkDone)
+                .buttonStyle(.raised)
         }
     }
 

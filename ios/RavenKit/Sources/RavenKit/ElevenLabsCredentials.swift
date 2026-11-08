@@ -6,12 +6,13 @@ public struct ElevenLabsCredentials: Equatable, Sendable {
     /// Voice over WebRTC, the only path the Swift SDK supports for audio.
     public let conversationToken: String
     public let prompt: String?
-    public let firstMessage: String?
+    /// Fills the agent's first message, which is set to "{{opening}}" on ElevenLabs.
+    public let opening: String?
 
-    public init(conversationToken: String, prompt: String?, firstMessage: String?) {
+    public init(conversationToken: String, prompt: String?, opening: String?) {
         self.conversationToken = conversationToken
         self.prompt = prompt
-        self.firstMessage = firstMessage
+        self.opening = opening
     }
 
     /// nil when the session is for another provider or the token is missing
@@ -23,7 +24,7 @@ public struct ElevenLabsCredentials: Equatable, Sendable {
         let agent = fields["overrides"]?["agent"]
         conversationToken = token
         prompt = agent?["prompt"]?["prompt"]?.stringValue
-        firstMessage = agent?["firstMessage"]?.stringValue
+        opening = fields["dynamicVariables"]?["opening"]?.stringValue
     }
 }
 

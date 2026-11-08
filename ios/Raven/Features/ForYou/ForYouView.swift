@@ -4,6 +4,7 @@ import SwiftUI
 /// Jobs, events, hackathons and courses picked for this person. Opens on the last feed instantly and refreshes behind it.
 struct ForYouView: View {
     @Environment(AppModel.self) private var app
+    @State private var opened: FeedCard?
 
     private var model: ForYouModel {
         app.feed
@@ -32,13 +33,18 @@ struct ForYouView: View {
             .refreshable { await refresh() }
             .task(id: model.section) { await refresh() }
             .sensoryFeedback(.impact(weight: .light), trigger: model.dismissals)
+            .sheet(item: $opened) { card in
+                // read the live card so the bookmark fills as soon as it's saved from the sheet
+                let live = model.cards.first { $0.id == card.id } ?? card
+                FeedDetailSheet(card: live) { save(live) }
+            }
         }
     }
 
     @ViewBuilder private var content: some View {
         if !model.cards.isEmpty {
             ForEach(model.cards) { card in
-                FeedCardView(card: card, onSave: { save(card) }, onDismiss: { dismiss(card) })
+                FeedCardView(card: card, onSave: { save(card) }, onDismiss: { dismiss(card) }, onOpen: { opened = card })
                     .feedRow()
                     .onAppear { loadMoreIfLast(card) }
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {

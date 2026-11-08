@@ -9,6 +9,8 @@ struct RoadmapPath: View {
     let onStart: (RoadmapStep) -> Void
 
     @State private var selected: RoadmapStep?
+    /// Run after the detail sheet is fully gone; iOS drops a full-screen cover presented while a sheet is closing.
+    @State private var afterDismiss: (() -> Void)?
 
     var body: some View {
         @Bindable var model = model
@@ -36,11 +38,11 @@ struct RoadmapPath: View {
         }
         .refreshable { await model.load() }
         .sensoryFeedback(.success, trigger: page.progress.done) { old, new in new > old }
-        .sheet(item: $selected) { step in
+        .sheet(item: $selected, onDismiss: runAfterDismiss) { step in
             StepDetailSheet(
                 step: step,
-                onPractice: { selected = nil; onStart(step) },
-                onMarkDone: { selected = nil; model.finishing = step },
+                onPractice: { close { onStart(step) } },
+                onMarkDone: { close { model.finishing = step } },
             )
         }
         .sheet(item: $model.finishing) { step in
@@ -48,6 +50,16 @@ struct RoadmapPath: View {
                 withAnimation(.spring(duration: 0.5)) { model.complete(step, note: note) }
             }
         }
+    }
+
+    private func close(then action: @escaping () -> Void) {
+        afterDismiss = action
+        selected = nil
+    }
+
+    private func runAfterDismiss() {
+        afterDismiss?()
+        afterDismiss = nil
     }
 
     /// Oldest finished step at the top, so the path reads as a journey down to what's next.

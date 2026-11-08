@@ -36,3 +36,13 @@ extension StubbedNetworkTests {
         }
     }
 }
+
+@Test func feedCardKeepsTheListingSummaryAndSalaryWhenTheServerSendsThem() throws {
+    let json = Data(#"""
+    {"id":"job:1","kind":"job","title":"Data analyst","org":"ATB","why":"Matches SQL","url":"https://adzuna.ca/1",
+     "source":"Adzuna","summary":"Build dashboards in Power BI.","salary":"$55,000–$65,000"}
+    """#.utf8)
+    let card = try JSONDecoder().decode(FeedCard.self, from: json)
+    #expect(card.summary == "Build dashboards in Power BI.")
+    #expect(card.salary == "$55,000–$65,000")
+}

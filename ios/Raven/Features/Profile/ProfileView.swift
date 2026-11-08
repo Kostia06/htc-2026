@@ -75,15 +75,6 @@ struct ProfileView: View {
             )
         }
         .listRowBackground(Theme.raised)
-        Section("Skills") {
-            ChipsSection(
-                chips: app.profile.skills.map { .init(title: $0.name, tag: $0.source.tag) },
-                placeholder: "Add a skill",
-                onAdd: { apply(.addSkill($0)) },
-                onRemove: { apply(.removeSkill($0.title)) },
-            )
-        }
-        .listRowBackground(Theme.raised)
         Section("Experience") {
             ForEach(app.profile.experience, id: \.self) { row in
                 ExperienceRow(row: row) { experienceSheet = RowSheet(row: row) }
@@ -107,7 +98,7 @@ struct ProfileView: View {
     }
 
     @ViewBuilder private var loadingSections: some View {
-        ForEach(["Target roles", "Skills", "Experience"], id: \.self) { title in
+        ForEach(["Target roles", "Experience"], id: \.self) { title in
             Section(title) { SkeletonLines(widths: [0.6, 0.8, 0.4], highlighted: 1).padding(.vertical, 8) }
                 .listRowBackground(Theme.raised)
         }
@@ -140,14 +131,4 @@ struct ProfileView: View {
 private struct RowSheet<Row: Hashable>: Identifiable {
     let id = UUID()
     let row: Row?
-}
-
-private extension SkillSource {
-    var tag: String {
-        switch self {
-        case .resume: "From your resume"
-        case .interview: "Heard in practice"
-        case .selfReported: "You added this"
-        }
-    }
 }

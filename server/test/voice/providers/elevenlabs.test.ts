@@ -31,7 +31,8 @@ describe("elevenlabs provider", () => {
         kind: "elevenlabs",
         signedUrl: "wss://api.elevenlabs.io/v1/convai/conversation?signature=s",
         conversationToken: "tok_1",
-        overrides: { agent: { prompt: { prompt: "Be Sam." }, firstMessage: "Hi! I'm Sam." } },
+        overrides: { agent: { prompt: { prompt: "Be Sam." } } },
+        dynamicVariables: { opening: "Hi! I'm Sam." },
       },
       expiresAt: null,
     });
