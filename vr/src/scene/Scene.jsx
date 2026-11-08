@@ -102,7 +102,7 @@ function useHeightOffset(inXR) {
 }
 
 export function Scene({ interview }) {
-  const { phase, question, meta, result, summary, transcript, caption, error, speaking, speechMs, getAmplitude, actions } = interview
+  const { phase, question, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, heard, micDenied, getAmplitude, actions } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const { offset: heightOffset, measured, calibrated } = useHeightOffset(inXR)
@@ -113,9 +113,9 @@ export function Scene({ interview }) {
   // The spec is explicit: the score shows for about six seconds after an answer
   // and never while one is being given. Reading feedback mid-answer is the single
   // easiest way to put the candidate off.
-  const showReview = useTimedVisibility(phase === 'review', REVIEW_VISIBLE_MS) && phase !== 'listening'
+  const showReview = useRecent(resultAt, REVIEW_VISIBLE_MS) && phase !== 'listening'
 
-  const buttonProps = buttonFor(phase, actions)
+  const buttonProps = buttonFor(phase, actions, { heard, micDenied })
 
   return (
     <>
@@ -176,7 +176,7 @@ export function Scene({ interview }) {
   )
 }
 
-function buttonFor(phase, actions) {
+function buttonFor(phase, actions, { heard, micDenied } = {}) {
   switch (phase) {
     case 'idle':
       return {
@@ -186,34 +186,42 @@ function buttonFor(phase, actions) {
         accent: '#2f7d5b',
       }
     case 'asking':
-      return { label: 'Listening…', hint: 'Wait for the question', disabled: true, onClick: () => {} }
+      return { label: 'Speaking…', hint: 'Wait for the question', disabled: true, onClick: () => {} }
     case 'awaiting':
-      return { label: 'Answer', hint: 'Hold trigger or Space', onClick: actions.startAnswer, accent: '#2f6f8a' }
+      return {
+        label: 'Answer',
+        hint: micDenied ? 'Microphone blocked — press to answer' : 'Press to answer',
+        onClick: actions.startAnswer,
+        accent: '#2f6f8a',
+      }
     case 'listening':
-      return { label: 'Done', hint: 'Release to submit', onClick: actions.stopAnswer, accent: '#8a4a3a' }
-    case 'scoring':
-      return { label: 'Scoring…', disabled: true, onClick: () => {} }
-    case 'review':
-      return { label: 'Next', hint: 'Trigger / A', onClick: actions.ask, accent: '#2f7d5b' }
+      return {
+        label: heard ? 'Listening…' : 'Go ahead',
+        hint: heard ? 'Pause when you are finished' : 'Just start talking',
+        onClick: actions.stopAnswer,
+        accent: '#8a4a3a',
+      }
     case 'done':
       return { label: 'Again', hint: 'Trigger / A', onClick: actions.restart, accent: '#2f7d5b' }
+    case 'scoring':
+      return { label: 'Thinking…', disabled: true, onClick: () => {} }
     default:
       return null
   }
 }
 
-// Shows `active`, then keeps showing it for `ms` after it goes false.
-function useTimedVisibility(active, ms) {
-  const [visible, setVisible] = useState(active)
+// True for `ms` after `at` last changed.
+function useRecent(at, ms) {
+  const [fresh, setFresh] = useState(false)
 
   useEffect(() => {
-    if (!active) return undefined
-    setVisible(true)
-    const timer = setTimeout(() => setVisible(false), ms)
+    if (!at) return undefined
+    setFresh(true)
+    const timer = setTimeout(() => setFresh(false), ms)
     return () => clearTimeout(timer)
-  }, [active, ms])
+  }, [at, ms])
 
-  return active || visible
+  return fresh
 }
 
 // Trigger or A advances; hold either to answer. B ends the interview. Polled
