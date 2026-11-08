@@ -16,6 +16,8 @@ export class AppNotConnectable extends Error {}
 
 const SLUG = /^[a-z0-9_-]{1,60}$/;
 const QUERY_MAX = 80;
+// Composio's page cursor is base64; anything else is dropped rather than forwarded
+const CURSOR = /^[A-Za-z0-9+/=_-]{1,200}$/;
 const PREFIX = "app:";
 
 export const validAppSlug = (slug: string) => SLUG.test(slug);
@@ -26,11 +28,11 @@ const curatedToolkits = () => new Set(CONNECTORS.map((c) => c.toolkit));
 export const isCurated = (slug: string) => curatedToolkits().has(slug);
 
 /** Catalog matches for a search box: connectable when the project has an auth config or Composio can make one for us. */
-export async function searchCatalog(env: Env, query: string): Promise<CatalogEntry[]> {
-  const toolkits = await searchToolkits(env, query.trim().slice(0, QUERY_MAX));
-  const configured = await authConfigIds(env, toolkits.map((t) => t.slug));
+export async function searchCatalog(env: Env, query: string, cursor?: string): Promise<{ apps: CatalogEntry[]; next?: string }> {
+  const page = await searchToolkits(env, query.trim().slice(0, QUERY_MAX), cursor && CURSOR.test(cursor) ? cursor : undefined);
+  const configured = await authConfigIds(env, page.toolkits.map((t) => t.slug));
   const curated = curatedToolkits();
-  return toolkits.map(({ slug, name, logo, category, managedAuth }) => ({
+  const apps = page.toolkits.map(({ slug, name, logo, category, managedAuth }) => ({
     slug,
     name,
     ...(logo ? { logo } : {}),
@@ -38,6 +40,7 @@ export async function searchCatalog(env: Env, query: string): Promise<CatalogEnt
     connectable: configured.has(slug) || managedAuth,
     curated: curated.has(slug),
   }));
+  return { apps, ...(page.next ? { next: page.next } : {}) };
 }
 
 /** Starts the hosted sign-in, adding a Composio-managed auth config for the app the first time anyone connects it. */

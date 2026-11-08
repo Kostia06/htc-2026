@@ -50,7 +50,7 @@ export function connectionsRouter(makeDeps: MakeDeps) {
   router.get("/catalog", async (c) => {
     if (!composioConfigured(c.env)) return c.json({ apps: [], configured: false });
     try {
-      return c.json({ apps: await searchCatalog(c.env, c.req.query("q") ?? ""), configured: true });
+      return c.json({ ...(await searchCatalog(c.env, c.req.query("q") ?? "", c.req.query("cursor"))), configured: true });
     } catch (e) {
       if (e instanceof ComposioError) return c.json({ error: "The app catalog couldn't be reached just now, try again" }, 502);
       throw e;

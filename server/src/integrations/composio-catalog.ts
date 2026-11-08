@@ -13,7 +13,8 @@ type RawToolkit = {
   meta?: { logo?: unknown; categories?: { name?: unknown }[] };
 };
 
-const SEARCH_LIMIT = 30;
+// a generous page; the search box can ask for the next one
+const PAGE_SIZE = 100;
 const INFO_TTL_MS = 60 * 60 * 1000;
 const info = new Map<string, { at: number; toolkit: Toolkit | null }>();
 
@@ -26,11 +27,12 @@ function toolkitOf(raw: RawToolkit): Toolkit | null {
   return { slug: raw.slug.toLowerCase(), name: raw.name, logo, category, managedAuth: raw.no_auth !== true && schemes.length > 0 };
 }
 
-/** Up to 30 toolkits matching a query, in Composio's order. An empty query lists its most-used ones. */
-export async function searchToolkits(env: Env, query: string): Promise<Toolkit[]> {
-  const params = new URLSearchParams({ limit: String(SEARCH_LIMIT), ...(query ? { search: query } : {}) });
-  const { items = [] } = await composio<{ items?: RawToolkit[] }>(env, { method: "GET", path: `/toolkits?${params}`, what: "app search" });
-  return items.map(toolkitOf).filter((t): t is Toolkit => t !== null).slice(0, SEARCH_LIMIT);
+/** One page of toolkits matching a query, in Composio's order, and the cursor for the next page. An empty query lists them all. */
+export async function searchToolkits(env: Env, query: string, cursor?: string): Promise<{ toolkits: Toolkit[]; next?: string }> {
+  const params = new URLSearchParams({ limit: String(PAGE_SIZE), ...(query ? { search: query } : {}), ...(cursor ? { cursor } : {}) });
+  const page = await composio<{ items?: RawToolkit[]; next_cursor?: unknown }>(env, { method: "GET", path: `/toolkits?${params}`, what: "app search" });
+  const toolkits = (page.items ?? []).map(toolkitOf).filter((t): t is Toolkit => t !== null).slice(0, PAGE_SIZE);
+  return { toolkits, ...(typeof page.next_cursor === "string" && page.next_cursor ? { next: page.next_cursor } : {}) };
 }
 
 /** One toolkit's name and logo, cached for an hour; null when Composio has no such toolkit. */

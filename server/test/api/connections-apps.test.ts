@@ -36,7 +36,7 @@ function fakeCatalog(over: { status?: string } = {}) {
     const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : undefined;
     const path = url.pathname.replace("/api/v3.1", "");
     calls.push({ path, search: url.search, method, body });
-    if (path === "/toolkits") return Response.json({ items: CATALOG, next_cursor: null });
+    if (path === "/toolkits") return Response.json({ items: CATALOG, next_cursor: "Y3Vyc29yMg==" });
     if (path.startsWith("/toolkits/")) {
       const found = CATALOG.find((t) => t.slug === path.split("/")[2]);
       return found ? Response.json(found) : Response.json({ error: "nope" }, { status: 404 });
@@ -67,7 +67,18 @@ describe("/api/connections/catalog", () => {
     ]);
     const search = calls.find((c) => c.path === "/toolkits");
     expect(new URLSearchParams(search?.search).get("search")).toBe("lin");
-    expect(new URLSearchParams(search?.search).get("limit")).toBe("30");
+    expect(new URLSearchParams(search?.search).get("limit")).toBe("100");
+  });
+
+  it("passes a page cursor through, and drops one that isn't Composio's", async () => {
+    const calls = fakeCatalog();
+    const { request } = testApp(fakeDeps({ env: keyed }).deps);
+    const first = (await (await request(user(), "GET", "/catalog?q=a")).json()) as { next?: string };
+    expect(first.next).toBe("Y3Vyc29yMg==");
+    await request(user(), "GET", `/catalog?q=a&cursor=${encodeURIComponent("Y3Vyc29yMg==")}`);
+    await request(user(), "GET", `/catalog?q=a&cursor=${encodeURIComponent("x&search=evil")}`);
+    const cursors = calls.filter((c) => c.path === "/toolkits").map((c) => new URLSearchParams(c.search).get("cursor"));
+    expect(cursors).toEqual([null, "Y3Vyc29yMg==", null]);
   });
 
   it("answers empty without a Composio key, without calling out", async () => {
