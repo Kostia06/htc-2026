@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Grouped, minimal: the few things worth setting, and where the rest of the app's data lives.
+/// Grouped, minimal: who you are, practice, your data, about. Sign out sits alone at the bottom.
 struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @State private var isConfirmingSignOut = false
@@ -9,24 +9,27 @@ struct SettingsView: View {
         List {
             Section("Account") {
                 LabeledContent("Signed in as", value: app.authenticator.accountLabel)
-                Button("Sign out", role: .destructive) { isConfirmingSignOut = true }
-            }
-            .listRowBackground(Theme.raised)
-            Section("Headset") {
-                NavigationLink { PairHeadsetView() } label: {
-                    Label("Pair a headset", systemImage: "visionpro")
-                }
             }
             .listRowBackground(Theme.raised)
             Section {
-                LabeledContent("Interviewer", value: "Eric")
+                NavigationLink { PairHeadsetView() } label: {
+                    Label("Pair a headset", systemImage: "visionpro")
+                }
+                LabeledContent {
+                    Text("Eric")
+                } label: {
+                    Label("Interviewer voice", systemImage: "person.wave.2")
+                }
             } header: {
-                Text("Practice voice")
+                Text("Practice")
             } footer: {
-                Text("The same voice on your phone and your headset.")
+                Text("The same interviewer on your phone and your headset.")
             }
             .listRowBackground(Theme.raised)
             Section("Privacy") {
+                NavigationLink { MemoryView() } label: {
+                    Label("What Skillit remembers", systemImage: "brain")
+                }
                 NavigationLink { PrivacyView() } label: {
                     Label("Your data", systemImage: "lock.shield")
                 }
@@ -39,6 +42,11 @@ struct SettingsView: View {
             } footer: {
                 Text("Skillit uses AI to read your resume, build your road and run practice conversations. "
                     + "It can get things wrong; check anything before you rely on it.")
+            }
+            .listRowBackground(Theme.raised)
+            Section {
+                Button("Sign out", role: .destructive) { isConfirmingSignOut = true }
+                    .frame(maxWidth: .infinity)
             }
             .listRowBackground(Theme.raised)
         }

@@ -1,3 +1,4 @@
+import SkillitKit
 import SwiftUI
 
 /// What the server keeps, in plain words, and the one button that removes all of it.
@@ -26,14 +27,6 @@ struct PrivacyView: View {
                     title: "Road and feed",
                     detail: "Built from your profile; rebuilt when it changes.",
                 )
-            }
-            .listRowBackground(Theme.raised)
-            Section {
-                NavigationLink { MemoryView() } label: {
-                    Label("What Skillit remembers about you", systemImage: "brain")
-                }
-            } footer: {
-                Text("See, delete or anonymously share the notes Skillit keeps to personalise your practice.")
             }
             .listRowBackground(Theme.raised)
             Section {
@@ -75,7 +68,8 @@ struct PrivacyView: View {
 
     private func deleteEverything() async {
         guard let client = app.client else {
-            await app.signOut()
+            // nothing was erased, so signing out here would tell them their data is gone when it isn't
+            failure = SkillitError.offline.message
             return
         }
         isDeleting = true
