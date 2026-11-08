@@ -116,6 +116,18 @@ struct InterviewTargetTests {
         #expect(InterviewTarget(action: RoadmapAction(type: .interview), postings: [], companyName: names) == nil)
     }
 
+    @Test func `a role can be practised for a local company, a posting or company can't take another`() {
+        #expect(InterviewTarget.role("Analyst").canAddCompany)
+        #expect(InterviewTarget.other("Barista").canAddCompany)
+        #expect(!InterviewTarget.company(slug: "acme", name: "Acme").canAddCompany)
+        #expect(!InterviewTarget.posting(id: "po_1", title: "Analyst", company: "Acme").canAddCompany)
+
+        let atAcme = InterviewTarget.role("Analyst").request(difficulty: .standard, at: "acme")
+        #expect(atAcme == VoiceSessionRequest(mode: .interview, companySlug: "acme", role: "Analyst", difficulty: .standard))
+        let companyKeepsItsOwn = InterviewTarget.company(slug: "acme", name: "Acme").request(difficulty: .easy, at: "other")
+        #expect(companyKeepsItsOwn.companySlug == "acme")
+    }
+
     @Test func `round-trips through JSON so the last choice can be remembered`() throws {
         let target = InterviewTarget.company(slug: "acme", name: "Acme")
         let data = try JSONEncoder().encode(target)

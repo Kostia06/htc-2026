@@ -27,6 +27,23 @@ public enum InterviewTarget: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    /// A role or free text has no employer yet, so the picker can offer a local company to prepare for.
+    public var canAddCompany: Bool {
+        switch self {
+        case .role, .other: true
+        case .posting, .company: false
+        }
+    }
+
+    /// The request with a local company added; ignored when the target already has its own.
+    public func request(difficulty: PracticeDifficulty, at companySlug: String?) -> VoiceSessionRequest {
+        var request = request(difficulty: difficulty)
+        if canAddCompany, let companySlug {
+            request.companySlug = companySlug
+        }
+        return request
+    }
+
     public func request(difficulty: PracticeDifficulty) -> VoiceSessionRequest {
         switch self {
         case let .posting(id, _, _): VoiceSessionRequest(mode: .interview, difficulty: difficulty, postingId: id)

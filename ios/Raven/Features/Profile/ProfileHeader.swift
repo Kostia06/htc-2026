@@ -13,9 +13,11 @@ struct ProfileHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(profile.targetRoles.isEmpty ? "Your profile" : "Aiming for")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if !profile.targetRoles.isEmpty {
+                Text("Aiming for")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
             Text(profile.targetRoles.first ?? "Pick a target role below")
                 .font(.system(size: roleSize, weight: .bold, design: .rounded))
                 .contentTransition(.opacity)

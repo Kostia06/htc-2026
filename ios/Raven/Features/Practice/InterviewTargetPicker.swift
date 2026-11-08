@@ -1,8 +1,8 @@
 import RavenKit
 import SwiftUI
 
-/// "Interview for what?": a saved posting, a target role, a company Skillit knows, or anything typed in.
-/// Remembers the last choice, so the next session is one tap. The caller starts the session once this sheet is gone.
+/// "Interview for what?": a saved posting, a target role, or anything typed in. When the choice has no employer,
+/// it offers the local companies Skillit knows. Remembers the last choice, so the next session is one tap.
 struct InterviewTargetPicker: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
@@ -10,6 +10,7 @@ struct InterviewTargetPicker: View {
     @AppStorage(InterviewTargetPicker.lastChoiceKey) private var lastChoice: Data?
     @State private var selected: InterviewTarget?
     @State private var other = ""
+    @State private var localCompany: String?
 
     static let lastChoiceKey = "interviewTarget"
 
@@ -21,11 +22,11 @@ struct InterviewTargetPicker: View {
     var body: some View {
         NavigationStack {
             List {
+                practisingFor
                 if !postings.isEmpty {
                     section("Your postings", postings.map { InterviewTarget.posting(id: $0.id, title: $0.title, company: $0.company) })
                 }
                 section("Target roles", app.profile.targetRoles.map(InterviewTarget.role))
-                section("Companies", app.companies.companies.map { InterviewTarget.company(slug: $0.slug, name: $0.name) })
                 Section("Something else") {
                     TextField("A role, a company, anything", text: $other)
                         .textInputAutocapitalization(.words)
@@ -50,6 +51,56 @@ struct InterviewTargetPicker: View {
         .presentationDetents([.large])
         .presentationBackground(Theme.ground)
         .onAppear(perform: preselect)
+    }
+
+    /// The one line that says what this interview is for, plus the local companies when there's no employer yet.
+    private var practisingFor: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("You're practising for").font(.subheadline).foregroundStyle(.secondary)
+                Text(summary).font(.title3.weight(.semibold))
+            }
+            .padding(.vertical, 4)
+            if let selected, selected.canAddCompany, !app.companies.companies.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Want to prepare for a company near you?").font(.subheadline)
+                    FlowLayout(spacing: 8) {
+                        ForEach(app.companies.companies) { company in
+                            companyChip(company)
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .listRowBackground(Theme.raised)
+    }
+
+    private var summary: String {
+        guard let selected else { return "Pick a role or posting below" }
+        if case let .posting(_, title, company) = selected {
+            return "\(title) at \(company)"
+        }
+        if selected.canAddCompany, let slug = localCompany, let company = app.companies.name(for: slug) {
+            return "\(selected.title) at \(company)"
+        }
+        return selected.title
+    }
+
+    private func companyChip(_ company: CompanySummary) -> some View {
+        let isOn = localCompany == company.slug
+        return Button {
+            localCompany = isOn ? nil : company.slug
+        } label: {
+            Text(company.name)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .foregroundStyle(isOn ? Theme.onAction : Color.primary)
+                .background(isOn ? Theme.action : Theme.chip, in: .capsule)
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.selection, trigger: isOn)
     }
 
     private func section(_ title: String, _ targets: [InterviewTarget]) -> some View {
@@ -84,7 +135,7 @@ struct InterviewTargetPicker: View {
     private var footer: some View {
         VStack(spacing: 14) {
             DifficultyPicker(difficulty: $difficulty)
-            Button(selected.map { "Start: \($0.title)" } ?? "Pick one to start", action: start)
+            Button(selected == nil ? "Pick one to start" : "Start interview", action: start)
                 .buttonStyle(.raised)
                 .disabled(selected == nil)
         }
@@ -104,11 +155,12 @@ struct InterviewTargetPicker: View {
     private func start() {
         guard let selected else { return }
         lastChoice = try? JSONEncoder().encode(selected)
-        onStart(selected.request(difficulty: difficulty))
+        onStart(selected.request(difficulty: difficulty, at: localCompany))
         dismiss()
     }
 }
 
+#if DEBUG
 #Preview {
     Color.clear
         .sheet(isPresented: .constant(true)) {
@@ -116,3 +168,4 @@ struct InterviewTargetPicker: View {
         }
         .environment(AppModel.preview(profile: Profile(targetRoles: ["Junior data analyst"])))
 }
+#endif

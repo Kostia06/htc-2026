@@ -122,6 +122,7 @@ private struct RequirementRow: View {
     }
 }
 
+#if DEBUG
 #Preview {
     Color.clear
         .sheet(isPresented: .constant(true)) {
@@ -129,3 +130,4 @@ private struct RequirementRow: View {
         }
         .environment(AppModel.preview(profile: .empty))
 }
+#endif
