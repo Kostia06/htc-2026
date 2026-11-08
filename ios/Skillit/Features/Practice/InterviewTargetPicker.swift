@@ -7,6 +7,7 @@ struct InterviewTargetPicker: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
     @AppStorage(PracticeDifficulty.storageKey) private var difficulty: PracticeDifficulty = .standard
+    @AppStorage(InterviewLength.storageKey) private var length: InterviewLength = .full
     @AppStorage(InterviewTargetPicker.lastChoiceKey) private var lastChoice: Data?
     @State private var selected: InterviewTarget?
     @State private var other = ""
@@ -134,14 +135,20 @@ struct InterviewTargetPicker: View {
 
     private var footer: some View {
         VStack(spacing: 14) {
+            InterviewLengthPicker(length: $length)
             DifficultyPicker(difficulty: $difficulty)
-            Button(selected == nil ? "Pick one to start" : "Start interview", action: start)
+            Button(startTitle, action: start)
                 .buttonStyle(.raised)
                 .disabled(selected == nil)
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .background(.bar)
+    }
+
+    private var startTitle: String {
+        guard selected != nil else { return "Pick one to start" }
+        return length == .quick ? "Start quick interview" : "Start interview"
     }
 
     private func preselect() {
@@ -155,7 +162,10 @@ struct InterviewTargetPicker: View {
     private func start() {
         guard let selected else { return }
         lastChoice = try? JSONEncoder().encode(selected)
-        onStart(selected.request(difficulty: difficulty, at: localCompany))
+        var request = selected.request(difficulty: difficulty, at: localCompany)
+        // full is the server's default, so it is left off the wire
+        request.length = length == .quick ? .quick : nil
+        onStart(request)
         dismiss()
     }
 }

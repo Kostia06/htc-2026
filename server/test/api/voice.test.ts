@@ -161,6 +161,33 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", difficulty: "brutal" })).status).toBe(400);
   });
 
+  it("starts a quick two-question interview and rejects an unknown length", async () => {
+    const me = await person();
+    const res = await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", length: "quick" });
+    expect(res.status).toBe(201);
+    const body = await res.json<Started & { length: string }>();
+    expect(body.length).toBe("quick");
+    expect(body.questions?.map((q) => q.source)).toEqual(["resume", "behavioral"]);
+    expect(tokenRequests.at(-1)).toMatch(/no follow-ups/i);
+    const full = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started & { length: string }>();
+    expect(full.length).toBe("full");
+    expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", length: "forever" })).status).toBe(400);
+  });
+
+  it("builds the report from a two-answer quick interview", async () => {
+    const me = await person();
+    const { sessionId, questions } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", length: "quick" })).json<Started>();
+    for (const q of questions ?? []) {
+      expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: q.text, answer: "I built an API that 2,000 staff used.", durationMs: 9000 })).status).toBe(200);
+    }
+    await settle();
+    const finished = await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {});
+    expect(finished.status).toBe(200);
+    const report = await finished.json<typeof debriefReply>();
+    expect(report.overall).toBe(64);
+    expect(report.perQuestion.map((q) => q.question)).toEqual(questions?.map((q) => q.text));
+  });
+
   it("takes the role, company and questions from a saved posting", async () => {
     await env.DB.prepare("INSERT INTO companies (id, slug, name) VALUES ('c1', 'acme', 'Acme')").run();
     const me = await person();

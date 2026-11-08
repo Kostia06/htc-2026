@@ -60,7 +60,8 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
 
     async start(launch = {}) {
       const slug = launch.companySlug ?? companySlug
-      const body = { mode: 'interview', ...(slug ? { companySlug: slug } : {}), role: launch.role ?? role }
+      // length 'quick' is the one-minute taster (two questions, no follow-ups); left off, the server runs a full one
+      const body = { mode: 'interview', ...(slug ? { companySlug: slug } : {}), role: launch.role ?? role, ...(launch.length ? { length: launch.length } : {}) }
       const started = await call('/api/voice/sessions', { method: 'POST', body })
       sessionId = started.sessionId
       transcript = []
