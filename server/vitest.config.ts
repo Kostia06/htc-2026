@@ -22,5 +22,6 @@ export default defineConfig({
       },
     })),
   ],
-  test: { setupFiles: ["./test/setup.ts"] },
+  // test-pg/ runs under Node against PGlite (vitest.pg.config.ts), not in the Workers pool
+  test: { setupFiles: ["./test/setup.ts"], include: ["test/**/*.test.ts"] },
 });

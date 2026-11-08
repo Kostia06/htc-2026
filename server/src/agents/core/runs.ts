@@ -1,3 +1,4 @@
+import { db } from "../../db";
 import type { Env } from "../../env";
 import type { Platform, SkillOutput } from "./types";
 
@@ -5,27 +6,27 @@ type RunRow = { id: string; skill: string; platform: string; status: string; out
 
 export async function recordRunStart(env: Env, run: { userId: string; skill: string; platform: Platform }) {
   const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO agent_runs (id, user_id, skill, platform, status, created_at) VALUES (?, ?, ?, ?, 'running', ?)")
+  await db(env).prepare("INSERT INTO agent_runs (id, user_id, skill, platform, status, created_at) VALUES (?, ?, ?, ?, 'running', ?)")
     .bind(id, run.userId, run.skill, run.platform, new Date().toISOString())
     .run();
   return id;
 }
 
 export async function recordRunDone(env: Env, id: string, output: SkillOutput) {
-  await env.DB.prepare("UPDATE agent_runs SET status = 'done', output = ?, finished_at = ? WHERE id = ?")
+  await db(env).prepare("UPDATE agent_runs SET status = 'done', output = ?, finished_at = ? WHERE id = ?")
     .bind(JSON.stringify(output), new Date().toISOString(), id)
     .run();
 }
 
 export async function recordRunFailed(env: Env, id: string, error: string) {
-  await env.DB.prepare("UPDATE agent_runs SET status = 'failed', error = ?, finished_at = ? WHERE id = ?")
+  await db(env).prepare("UPDATE agent_runs SET status = 'failed', error = ?, finished_at = ? WHERE id = ?")
     .bind(error.slice(0, 500), new Date().toISOString(), id)
     .run();
 }
 
 // filtered by owner in SQL, so someone else's run looks exactly like a missing one
 export async function findRun(env: Env, id: string, userId: string) {
-  const row = await env.DB.prepare(
+  const row = await db(env).prepare(
     "SELECT id, skill, platform, status, output, error, created_at, finished_at FROM agent_runs WHERE id = ? AND user_id = ?",
   )
     .bind(id, userId)

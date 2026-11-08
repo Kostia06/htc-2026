@@ -1,3 +1,4 @@
+import { db } from "../../db";
 import type { AgentDeps } from "../core/types";
 
 // half of the 14 days after which garbage collection deletes a fact, so research lands before facts disappear
@@ -8,7 +9,7 @@ const DAY_MS = 86_400_000;
 const RESEARCH_FIRST = new Set(["interview-prep", "interview-intel"]);
 
 async function factsAreFresh(deps: AgentDeps, slug: string) {
-  const row = await deps.env.DB.prepare(
+  const row = await db(deps.env).prepare(
     "SELECT max(f.fetched_at) AS latest FROM companies c JOIN company_facts f ON f.company_id = c.id WHERE c.slug = ?",
   )
     .bind(slug)
