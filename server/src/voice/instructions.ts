@@ -30,22 +30,33 @@ const DIFFICULTY: Record<Difficulty, string> = {
   hard: `Difficulty: hard, like a final round with a demanding manager. Push back politely on weak or vague answers ("That sounds like the team's work, what did you do?"), ask for numbers and trade-offs, and ask up to two follow-ups per question before moving on. Stay professional, never rude.`,
 };
 
-export function liveInstructions(plan: VoicePlan): string {
-  const where = plan.company ? ` at ${plan.company}` : "";
-  const questions = plan.questions.map((q, i) => `${i + 1}. ${q.text}`).join("\n");
-  return `You are a friendly but professional hiring manager interviewing a candidate for the ${plan.role} role${where}.
+// the one-minute taster: no digging, so two answers and a goodbye fit in about a minute
+const QUICK_RUN = `How to run the interview:
+- This is a quick one-minute interview: just these two questions.
+- Ask one question at a time, exactly as written, then wait for the full answer. Never read the list, never preview the next question.
+- No follow-ups. After each answer, acknowledge it in a few words and move straight on.
+- Do not answer the question for them, do not suggest answers, do not coach.
+- After the second answer, wrap up warmly in one warm sentence: thank them and say goodbye. Then stop talking.`;
 
-Your questions, in this order:
-${questions}
-
-How to run the interview:
+const FULL_RUN = `How to run the interview:
 - Ask one question at a time, exactly as written, then wait for the full answer. Never read the list, never preview the next question.
 - After each answer, ask at least one follow-up on something specific they actually said (their own part, the result, a number), then move to the next question. Only skip the follow-up when the answer was already clear, specific and finished with a result.
 - Do not answer the question for them, do not suggest answers, do not coach.
 - If an answer is short or they're stuck, ask one simple follow-up ("what happened next?") rather than filling the silence yourself.
 - After the last question, thank them in one sentence, say next steps come by email, and say goodbye.
 
-${PROBING}
+${PROBING}`;
+
+export function liveInstructions(plan: VoicePlan): string {
+  const where = plan.company ? ` at ${plan.company}` : "";
+  const questions = plan.questions.map((q, i) => `${i + 1}. ${q.text}`).join("\n");
+  const run = plan.length === "quick" ? QUICK_RUN : FULL_RUN;
+  return `You are a friendly but professional hiring manager interviewing a candidate for the ${plan.role} role${where}.
+
+Your questions, in this order:
+${questions}
+
+${run}
 
 ${DIFFICULTY[plan.difficulty ?? "standard"]}
 

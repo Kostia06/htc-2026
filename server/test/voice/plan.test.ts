@@ -63,4 +63,20 @@ describe("interview plan", () => {
     expect(plan.questions.length).toBe(MAX_QUESTIONS);
     expect(plan.questions.every((q) => q.source === "behavioral")).toBe(true);
   });
+
+  it("keeps a quick interview to two questions: an opener from their profile, then one behavioural", () => {
+    const plan = buildInterviewPlan(inputs({ length: "quick" }));
+    expect(plan.length).toBe("quick");
+    expect(plan.questions.map((q) => q.source)).toEqual(["resume", "behavioral"]);
+    expect(plan.questions[0].text).toMatch(/^I saw you built a Python Flask API/);
+  });
+
+  it("opens a quick interview with the role when there's nothing on the profile yet", () => {
+    const plan = buildInterviewPlan(inputs({ length: "quick", role: "Barista", profile: emptyProfile(), reportedQuestions: [] }));
+    expect(plan.questions.map((q) => q.text)).toEqual(["So what draws you to the Barista role?", "Tell me about a time you had to learn something fast."]);
+  });
+
+  it("is a full interview unless asked otherwise", () => {
+    expect(buildInterviewPlan(inputs()).length).toBe("full");
+  });
 });

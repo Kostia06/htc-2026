@@ -11,7 +11,7 @@ import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany, UnknownPosting } from "../voice/session";
 import { notifyAfterWrite } from "../notifications/generate";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns, type TurnTiming } from "../voice/store";
-import { DIFFICULTIES, type Difficulty, VOICE_MODES, type VoiceMode } from "../voice/types";
+import { DIFFICULTIES, type Difficulty, type InterviewLength, LENGTHS, VOICE_MODES, type VoiceMode } from "../voice/types";
 
 const SESSIONS_PER_HOUR = 10;
 const MAX_ANSWER = 4000;
@@ -46,10 +46,13 @@ export function voiceRouter() {
   const router = new Hono<AppContext>();
 
   router.post("/sessions", async (c) => {
-    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown; postingId?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown; length?: unknown; postingId?: unknown }>().catch(() => null);
     if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview" }, 400);
     if (body.difficulty !== undefined && !DIFFICULTIES.includes(body.difficulty as Difficulty)) {
       return c.json({ error: "difficulty must be easy, standard or hard" }, 400);
+    }
+    if (body.length !== undefined && !LENGTHS.includes(body.length as InterviewLength)) {
+      return c.json({ error: "length must be quick or full" }, 400);
     }
     const userId = c.var.sessionId;
     if ((await countSessionsSince(c.env, userId, new Date(Date.now() - 3600_000))) >= SESSIONS_PER_HOUR) {
@@ -61,6 +64,7 @@ export function voiceRouter() {
         companySlug: optionalText(body.companySlug),
         role: optionalText(body.role),
         difficulty: body.difficulty as Difficulty | undefined,
+        length: body.length as InterviewLength | undefined,
         postingId: optionalText(body.postingId),
       });
       return c.json(started, 201);

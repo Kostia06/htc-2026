@@ -64,4 +64,13 @@ describe("live instructions", () => {
     expect(hard).toMatch(/up to two follow-ups/i);
     expect(interview()).toMatch(/standard first-round/i);
   });
+
+  it("runs a quick interview with no follow-ups and a one-sentence warm goodbye", () => {
+    const quick = liveInstructions(buildInterviewPlan(inputs({ length: "quick" })));
+    expect(quick).toMatch(/no follow-ups/i);
+    expect(quick).toMatch(/after the second answer/i);
+    expect(quick).toMatch(/one warm sentence/i);
+    expect(quick).not.toMatch(/at least one follow-up/i);
+    expect(quick).not.toMatch(/Dig for specifics/);
+  });
 });
