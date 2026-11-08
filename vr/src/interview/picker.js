@@ -9,8 +9,9 @@ export const LENGTHS = ['quick', 'full']
 const MAX_POSTINGS = 3
 const MAX_ROLES = 4
 const MAX_COMPANIES = 6
+const MAX_JOBS = 6
 
-export function targetsOf({ postings = [], targetRoles = [] } = {}) {
+export function targetsOf({ postings = [], targetRoles = [], jobs = [] } = {}) {
   const fromPostings = postings
     .filter((p) => p?.id && p?.title)
     .slice(0, MAX_POSTINGS)
@@ -18,8 +19,17 @@ export function targetsOf({ postings = [], targetRoles = [] } = {}) {
   const fromRoles = [...new Set(targetRoles.filter((r) => typeof r === 'string' && r.trim()))]
     .slice(0, MAX_ROLES)
     .map((role) => ({ kind: 'role', key: `role:${role}`, title: role }))
-  return [...fromPostings, ...fromRoles]
+  // real postings near the person (For you's jobs); picking one saves it as a posting before the interview starts
+  const fromJobs = jobs
+    .filter((j) => j?.id && j?.title)
+    .slice(0, MAX_JOBS)
+    .map((j) => ({ kind: 'job', key: `job:${j.id}`, id: j.id, title: j.title, company: j.org ?? null, job: j }))
+  return [...fromPostings, ...fromJobs, ...fromRoles]
 }
+
+/** What the posting import reads when the job's own page can't be fetched: everything the card already says. */
+export const postingTextOf = (job) =>
+  [`${job.title} at ${job.org}`, job.where && `Location: ${job.where}`, job.summary, job.level, job.format].filter(Boolean).join('\n')
 
 export const companiesOf = (companies = []) => companies.filter((c) => c?.slug && c?.name).slice(0, MAX_COMPANIES)
 
@@ -43,8 +53,8 @@ export function launchOf({ target = null, companySlug = null, difficulty = 'stan
 
 /** The one line that says what the interview is for. */
 export function summaryOf({ target = null, companySlug = null } = {}, companies = []) {
-  if (!target) return 'Pick a role or posting'
-  if (target.kind === 'posting') return target.company ? `${target.title} at ${target.company}` : target.title
+  if (!target) return 'A general interview, or pick a job'
+  if (target.kind === 'posting' || target.kind === 'job') return target.company ? `${target.title} at ${target.company}` : target.title
   const company = companySlug && companies.find((c) => c.slug === companySlug)
   return company ? `${target.title} at ${company.name}` : target.title
 }

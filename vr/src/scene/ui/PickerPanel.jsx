@@ -36,10 +36,11 @@ function flow(labels) {
 export function PickerPanel({ picker, reducedMotion, ...props }) {
   const sections = []
   const postings = picker.targets.filter((t) => t.kind === 'posting')
-  const roles = picker.targets.filter((t) => t.kind === 'role')
+  const jobs = picker.targets.filter((t) => t.kind === 'job')
   const target = picker.target
   if (postings.length) sections.push({ title: 'Your postings', items: postings.map((t) => ({ key: t.key, label: t.company ? `${t.title} · ${t.company}` : t.title, on: target?.key === t.key, press: () => picker.pickTarget(t.key) })) })
-  if (roles.length) sections.push({ title: 'Target roles', items: roles.map((t) => ({ key: t.key, label: t.title, on: target?.key === t.key, press: () => picker.pickTarget(t.key) })) })
+  // real postings near the person; picking one saves it, and the interview is built from its description
+  if (jobs.length) sections.push({ title: 'Real jobs near you', items: jobs.map((t) => ({ key: t.key, label: t.company ? `${t.title} · ${t.company}` : t.title, on: picker.savingJob === t.key, press: () => picker.pickTarget(t.key) })) })
   if (canAddCompany(target) && picker.companies.length) {
     sections.push({ title: 'A company near you', items: picker.companies.map((c) => ({ key: c.slug, label: c.name, on: picker.companySlug === c.slug, press: () => picker.pickCompany(c.slug) })) })
   }
