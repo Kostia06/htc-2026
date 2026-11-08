@@ -15,6 +15,7 @@ export default defineConfig({
           KEENABLE_API_KEY: "test-keenable-key",
           ELEVENLABS_API_KEY: "",
           ELEVENLABS_AGENT_ID: "",
+          ELEVENLABS_NETWORKING_AGENT_ID: "",
           VOICE_PROVIDER: "gemini",
           TEST_MIGRATIONS: await readD1Migrations("./migrations"),
         },

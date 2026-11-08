@@ -34,7 +34,7 @@ export async function startVoiceSession(env: Env, userId: string, request: Start
   const inputs = await planInputs(env, userId, request);
   const plan = request.mode === "interview" ? buildInterviewPlan(inputs) : buildNetworkingPlan(inputs);
   const opening = openingLine(plan);
-  const voice = await voiceProvider(env).startSession(env, { instructions: liveInstructions(plan), opening });
+  const voice = await voiceProvider(env).startSession(env, { mode: request.mode, instructions: liveInstructions(plan), opening });
   const sessionId = await createSession(env, userId, { mode: request.mode, companySlug: request.companySlug ?? null, plan });
   return {
     sessionId,
