@@ -131,7 +131,8 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
 
   return (
     <div className="roadmap__body">
-      <ProgressCard goal={page.goal} progress={page.progress} />
+      {/* the count is the steps on this road, so it always matches what the trail shows */}
+      <ProgressCard goal={page.goal} progress={{ ...page.progress, done: done.length, total: done.length + page.next.length }} />
       {done.length > RECENT_DONE && (
         <button type="button" className="roadmap__earlier t-subhead semibold" onClick={() => setShowAll(!showAll)}>
           {showAll ? 'Hide earlier steps' : `Show ${done.length - RECENT_DONE} earlier steps`}
