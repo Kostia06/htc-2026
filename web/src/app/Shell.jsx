@@ -1,8 +1,9 @@
 // MainTabView.swift for a browser: the five tabs as a glass sidebar on wide screens, and as a floating glass
 // tab bar on phones that shrinks while scrolling down (tabBarMinimizeBehavior(.onScrollDown)).
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { Building2, CircleUserRound, GalleryVerticalEnd, Glasses, Route } from 'lucide-react'
+import { Spinner } from '../ui/Button'
 
 const TABS = [
   { to: '/roadmap', label: 'Roadmap', icon: Route },
@@ -60,7 +61,16 @@ export function Shell() {
       </aside>
 
       <div className="shell__content">
-        <Outlet />
+        {/* a tab's first visit loads its code; the sidebar and tab bar stay put meanwhile */}
+        <Suspense
+          fallback={
+            <div className="shell__loading">
+              <Spinner />
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </div>
 
       <nav className={`tabbar glass-strong${minimized ? ' is-minimized' : ''}`} aria-label="Main">
