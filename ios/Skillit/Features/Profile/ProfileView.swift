@@ -10,6 +10,7 @@ struct ProfileView: View {
     @State private var path: [ProfileDestination] = []
     @State private var openedTailored: TailoredResumeModel?
     @State private var tailoring: TailorRequest?
+    @State private var isRecordingOutcome = false
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -26,6 +27,7 @@ struct ProfileView: View {
                             .transition(.opacity)
                     }
                     ProfileDoors(doors: doors)
+                    gotTheJobButton
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
@@ -33,6 +35,7 @@ struct ProfileView: View {
             }
             .background(Theme.ground)
             .navigationTitle("Profile")
+            .sheet(isPresented: $isRecordingOutcome) { GotTheJobSheet() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Settings", systemImage: "gearshape") { path.append(.settings) }
@@ -61,6 +64,30 @@ struct ProfileView: View {
                 Text(headlineEditor.failure ?? "")
             }
         }
+    }
+
+    /// The finish line of the road: recording it can feed the shared trails that help the next person.
+    private var gotTheJobButton: some View {
+        Button { isRecordingOutcome = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "flag.checkered")
+                    .font(.title3)
+                    .foregroundStyle(Theme.positive)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("I got the job").font(.headline)
+                    Text("Mark the finish and help the next person on your road")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .foregroundStyle(.primary)
+            .skillitCard()
+        }
+        .buttonStyle(.raisedCard())
     }
 
     private var doors: [ProfileDoor] {

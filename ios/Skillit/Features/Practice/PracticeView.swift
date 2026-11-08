@@ -13,6 +13,7 @@ struct PracticeView: View {
     @State private var openedPosting: JobPosting?
     @State private var isPairing = false
     @State private var isRecapping = false
+    @State private var replaying: PracticeSessionSummary?
 
     var body: some View {
         NavigationStack {
@@ -27,6 +28,13 @@ struct PracticeView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 4)
+                    if let history {
+                        RecordingsSection(
+                            sessions: history.sessions,
+                            onOpen: { replaying = $0 },
+                            onSeeAll: { isShowingHistory = true }
+                        )
+                    }
                     yourPostings
                     vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
@@ -45,6 +53,10 @@ struct PracticeView: View {
                 InterviewTargetPicker(postings: postings.postings) { pending = $0 }
             }
             .sheet(item: $openedPosting) { PostingView(posting: $0) }
+            .sheet(item: $replaying) { session in
+                NavigationStack { ReplayView(sessionId: session.id, service: app.replayService) }
+                    .presentationDragIndicator(.visible)
+            }
             .fullScreenCover(item: $activeSession) { session in
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }

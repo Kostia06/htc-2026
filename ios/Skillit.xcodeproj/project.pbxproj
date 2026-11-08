@@ -118,6 +118,7 @@
 		A2B790A9248537DB41C953E7 /* RecapSharedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC99BCA264AC1AFA000C3460 /* RecapSharedCard.swift */; };
 		A4CFE1ED98F73DCA4E23B986 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FD08B2655FB2CD86B0ACD8 /* NotificationCenterView.swift */; };
 		A570EF72CD717663A4E1BB3A /* Crossroads+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D57D90852554726280794 /* Crossroads+Display.swift */; };
+		A819580519B2DA7164CD32BB /* GotTheJobSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CB55EA27286DDE58B3D036 /* GotTheJobSheet.swift */; };
 		A9C38BF2E9F4AD4687278C84 /* RoadmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFFDE6785F6335A66931C51B /* RoadmapView.swift */; };
 		A9C3CC73C4CC27C0ADD27021 /* RoadProgressLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AB3A58F3679CF461303E38 /* RoadProgressLine.swift */; };
 		ABA45D8203D518094E51CDCC /* RaisedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF80942B66F672FB20FA5D0A /* RaisedButtonStyle.swift */; };
@@ -133,6 +134,7 @@
 		B8A67C9ACFE4537214DDAFE5 /* ChoiceQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7F6A617F4EE6FB295352F /* ChoiceQuestion.swift */; };
 		BA47F6F034B7D68BCC4CA028 /* ChipsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF86AD33FEA2AD66917F0E0 /* ChipsSection.swift */; };
 		BA53D254EC82997FA06CB5D5 /* MemoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66D282C1EFC353340E9A76F /* MemoryService.swift */; };
+		BA723CD2CE2496F93F6D8FA5 /* RecordingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99456384A8CADDBDC52010 /* RecordingsSection.swift */; };
 		BC49FB80D38BF17C783D2CD5 /* TailoredResumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823BA15A5174DDD005D9C410 /* TailoredResumeView.swift */; };
 		BED7D3AEBC69BA058A129D7B /* DifficultyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73EF5C5C4713C513A414ECE /* DifficultyPicker.swift */; };
 		BEFBE0DA4370F9529E179557 /* RoadLineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A129CFFC54C42FE4C550EF9 /* RoadLineRow.swift */; };
@@ -239,6 +241,7 @@
 		41B534B76E95550B5E4AF2E1 /* SampleRoadmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRoadmap.swift; sourceTree = "<group>"; };
 		41EE614579C04CCC269F9E46 /* TailoredResumeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailoredResumeModel.swift; sourceTree = "<group>"; };
 		451AA4DFDCFC1E086FFEFEEA /* SuggestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionCard.swift; sourceTree = "<group>"; };
+		45CB55EA27286DDE58B3D036 /* GotTheJobSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotTheJobSheet.swift; sourceTree = "<group>"; };
 		4664E1301F925F2C03D5AC52 /* TailoredResumesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailoredResumesSection.swift; sourceTree = "<group>"; };
 		48D6210DE1BCBF0371A3B7F1 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
 		49A03CE0CBCC9C7F09703FB3 /* ChatComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatComposer.swift; sourceTree = "<group>"; };
@@ -312,6 +315,7 @@
 		CA11DB0AC48E4243A109766A /* TailorJobModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailorJobModel.swift; sourceTree = "<group>"; };
 		CBA39B508177FE83406C8567 /* ReplayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayService.swift; sourceTree = "<group>"; };
 		CC99BCA264AC1AFA000C3460 /* RecapSharedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapSharedCard.swift; sourceTree = "<group>"; };
+		CD99456384A8CADDBDC52010 /* RecordingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSection.swift; sourceTree = "<group>"; };
 		CDCD7BD109E7C0E83E973891 /* SpeechDictation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechDictation.swift; sourceTree = "<group>"; };
 		CDD1257E966163BB13115D4A /* VoiceSessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSessionModel.swift; sourceTree = "<group>"; };
 		CF80942B66F672FB20FA5D0A /* RaisedButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedButtonStyle.swift; sourceTree = "<group>"; };
@@ -426,6 +430,7 @@
 				3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */,
 				FC6E2301E658B586D135965B /* PracticeView.swift */,
 				966D3989EF154F072250543B /* PreviewVoiceEngine.swift */,
+				CD99456384A8CADDBDC52010 /* RecordingsSection.swift */,
 				16B1176230A3A7B62060707C /* SessionSummaryView.swift */,
 				7FF9F2DF6F57E7E2660A7247 /* VoiceBar.swift */,
 				B4475A386131EA20D47A0691 /* VoiceEngine.swift */,
@@ -452,6 +457,7 @@
 				DEF86AD33FEA2AD66917F0E0 /* ChipsSection.swift */,
 				91DD49EDDB15983E44263739 /* EducationForm.swift */,
 				59298463A4E72F1509B09CD3 /* ExperienceForm.swift */,
+				45CB55EA27286DDE58B3D036 /* GotTheJobSheet.swift */,
 				D5ED74D4782E7EED8203D2A1 /* NextMoveCard.swift */,
 				66CDC4007B33C3177C5CF184 /* ProfileDoors.swift */,
 				BA79FCFDC23BEC7874A034D3 /* ProfileEditor.swift */,
@@ -872,6 +878,7 @@
 				10BA3832CB76F838159CC0F5 /* FlowLayout.swift in Sources */,
 				2EF20558BE92C1D7A0FF12E4 /* ForYouModel.swift in Sources */,
 				3EAA67F51E647E08668C555F /* ForYouView.swift in Sources */,
+				A819580519B2DA7164CD32BB /* GotTheJobSheet.swift in Sources */,
 				3CFE2F6D6A6124D529D84351 /* HeadsetDevicesList.swift in Sources */,
 				601100FB91A45E5B43BF66C9 /* HeadsetLinkModel.swift in Sources */,
 				F0579AF46F7421DF76C4F9BB /* HeadsetPairingModel.swift in Sources */,
@@ -931,6 +938,7 @@
 				A2B790A9248537DB41C953E7 /* RecapSharedCard.swift in Sources */,
 				9F3E25D8F109B2B454CDECC6 /* RecapView.swift in Sources */,
 				8923BBD5674CF5CBEB371802 /* RecapVoice.swift in Sources */,
+				BA723CD2CE2496F93F6D8FA5 /* RecordingsSection.swift in Sources */,
 				2B3E8C6F805C2A053E778BC7 /* ReplayEntryRow.swift in Sources */,
 				58211C86211FF3D66BD5CD9D /* ReplayModel.swift in Sources */,
 				1B1E4D1D540D6510275C7672 /* ReplayScrubBar.swift in Sources */,
