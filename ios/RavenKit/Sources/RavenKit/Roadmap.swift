@@ -54,11 +54,14 @@ public struct RoadmapAction: Decodable, Equatable, Sendable {
     public let type: Kind
     public let companySlug: String?
     public let role: String?
+    /// Set on the interview step a job posting added; the session then asks about that posting.
+    public let postingId: String?
 
-    public init(type: Kind, companySlug: String? = nil, role: String? = nil) {
+    public init(type: Kind, companySlug: String? = nil, role: String? = nil, postingId: String? = nil) {
         self.type = type
         self.companySlug = companySlug
         self.role = role
+        self.postingId = postingId
     }
 }
 

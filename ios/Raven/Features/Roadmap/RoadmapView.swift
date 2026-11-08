@@ -5,6 +5,9 @@ import SwiftUI
 struct RoadmapView: View {
     @Environment(AppModel.self) private var app
     @State private var model: RoadmapModel?
+    @State private var postings = PostingsModel()
+    @State private var picking: PracticePick?
+    @State private var pending: PracticeLaunch?
     @State private var practice: PracticeLaunch?
     @State private var lastPractice: PracticeLaunch?
     @State private var isUpdating = false
@@ -22,8 +25,14 @@ struct RoadmapView: View {
                 }
         }
         .sheet(isPresented: $isUpdating) {
-            // anything Raven applied is on the server already; the roadmap just needs reading again
-            QuickUpdateView(onApplied: { _ in Task { await model?.load() } })
+            // the app model notes what was applied; the onChange below reads the roadmap again
+            QuickUpdateView(onApplied: { _ in })
+        }
+        // the cover goes up once the picker is fully gone; iOS drops one presented while a sheet is closing
+        .sheet(item: $picking, onDismiss: launchPending) { pick in
+            InterviewTargetPicker(postings: postings.postings, initial: pick.initial) { request in
+                pending = PracticeLaunch(step: pick.step, session: app.voiceSession(request))
+            }
         }
         .fullScreenCover(item: $practice, onDismiss: finishPractice) { launch in
             VoiceSessionView(model: launch.session, onPracticeAgain: { startPractice(launch.step) })
@@ -34,6 +43,8 @@ struct RoadmapView: View {
             self.model = model
             await model.load()
         }
+        .task(id: app.updatesApplied) { await postings.load(using: app.client) }
+        .onChange(of: app.updatesApplied) { Task { await model?.load() } }
     }
 
     @ViewBuilder private var content: some View {
@@ -57,19 +68,30 @@ struct RoadmapView: View {
         }
     }
 
+    /// Asks what the interview is for first, preset to what the step says; "Practice again" skips the asking.
     private func startPractice(_ step: RoadmapStep) {
         guard let action = step.action else { return }
-        let request = VoiceSessionRequest(mode: .interview, companySlug: action.companySlug, role: action.role, difficulty: .preferred)
-        let session = VoiceSessionModel(request: request, service: voiceService, engine: voiceEngine)
-        let launch = PracticeLaunch(step: step, session: session)
+        if let last = lastPractice, last.step.id == step.id {
+            let launch = PracticeLaunch(step: step, session: app.voiceSession(last.session.request))
+            lastPractice = launch
+            practice = launch
+            return
+        }
+        let initial = InterviewTarget(action: action, postings: postings.postings, companyName: app.companies.name(for:))
+        picking = PracticePick(step: step, initial: initial)
+    }
+
+    private func launchPending() {
+        guard let launch = pending else { return }
+        pending = nil
         lastPractice = launch
         practice = launch
     }
 
     /// A session that reached its summary counts as the step done; one closed early leaves the step as it was.
     private func finishPractice() {
+        defer { lastPractice = nil }
         guard let launch = lastPractice, case let .finished(debrief) = launch.session.phase else { return }
-        lastPractice = nil
         withAnimation(.spring(duration: 0.5)) {
             model?.complete(launch.step, note: String("Scored \(debrief.overall)/100. \(debrief.verdict)".prefix(160)))
         }
@@ -85,17 +107,15 @@ struct RoadmapView: View {
             return UnavailableRoadmap()
         #endif
     }
+}
 
-    // without a signed-in client (previews) there is no server to start a real voice session
-    private var voiceService: any VoicePracticeService {
-        if let client = app.client {
-            return client
-        }
-        return PreviewVoicePractice()
-    }
+/// A step whose interview is about to start, with the target its action points at.
+struct PracticePick: Identifiable {
+    let step: RoadmapStep
+    let initial: InterviewTarget?
 
-    private var voiceEngine: any VoiceEngine {
-        app.client == nil ? PreviewVoiceEngine() : ElevenLabsVoiceEngine()
+    var id: String {
+        step.id
     }
 }
 

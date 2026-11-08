@@ -3,6 +3,9 @@ import SwiftUI
 
 /// Slides up from the bottom when a node is tapped: what the step is, in a glance, and the one way to start it.
 struct StepDetailSheet: View {
+    @Environment(AppModel.self) private var app
+    @State private var company: CompanyLink?
+
     let step: RoadmapStep
     let onPractice: () -> Void
     let onMarkDone: () -> Void
@@ -23,6 +26,9 @@ struct StepDetailSheet: View {
                     .lineLimit(2)
             }
             FactGrid(facts: facts)
+            if let slug = step.action?.companySlug {
+                companyLink(slug)
+            }
             if isDone, let note = step.note, !note.isEmpty {
                 labelled("What you did", text: note)
             }
@@ -34,6 +40,20 @@ struct StepDetailSheet: View {
                 actions
             }
         }
+        .sheet(item: $company) { link in
+            CompanySheet(slug: link.slug)
+        }
+    }
+
+    /// The company this interview is at: what Skillit knows about it is one tap away.
+    private func companyLink(_ slug: String) -> some View {
+        Button {
+            company = CompanyLink(slug: slug)
+        } label: {
+            Label(app.companies.name(for: slug) ?? "About the company", systemImage: "building.2")
+                .font(.subheadline.weight(.semibold))
+        }
+        .tint(Theme.action)
     }
 
     private var facts: [FactGrid.Fact] {

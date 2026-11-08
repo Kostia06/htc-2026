@@ -20,12 +20,18 @@ public struct VoiceSessionRequest: Encodable, Equatable, Sendable {
     public var companySlug: String?
     public var role: String?
     public var difficulty: PracticeDifficulty?
+    /// A saved posting: the server takes the role and company from it and asks about its requirements.
+    public var postingId: String?
 
-    public init(mode: PracticeMode, companySlug: String? = nil, role: String? = nil, difficulty: PracticeDifficulty? = nil) {
+    public init(
+        mode: PracticeMode, companySlug: String? = nil, role: String? = nil,
+        difficulty: PracticeDifficulty? = nil, postingId: String? = nil,
+    ) {
         self.mode = mode
         self.companySlug = companySlug
         self.role = role
         self.difficulty = difficulty
+        self.postingId = postingId
     }
 }
 
@@ -81,6 +87,8 @@ public struct PracticeQuestion: Decodable, Equatable, Sendable {
         /// Someone recently reported being asked this at the company.
         case reported
         case resume
+        /// Drawn from the job posting the session was started from.
+        case posting
         case technical
         case behavioral
     }

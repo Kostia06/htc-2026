@@ -17,6 +17,10 @@ final class AppModel {
     private(set) var client: RavenClient?
     var profile: Profile = .empty
     var feed = ForYouModel()
+    /// The companies Skillit has researched, so a job card or a step can open the company behind it.
+    let companies = CompaniesModel()
+    /// Bumped whenever Skillit applied an update, so screens showing roadmap steps or postings read them again.
+    private(set) var updatesApplied = 0
 
     let authenticator: Authenticator
     private let baseURL: URL
@@ -43,8 +47,9 @@ final class AppModel {
             return
         }
         let client = RavenClient(baseURL: baseURL, accessToken: authenticator.accessToken)
-        // alongside the profile request, so the For you tab is fresh before anyone opens it
+        // alongside the profile request, so the For you tab and the known companies are fresh before anyone needs them
         Task { await feed.refresh(using: client) }
+        Task { await companies.refresh(using: client) }
         do {
             profile = try await client.profile()
             self.client = client
@@ -67,5 +72,17 @@ final class AppModel {
     func finishOnboarding(with profile: Profile) {
         self.profile = profile
         phase = .ready
+    }
+
+    /// Everything Skillit changed is on the server already; this refreshes what the app holds in memory.
+    func noteApplied(_ changes: [AppliedChange]) {
+        updatesApplied += 1
+        guard let client else { return }
+        if changes.contains(where: \.touchesProfile) {
+            Task { if let profile = try? await client.profile() { self.profile = profile } }
+        }
+        if changes.contains(where: { $0.type == "add_company" }) {
+            Task { await companies.refresh(using: client) }
+        }
     }
 }

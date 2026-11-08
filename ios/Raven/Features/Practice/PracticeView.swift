@@ -1,12 +1,14 @@
 import RavenKit
 import SwiftUI
 
-/// The Practice tab: start a spoken interview, or move to the headset.
+/// The Practice tab: pick what you're interviewing for and start talking, or move to the headset.
 struct PracticeView: View {
     @Environment(AppModel.self) private var app
-    @State private var target = ""
-    @AppStorage(PracticeDifficulty.storageKey) private var difficulty: PracticeDifficulty = .standard
+    @State private var postings = PostingsModel()
+    @State private var isPicking = false
+    @State private var pending: VoiceSessionRequest?
     @State private var activeSession: VoiceSessionModel?
+    @State private var openedPosting: JobPosting?
     @State private var isPairing = false
     @State private var isRecapping = false
 
@@ -14,33 +16,33 @@ struct PracticeView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    TextField("Company or role (optional)", text: $target)
-                        .textInputAutocapitalization(.words)
-                        .submitLabel(.done)
-                        .ravenCard()
-                    DifficultyPicker(difficulty: $difficulty)
-                        .padding(.bottom, 8)
                     interviewChoice
+                    yourPostings
                     vrLink.padding(.top, 8)
-                    row("Tell Raven about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
+                    row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
                     NavigationLink { PracticeHistoryView() } label: { rowLabel("Past sessions", systemImage: "chart.line.uptrend.xyaxis") }
                         .buttonStyle(.plain)
                 }
                 .padding(24)
             }
-            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
             .sheet(isPresented: $isRecapping) { RecapView(companySlug: nil, voice: ElevenLabsRecapVoice()) }
+            // the session starts once the picker is fully gone; iOS drops a cover presented while a sheet is closing
+            .sheet(isPresented: $isPicking, onDismiss: startPending) {
+                InterviewTargetPicker(postings: postings.postings) { pending = $0 }
+            }
+            .sheet(item: $openedPosting) { PostingView(posting: $0) }
             .fullScreenCover(item: $activeSession) { session in
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
+            .task(id: app.updatesApplied) { await postings.load(using: app.client) }
         }
     }
 
     private var interviewChoice: some View {
         Button {
-            start()
+            isPicking = true
         } label: {
             HStack(spacing: 16) {
                 Image(systemName: "person.fill.questionmark")
@@ -51,7 +53,7 @@ struct PracticeView: View {
                     Text("Interview")
                         .font(.title2.bold())
                         .foregroundStyle(.primary)
-                    Text("Answer the questions a hiring manager would ask, out loud.")
+                    Text("Pick a posting, role or company, then answer out loud.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.leading)
@@ -61,6 +63,20 @@ struct PracticeView: View {
             .ravenCard()
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder private var yourPostings: some View {
+        if !postings.postings.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Your postings")
+                    .font(.headline)
+                    .padding(.top, 8)
+                ForEach(postings.postings) { posting in
+                    PostingCard(posting: posting) { openedPosting = posting }
+                }
+            }
+            .animation(.spring(duration: 0.35), value: postings.postings)
+        }
     }
 
     private var vrLink: some View {
@@ -84,18 +100,14 @@ struct PracticeView: View {
         .ravenCard()
     }
 
-    private func start() {
-        let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
-        start(VoiceSessionRequest(mode: .interview, role: trimmed.isEmpty ? nil : trimmed, difficulty: difficulty))
+    private func startPending() {
+        guard let request = pending else { return }
+        pending = nil
+        start(request)
     }
 
     /// Also how "Practice again" works: a fresh model replaces the one on screen, so the cover stays up.
     private func start(_ request: VoiceSessionRequest) {
-        guard let client = app.client else {
-            // screenshots run without a signed-in client; they get the scripted session instead of the server
-            activeSession = VoiceSessionModel(request: request, service: PreviewVoicePractice(), engine: PreviewVoiceEngine())
-            return
-        }
-        activeSession = VoiceSessionModel(request: request, service: client, engine: ElevenLabsVoiceEngine())
+        activeSession = app.voiceSession(request)
     }
 }
