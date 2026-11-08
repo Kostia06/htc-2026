@@ -1,12 +1,12 @@
 import RavenKit
 import SwiftUI
 
-/// One feed item: what it is, who runs it, and the one reason it's here. Tapping opens the listing.
+/// One feed item: what it is, who runs it, and the one reason it's here. Tapping opens its details.
 struct FeedCardView: View {
     let card: FeedCard
     var onSave: () -> Void = {}
     var onDismiss: () -> Void = {}
-    @Environment(\.openURL) private var openURL
+    var onOpen: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -14,10 +14,16 @@ struct FeedCardView: View {
             details
         }
         .ravenCard()
+        .overlay(alignment: .leading) {
+            Capsule()
+                .fill(card.kind.tint)
+                .frame(width: 4)
+                .padding(.vertical, 18)
+        }
         .contentShape(.rect(cornerRadius: 20))
-        .onTapGesture { openURL(card.url) }
+        .onTapGesture(perform: onOpen)
         .accessibilityElement(children: .contain)
-        .accessibilityAction(named: "Open") { openURL(card.url) }
+        .accessibilityAction(named: "Details", onOpen)
     }
 
     private var details: some View {
@@ -104,37 +110,6 @@ private struct CardActionButton: View {
         // borderless keeps each button its own tap target inside a List row
         .buttonStyle(.borderless)
         .accessibilityLabel(label)
-    }
-}
-
-private struct KindBadge: View {
-    let kind: FeedCard.Kind
-
-    var body: some View {
-        Image(systemName: symbol)
-            .font(.body.weight(.semibold))
-            .foregroundStyle(.white)
-            .frame(width: 40, height: 40)
-            .background(Color(white: 0.16), in: .rect(cornerRadius: 12))
-            .accessibilityLabel(name)
-    }
-
-    private var symbol: String {
-        switch kind {
-        case .job: "briefcase.fill"
-        case .hackathon: "trophy.fill"
-        case .course: "book.closed.fill"
-        case .event: "calendar"
-        }
-    }
-
-    private var name: String {
-        switch kind {
-        case .job: "Job"
-        case .hackathon: "Hackathon"
-        case .course: "Course"
-        case .event: "Event"
-        }
     }
 }
 

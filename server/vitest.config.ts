@@ -17,6 +17,8 @@ export default defineConfig({
           ELEVENLABS_AGENT_ID: "",
           ELEVENLABS_NETWORKING_AGENT_ID: "",
           VOICE_PROVIDER: "gemini",
+          // production runs on Supabase; this suite runs on D1, and test-pg/ covers Postgres
+          DB_BACKEND: "d1",
           TEST_MIGRATIONS: await readD1Migrations("./migrations"),
         },
       },

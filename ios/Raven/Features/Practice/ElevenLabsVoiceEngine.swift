@@ -39,7 +39,8 @@ final class ElevenLabsVoiceEngine: VoiceEngine {
 
     private func connect(with credentials: ElevenLabsCredentials, into continuation: AsyncStream<VoiceEvent>.Continuation) async {
         let config = ConversationConfig(
-            agentOverrides: AgentOverrides(prompt: credentials.prompt, firstMessage: credentials.firstMessage),
+            agentOverrides: AgentOverrides(prompt: credentials.prompt),
+            dynamicVariables: credentials.opening.map { ["opening": $0] },
             onError: { error in continuation.yield(.failed(error.localizedDescription)) },
             onAgentResponse: { text, _ in continuation.yield(.transcript(.agent, text)) },
             onUserTranscript: { text, _ in continuation.yield(.transcript(.person, text)) },

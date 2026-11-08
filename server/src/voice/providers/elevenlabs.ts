@@ -35,7 +35,9 @@ export const elevenLabs: VoiceProvider = {
         kind: "elevenlabs",
         signedUrl: signed.signed_url,
         conversationToken: token.token,
-        overrides: { agent: { prompt: { prompt: instructions }, firstMessage: opening } },
+        overrides: { agent: { prompt: { prompt: instructions } } },
+        // the agent's first message is "{{opening}}"; ElevenLabs refuses a first_message override on this account
+        dynamicVariables: { opening },
       },
       // the responses carry no expiry, so we don't promise one
       expiresAt: null,

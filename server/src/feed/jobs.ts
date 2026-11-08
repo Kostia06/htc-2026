@@ -20,6 +20,7 @@ export function cachedJobSearch(env: Env): SearchJobs {
 const listingId = (url: string) => url.split("/").pop() ?? url;
 
 export function jobCandidate(posting: JobPosting): Candidate {
+  const summary = posting.description.replace(/\s+/g, " ").trim();
   return {
     card: {
       id: `job:${listingId(posting.url)}`,
@@ -29,6 +30,8 @@ export function jobCandidate(posting: JobPosting): Candidate {
       // for a job "when" is the posting date; the app labels it "Posted"
       ...(posting.posted_at && { when: posting.posted_at }),
       ...(posting.location && { where: posting.location }),
+      ...(summary && { summary }),
+      ...(posting.salary?.label && { salary: posting.salary.label }),
       url: posting.url,
       source: "Adzuna",
       attribution: { label: ADZUNA_ATTRIBUTION.attribution, url: ADZUNA_ATTRIBUTION.attribution_url },

@@ -31,6 +31,9 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
     public let when: String?
     public let `where`: String?
     public let why: String
+    /// The listing's own short description (jobs today); nil when the source gives none.
+    public let summary: String?
+    public let salary: String?
     public let url: URL
     public let source: String
     public let attribution: Attribution?
@@ -41,7 +44,8 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
 
     public init(
         id: String, kind: Kind, title: String, org: String, when: String? = nil, where place: String? = nil,
-        why: String, url: URL, source: String, attribution: Attribution? = nil, tags: [String]? = nil, saved: Bool = false,
+        why: String, summary: String? = nil, salary: String? = nil, url: URL, source: String,
+        attribution: Attribution? = nil, tags: [String]? = nil, saved: Bool = false,
     ) {
         self.id = id
         self.kind = kind
@@ -50,6 +54,8 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
         self.when = when
         self.where = place
         self.why = why
+        self.summary = summary
+        self.salary = salary
         self.url = url
         self.source = source
         self.attribution = attribution

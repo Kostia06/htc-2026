@@ -24,6 +24,9 @@ export type FeedCard = {
   where?: string;
   // one short line saying why this person is seeing it, built from their profile, never by a model
   why: string;
+  // the listing's own short description, shown in the app before anyone is sent off-site
+  summary?: string;
+  salary?: string;
   url: string;
   source: string;
   attribution?: Attribution;

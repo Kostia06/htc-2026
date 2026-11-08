@@ -24,7 +24,8 @@ Returns (201):
     "kind": "elevenlabs",
     "signedUrl": "wss://…",            // short-lived, one conversation (browser SDK)
     "conversationToken": "…",          // same session for the Swift SDK's WebRTC path (the phone); VR can ignore it
-    "overrides": { "agent": { "prompt": { "prompt": "…" }, "firstMessage": "…" } }
+    "overrides": { "agent": { "prompt": { "prompt": "…" } } },
+    "dynamicVariables": { "opening": "…" }
   },
   "opening": "Hi, thanks for coming in…",
   "questions": [{ "text": "…", "reported": true }],   // interview
@@ -42,6 +43,7 @@ import { Conversation } from "@elevenlabs/client";
 const conversation = await Conversation.startSession({
   signedUrl: session.credentials.signedUrl,
   overrides: session.credentials.overrides,
+  dynamicVariables: session.credentials.dynamicVariables,   // fills the agent's opening line
   onMessage: ({ source, message }) => showCaption(source, message),   // source: "user" | "ai"
   onModeChange: ({ mode }) => setAvatarTalking(mode === "speaking"),  // drive the avatar's mouth/animation
 });

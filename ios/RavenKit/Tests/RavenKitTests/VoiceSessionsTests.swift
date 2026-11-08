@@ -100,11 +100,11 @@ struct ElevenLabsCredentialsTests {
     @Test func `reads the token and the prompt overrides the server sends`() throws {
         let json = """
         {"kind":"elevenlabs","signedUrl":"wss://x","conversationToken":"tok_1",
-         "overrides":{"agent":{"prompt":{"prompt":"Be Eric."},"firstMessage":"Hi, ready?"}}}
+         "overrides":{"agent":{"prompt":{"prompt":"Be Eric."}}},"dynamicVariables":{"opening":"Hi, ready?"}}
         """
         let value = try JSONDecoder().decode(JSONValue.self, from: Data(json.utf8))
         let credentials = try #require(ElevenLabsCredentials(value))
-        #expect(credentials == .init(conversationToken: "tok_1", prompt: "Be Eric.", firstMessage: "Hi, ready?"))
+        #expect(credentials == .init(conversationToken: "tok_1", prompt: "Be Eric.", opening: "Hi, ready?"))
     }
 
     @Test func `refuses another provider or a missing token`() {
