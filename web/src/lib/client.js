@@ -64,6 +64,17 @@ async function request(path, options) {
 
 const post = (path, body, options) => request(path, { method: 'POST', body: body ?? {}, ...options })
 
+/** For bytes rather than JSON, like a recording: same sign-in, same 401 handling. */
+async function blob(path) {
+  const res = await send(path)
+  if (res.status === 401) {
+    unauthorized()
+    throw new ApiError(401, SIGNED_OUT)
+  }
+  if (!res.ok) throw new ApiError(res.status, "The recording isn't available.")
+  return res.blob()
+}
+
 function upload(path, file) {
   const form = new FormData()
   form.append('file', file)
@@ -110,6 +121,11 @@ export const voiceApi = {
   finish: (id) => post(`/api/voice/sessions/${id}/finish`, { platform: 'app' }),
   history: (cursor) => request('/api/voice/history', { query: { cursor } }),
   session: (id) => request(`/api/voice/sessions/${id}`),
+  /** links the ElevenLabs recording, so the session can be replayed and deleted with it */
+  attachConversation: (id, conversationId) => post(`/api/voice/sessions/${id}/conversation`, { conversationId }),
+  /** { audioUrl, recording, timing, durationSec, moments, transcript } */
+  replay: (id) => request(`/api/voice/sessions/${id}/replay`),
+  replayAudio: (id) => blob(`/api/voice/sessions/${id}/replay/audio`),
 }
 
 export const companiesApi = {

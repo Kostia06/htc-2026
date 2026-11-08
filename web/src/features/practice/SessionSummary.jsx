@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { AudioWaveform, Check, ChevronDown } from 'lucide-react'
 import { RaisedButton, TextButton } from '../../ui/Button'
 import { SkeletonLines } from '../../ui/Feedback'
+import ReplayPanel from '../replay/ReplayPanel'
 
-export default function SessionSummary({ debrief, onAgain, onDone }) {
+export default function SessionSummary({ debrief, sessionId, onAgain, onDone }) {
   return (
     <div className="summary">
       <div className="summary__scroll">
-        {debrief ? <Ready debrief={debrief} /> : <Writing />}
+        {debrief ? <Ready debrief={debrief} sessionId={sessionId} /> : <Writing />}
       </div>
       <div className="summary__bottom">
         <RaisedButton onClick={onAgain} disabled={!debrief}>
@@ -36,13 +37,14 @@ function Writing() {
   )
 }
 
-function Ready({ debrief }) {
+function Ready({ debrief, sessionId }) {
   const [open, setOpen] = useState(false)
   const strengths = debrief.strengths?.slice(0, 2) ?? []
   const improvements = debrief.improvements?.slice(0, 3) ?? []
   return (
     <div className="summary__stack">
       <ScoreHeadline score={debrief.overall} verdict={debrief.verdict} />
+      {sessionId && <ReplayPanel sessionId={sessionId} />}
 
       {strengths.length > 0 && (
         <section className="summary__section">

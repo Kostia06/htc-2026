@@ -1,0 +1,230 @@
+/* ---------- Replay: player + transcript beside a moments feed ---------- */
+.replay {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  /* the report and the session page widen for the two columns; their other blocks keep a readable measure */
+  .summary:has(.replay) {
+    max-width: 1040px;
+  }
+  .summary__stack > :not(.replay),
+  .session-detail .history__list > :not(.replay) {
+    max-width: 680px;
+  }
+  .replay {
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+  }
+  /* the feed stays in reach while the transcript scrolls past */
+  .replay__feed {
+    position: sticky;
+    top: 16px;
+  }
+}
+.replay__main,
+.replay__feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.replay__player {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.replay__controls {
+  gap: 14px;
+  align-items: center;
+}
+.replay__play {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--action);
+  color: var(--on-action);
+  transition: transform 0.15s var(--spring);
+}
+.replay__play:active {
+  transform: scale(0.94);
+}
+.replay__note {
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* ---------- Scrub bar with moment dots ---------- */
+.scrub {
+  position: relative;
+  height: 44px;
+}
+.scrub__range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.scrub__range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--action) var(--progress), var(--inset) var(--progress));
+}
+.scrub__range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--action) var(--progress), var(--inset) var(--progress));
+}
+.scrub__range::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--action);
+}
+.scrub__range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--action);
+}
+.scrub__range:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+/* small to see, but each dot keeps a 32px target */
+.scrub__dot {
+  position: absolute;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.scrub__dot::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 0 2px var(--raised);
+  transition: transform 0.25s var(--spring);
+}
+.scrub__dot:hover::after,
+.scrub__dot.is-selected::after {
+  transform: scale(1.5);
+}
+.scrub__dot:focus-visible {
+  outline: 2px solid var(--dot);
+}
+
+/* ---------- Moments: a notification-style feed ---------- */
+.moment-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.moment-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  text-align: left;
+  transition: background 0.2s var(--smooth);
+}
+.moment-row:hover,
+.moment-row.is-selected {
+  background: var(--inset);
+}
+.moment-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.moment-row__top {
+  gap: 8px;
+  align-items: baseline;
+}
+.moment-row__detail {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.moment-glyph {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--tint);
+  background: color-mix(in srgb, var(--tint) 16%, transparent);
+}
+.moment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--inset);
+  animation: pop-in 0.3s var(--spring);
+}
+.moment-card__head {
+  gap: 10px;
+  align-items: center;
+}
+.moment-card__better {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--agent) 12%, transparent);
+}
+
+/* ---------- Transcript ---------- */
+.replay__transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.replay__line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  text-align: left;
+  color: var(--text-2);
+  transition: background 0.2s var(--smooth), color 0.2s var(--smooth);
+}
+.replay__line:disabled {
+  cursor: default;
+}
+.replay__line.is-current {
+  background: var(--inset);
+  color: var(--text);
+}
+@media (prefers-reduced-motion: reduce) {
+  .moment-card,
+  .scrub__dot::after {
+    animation: none;
+    transition: none;
+  }
+}

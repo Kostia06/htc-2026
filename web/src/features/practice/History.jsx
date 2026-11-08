@@ -9,6 +9,7 @@ import { fullDate, relative } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { Page, PageHeader } from '../../ui/Layout'
+import ReplayPanel from '../replay/ReplayPanel'
 import './practice.css'
 
 const CACHE = 'history'
@@ -203,7 +204,7 @@ export function SessionDetail() {
   const overall = scored.length ? scored.reduce((a, b) => a + b, 0) / scored.length : null
 
   return (
-    <Page className="session-detail">
+    <Page wide className="session-detail">
       <PageHeader title={detail?.companyName ?? 'Interview'} back={{ to: '/practice/history', label: 'History' }} />
       {state.phase === 'loading' && (
         <div className="stack history__list">
@@ -232,6 +233,7 @@ export function SessionDetail() {
             )}
           </header>
           {!turns.length && <p className="card t-body c-2">Nothing was said in this session.</p>}
+          {turns.length > 0 && <ReplayPanel sessionId={id} />}
           {turns.map((t) => (
             <article key={t.idx} className="card turn-card">
               <div className="row turn-card__head">
