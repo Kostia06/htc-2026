@@ -5,7 +5,8 @@ import SwiftUI
 /// Tapping opens its details.
 struct FeedCardView: View {
     let card: FeedCard
-    var onSave: () -> Void = {}
+    var onToggleSaved: () -> Void = {}
+    var onUnsave: () -> Void = {}
     var onDismiss: () -> Void = {}
     var onOpen: () -> Void = {}
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -23,9 +24,10 @@ struct FeedCardView: View {
         .contentShape(.rect(cornerRadius: 20))
         .onTapGesture(perform: onOpen)
         .contextMenu {
-            // there is no unsave on the server, so a saved card only offers what it can actually do
-            if !card.isSaved {
-                Button("Save", systemImage: "bookmark", action: onSave)
+            if card.isSaved {
+                Button("Remove from Saved", systemImage: "bookmark.slash", action: onUnsave)
+            } else {
+                Button("Save", systemImage: "bookmark", action: onToggleSaved)
             }
             Button("Not for me", systemImage: "hand.thumbsdown", role: .destructive, action: onDismiss)
         }
@@ -65,18 +67,19 @@ struct FeedCardView: View {
         [card.org, card.where].compactMap(\.self).joined(separator: " · ")
     }
 
+    /// Text only: the words already say what each fact is, so a glyph beside them added noise, not meaning.
     @ViewBuilder private var chips: some View {
         if let when = card.cardWhenText {
-            FeedChip(text: when, systemImage: card.date == nil ? "clock" : "calendar")
+            FeedChip(text: when)
         }
         if let salary = card.salary {
-            FeedChip(text: salary, systemImage: "dollarsign")
+            FeedChip(text: salary)
         }
         if let format = shownFormat {
-            FeedChip(text: format, systemImage: "laptopcomputer")
+            FeedChip(text: format)
         }
         if card.level == "beginner" {
-            FeedChip(text: "Beginner friendly", systemImage: "leaf")
+            FeedChip(text: "Beginner friendly")
         }
     }
 
@@ -89,7 +92,7 @@ struct FeedCardView: View {
 
     /// Just the bookmark on the card; dismissing lives in the swipe and the long-press menu.
     private var bookmark: some View {
-        Button(action: onSave) {
+        Button(action: onToggleSaved) {
             Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
                 .font(.body.weight(.medium))
                 .foregroundStyle(card.isSaved ? Theme.action : Color.secondary)
@@ -104,16 +107,15 @@ struct FeedCardView: View {
         .padding(.trailing, -8)
         .symbolEffect(.bounce, value: card.isSaved)
         .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
-        .accessibilityLabel(card.isSaved ? "Saved" : "Save")
+        .accessibilityLabel(card.isSaved ? "Remove from Saved" : "Save")
     }
 }
 
 private struct FeedChip: View {
     let text: String
-    let systemImage: String
 
     var body: some View {
-        Label(text, systemImage: systemImage)
+        Text(text)
             .font(.caption)
             .foregroundStyle(.secondary)
             .lineLimit(1)

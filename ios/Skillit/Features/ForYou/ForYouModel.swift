@@ -15,6 +15,8 @@ final class ForYouModel {
     /// Bumps once per dismissed card, so the view plays one haptic per swipe.
     private(set) var dismissals = 0
 
+    private enum Freshness { case asStored, withNewPostings }
+
     private let cache: FeedCache
     private var refreshTasks: [FeedSection: Task<Void, Never>] = [:]
 
@@ -30,6 +32,16 @@ final class ForYouModel {
 
     var cards: [FeedCard] {
         timelines[section]?.cards ?? []
+    }
+
+    /// The card as this section now has it; one unsaved from inside Saved has left the section, so Saved says whether it's kept.
+    func current(_ card: FeedCard) -> FeedCard {
+        if let live = cards.first(where: { $0.id == card.id }) {
+            return live
+        }
+        var copy = card
+        copy.saved = timelines[.saved]?.cards.contains { $0.id == card.id } ?? card.isSaved
+        return copy
     }
 
     /// False only before this section has ever loaded on this device; that is the one time skeletons show.
@@ -56,13 +68,22 @@ final class ForYouModel {
 
     /// Joins a refresh already in flight, so the prefetch at launch and the tab appearing don't fetch twice.
     func refresh(using client: SkillitClient) async {
+        await refresh(.asStored, using: client)
+    }
+
+    /// Pull to refresh: the server searches for new postings now instead of waiting for its hourly check.
+    func pullToRefresh(using client: SkillitClient) async {
+        await refresh(.withNewPostings, using: client)
+    }
+
+    private func refresh(_ freshness: Freshness, using client: SkillitClient) async {
         let section = section
         if let running = refreshTasks[section] {
             return await running.value
         }
         // a retry shows skeletons (or the cards) again rather than the old error while it waits
         errors[section] = nil
-        let task = Task { await fetchFirstPage(of: section, using: client) }
+        let task = Task { await fetchFirstPage(of: section, freshness, using: client) }
         refreshTasks[section] = task
         await task.value
         refreshTasks[section] = nil
@@ -96,6 +117,30 @@ final class ForYouModel {
                     timelines[key]?.mark(id: card.id, saved: false)
                 }
                 timelines[.saved]?.remove(id: card.id)
+            }
+        }
+    }
+
+    /// The bookmark empties everywhere and the card leaves Saved at once; a refusal puts both back.
+    /// It stays in the feed itself: unsaving is not "not for me".
+    func unsave(_ card: FeedCard, using client: SkillitClient) {
+        guard card.isSaved else { return }
+        let removed = timelines[.saved]?.remove(id: card.id)
+        for key in timelines.keys {
+            timelines[key]?.mark(id: card.id, saved: false)
+        }
+        persist(.all)
+        Task {
+            do {
+                try await client.unsave(cardId: card.id)
+            } catch {
+                for key in timelines.keys {
+                    timelines[key]?.mark(id: card.id, saved: true)
+                }
+                if let removed {
+                    timelines[.saved]?.insert(removed.card, at: removed.index)
+                }
+                persist(.all)
             }
         }
     }
@@ -141,10 +186,15 @@ final class ForYouModel {
     }
 
     /// While the server builds, ask again every couple of seconds until the new feed lands.
-    private func fetchFirstPage(of section: FeedSection, using client: SkillitClient) async {
-        for _ in 0 ..< Self.maxBuildPolls {
+    private func fetchFirstPage(of section: FeedSection, _ freshness: Freshness, using client: SkillitClient) async {
+        for poll in 0 ..< Self.maxBuildPolls {
             do {
-                let page = try await client.feed(section: section)
+                // only the first request asks for new postings; the polls after it wait for that rebuild
+                let page = if poll == 0, freshness == .withNewPostings {
+                    try await client.refreshedFeed(section: section)
+                } else {
+                    try await client.feed(section: section)
+                }
                 apply(page, to: section)
                 guard page.building else { return }
             } catch {

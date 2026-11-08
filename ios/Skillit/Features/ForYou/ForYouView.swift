@@ -48,8 +48,8 @@ struct ForYouView: View {
             .refreshable {
                 if isRadar {
                     await refreshRadar()
-                } else {
-                    await refresh()
+                } else if let client = app.client {
+                    await model.pullToRefresh(using: client)
                 }
             }
             .task(id: model.section) { await refresh() }
@@ -61,9 +61,9 @@ struct ForYouView: View {
             }
             .sensoryFeedback(.impact(weight: .light), trigger: model.dismissals)
             .sheet(item: $opened) { card in
-                // read the live card so the bookmark fills as soon as it's saved from the sheet
-                let live = model.cards.first { $0.id == card.id } ?? card
-                FeedDetailSheet(card: live) { save(live) }
+                // read the live card so the bookmark fills, or empties, as soon as it's tapped in the sheet
+                let live = model.current(card)
+                FeedDetailSheet(card: live) { toggleSaved(live) }
             }
             .sheet(item: $openedCompany) { link in
                 CompanySheet(slug: link.slug)
@@ -74,20 +74,26 @@ struct ForYouView: View {
     @ViewBuilder private var content: some View {
         if !model.cards.isEmpty {
             ForEach(model.cards) { card in
-                FeedCardView(card: card, onSave: { save(card) }, onDismiss: { dismiss(card) }, onOpen: { opened = card })
-                    .feedRow()
-                    .onAppear { loadMoreIfLast(card) }
-                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                        if !card.isSaved {
-                            Button { save(card) } label: { Label("Save", systemImage: "bookmark.fill") }
-                                .tint(Theme.action)
-                        }
+                FeedCardView(
+                    card: card, onToggleSaved: { toggleSaved(card) }, onUnsave: { unsave(card) },
+                    onDismiss: { dismiss(card) }, onOpen: { opened = card }
+                )
+                .feedRow()
+                .onAppear { loadMoreIfLast(card) }
+                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    if !card.isSaved {
+                        Button { save(card) } label: { Label("Save", systemImage: "bookmark.fill") }
+                            .tint(Theme.action)
                     }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) { dismiss(card) } label: {
-                            Label(model.section == .saved ? "Remove" : "Dismiss", systemImage: "xmark")
-                        }
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    // in Saved the swipe only unsaves; "not for me" stays a separate, deliberate choice
+                    if model.section == .saved {
+                        Button(role: .destructive) { unsave(card) } label: { Label("Remove", systemImage: "bookmark.slash") }
+                    } else {
+                        Button(role: .destructive) { dismiss(card) } label: { Label("Dismiss", systemImage: "xmark") }
                     }
+                }
             }
             if model.isLoadingMore {
                 ProgressView().frame(maxWidth: .infinity).feedRow()
@@ -134,6 +140,19 @@ struct ForYouView: View {
     private func save(_ card: FeedCard) {
         guard let client = app.client else { return }
         withAnimation(.snappy) { model.save(card, using: client) }
+    }
+
+    private func unsave(_ card: FeedCard) {
+        guard let client = app.client else { return }
+        withAnimation(.snappy) { model.unsave(card, using: client) }
+    }
+
+    private func toggleSaved(_ card: FeedCard) {
+        if card.isSaved {
+            unsave(card)
+        } else {
+            save(card)
+        }
     }
 
     private func dismiss(_ card: FeedCard) {

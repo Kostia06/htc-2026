@@ -4,7 +4,7 @@ import SwiftUI
 /// What a feed card is about, shown in the app first; the website is one tap away at the bottom.
 struct FeedDetailSheet: View {
     let card: FeedCard
-    let onSave: () -> Void
+    let onToggleSaved: () -> Void
     @Environment(\.openURL) private var openURL
     @Environment(AppModel.self) private var app
     @State private var company: CompanyLink?
@@ -107,7 +107,7 @@ struct FeedDetailSheet: View {
 
     private var buttons: some View {
         HStack(spacing: 12) {
-            Button(action: onSave) {
+            Button(action: onToggleSaved) {
                 Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
                     .frame(width: 24)
                     .contentTransition(.symbolEffect(.replace))
@@ -115,7 +115,7 @@ struct FeedDetailSheet: View {
             .buttonStyle(.raisedSecondary)
             .frame(width: 72)
             .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
-            .accessibilityLabel(card.isSaved ? "Saved" : "Save")
+            .accessibilityLabel(card.isSaved ? "Remove from Saved" : "Save")
             Button(websiteTitle) { openURL(card.url) }
                 .buttonStyle(.raised)
         }
@@ -140,7 +140,9 @@ private struct FitReasons: View {
                 .font(.headline)
             ForEach(reasons, id: \.self) { reason in
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    Image(systemName: "checkmark.circle.fill")
+                    // a bare glyph, like every other icon on the card and sheet; a filled disc read as a button
+                    Image(systemName: "checkmark")
+                        .fontWeight(.semibold)
                         .foregroundStyle(Theme.agent)
                         .accessibilityHidden(true)
                     Text(reason)
