@@ -18,7 +18,8 @@ export const roadmapSteps: Skill<RoadmapStepsInput> = {
 2. Each step is one concrete thing to do, with a "kind", a "title" under 60 characters starting with a verb, an "estimate" like "20 min" or "3 weeks",
    a "why": one line under 90 characters tied to something specific in their background or goal, and a "detail": one or two lines saying exactly what to do,
    naming their own skills, projects, school or employers where it fits.
-3. Use interview_practice for a spoken mock interview and networking_practice for rehearsing a conversation; both are done in the app, so say what to rehearse.
+3. Use interview_practice for a spoken mock interview, done in the app, so say what to rehearse. Use networking_practice for a real conversation to go and have:
+   a coffee chat, a meetup or a message to someone in the field.
 4. Mix kinds that fit the field. Never repeat a step from "previous". Early steps are small and doable this week; later ones build toward applications.
 5. "needs" lists 1 to 3 things the step requires of them, like a skill, tool, credential or contact. When their background shows it, quote the background word for word as "evidence";
    leave evidence out when it doesn't. Only a step anyone could do today has no needs.

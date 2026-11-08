@@ -3,7 +3,7 @@ import { getCompanyInsights } from "../memory/insights";
 import { getProfile } from "../memory/profile/store";
 import { liveInstructions, openingLine } from "./instructions";
 import { voiceProvider } from "./providers";
-import { buildInterviewPlan, buildNetworkingPlan, type PlanInputs } from "./plan";
+import { buildInterviewPlan, type PlanInputs } from "./plan";
 import { createSession } from "./store";
 import type { Difficulty, VoiceMode, VoicePlan } from "./types";
 
@@ -27,15 +27,14 @@ async function planInputs(env: Env, userId: string, request: StartRequest): Prom
 
 // what the client shows before the voice starts; the full plan stays server-side in the live instructions
 function publicPlan(plan: VoicePlan) {
-  if (plan.mode === "interview") return { questions: plan.questions.map(({ text, source }) => ({ text, source })) };
-  return { persona: plan.persona, goals: plan.goals };
+  return { questions: plan.questions.map(({ text, source }) => ({ text, source })) };
 }
 
 export async function startVoiceSession(env: Env, userId: string, request: StartRequest) {
   const inputs = await planInputs(env, userId, request);
-  const plan = request.mode === "interview" ? buildInterviewPlan(inputs) : buildNetworkingPlan(inputs);
+  const plan = buildInterviewPlan(inputs);
   const opening = openingLine(plan);
-  const voice = await voiceProvider(env).startSession(env, { mode: request.mode, instructions: liveInstructions(plan), opening });
+  const voice = await voiceProvider(env).startSession(env, { instructions: liveInstructions(plan), opening });
   const sessionId = await createSession(env, userId, { mode: request.mode, companySlug: request.companySlug ?? null, plan });
   return {
     sessionId,

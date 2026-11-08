@@ -1,7 +1,7 @@
 import type { HeadsetSession } from "../pairing/api";
 import { NetworkError, callApi } from "../session/http";
 
-export type LaunchMode = "interview" | "networking";
+export type LaunchMode = "interview";
 /** What the phone asked this headset to start; the same fields `POST /api/voice/sessions` takes, plus the roadmap step. */
 export type Launch = { mode: LaunchMode; companySlug?: string; role?: string; stepId?: string };
 

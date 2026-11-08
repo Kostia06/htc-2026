@@ -1,4 +1,5 @@
-export const VOICE_MODES = ["interview", "networking"] as const;
+// still a list so the API keeps its `mode` field; interview is the only practice left
+export const VOICE_MODES = ["interview"] as const;
 export type VoiceMode = (typeof VOICE_MODES)[number];
 
 export const DIFFICULTIES = ["easy", "standard", "hard"] as const;
@@ -15,15 +16,4 @@ export type InterviewPlan = {
   questions: PlannedQuestion[];
 };
 
-export type Persona = { name: string; role: string; company: string | null };
-
-export type NetworkingPlan = {
-  mode: "networking";
-  role: string;
-  difficulty?: Difficulty;
-  persona: Persona;
-  talkingPoints: string[];
-  goals: string[];
-};
-
-export type VoicePlan = InterviewPlan | NetworkingPlan;
+export type VoicePlan = InterviewPlan;

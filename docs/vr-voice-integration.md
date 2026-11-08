@@ -4,13 +4,13 @@ The voice backend is live at `https://htc-mentor.ilnkostia-dev.workers.dev` and 
 `https://raven-vr.ilnkostia-dev.workers.dev` and `http://localhost:5173`. The headset gets its bearer token from
 the phone during sign-in (pairing). Every call below sends `Authorization: Bearer <token>`.
 
-How the conversation should *sound* (stages, follow-ups, networking flow): see `docs/conversation-design.md`.
+How the conversation should *sound* (stages, follow-ups, turn-taking): see `docs/conversation-design.md`.
 
 ## 1. Start a session
 
 ```
 POST /api/voice/sessions
-{ "mode": "interview" | "networking", "companySlug": "atb", "role": "Junior data analyst" }
+{ "mode": "interview", "companySlug": "atb", "role": "Junior data analyst" }
 ```
 
 Returns (201):
@@ -28,8 +28,7 @@ Returns (201):
     "dynamicVariables": { "opening": "…" }
   },
   "opening": "Hi, thanks for coming in…",
-  "questions": [{ "text": "…", "reported": true }],   // interview
-  "persona": { … }, "goals": [ … ]                     // networking
+  "questions": [{ "text": "…", "reported": true }]
 }
 ```
 
@@ -110,10 +109,3 @@ Phone side: `GET /api/headset/devices`, `DELETE /api/headset/devices/:id` (sign 
 - `POST /api/voice/sessions/:id/next` — returns the interviewer's next short line (a follow-up or the next
   question). Used by the phone's on-device voice; VR can keep using ElevenLabs as above.
 - Shorter, personal questions ("I saw you did research for Starfish — tell me about that").
-
-## Two voices for networking
-
-The interviewer and the networking contact should sound like different people. ElevenLabs lets a session
-override the voice only if "voice" overrides are enabled in the agent's Security settings; until then, the
-simplest option is a second ElevenLabs agent for the networking persona (its id goes in the server's
-`ELEVENLABS_NETWORKING_AGENT_ID` — not wired yet, ask in the team chat).

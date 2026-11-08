@@ -1,7 +1,13 @@
 import Foundation
 
+/// Interview is the only practice left; the field stays on the API so older sessions still decode.
 public enum PracticeMode: String, Codable, Sendable, CaseIterable {
-    case interview, networking
+    case interview
+
+    public init(from decoder: any Decoder) throws {
+        // a session saved under the retired networking mode reads as an interview rather than failing the whole page
+        self = try PracticeMode(rawValue: decoder.singleValueContainer().decode(String.self)) ?? .interview
+    }
 }
 
 /// How hard the interviewer pushes. The server treats a missing value as `standard`.
@@ -23,7 +29,7 @@ public struct VoiceSessionRequest: Encodable, Equatable, Sendable {
     }
 }
 
-/// A started voice session. Interview sessions carry `questions`; networking sessions carry `persona` and `goals`.
+/// A started voice session, with the interview questions the server planned.
 public struct VoiceSession: Decodable, Equatable, Sendable, Identifiable {
     public let id: String
     public let mode: PracticeMode
@@ -35,12 +41,10 @@ public struct VoiceSession: Decodable, Equatable, Sendable, Identifiable {
     public let role: String?
     public let company: String?
     public let questions: [PracticeQuestion]
-    public let persona: Persona?
-    public let goals: [String]
 
     public init(
         id: String, mode: PracticeMode, provider: String, credentials: JSONValue = .object([:]), expiresAt: String? = nil, opening: String,
-        role: String? = nil, company: String? = nil, questions: [PracticeQuestion] = [], persona: Persona? = nil, goals: [String] = [],
+        role: String? = nil, company: String? = nil, questions: [PracticeQuestion] = [],
     ) {
         self.id = id
         self.mode = mode
@@ -51,8 +55,6 @@ public struct VoiceSession: Decodable, Equatable, Sendable, Identifiable {
         self.role = role
         self.company = company
         self.questions = questions
-        self.persona = persona
-        self.goals = goals
     }
 
     public init(from decoder: any Decoder) throws {
@@ -66,13 +68,11 @@ public struct VoiceSession: Decodable, Equatable, Sendable, Identifiable {
         role = try container.decodeIfPresent(String.self, forKey: .role)
         company = try container.decodeIfPresent(String.self, forKey: .company)
         questions = try container.decodeIfPresent([PracticeQuestion].self, forKey: .questions) ?? []
-        persona = try container.decodeIfPresent(Persona.self, forKey: .persona)
-        goals = try container.decodeIfPresent([String].self, forKey: .goals) ?? []
     }
 
     private enum CodingKeys: String, CodingKey {
         case id = "sessionId"
-        case mode, provider, credentials, expiresAt, opening, role, company, questions, persona, goals
+        case mode, provider, credentials, expiresAt, opening, role, company, questions
     }
 }
 
@@ -107,18 +107,6 @@ public struct PracticeQuestion: Decodable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey { case text, source, reportedIn }
-}
-
-public struct Persona: Decodable, Equatable, Sendable {
-    public let name: String
-    public let role: String
-    public let company: String?
-
-    public init(name: String, role: String, company: String? = nil) {
-        self.name = name
-        self.role = role
-        self.company = company
-    }
 }
 
 public struct VoiceTurn: Encodable, Equatable, Sendable {

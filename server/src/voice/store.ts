@@ -29,8 +29,9 @@ export async function createSession(
   return id;
 }
 
+// a session from the retired networking mode has no questions in its plan, so it is treated as unknown
 export async function findSession(env: Env, userId: string, id: string): Promise<VoiceSession | null> {
-  const row = await db(env).prepare("SELECT * FROM voice_sessions WHERE id = ? AND user_id = ?").bind(id, userId).first<SessionRow>();
+  const row = await db(env).prepare("SELECT * FROM voice_sessions WHERE id = ? AND user_id = ? AND mode = 'interview'").bind(id, userId).first<SessionRow>();
   if (!row) return null;
   const plan = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as VoicePlan;
   return { id: row.id, mode: row.mode, companySlug: row.company_slug, plan, status: row.status, createdAt: row.created_at };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { liveInstructions, openingLine } from "../../src/voice/instructions";
-import { buildInterviewPlan, buildNetworkingPlan } from "../../src/voice/plan";
+import { buildInterviewPlan } from "../../src/voice/plan";
 import { inputs } from "./fixtures";
 
 describe("live instructions", () => {
@@ -30,16 +30,6 @@ describe("live instructions", () => {
     expect(text).toMatch(/never preview the next question/i);
   });
 
-  it("plays a person at a meetup for networking, not an interviewer, with the same short turns", () => {
-    const plan = buildNetworkingPlan(inputs());
-    const text = liveInstructions(plan);
-    expect(text).toContain("Acme");
-    expect(text).not.toMatch(/interviewer/i);
-    expect(text).toMatch(/20 words/);
-    expect(text).toMatch(/wait/i);
-    expect(openingLine(plan)).toMatch(/^hi/i);
-  });
-
   it("probes instead of assuming: vague answers get a concrete question back", () => {
     const text = interview();
     expect(text).toMatch(/never assume you understood/i);
@@ -49,7 +39,6 @@ describe("live instructions", () => {
 
   it("never writes stage directions or bracketed audio tags, which end up in the transcript", () => {
     expect(interview()).toMatch(/never write anything in square brackets/i);
-    expect(liveInstructions(buildNetworkingPlan(inputs()))).toMatch(/never write anything in square brackets/i);
   });
 
   it("changes how hard the interviewer pushes with the difficulty", () => {

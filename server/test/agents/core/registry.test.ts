@@ -16,7 +16,7 @@ describe("agent registry", () => {
   it("has every skill exactly once, across four agents", () => {
     expect(agents.map((a) => a.card.name)).toEqual(["resume", "research", "interview", "career"]);
     expect(allSkills().map((s) => s.name).sort()).toEqual([
-      "career-snapshot", "interview-debrief", "interview-intel", "interview-prep", "interview-recap", "networking-recap",
+      "career-snapshot", "interview-debrief", "interview-intel", "interview-prep", "interview-recap",
       "onboarding-prefill", "profile-intake", "recommend-courses", "recommend-jobs", "recommend-research", "research-company", "resume-coach", "roadmap-steps",
     ]);
   });

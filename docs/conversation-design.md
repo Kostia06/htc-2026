@@ -29,22 +29,6 @@ Rules: every line ≤ 20 words, one question at a time, open-ended, never leadin
 actually said. Never read a list. Never lecture mid-interview — feedback comes after each answer on screen, and
 in full at the end.
 
-## Networking (two people, two voices)
-
-A networking chat is a different rhythm: shorter turns, both sides ask, no scoring tone. The AI plays a person
-at a Calgary meetup (e.g. a data analyst at ATB) with a **different voice from the interviewer**.
-
-| Stage | AI person | What Raven checks the user does |
-|---|---|---|
-| Open | Friendly, a bit busy: "Hey, I don't think we've met. I'm Priya." | Introduces themselves in one or two lines |
-| Their work | Answers briefly, waits to be asked more | Asks something better than "what do you do?" — e.g. "What does a normal week look like for you?" |
-| Follow the thread | Mentions one specific detail | Picks up that detail ("You said you moved from support to data — how?") |
-| Give back | Asks about the user | Short, specific answer about themselves |
-| Exit | Starts wrapping up | Asks to stay in touch: "Could I add you on LinkedIn / grab a coffee next week?" |
-
-Feedback afterwards: did they introduce themselves, ask a real question, follow up on something said, and ask to
-stay in touch (and follow up within 24–48 hours).
-
 ## Turn-taking (what makes it feel human)
 
 - **Short pauses are thinking, not the end.** Candidates pause mid-answer. End the turn after ~0.7 s of silence
@@ -57,5 +41,4 @@ stay in touch (and follow up within 24–48 hours).
 ## Sources
 
 - Interview structure and STAR probing: [Indeed – interview structures](https://ca.indeed.com/career-advice/interviewing/interview-structures-and-types), [CodeSignal – probing with STAR](https://codesignal.com/learn/courses/preparing-and-conducting-effective-interviews/lessons/probing-with-star), [Univ. of Kentucky – behavioural interview guide](https://hr.uky.edu/sites/default/files/bbi_quick_guide.pdf), [SCU career center](https://scu.edu/careercenter/toolkit/practice-for-interviews)
-- Networking flow: [The Muse](https://www.themuse.com/advice/a-surefire-way-to-get-anyone-talking-at-a-networking-event), [Duke – small talk guide](https://careerhub.students.duke.edu/resources/making-small-talk-guide/), [JHU – conversation cues](https://studentaffairs.jhu.edu/career-services/wp-content/uploads/sites/58/2017/08/Conversation_Cues_Networking.pdf)
 - Voice turn-taking: [LiveKit – turn tuning](https://docs.livekit.io/agents/logic/turns/tuning/), [Lorikeet – waiting vs listening](https://www.lorikeetcx.ai/blog/if-your-voice-ai-cant-wait-it-cant-listen), [CodeSignal – conversation practice](https://codesignal.com/blog/introducing-conversation-practice/)

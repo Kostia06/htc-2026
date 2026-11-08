@@ -48,18 +48,16 @@
         var body: some View {
             ScrollView {
                 VStack(spacing: 20) {
-                    card("Compact", button: StartPracticeButton(mode: .interview, companySlug: "atb", link: DemoHeadsetLink()) {})
-                    card("Sent", button: StartPracticeButton(mode: .networking, link: DemoHeadsetLink(), initialPhase: .sent) {})
+                    card("Compact", button: StartPracticeButton(companySlug: "atb", link: DemoHeadsetLink()) {})
+                    card("Sent", button: StartPracticeButton(link: DemoHeadsetLink(), initialPhase: .sent) {})
                     card(
                         "Open · Quest connected",
-                        button: StartPracticeButton(
-                            mode: .interview, companySlug: "atb", link: DemoHeadsetLink(), initialPhase: .expanded,
-                        ) {},
+                        button: StartPracticeButton(companySlug: "atb", link: DemoHeadsetLink(), initialPhase: .expanded) {},
                     )
                     card(
                         "Open · no headset listening",
                         button: StartPracticeButton(
-                            mode: .interview, companySlug: "atb", link: DemoHeadsetLink(isConnected: false), initialPhase: .expanded,
+                            companySlug: "atb", link: DemoHeadsetLink(isConnected: false), initialPhase: .expanded,
                         ) {},
                     )
                 }

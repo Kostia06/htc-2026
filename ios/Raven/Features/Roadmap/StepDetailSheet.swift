@@ -92,13 +92,7 @@ struct StepDetailSheet: View {
 
     @ViewBuilder private var actions: some View {
         if let action = step.action {
-            StartPracticeButton(
-                mode: action.type == .interview ? .interview : .networking,
-                companySlug: action.companySlug,
-                role: action.role,
-                stepID: step.id,
-                onPhone: onPractice,
-            )
+            StartPracticeButton(companySlug: action.companySlug, role: action.role, stepID: step.id, onPhone: onPractice)
         } else {
             Button("Mark done", action: onMarkDone)
                 .buttonStyle(.raised)

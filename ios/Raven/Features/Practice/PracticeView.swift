@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// The Practice tab: pick a spoken interview or a networking chat, or move to the headset.
+/// The Practice tab: start a spoken interview, or move to the headset.
 struct PracticeView: View {
     @Environment(AppModel.self) private var app
     @State private var target = ""
@@ -20,14 +20,7 @@ struct PracticeView: View {
                         .ravenCard()
                     DifficultyPicker(difficulty: $difficulty)
                         .padding(.bottom, 8)
-                    choice(
-                        .interview, title: "Interview", systemImage: "person.fill.questionmark",
-                        detail: "Answer the questions a hiring manager would ask, out loud.",
-                    )
-                    choice(
-                        .networking, title: "Networking", systemImage: "person.2.fill",
-                        detail: "Meet someone in the field and keep the conversation going.",
-                    )
+                    interviewChoice
                     vrLink.padding(.top, 8)
                     row("Tell Raven about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
                     NavigationLink { PracticeHistoryView() } label: { rowLabel("Past sessions", systemImage: "chart.line.uptrend.xyaxis") }
@@ -45,20 +38,20 @@ struct PracticeView: View {
         }
     }
 
-    private func choice(_ mode: PracticeMode, title: String, systemImage: String, detail: String) -> some View {
+    private var interviewChoice: some View {
         Button {
-            start(mode)
+            start()
         } label: {
             HStack(spacing: 16) {
-                Image(systemName: systemImage)
+                Image(systemName: "person.fill.questionmark")
                     .font(.title2)
                     .foregroundStyle(Theme.action)
                     .frame(width: 36)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
+                    Text("Interview")
                         .font(.title2.bold())
                         .foregroundStyle(.primary)
-                    Text(detail)
+                    Text("Answer the questions a hiring manager would ask, out loud.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.leading)
@@ -91,9 +84,9 @@ struct PracticeView: View {
         .ravenCard()
     }
 
-    private func start(_ mode: PracticeMode) {
+    private func start() {
         let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
-        start(VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed, difficulty: difficulty))
+        start(VoiceSessionRequest(mode: .interview, role: trimmed.isEmpty ? nil : trimmed, difficulty: difficulty))
     }
 
     /// Also how "Practice again" works: a fresh model replaces the one on screen, so the cover stays up.

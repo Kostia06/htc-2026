@@ -35,12 +35,11 @@ describe("templateSteps", () => {
     expect(steps.some((s) => s.why.includes("Junior data analyst") || s.title.includes("Junior data analyst"))).toBe(true);
   });
 
-  it("gives practice steps an action the app can launch", () => {
+  it("gives interview practice an action the app can launch, and nothing else one", () => {
     const steps = templateSteps(personFor("Registered nurse", []), 0, 8);
     const interview = steps.find((s) => s.kind === "interview_practice");
-    const networking = steps.find((s) => s.kind === "networking_practice");
     expect(interview?.action).toEqual({ type: "interview", role: "Registered nurse" });
-    expect(networking?.action).toEqual({ type: "networking", role: "Registered nurse" });
+    expect(steps.find((s) => s.kind === "networking_practice")?.action).toBeUndefined();
     expect(steps.find((s) => s.kind === "event")?.action).toBeUndefined();
   });
 

@@ -5,7 +5,7 @@ import SwiftUI
 /// **Live on phone** calls `onPhone` (present the voice session there); **In VR** sends the step to the paired headset,
 /// or opens pairing when none is listening. Drop it into a roadmap step card:
 ///
-///     StartPracticeButton(mode: .interview, companySlug: step.companySlug, role: step.role, stepID: step.id) {
+///     StartPracticeButton(companySlug: step.companySlug, role: step.role, stepID: step.id) {
 ///         activeSession = VoiceSessionModel(request: VoiceSessionRequest(mode: .interview, companySlug: step.companySlug), ...)
 ///     }
 ///
@@ -13,7 +13,6 @@ import SwiftUI
 struct StartPracticeButton: View {
     enum Phase: Equatable { case compact, expanded, sent }
 
-    let mode: PracticeMode
     var companySlug: String?
     var role: String?
     var stepID: String?
@@ -30,10 +29,9 @@ struct StartPracticeButton: View {
     @Namespace private var shape
 
     init(
-        mode: PracticeMode, companySlug: String? = nil, role: String? = nil, stepID: String? = nil,
+        companySlug: String? = nil, role: String? = nil, stepID: String? = nil,
         link: (any HeadsetLinkService)? = nil, initialPhase: Phase = .compact, onPhone: @escaping () -> Void,
     ) {
-        self.mode = mode
         self.companySlug = companySlug
         self.role = role
         self.stepID = stepID
@@ -149,7 +147,8 @@ struct StartPracticeButton: View {
         }
         Task {
             do throws(RavenError) {
-                _ = try await model.send(HeadsetLaunch(mode: mode, companySlug: companySlug, role: role, stepID: stepID), using: service)
+                let launch = HeadsetLaunch(mode: .interview, companySlug: companySlug, role: role, stepID: stepID)
+                _ = try await model.send(launch, using: service)
                 sendFailure = nil
                 phase = .sent
             } catch {

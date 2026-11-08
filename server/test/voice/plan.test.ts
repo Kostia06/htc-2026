@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { emptyProfile } from "../../src/memory/profile/patch";
-import { buildInterviewPlan, buildNetworkingPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
+import { buildInterviewPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
 import { inputs, profile } from "./fixtures";
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
@@ -49,20 +49,5 @@ describe("interview plan", () => {
     const plan = buildInterviewPlan(inputs({ role: "entry-level", company: null, reportedQuestions: [], facts: [], profile: emptyProfile() }));
     expect(plan.questions.length).toBe(MAX_QUESTIONS);
     expect(plan.questions.every((q) => q.source === "behavioral")).toBe(true);
-  });
-});
-
-describe("networking plan", () => {
-  it("meets someone from the company and talks about what the company is doing", () => {
-    const plan = buildNetworkingPlan(inputs());
-    expect(plan.persona.company).toBe("Acme");
-    expect(plan.talkingPoints).toContain("Acme opened a Calgary office in 2026.");
-    expect(plan.goals).toHaveLength(3);
-  });
-
-  it("falls back to a Calgary meetup when no company is chosen", () => {
-    const plan = buildNetworkingPlan(inputs({ company: null, facts: [] }));
-    expect(plan.persona.company).toBeNull();
-    expect(plan.talkingPoints.length).toBeGreaterThanOrEqual(3);
   });
 });

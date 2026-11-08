@@ -52,7 +52,6 @@ function fill(template: TemplateStep, person: Person): StepContent {
     label: labelFor(template.needs, person.skills),
   };
   if (template.kind === "interview_practice") step.action = { type: "interview", role: person.goal };
-  if (template.kind === "networking_practice") step.action = { type: "networking", role: person.goal };
   return step;
 }
 

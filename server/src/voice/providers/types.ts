@@ -20,7 +20,7 @@ export type StartedVoice = { provider: VoiceProviderName; credentials: VoiceCred
 
 export type VoiceProvider = {
   name: VoiceProviderName;
-  startSession(env: Env, conversation: { mode: "interview" | "networking"; instructions: string; opening: string }, now?: Date): Promise<StartedVoice>;
+  startSession(env: Env, conversation: { instructions: string; opening: string }, now?: Date): Promise<StartedVoice>;
 };
 
 export class ProviderNotConfigured extends Error {}

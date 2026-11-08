@@ -17,10 +17,6 @@ export function PracticeMenu({ token, onSignOut }: { token: string; onSignOut: (
           <span className="practice-title">Interview</span>
           <span className="practice-hint">Answer questions from a hiring manager</span>
         </button>
-        <button className="practice-option">
-          <span className="practice-title">Networking</span>
-          <span className="practice-hint">Introduce yourself at an industry event</span>
-        </button>
       </div>
     </main>
   );

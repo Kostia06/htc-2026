@@ -19,24 +19,20 @@ extension RoadmapStep.Kind {
     var name: String {
         switch self {
         case .interviewPractice: "Interview practice"
-        case .networkingPractice: "Networking practice"
+        case .networkingPractice: "Networking"
         default: rawValue.capitalized
         }
     }
 }
 
 extension RoadmapStep {
-    /// Practice steps start a spoken session in the app; everything else is marked done by hand.
+    /// Interview steps start a spoken session in the app; everything else is marked done by hand.
     var isPractice: Bool {
         action != nil
     }
 
     var actionTitle: String {
-        switch action?.type {
-        case .interview: "Start interview"
-        case .networking: "Start networking"
-        case nil: "Mark done"
-        }
+        action == nil ? "Mark done" : "Start interview"
     }
 }
 

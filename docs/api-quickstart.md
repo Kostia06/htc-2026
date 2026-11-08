@@ -39,5 +39,5 @@ await (await fetch(B + "/api/memory/atb", { headers: H })).json();   // research
 | Agents | `GET /api/agent/cards` · `POST /api/agent/:skill { platform, input }` |
 | A2A | `GET /.well-known/agent-card.json` · `POST /a2a` (JSON-RPC, header `A2A-Version: 1.0`) |
 
-Voice sessions use ElevenLabs (interviewer: Eric, networking: Jessica) — every connected minute spends credit, keep tests short.
+Voice sessions use ElevenLabs (interviewer: Eric) — every connected minute spends credit, keep tests short.
 The roadmap, For you, resume and settings screens are being rebuilt now; their API shapes may change in the next deploy.

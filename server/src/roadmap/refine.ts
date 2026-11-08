@@ -64,6 +64,5 @@ function fromDraft(draft: DraftStep, request: RefineRequest): StepContent {
     label: labelStep(draft.needs ?? [], request.background),
   };
   if (draft.kind === "interview_practice") step.action = { type: "interview", role: request.person.goal };
-  if (draft.kind === "networking_practice") step.action = { type: "networking", role: request.person.goal };
   return step;
 }

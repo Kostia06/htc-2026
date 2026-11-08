@@ -68,7 +68,7 @@ struct PracticeHistoryView: View {
         ContentUnavailableView {
             Label(model.errorMessage == nil ? "No practice yet" : "Couldn't load your history", systemImage: "waveform")
         } description: {
-            Text(model.errorMessage ?? "Your interview and networking sessions will show up here, with scores over time.")
+            Text(model.errorMessage ?? "Your interview sessions will show up here, with scores over time.")
         } actions: {
             if model.errorMessage != nil {
                 Button("Try again") { Task { await model.refresh() } }
@@ -138,9 +138,9 @@ private struct SessionRow: View {
                 .font(.title3)
                 .frame(width: 44, height: 44)
                 .background(Theme.raised.mix(with: .white, by: 0.06), in: .rect(cornerRadius: 12))
-                .foregroundStyle(session.mode == .interview ? Theme.action : Theme.agent)
+                .foregroundStyle(Theme.action)
             VStack(alignment: .leading, spacing: 4) {
-                Text(session.companyName ?? (session.mode == .interview ? "General interview" : "Networking chat")).font(.headline)
+                Text(session.companyName ?? "General interview").font(.headline)
                 Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)

@@ -31,7 +31,7 @@ export function voiceRouter() {
 
   router.post("/sessions", async (c) => {
     const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown }>().catch(() => null);
-    if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview or networking" }, 400);
+    if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview" }, 400);
     if (body.difficulty !== undefined && !DIFFICULTIES.includes(body.difficulty as Difficulty)) {
       return c.json({ error: "difficulty must be easy, standard or hard" }, 400);
     }
@@ -58,7 +58,7 @@ export function voiceRouter() {
     if (!body || !isText(body.question, 1000) || !isText(body.answer, MAX_ANSWER)) return c.json({ error: "send the question and the answer text" }, 400);
     const durationMs = typeof body.durationMs === "number" && body.durationMs > 0 ? body.durationMs : 0;
 
-    const score = await scoreTurn(c.env, { mode: session.mode, question: body.question, answer: body.answer, durationMs });
+    const score = await scoreTurn(c.env, { question: body.question, answer: body.answer, durationMs });
     await addTurn(c.env, c.var.sessionId, session.id, { question: body.question, answer: body.answer, score });
     return c.json(score);
   });

@@ -1,4 +1,4 @@
-import type { Difficulty, InterviewPlan, NetworkingPlan, VoicePlan } from "./types";
+import type { Difficulty, VoicePlan } from "./types";
 
 // The same rules drive the phone and the headset, so the agent behaves the same everywhere.
 // Short turns matter most: a voice agent that talks for a paragraph feels like it isn't listening.
@@ -25,7 +25,7 @@ const DIFFICULTY: Record<Difficulty, string> = {
   hard: `Difficulty: hard, like a final round with a demanding manager. Push back politely on weak or vague answers ("That sounds like the team's work, what did you do?"), ask for numbers and trade-offs, and ask up to two follow-ups per question before moving on. Stay professional, never rude.`,
 };
 
-function interviewInstructions(plan: InterviewPlan) {
+export function liveInstructions(plan: VoicePlan): string {
   const where = plan.company ? ` at ${plan.company}` : "";
   const questions = plan.questions.map((q, i) => `${i + 1}. ${q.text}`).join("\n");
   return `You are a friendly but professional hiring manager interviewing a candidate for the ${plan.role} role${where}.
@@ -49,32 +49,8 @@ ${TURN_RULES}
 ${SAFETY_RULES}`;
 }
 
-function networkingInstructions(plan: NetworkingPlan) {
-  const points = plan.talkingPoints.map((p) => `- ${p}`).join("\n");
-  return `You are ${plan.persona.name}, who ${plan.persona.role}. You're at a casual Calgary networking event and the person just walked up to you.
-They're hoping to become a ${plan.role}. Be warm and a little busy, like a real attendee: answer their questions, share a bit about yourself, and ask about them.
-
-Things you can talk about:
-${points}
-
-How to run the chat:
-- Don't run the conversation for them: if they never ask you anything, keep your answers short and let the pause sit.
-- When they ask a good question or ask to stay in touch, be glad to, and answer in a sentence.
-- Pick up on one detail they mention and ask about it, like a curious person would.
-- After about five minutes, or when they wrap up, say it was nice meeting them and end the chat.
-${plan.difficulty === "hard" ? "- You're busy and a little hard to talk to: short answers until they ask something genuinely interesting.\n" : ""}
-${TURN_RULES}
-
-${SAFETY_RULES}`;
-}
-
-export function liveInstructions(plan: VoicePlan): string {
-  return plan.mode === "interview" ? interviewInstructions(plan) : networkingInstructions(plan);
-}
-
 // shown on screen and spoken first, so every platform starts the same way
 export function openingLine(plan: VoicePlan): string {
-  if (plan.mode === "networking") return `Hi! I'm ${plan.persona.name}. Are you enjoying the event?`;
   const where = plan.company ? ` at ${plan.company}` : "";
   return `Hi, thanks for coming in. We're meeting about the ${plan.role} role${where}. Ready to start?`;
 }

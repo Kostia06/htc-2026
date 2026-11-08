@@ -62,7 +62,7 @@
             return [
                 CompletedDay(day: RoadmapPage.dayKey(yesterday), steps: [
                     done("d0", .project, "Build a lending dashboard in SQL", "github.com/kostia/lending-dash", yesterday),
-                    done("d1", .networkingPractice, "Practise asking an ATB analyst for 15 minutes",
+                    done("d1", .networkingPractice, "Ask an ATB analyst for 15 minutes",
                          "Clear intro; ask one sharper question next time.", yesterday),
                 ]),
                 CompletedDay(day: RoadmapPage.dayKey(earlier), steps: [
@@ -110,10 +110,10 @@
                 label: .stretch, estimate: "3 weeks",
             ),
             Blueprint(
-                kind: .networkingPractice, title: "Practise asking your co-op manager for a referral",
+                kind: .networkingPractice, title: "Ask your co-op manager for a referral",
                 why: "A referral from ATB carries weight in Calgary.",
-                detail: "Rehearse the ask: what you've done since the co-op, the role you're after, and the one-line favour.",
-                label: .readyNow, estimate: "15 min", action: .init(type: .networking, role: "Junior data analyst"),
+                detail: "Say what you've done since the co-op, the role you're after, and the one-line favour.",
+                label: .readyNow, estimate: "15 min",
             ),
             Blueprint(
                 kind: .application, title: "Apply to five junior analyst roles",

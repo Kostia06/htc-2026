@@ -26,7 +26,7 @@ describe("voice store", () => {
   });
 
   it("deletes sessions after 30 days", async () => {
-    const old = await createSession(env, "owner", { mode: "networking", companySlug: null, plan }, new Date("2026-09-01T00:00:00Z"));
+    const old = await createSession(env, "owner", { mode: "interview", companySlug: null, plan }, new Date("2026-09-01T00:00:00Z"));
     await finishSession(env, "owner", old);
     expect(await deleteOldSessions(env, new Date("2026-11-08T00:00:00Z"))).toBeGreaterThanOrEqual(1);
     expect(await findSession(env, "owner", old)).toBeNull();

@@ -32,7 +32,6 @@ const titleCase = (slug: string) => slug.split("-").map((word) => word.charAt(0)
 
 /** The line shown while the session starts: "Starting your interview with ATB…" */
 export function describeLaunch(launch: Launch) {
-  const what = launch.mode === "interview" ? "interview" : "networking chat";
   const company = launch.companySlug ? (KNOWN_COMPANIES[launch.companySlug] ?? titleCase(launch.companySlug)) : null;
-  return company ? `Starting your ${what} with ${company}…` : `Starting your ${what}…`;
+  return company ? `Starting your interview with ${company}…` : "Starting your interview…";
 }

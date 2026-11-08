@@ -46,7 +46,7 @@ struct PracticeSessionDetailView: View {
             .animation(.spring(duration: 0.4), value: phase)
         }
         .background(Theme.ground)
-        .navigationTitle(session.companyName ?? (session.mode == .interview ? "Interview" : "Networking"))
+        .navigationTitle(session.companyName ?? "Interview")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Theme.ground, for: .navigationBar)
         .task { await load() }
@@ -55,7 +55,7 @@ struct PracticeSessionDetailView: View {
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(session.mode == .interview ? "Interview practice" : "Networking practice").font(.headline)
+                Text("Interview practice").font(.headline)
                 if let date = RelativeTime.date(from: session.createdAt) {
                     Text(date.formatted(.dateTime.weekday(.wide).day().month(.abbreviated).hour().minute()))
                         .font(.subheadline)

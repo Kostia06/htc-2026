@@ -49,11 +49,11 @@ struct PracticeHistoryCache: Sendable {
     struct SamplePracticeHistory: PracticeHistoryService {
         static let sessions: [PracticeSessionSummary] = [
             session("s1", .interview, company: ("atb", "ATB Financial"), daysAgo: 0.1, score: 4.2),
-            session("s2", .networking, company: nil, daysAgo: 1.2, score: 3.9),
+            session("s2", .interview, company: nil, daysAgo: 1.2, score: 3.9),
             session("s3", .interview, company: ("benevity", "Benevity"), daysAgo: 2.5, score: 3.4),
             session("s4", .interview, company: nil, daysAgo: 4, score: 3.6),
             session("s5", .interview, company: ("atb", "ATB Financial"), daysAgo: 6, score: 2.9),
-            session("s6", .networking, company: nil, daysAgo: 9, score: 3.1),
+            session("s6", .interview, company: nil, daysAgo: 9, score: 3.1),
             session("s7", .interview, company: nil, daysAgo: 12, score: 2.4),
         ]
 
