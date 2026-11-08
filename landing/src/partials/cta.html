@@ -1,37 +1,10 @@
-<section class="section is-cta" id="cta" data-section="cta" data-section-color="black">
-  <div class="container is-cta">
-    <div class="cta-wrap">
-      <div class="cta-card-wrapper">
-        <div class="cta-card">
-          <div class="cta-left">
-            <h2 class="cta-heading">{{ cta.heading }}</h2>
-            <div class="b1 grey text-ailng-left max-w-29">{{ cta.body }}</div>
-            <div class="cta-btn-wrap">
-              <a class="nav_link-cta orange" href="{{ links.app }}">
-                <div class="bg-btn">
-                  <div class="btn-text">{{ cta.primary }}</div>
-                </div>
-                <div class="explode violet"></div>
-              </a>
-              <a class="nav_link-cta violet" href="{{ links.how }}">
-                <div class="btn-text">{{ cta.secondary }}</div>
-                <div class="explode violet"></div>
-              </a>
-            </div>
-          </div>
-          <div class="cta-right">
-            <div class="cta-img r-next" role="img" aria-label="{{ cta.screen.title }}">
-              <div class="r-next__head"><span class="r-next__title">{{ cta.screen.title }}</span><span class="r-next__week">{{ cta.screen.week }}</span></div>
-              <ol class="r-next__list">
-                <li class="r-move"><span class="r-move__n">1</span><span class="r-move__tag">{{ cta.screen.moves.0.tag }}</span><span class="r-move__text">{{ cta.screen.moves.0.text }}</span></li>
-                <li class="r-move"><span class="r-move__n">2</span><span class="r-move__tag">{{ cta.screen.moves.1.tag }}</span><span class="r-move__text">{{ cta.screen.moves.1.text }}</span></li>
-                <li class="r-move"><span class="r-move__n">3</span><span class="r-move__tag">{{ cta.screen.moves.2.tag }}</span><span class="r-move__text">{{ cta.screen.moves.2.text }}</span></li>
-              </ol>
-            </div>
-          </div>
-        </div>
-        <div class="stats-card-gradient _2"></div>
-      </div>
+<section class="section wrap" id="cta" aria-labelledby="cta-title">
+  <div class="cta glass">
+    <h2 id="cta-title" class="section__title">Your next move is waiting.</h2>
+    <p class="section__intro">Tell {{ brand }} the job you want and get your Road in two minutes.</p>
+    <div class="hero__ctas hero__ctas--center">
+      <a class="raised-btn raised-btn--action" href="{{ links.app }}"><span class="raised-btn__face">Open the app</span></a>
+      <a class="raised-btn raised-btn--secondary" href="{{ links.login }}"><span class="raised-btn__face">Sign in</span></a>
     </div>
   </div>
 </section>

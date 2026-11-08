@@ -1,0 +1,249 @@
+/* Shared pieces, mirroring the web app's components so a click into the app feels like the same product. */
+
+/* ---------- wordmark (app.css .sidebar__mark / __word) ---------- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: var(--action);
+  color: var(--on-action);
+  font: 800 18px/1 var(--font-rounded);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 4px 0 color-mix(in srgb, var(--action) 65%, black);
+}
+.brand__word {
+  font: 700 22px/1 var(--font-rounded);
+  letter-spacing: -0.01em;
+}
+
+/* ---------- glass (glass.css) ---------- */
+.glass,
+.glass-strong {
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-shine), 0 12px 32px rgb(0 0 0 / 0.35);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.glass-strong {
+  background: var(--glass-strong);
+}
+
+.glass-prominent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font: var(--headline);
+  color: var(--on-action);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0) 55%), rgb(168 199 163 / 0.9);
+  border: 1px solid rgb(255 255 255 / 0.25);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4), 0 8px 24px rgb(168 199 163 / 0.18);
+  transition: transform 0.15s var(--smooth), filter 0.15s;
+  white-space: nowrap;
+}
+.glass-prominent:hover {
+  filter: brightness(1.05);
+}
+.glass-prominent:active {
+  transform: scale(0.97);
+}
+
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: var(--subhead);
+  font-weight: 600;
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-shine);
+  transition: background 0.15s, transform 0.15s var(--smooth);
+  white-space: nowrap;
+}
+.glass-button:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+.glass-button:active {
+  transform: scale(0.96);
+}
+
+/* ---------- RaisedButton (ui.css): a face on a darker ledge that sinks when pressed ---------- */
+.raised-btn {
+  --depth: 5px;
+  --face: var(--action);
+  --fg: var(--on-action);
+  position: relative;
+  display: inline-block;
+  padding-bottom: var(--depth);
+  border-radius: 16px;
+  isolation: isolate;
+}
+.raised-btn::before {
+  content: '';
+  position: absolute;
+  inset: var(--depth) 0 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--face) 65%, black);
+  z-index: -1;
+}
+.raised-btn__face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 16px;
+  background: var(--face);
+  color: var(--fg);
+  font: var(--headline);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  transition: transform 0.15s var(--spring), filter 0.15s;
+}
+.raised-btn:hover .raised-btn__face {
+  filter: brightness(1.05);
+}
+.raised-btn:active .raised-btn__face {
+  transform: translateY(var(--depth));
+  transition-timing-function: ease-out;
+}
+.raised-btn--secondary {
+  --face: var(--secondary-button);
+  --fg: #fff;
+}
+.raised-btn--agent {
+  --face: var(--agent);
+}
+
+/* ---------- cards and type ---------- */
+.card {
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+}
+
+.eyebrow {
+  font: var(--footnote);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--action);
+}
+
+.tint-action { color: var(--action); background: rgb(168 199 163 / 0.14); }
+.tint-agent { color: var(--agent); background: rgb(227 209 173 / 0.14); }
+.tint-positive { color: var(--positive); background: rgb(148 219 230 / 0.12); }
+.tint-job { color: var(--kind-job); background: rgb(168 204 255 / 0.12); }
+.tint-event { color: var(--kind-event); background: rgb(255 204 173 / 0.12); }
+.tint-course { color: var(--kind-course); background: rgb(255 235 163 / 0.12); }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 16px 0;
+}
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(1120px, 100%);
+  margin-inline: auto;
+  padding: 8px 8px 8px 14px;
+  border-radius: 22px;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-shine), 0 12px 32px rgb(0 0 0 / 0.35);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.topbar__nav {
+  display: flex;
+  gap: 4px;
+  margin-inline: auto;
+}
+.topbar__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font: var(--subhead);
+  font-weight: 600;
+  color: var(--text-2);
+  transition: color 0.15s, background 0.15s;
+}
+.topbar__nav a:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+}
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar__menu,
+.topbar__nav .topbar__signin-mobile {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .topbar__inner {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .topbar__signin {
+    display: none;
+  }
+  .topbar__menu {
+    display: inline-flex;
+    width: 44px;
+    padding: 0;
+  }
+  .topbar__nav {
+    display: none;
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: column;
+    margin: 0;
+    padding: 4px 0 6px;
+    border-top: 1px solid var(--hairline);
+  }
+  .topbar[data-menu='open'] .topbar__nav {
+    display: flex;
+  }
+  .topbar__nav a {
+    font: var(--body);
+    font-weight: 600;
+    color: var(--text);
+  }
+  .topbar__nav .topbar__signin-mobile {
+    display: inline-flex;
+  }
+}
+@media (max-width: 380px) {
+  .topbar__cta {
+    padding: 0 14px;
+  }
+  .brand__word {
+    font-size: 20px;
+  }
+}

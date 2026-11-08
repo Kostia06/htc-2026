@@ -1,30 +1,7 @@
-/* Stylesheet entry. Order matters: tokens → base → shared components → sections in page order. */
-@import './tokens.css';
-@import './fonts.css';
+/* The landing wears the web app's design system: its tokens are imported straight from web/ so
+   skillit.study and app.skillit.study stay one palette. Components below mirror web/src/ui/ui.css
+   (RaisedButton) and web/src/styles/glass.css (glass surfaces, ambient light). */
+@import '../../../web/src/styles/tokens.css';
 @import './base.css';
-@import './layout.css';
-
-@import './components/typography.css';
-@import './components/buttons.css';
-@import './components/glow.css';
-@import './components/shadow.css';
-@import './components/social.css';
-@import './components/flip-link.css';
-@import './components/bg-video.css';
-
-@import './sections/preloader.css';
-@import './sections/header.css';
-@import './sections/hero.css';
-@import './sections/cards.css';
-@import './sections/stages.css';
-@import './sections/services.css';
-@import './sections/clients.css';
-@import './sections/testimonial.css';
-@import './sections/faq.css';
-@import './sections/cta.css';
-@import './sections/book-call.css';
-@import './sections/footer.css';
-@import './sections/cookies.css';
-
-/* Skillit: product mock-ups, wordmark and copy tweaks layered on the shared layout */
-@import './components/skillit.css';
+@import './components.css';
+@import './sections.css';

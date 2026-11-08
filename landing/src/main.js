@@ -1,35 +1,19 @@
-import { initPreloader } from './modules/preloader.js';
-import { initSmoothScroll } from './modules/smooth-scroll.js';
-import { initNavTheme } from './modules/nav-theme.js';
-import { initNavCollapse } from './modules/nav-collapse.js';
-import { initBurger } from './modules/burger.js';
-import { initExplode } from './modules/explode.js';
-import { initMagnetic } from './modules/magnetic.js';
-import { initHero } from './modules/hero.js';
-import { initSplitReveal } from './modules/split-reveal.js';
-import { initCards } from './modules/cards.js';
-import { initStages } from './modules/stages.js';
-import { initServices } from './modules/services.js';
-import { initClients } from './modules/clients.js';
-import { initTestimonial } from './modules/testimonial.js';
-import { initFaq } from './modules/faq.js';
-import { initCta } from './modules/cta.js';
-import { initCookies } from './modules/cookies.js';
+// The only script on the page: the phone menu. Everything else is plain HTML and CSS.
+const header = document.querySelector('.topbar');
+const toggle = header?.querySelector('.topbar__menu');
 
-initPreloader();
-initSmoothScroll();
-initNavTheme();
-initNavCollapse();
-initBurger();
-initExplode();
-initMagnetic();
-initHero();
-initSplitReveal();
-initCards();
-initStages();
-initServices();
-initClients();
-initTestimonial();
-initFaq();
-initCta();
-initCookies();
+function setMenu(open) {
+  header.dataset.menu = open ? 'open' : 'closed';
+  toggle.setAttribute('aria-expanded', String(open));
+}
+
+if (toggle) {
+  toggle.addEventListener('click', () => setMenu(header.dataset.menu !== 'open'));
+  header.querySelectorAll('.topbar__nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header.dataset.menu === 'open') {
+      setMenu(false);
+      toggle.focus();
+    }
+  });
+}
