@@ -29,13 +29,15 @@ public extension SkillitClient {
     }
 
     func setNotification(_ kind: NotificationKind, isOn: Bool) async throws(SkillitError) -> NotificationPreferences {
-        try await send(authorized("PUT", "api/notifications/settings", json: PreferencesBody(kinds: [kind.rawValue: isOn])))
+        let body = PreferencesBody(kinds: [kind.rawValue: isOn])
+        return try await send(authorized("PUT", "api/notifications/settings", json: body))
     }
 
     /// The APNs token as hex, exactly as Apple handed it over.
     func registerPushDevice(token: Data) async throws(SkillitError) {
         let hex = token.map { String(format: "%02x", $0) }.joined()
-        let _: DeviceResponse = try await send(authorized("POST", "api/notifications/devices", json: DeviceBody(token: hex, platform: "ios")))
+        let body = DeviceBody(token: hex, platform: "ios")
+        let _: DeviceResponse = try await send(authorized("POST", "api/notifications/devices", json: body))
     }
 
     /// A card from the person's feed by id, for a notification that points at it.
@@ -56,4 +58,7 @@ private struct DeviceBody: Encodable {
     let platform: String
 }
 
-private struct DeviceResponse: Decodable { let ok: Bool }
+// the body is only acknowledged; decoding it confirms the server answered as expected
+private struct DeviceResponse: Decodable {
+    let ok: Bool // swiftlint:disable:this identifier_name
+}

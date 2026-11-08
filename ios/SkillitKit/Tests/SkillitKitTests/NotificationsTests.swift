@@ -48,7 +48,9 @@ extension StubbedNetworkTests {
 
 struct NotificationGroupingTests {
     private func item(_ id: String, at iso: String, read: Bool = false, pushed: Bool = false) -> SkillitNotification {
-        SkillitNotification(id: id, kind: .feedMatch, title: id, body: "", target: .feed(id: id), createdAt: iso, readAt: read ? iso : nil, pushed: pushed)
+        SkillitNotification(
+            id: id, kind: .feedMatch, title: id, body: "", target: .feed(id: id), createdAt: iso, readAt: read ? iso : nil, pushed: pushed,
+        )
     }
 
     @Test func `splits into Today and Earlier and drops empty groups`() throws {
