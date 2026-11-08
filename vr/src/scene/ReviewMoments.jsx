@@ -6,15 +6,17 @@ import { Card, Label, RaisedButton, Surface, color, flat, space, type, usePressa
 // from here" on each, as an app card. The open moment's note, rewrite and
 // sources sit at the bottom.
 
-const WIDTH = 0.66
+// the score card's footprint (ScoreCard.jsx), so the two read as a pair
+const WIDTH = 0.64
 const PAD = space.l
 const LEFT = -WIDTH / 2 + PAD
 const RIGHT = WIDTH / 2 - PAD
-const ROW_H = 0.064
-const PAGE = 5
-const OPEN_H = 0.2
+const ROW_H = 0.06
+const PAGE = 4
+const OPEN_H = 0.17
 const HEADER_H = 0.09 // title, then the recording note under it
-const HEIGHT = PAD * 2 + HEADER_H + PAGE * ROW_H + 0.06 + OPEN_H
+const MORE_H = 0.08 // the More key, between the rows and the open moment
+const HEIGHT = PAD * 2 + HEADER_H + PAGE * ROW_H + MORE_H + OPEN_H
 
 // moments.js names its dots in the old palette; in the app's meaning: good is
 // teal, needs work is coral, anything the AI suggests or researched is sand.
@@ -130,7 +132,7 @@ export function ReviewMoments({ review, position, rotation, reducedMotion }) {
             radius={0.022}
             onPress={() => setPage((p) => (p + 1) % pages)}
             reducedMotion={reducedMotion}
-            position={[RIGHT - 0.07, top - HEADER_H - PAGE * ROW_H - 0.03, 0.003]}
+            position={[RIGHT - 0.07, top - HEADER_H - PAGE * ROW_H - MORE_H / 2, 0.003]}
           />
         )}
         <OpenMoment row={open} position={[0, -HEIGHT / 2 + PAD + OPEN_H, 0]} />

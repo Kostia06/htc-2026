@@ -24,20 +24,21 @@ import { toPanelScore, toPanelSummary } from '../interview/scores.js'
 // you actually tune while wearing the headset.
 //
 // During the interview the room is kept as close to a real one as possible:
-// no status text, no spinners, nothing hovering over the interviewer. Only the
-// desk button (answer / done), captions below him in the headset, and the
-// score card beside him after an answer.
+// no status text, no spinners, nothing over or under the interviewer. Only the
+// desk button (answer / done), the score card beside him after an answer, and
+// captions below him if the candidate turned them on in the menu.
 const INTERVIEWER = { position: [0, 0, INTERVIEWER_Z], rotation: [0, 0, 0] }
 const MOUTH = [0, INTERVIEWER_EYE_Y - 0.08, INTERVIEWER_Z + 0.08]
 const PAIRING_PANEL = { position: [0, 1.18, -1.1], rotation: [-0.14, 0, 0] }
 // below his face, so the candidate already meets his eyes on the menu
 const MENU_PANEL = { position: [0, 1.04, -1.1], rotation: [-0.3, 0, 0] }
-const SIDE_PANEL = { position: [-0.5, 1.2, -1.0], rotation: [-0.1, 0.46, 0] }
+// Upright and level, clear of the menu and summary in the middle and well above the desk (top 0.745).
+const SIDE_PANEL = { position: [-0.68, 1.2, -0.95], rotation: [0, 0.55, 0] }
 const SUMMARY_PANEL = { position: [0, 1.14, -1.12], rotation: [-0.14, 0, 0] }
 const CAPTION = { position: [0, 0.9, -1.15], rotation: [-0.35, 0, 0] }
 const BUTTON = { position: [0, 0.88, -0.58], rotation: [-0.8, 0, 0] }
 // the replay sits opposite the score card, on the right
-const REVIEW_MOMENTS = { position: [0.62, 1.22, -0.92], rotation: [-0.1, -0.6, 0] }
+const REVIEW_MOMENTS = { position: [0.68, 1.2, -0.95], rotation: [0, -0.55, 0] }
 // lying on the desk beside the answer key
 const RECORDING_BADGE = { position: [0.25, 0.87, -0.6], rotation: [-0.8, 0, 0] }
 const GREETING_MS = 1800
@@ -55,7 +56,7 @@ function stageOf({ showPairing, phase }) {
 // candidate chose to carry on with example data.
 // `review` (useInterviewReview) is the replay of a finished or phone-chosen
 // session, shown beside the summary or the menu; never during an interview.
-export function Scene({ interview, headset, review }) {
+export function Scene({ interview, headset, review, captions }) {
   const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
@@ -124,6 +125,8 @@ export function Scene({ interview, headset, review }) {
               onPosture={comfort.setPosture}
               onRecenter={comfort.recenter}
               onHowTo={hints.show}
+              captionsOn={Boolean(captions?.on)}
+              onCaptions={captions?.toggle}
               onBegin={() => actions.begin()}
               inXR={inXR}
               reducedMotion={reducedMotion}
@@ -139,7 +142,7 @@ export function Scene({ interview, headset, review }) {
 
         {stage === 'interview' && (
           <>
-            {inXR && (
+            {inXR && captions?.on && (
               <Caption
                 text={error ?? (phase === 'listening' ? transcript : caption)}
                 tone={error ? 'negative' : 'text'}
