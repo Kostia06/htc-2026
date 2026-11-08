@@ -1,5 +1,3 @@
-import './styles/main.css';
-
 import { initPreloader } from './modules/preloader.js';
 import { initSmoothScroll } from './modules/smooth-scroll.js';
 import { initNavTheme } from './modules/nav-theme.js';
