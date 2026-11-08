@@ -9,9 +9,12 @@ const HALF_LIFE_DAYS = 90;
 const DAY_MS = 86_400_000;
 
 type Fact = { kind: string; text: string; source_url: string; fetched_at: string };
-type ExpRow = { id: string; questions_json: string; is_seeded: number; created_at: string; contributor: string | null };
-type Question = { text: string; count: number; example: boolean; last_reported_at: string | null };
+type ExpRow = { id: string; questions_json: string; is_seeded: number; created_at: string; contributor: string | null; format: string | null; tips: string | null };
+// round and shows only ever come from Skillit's own examples, where format holds the round and tips what a good answer shows
+type Question = { text: string; count: number; example: boolean; last_reported_at: string | null; round?: string; shows?: string };
 type Tally = Question & { weight: number };
+
+const exampleDetail = (row: ExpRow) => ({ ...(row.format ? { round: row.format } : {}), ...(row.tips ? { shows: row.tips } : {}) });
 
 const recencyWeight = (createdAt: string, now: number) => 0.5 ** (Math.max(0, now - Date.parse(createdAt)) / DAY_MS / HALF_LIFE_DAYS);
 
@@ -21,7 +24,7 @@ function tally(rows: ExpRow[], example: boolean, now: number): Tally[] {
   for (const row of rows) {
     for (const q of JSON.parse(row.questions_json) as string[]) {
       const key = q.trim().toLowerCase();
-      const entry = tallies.get(key) ?? { text: q.trim(), count: 0, example, last_reported_at: null, weight: 0 };
+      const entry = tallies.get(key) ?? { text: q.trim(), count: 0, example, last_reported_at: null, weight: 0, ...(example ? exampleDetail(row) : {}) };
       entry.count++;
       if (!example) {
         entry.weight += recencyWeight(row.created_at, now);
@@ -52,7 +55,7 @@ export async function getCompanyInsights(env: Env, slug: string, role?: string) 
     .all<Fact>();
 
   const roleFilter = role ? " AND lower(role) = lower(?)" : "";
-  const stmt = db(env).prepare(`SELECT id, questions_json, is_seeded, created_at, contributor FROM experiences WHERE company_id = ?${roleFilter}`);
+  const stmt = db(env).prepare(`SELECT id, questions_json, is_seeded, created_at, contributor, format, tips FROM experiences WHERE company_id = ?${roleFilter}`);
   const { results: rows } = await (role ? stmt.bind(company.id, role) : stmt.bind(company.id)).all<ExpRow>();
 
   const real = rows.filter((r) => !r.is_seeded);

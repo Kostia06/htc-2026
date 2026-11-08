@@ -58,6 +58,17 @@ describe("company insights", () => {
     expect(out?.questions.every((q) => q.example)).toBe(true);
   });
 
+  it("gives Skillit's own examples their round and what a good answer shows, never a real report's tips", async () => {
+    await env.DB.prepare(
+      "INSERT INTO experiences (id, company_id, role, questions_json, format, tips, is_seeded, created_at) VALUES ('ex', 'c1', 'Junior Developer', ?, 'technical', 'Names trade-offs.', 1, ?)",
+    ).bind(JSON.stringify(["Design a URL shortener"]), new Date().toISOString()).run();
+    for (const i of [1, 2, 3]) await addExperience(i);
+    const out = await getCompanyInsights(env, "acme");
+    expect(out?.questions.find((q) => q.example)).toMatchObject({ text: "Design a URL shortener", round: "technical", shows: "Names trade-offs." });
+    expect(out?.questions.filter((q) => !q.example).every((q) => !("round" in q) && !("shows" in q))).toBe(true);
+    expect(JSON.stringify(out)).not.toContain("Practise SQL");
+  });
+
   it("does not let seeded rows lift real reports over the threshold", async () => {
     await addExperience(1, 1);
     await addExperience(2, 1);
