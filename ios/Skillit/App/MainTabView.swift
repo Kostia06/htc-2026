@@ -72,8 +72,13 @@ struct MainTabView: View {
 
 private extension View {
     /// Each tab scrolls under the floating bar; this keeps its last rows clear of it.
-    /// An inset on the TabView itself doesn't reach the tabs' own scroll views.
+    /// An inset (not padding) is what lists, scroll views and pushed screens inside
+    /// the tab's NavigationStack all respect.
     func clearsAskBar() -> some View {
-        safeAreaPadding(.bottom, AskSkillitBar.reservedHeight)
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            Color.clear
+                .frame(height: AskSkillitBar.reservedHeight)
+                .allowsHitTesting(false)
+        }
     }
 }

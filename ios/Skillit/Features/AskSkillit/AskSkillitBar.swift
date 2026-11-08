@@ -6,7 +6,7 @@ import SwiftUI
 /// Built by hand because the system search tab can't carry a mic or a reply card; the glass shapes share ids so they morph.
 struct AskSkillitBar: View {
     /// Bar height plus its gap above the home indicator; tabs pad their content by this much.
-    static let reservedHeight: CGFloat = 76
+    static let reservedHeight: CGFloat = 92
 
     @Environment(AppModel.self) private var app
     @Binding var selection: MainTabView.Section
