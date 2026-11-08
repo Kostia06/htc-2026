@@ -62,7 +62,7 @@ export function CompaniesList() {
         <ContentUnavailable
           icon={Building2}
           title={error ? "Couldn't load companies" : 'Nothing researched yet'}
-          description={error ?? 'Skillit researches the companies on your roadmap overnight.'}
+          description={error ?? 'Skillit researches the companies on your road overnight.'}
           className="companies__empty"
         >
           <RaisedButton onClick={load}>Try again</RaisedButton>

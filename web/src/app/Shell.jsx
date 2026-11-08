@@ -7,7 +7,7 @@ import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Rout
 import { Spinner } from '../ui/Button'
 
 const TABS = [
-  { to: '/roadmap', label: 'Roadmap', icon: Route },
+  { to: '/roadmap', label: 'Road', icon: Route },
   { to: '/for-you', label: 'For you', icon: GalleryVerticalEnd },
   { to: '/practice', label: 'Practice', icon: Glasses },
   { to: '/companies', label: 'Companies', icon: Building2 },

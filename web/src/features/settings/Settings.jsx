@@ -55,7 +55,7 @@ export function Settings() {
 
         <Group
           header="About"
-          footer="Skillit uses AI to read your resume, build your roadmap and run practice conversations. It can get things wrong; check anything before you rely on it."
+          footer="Skillit uses AI to read your resume, build your road and run practice conversations. It can get things wrong; check anything before you rely on it."
         >
           <GroupRow>
             <span className="row settings__labeled">
@@ -91,7 +91,7 @@ const KEPT = [
   [FileLock, 'Profile', 'Encrypted with a key tied to your account; only you can read it.'],
   [FileText, 'Resume text', 'Deleted an hour after upload. Only what you confirm stays, in your profile.'],
   [AudioWaveform, 'Practice sessions', 'Transcripts and scores, encrypted the same way.'],
-  [Route, 'Roadmap and feed', 'Built from your profile; rebuilt when it changes.'],
+  [Route, 'Road and feed', 'Built from your profile; rebuilt when it changes.'],
 ]
 
 export function Privacy() {
@@ -138,7 +138,7 @@ export function Privacy() {
           </GroupRow>
         </Group>
 
-        <Group footer="Removes your profile, memories, roadmap, feed and practice sessions from Skillit's servers, then signs you out. This can't be undone.">
+        <Group footer="Removes your profile, memories, road, feed and practice sessions from Skillit's servers, then signs you out. This can't be undone.">
           <GroupRow destructive onClick={deleting ? undefined : () => setConfirming(true)}>
             <span className="row settings__icon-label">
               Delete my data
@@ -150,7 +150,7 @@ export function Privacy() {
       {confirming && (
         <Confirm
           title="Delete everything Skillit knows about you?"
-          message="Your profile, memories, roadmap, feed and practice sessions are removed for good, and you're signed out."
+          message="Your profile, memories, road, feed and practice sessions are removed for good, and you're signed out."
           confirmLabel="Delete my data"
           onConfirm={eraseAll}
           onClose={() => setConfirming(false)}

@@ -76,13 +76,13 @@ export default function Roadmap() {
   return (
     <Page className="roadmap">
       <PageHeader
-        title="Roadmap"
+        title="Road"
         showTitle={false}
         actions={<BarButton icon={MessageSquarePlus} label="Update" showLabel onClick={() => navigate('/roadmap/update')} />}
       />
       {state.phase === 'loading' && <RoadmapSkeleton />}
       {state.phase === 'failed' && (
-        <ContentUnavailable icon={Route} title="Couldn't load your roadmap" description={state.message}>
+        <ContentUnavailable icon={Route} title="Couldn't load your road" description={state.message}>
           <RaisedButton onClick={load}>Try again</RaisedButton>
         </ContentUnavailable>
       )}

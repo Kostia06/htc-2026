@@ -10,7 +10,7 @@ import { Page, PageHeader } from '../../ui/Layout'
 import './practice.css'
 
 const LIFETIME_S = 120
-const HEADSET_SITE = 'raven-vr.ilnkostia-dev.workers.dev'
+const HEADSET_SITE = 'vr.skillit.study'
 
 export default function PairHeadset({ back = { to: '/practice', label: 'Practice' } }) {
   const [phase, setPhase] = useState('loading') // loading | code | connected | failed

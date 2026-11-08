@@ -16,6 +16,9 @@ const UNREADABLE = 'Something went wrong on our side. Try again in a moment.'
 
 const sentence = (text) => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text)
 
+// dev goes through Vite's /api proxy; the deployed app at app.skillit.study has no /api of its own
+const API_BASE = (import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? 'https://api.skillit.study' : '')).replace(/\/$/, '')
+
 let unauthorized = () => {}
 /** The app registers what a 401 does (sign out) once it starts. */
 export function onUnauthorized(fn) {
@@ -29,7 +32,7 @@ async function send(path, { method = 'GET', body, form, query, timeout } = {}) {
   if (token) headers.set('Authorization', `Bearer ${token}`)
   if (body !== undefined) headers.set('Content-Type', 'application/json')
   const params = query ? new URLSearchParams(Object.entries(query).filter(([, v]) => v !== undefined && v !== null && v !== '')) : null
-  const url = params && [...params].length ? `${path}?${params}` : path
+  const url = API_BASE + (params && [...params].length ? `${path}?${params}` : path)
   const controller = timeout ? new AbortController() : null
   const timer = controller ? setTimeout(() => controller.abort(), timeout) : null
   try {
