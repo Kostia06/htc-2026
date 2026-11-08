@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSkill } from './useSkill'
 import { Problem, Thinking, Updated } from './ui'
 import './plan.css'
@@ -23,6 +24,40 @@ function subline(total, left) {
   return `${count(left)} moves left. Start at the top: each one builds on the last.`
 }
 
+// which moves are ticked off, kept on this device next to the plan they belong to; a refreshed plan starts clean
+const doneKey = (userId, stamp) => `raven-ai:${userId}:${stamp}:plan-done`
+
+function useDone(userId, stamp, at) {
+  const k = doneKey(userId, stamp)
+  const [saved, setSaved] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(k) ?? 'null')
+    } catch {
+      return null
+    }
+  })
+  const done = new Set(saved?.at === at ? saved.done : [])
+  const toggle = (i) => {
+    const next = new Set(done)
+    if (next.has(i)) next.delete(i)
+    else next.add(i)
+    const value = { at, done: [...next] }
+    setSaved(value)
+    try {
+      localStorage.setItem(k, JSON.stringify(value))
+    } catch {
+      // private mode: ticks still show, they just aren't kept
+    }
+  }
+  return [done, toggle]
+}
+
+const Check = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12l5 5L20 7" />
+  </svg>
+)
+
 /** career-snapshot: the first thing someone sees after onboarding, run automatically from the profile they just saved. */
 export default function Plan({ userId, stamp, first, role, onGo }) {
   const [state, run] = useSkill({ userId, stamp, key: 'career-snapshot', skill: 'career-snapshot', auto: true })
@@ -33,7 +68,10 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
   const aim = roles[0] || role
   const name = first ? `, ${first}` : ''
   const title = steps.length ? `Your next ${count(steps.length).toLowerCase()} moves${name}.` : `Building your plan${name}.`
-  const next = steps[0]
+  const [done, toggle] = useDone(userId, stamp, state.at)
+  const left = steps.length - steps.filter((_, i) => done.has(i)).length
+  const nextIndex = steps.findIndex((_, i) => !done.has(i))
+  const next = steps[nextIndex]
 
   return (
     <div className="pl">
@@ -43,13 +81,14 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
           {aim ? `On the way to ${aim}` : 'Your career plan'}
         </span>
         <h1 className="pl__title">{title}</h1>
-        <p className="pl__sub">{subline(steps.length, steps.length)}</p>
+        <p className="pl__sub">{subline(steps.length, left)}</p>
       </section>
 
       <div className="pl__grid">
         <section className="pl__moves" aria-labelledby="pl-moves">
           <div className="pl__head">
             <h2 id="pl-moves">Your moves</h2>
+            {steps.length > 0 && <span>{steps.length - left} of {steps.length} done</span>}
           </div>
 
           {busy && !output && <Thinking>Raven is reading your profile and building your plan…</Thinking>}
@@ -57,9 +96,12 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
 
           {steps.map((s, i) => {
             const link = linkFor(s.step)
+            const isDone = done.has(i)
             return (
-              <article key={i} className="pl__card">
-                <span className="pl__check">{i + 1}</span>
+              <article key={i} className={`pl__card${isDone ? ' is-done' : ''}`}>
+                <button type="button" className="pl__check" onClick={() => toggle(i)} aria-pressed={isDone} aria-label={`${isDone ? 'Mark as not done' : 'Mark as done'}: ${s.step}`}>
+                  {isDone ? <Check /> : i + 1}
+                </button>
                 <div className="pl__body">
                   <h3>{s.step}</h3>
                   {s.why && <p>{s.why}</p>}
@@ -95,6 +137,16 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
             <section className="pl__panel">
               <span className="pl__label">Next up</span>
               <h2>{next.step}</h2>
+              <button type="button" className="pl__btn pl__btn--primary" onClick={() => toggle(nextIndex)}>Mark as done</button>
+            </section>
+          )}
+
+          {steps.length > 0 && !next && (
+            <section className="pl__panel">
+              <span className="pl__label">All done</span>
+              <h2>Every move is ticked off.</h2>
+              <p>Ask Raven for a fresh plan built on where you are now.</p>
+              <button type="button" className="pl__btn pl__btn--primary" onClick={() => run()} disabled={busy}>{busy ? 'Building…' : 'Refresh my plan'}</button>
             </section>
           )}
 
