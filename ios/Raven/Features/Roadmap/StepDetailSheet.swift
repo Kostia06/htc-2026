@@ -21,7 +21,7 @@ struct StepDetailSheet: View {
                         block("What you did", text: note, systemImage: "checkmark.seal.fill", tint: Theme.action)
                     }
                     if !step.why.isEmpty {
-                        block("Why this step", text: step.why, systemImage: "sparkles", tint: Theme.agent)
+                        block("Why this step", text: step.why, systemImage: "target", tint: Theme.agent)
                     }
                     if !step.detail.isEmpty {
                         block("How to do it", text: step.detail, systemImage: "list.bullet", tint: .secondary)

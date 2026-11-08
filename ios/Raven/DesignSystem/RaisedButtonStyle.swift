@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// Duolingo-style chunky button: a darker ledge under the face that the face sinks into when pressed.
+/// Chunky button: a darker ledge under the face that the face sinks into when pressed.
 struct RaisedButtonStyle: ButtonStyle {
     var color: Color = Theme.action
-    var foreground: Color = .white
+    var foreground: Color = Theme.onAction
     var depth: CGFloat = 5
     var cornerRadius: CGFloat = 16
 

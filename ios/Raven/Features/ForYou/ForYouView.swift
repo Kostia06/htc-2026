@@ -105,7 +105,7 @@ private extension View {
 private struct BuildingRow: View {
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "sparkles")
+            Image(systemName: "magnifyingglass")
                 .foregroundStyle(Theme.agent)
                 .symbolEffect(.pulse, options: .repeating)
             Text("Finding things for you…")
@@ -126,7 +126,7 @@ private struct EmptyFeed: View {
 
     var body: some View {
         ContentUnavailableView {
-            Label(title, systemImage: section == .saved ? "bookmark" : "sparkles")
+            Label(title, systemImage: section == .saved ? "bookmark" : "tray")
         } description: {
             Text(message ?? description)
         }

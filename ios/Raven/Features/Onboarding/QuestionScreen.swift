@@ -47,7 +47,7 @@ struct QuestionScreen: View {
 
 private struct FromResumeTag: View {
     var body: some View {
-        Label("From your resume", systemImage: "sparkles")
+        Label("From your resume", systemImage: "doc.text")
             .font(.footnote.weight(.semibold))
             .foregroundStyle(Theme.agent)
             .padding(.horizontal, 10)

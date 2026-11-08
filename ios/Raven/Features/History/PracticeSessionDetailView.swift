@@ -103,7 +103,7 @@ private struct TurnCard: View {
                 Text(deliveryLine(delivery)).font(.caption).foregroundStyle(.secondary)
             }
             if let tip = turn.tip, !tip.isEmpty {
-                Label(tip, systemImage: "sparkles")
+                Label(tip, systemImage: "lightbulb")
                     .font(.subheadline)
                     .foregroundStyle(Theme.agent)
                     .padding(12)

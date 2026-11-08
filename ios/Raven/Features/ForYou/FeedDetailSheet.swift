@@ -13,7 +13,7 @@ struct FeedDetailSheet: View {
                 VStack(alignment: .leading, spacing: 22) {
                     header
                     facts
-                    block("Why it's for you", text: card.why, systemImage: "sparkles", tint: Theme.agent)
+                    block("Why it's for you", text: card.why, systemImage: "target", tint: Theme.agent)
                     if let summary = card.summary {
                         block("About", text: summary, systemImage: "text.alignleft", tint: .secondary)
                     }

@@ -22,7 +22,7 @@ struct OnboardingHeader: View {
                 ProgressBar(progress: progress)
             }
             if isReadingResume {
-                Label("Reading your resume", systemImage: "sparkles")
+                Label("Reading your resume", systemImage: "doc.text.magnifyingglass")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(Theme.agent)
                     .padding(.leading, 56)
