@@ -8,7 +8,7 @@ import { type Executor, postgresDatabase } from "../src/db/postgres";
 import type { Row } from "../src/db/types";
 
 // applied in order, exactly like Supabase applies its migrations folder
-const SCHEMA = ["2026110801_raven_schema.sql", "2026110802_raven_features.sql"].map((name) =>
+const SCHEMA = ["2026110801_raven_schema.sql", "2026110802_raven_features.sql", "2026110803_user_postings.sql"].map((name) =>
   fileURLToPath(new URL(`../../supabase/migrations/${name}`, import.meta.url)),
 );
 
