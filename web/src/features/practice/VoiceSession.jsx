@@ -40,7 +40,7 @@ export default function VoiceSessionRoute() {
 function VoiceSession() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const request = { companySlug: params.get('company') || undefined, role: params.get('role') || undefined, difficulty: params.get('difficulty') || undefined, length: params.get('length') || undefined }
+  const request = { companySlug: params.get('company') || undefined, role: params.get('role') || undefined, difficulty: params.get('difficulty') || undefined, length: params.get('length') || undefined, postingId: params.get('posting') || undefined }
   const stepId = params.get('step')
 
   const [phase, setPhase] = useState('live') // live | typed | wrappingUp | finished | failed

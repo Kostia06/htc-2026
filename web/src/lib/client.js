@@ -118,8 +118,9 @@ export const feedApi = {
 export const voiceApi = {
   /** { sessionId, credentials, opening, role, company, questions } */
   // length 'quick' is the one-minute taster: two questions, no follow-ups; left off, the server runs a full interview
-  start: ({ companySlug, role, difficulty, length }) =>
-    post('/api/voice/sessions', { mode: 'interview', companySlug: companySlug || undefined, role: role || undefined, difficulty, length: length || undefined }),
+  // postingId: a saved job posting; the interviewer asks about its own responsibilities and requirements
+  start: ({ companySlug, role, difficulty, length, postingId }) =>
+    post('/api/voice/sessions', { mode: 'interview', companySlug: companySlug || undefined, role: role || undefined, difficulty, length: length || undefined, postingId: postingId || undefined }),
   turn: (id, turn) => post(`/api/voice/sessions/${id}/turns`, turn),
   finish: (id) => post(`/api/voice/sessions/${id}/finish`, { platform: 'app' }),
   history: (cursor) => request('/api/voice/history', { query: { cursor } }),

@@ -3,18 +3,16 @@
 import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
 import { ChartLine, Glasses, MessagesSquare, UserRoundSearch, Zap } from 'lucide-react'
-import { useApp } from '../../app/context'
 import { readPref, writePref } from '../../lib/cache'
 import { Segmented } from '../../ui/Controls'
 import { NavRow, Page, PageHeader } from '../../ui/Layout'
 import { DIFFICULTIES } from './difficulty'
+import NearbyJobs from './NearbyJobs'
 import './practice.css'
 
 export default function PracticeHome() {
   const navigate = useNavigate()
-  const { profile } = useApp()
   const [role, setRole] = useState('')
-  const targetRoles = profile?.targetRoles ?? []
   const [difficulty, setDifficulty] = useState(() => readPref('practiceDifficulty', 'standard'))
   const note = DIFFICULTIES.find((d) => d.id === difficulty)?.note
 
@@ -23,11 +21,13 @@ export default function PracticeHome() {
     writePref('practiceDifficulty', id)
   }
 
-  const start = ({ quick = false } = {}) => {
+  const start = ({ quick = false, posting } = {}) => {
     const params = new URLSearchParams({ difficulty })
+    // a real posting: the interviewer tests you on its own description
+    if (posting) params.set('posting', posting)
     if (quick) params.set('length', 'quick')
     // nothing picked: the server opens with the profile's first target role
-    if (role.trim()) params.set('role', role.trim())
+    if (!posting && role.trim()) params.set('role', role.trim())
     navigate(`/practice/session?${params}`)
   }
 
@@ -35,22 +35,10 @@ export default function PracticeHome() {
     <Page className="practice">
       <PageHeader title="Practice" large />
       <div className="practice__stack">
-        {/* InterviewTargetPicker.swift's summary line, with the profile's target roles one tap away */}
+        {/* what this interview is for; real postings near you are listed below */}
         <div className="practice__target">
           <p className="t-subhead c-2">You're practising for</p>
           <p className="t-title3">{role.trim() || 'A general interview'}</p>
-          {targetRoles.length > 0 && (
-            <div className="practice__roles">
-              {targetRoles.map((r) => {
-                const isOn = role.trim() === r
-                return (
-                  <button key={r} type="button" className={`chip t-subhead${isOn ? ' is-on' : ''}`} aria-pressed={isOn} onClick={() => setRole(isOn ? '' : r)}>
-                    {r}
-                  </button>
-                )
-              })}
-            </div>
-          )}
         </div>
 
         <div className="card practice__field">
@@ -63,6 +51,8 @@ export default function PracticeHome() {
             onKeyDown={(e) => e.key === 'Enter' && start()}
           />
         </div>
+
+        <NearbyJobs onPractise={(posting) => start({ posting })} />
 
         <div className="practice__difficulty">
           <Segmented label="Difficulty" options={DIFFICULTIES} value={difficulty} onChange={pick} />
