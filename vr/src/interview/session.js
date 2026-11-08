@@ -46,18 +46,32 @@ export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Softw
 
   const said = (text) => transcript.push({ speaker: 'interviewer', text })
 
+  async function mintToken() {
+    const auth = await call('/api/session', { method: 'POST' })
+    if (typeof localStorage !== 'undefined') localStorage.setItem('aim.token', auth.token)
+    return auth.token
+  }
+
   return {
     isStub: false,
 
     async start() {
-      const auth = await call('/api/session', { method: 'POST' })
-      token = auth.token
-      if (typeof localStorage !== 'undefined') localStorage.setItem('aim.token', token)
+      // Reuse a stored token. Minting is capped at 10/hour per IP, which a few
+      // demo rehearsals will burn through — and the failure reads as the app
+      // being broken rather than rate limited.
+      token = typeof localStorage !== 'undefined' ? localStorage.getItem('aim.token') : null
+      if (!token) token = await mintToken()
 
-      const started = await call('/api/voice/sessions', {
-        method: 'POST',
-        body: { mode: 'interview', ...(companySlug ? { companySlug } : {}), role },
-      })
+      const body = { mode: 'interview', ...(companySlug ? { companySlug } : {}), role }
+      let started
+      try {
+        started = await call('/api/voice/sessions', { method: 'POST', body })
+      } catch (err) {
+        // A stored token can be stale or belong to a pairing that has expired.
+        if (!/\(401\)/.test(err.message)) throw err
+        token = await mintToken()
+        started = await call('/api/voice/sessions', { method: 'POST', body })
+      }
       sessionId = started.sessionId
       transcript = []
       scored = 0
