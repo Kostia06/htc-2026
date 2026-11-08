@@ -48,13 +48,18 @@ final class VoiceSessionModel: Identifiable {
     }
 
     func run() async {
-        guard let session = await startSession() else { return }
+        guard let session = await startSession(), !Task.isCancelled else { return }
         self.session = session
         company = session.company
         for await event in engine.start(session) {
             handle(event, in: session)
         }
-        guard phase == .live, !Task.isCancelled else { return }
+        // the screen went away mid-call: hang up, or the mic and the agent keep going in the background
+        if Task.isCancelled {
+            engine.stop()
+            return
+        }
+        guard phase == .live else { return }
         if let last = transcript.flush() {
             submit(last, in: session)
         }

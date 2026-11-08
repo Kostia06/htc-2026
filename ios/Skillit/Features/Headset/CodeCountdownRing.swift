@@ -7,8 +7,12 @@ struct CodeCountdownRing: View {
     /// how long a code lives on the server; used to turn the time left into a fraction
     private let lifetime: TimeInterval = 120
 
-    @ScaledMetric(relativeTo: .largeTitle) private var digitSize: CGFloat = 64
-    @ScaledMetric(relativeTo: .largeTitle) private var diameter: CGFloat = 272
+    @ScaledMetric(relativeTo: .largeTitle) private var scaledDigitSize: CGFloat = 64
+    @ScaledMetric(relativeTo: .largeTitle) private var scaledDiameter: CGFloat = 272
+
+    /// Past this the ring is wider than a phone at accessibility text sizes; the digits are already huge by then.
+    private var diameter: CGFloat { min(scaledDiameter, 300) }
+    private var digitSize: CGFloat { min(scaledDigitSize, 72) }
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in

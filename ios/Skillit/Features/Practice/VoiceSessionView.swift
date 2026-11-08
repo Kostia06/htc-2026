@@ -75,6 +75,8 @@ struct VoiceSessionView: View {
             Text(model.question?.text ?? "")
                 .font(.title.weight(.semibold))
                 .multilineTextAlignment(.center)
+                // nothing on this screen scrolls, so a long question at a large text size shrinks rather than clips
+                .minimumScaleFactor(0.5)
                 .contentTransition(.opacity)
         }
         .frame(maxWidth: .infinity, minHeight: 160, alignment: .bottom)
