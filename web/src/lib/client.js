@@ -230,7 +230,8 @@ export const notificationsApi = {
   readAll: () => post('/api/notifications/read', { all: true }),
 }
 
-export const sendUpdate = (message, conversation) => post('/api/updates', { message, conversation })
+// focusStepId: the step a "Mark done" chat is about; the server marks it done whatever the words say
+export const sendUpdate = (message, conversation, focusStepId) => post('/api/updates', { message, conversation, focusStepId })
 
 export const recapApi = {
   /** { reply, done, extracted, shared } */

@@ -98,7 +98,7 @@ export function MarkDoneSheet() {
   const navigate = useNavigate()
   const { reload } = useOutletContext()
   const { step } = useStep()
-  return <QuickUpdate key={step?.id ?? 'loading'} focusTitle={step?.title ?? 'this step'} onApplied={reload} onClose={() => navigate(BACK)} />
+  return <QuickUpdate key={step?.id ?? 'loading'} focusTitle={step?.title ?? 'this step'} focusStepId={step?.id} onApplied={reload} onClose={() => navigate(BACK)} />
 }
 
 export function UpdateSheet() {

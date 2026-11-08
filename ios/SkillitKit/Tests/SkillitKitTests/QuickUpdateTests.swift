@@ -40,6 +40,17 @@ extension StubbedNetworkTests {
             #expect(sent["message"] as? String == "the Flask one")
             let lines = [["speaker": "user", "text": "finished my project"], ["speaker": "raven", "text": "Which one?"]]
             #expect(sent["conversation"] as? [[String: String]] == lines)
+            #expect(sent["focusStepId"] == nil)
+        }
+
+        @Test func `names the step a Mark done chat is about`() async throws {
+            StubProtocol.routes.withLock {
+                $0["POST /api/updates"] = (200, #"{"reply":"Done.","needsAnswer":false,"applied":[]}"#)
+            }
+            _ = try await client.quickUpdate(.init(message: "shipped it", focusStepID: "st_1"))
+            let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/updates"] })
+            let sent = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            #expect(sent["focusStepId"] as? String == "st_1")
         }
 
         @Test func `reads a clarifying question with nothing applied`() async throws {

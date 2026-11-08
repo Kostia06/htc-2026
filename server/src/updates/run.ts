@@ -13,7 +13,8 @@ export const DEFAULT_TIMEOUT_MS = 6_000;
 const MAX_MESSAGES = 20;
 const MAX_STEPS = 40;
 
-type UpdateTurn = { userId: string; messages: UpdateMessage[]; timeoutMs?: number; waitUntil?: (work: Promise<unknown>) => void };
+/** `focusStepId` is the step whose "Mark done" opened the chat: it is marked done whatever the model makes of the words. */
+type UpdateTurn = { userId: string; messages: UpdateMessage[]; focusStepId?: string; timeoutMs?: number; waitUntil?: (work: Promise<unknown>) => void };
 
 /** One question per update: once Skillit has replied to what the person said, there is none left. */
 export const canStillAsk = (messages: UpdateMessage[]) => {
@@ -57,20 +58,41 @@ export async function runQuickUpdate(deps: AgentDeps, turn: UpdateTurn): Promise
     projects: profile.projects.map((p) => p.name),
   };
 
-  const run = await withTimeout(
-    orchestrate(deps, { skillId: "quick-update", platform: "app", userId: turn.userId, input }),
-    turn.timeoutMs ?? DEFAULT_TIMEOUT_MS,
-    turn.waitUntil,
-  );
-  if (run.status === "failed") throw new UpdateFailed(run.error);
+  const ctx = { env: deps.env, userId: turn.userId, memory, openSteps, said: lastSaid(messages) };
+  // only one of their open steps can be the focus, so a foreign or finished id changes nothing
+  const focus = openSteps.find((s) => s.id === turn.focusStepId);
+  const markFocus = async () => (await applyActions(ctx, [{ type: "complete_step", stepId: focus!.id }])).applied;
 
-  const output = run.output as QuickUpdateOutput;
+  let output: QuickUpdateOutput;
+  try {
+    const run = await withTimeout(
+      orchestrate(deps, { skillId: "quick-update", platform: "app", userId: turn.userId, input }),
+      turn.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      turn.waitUntil,
+    );
+    if (run.status === "failed") throw new UpdateFailed(run.error);
+    output = run.output as QuickUpdateOutput;
+  } catch (e) {
+    // a model that fails or stalls can't stop "Mark done"; anything else (a refused run) still surfaces
+    if (!focus || !(e instanceof UpdateFailed || e instanceof UpdateTimedOut)) throw e;
+    const applied = await markFocus();
+    return { reply: confirmation(applied), needsAnswer: false, applied };
+  }
+  // with a focus the step is already known, so a question (and the guesses that came with it) is not needed
+  if (output.needsAnswer && focus) {
+    const applied = await markFocus();
+    return { reply: confirmation(applied), needsAnswer: false, applied };
+  }
   if (output.needsAnswer) return { reply: output.reply, needsAnswer: true, applied: [] };
 
   // an unknown key stays as it is and is refused by applyActions, like any other id that isn't theirs
-  const proposed: ProposedAction[] = (output.actions ?? []).map((a) => (a.stepId ? { ...a, stepId: idOf.get(a.stepId) ?? a.stepId } : a));
-  const { applied, dropped } = await applyActions({ env: deps.env, userId: turn.userId, memory, openSteps, said: lastSaid(messages) }, proposed);
+  const proposed: ProposedAction[] = (output.actions ?? [])
+    .map((a) => (a.stepId ? { ...a, stepId: idOf.get(a.stepId) ?? a.stepId } : a))
+    .filter((a) => !focus || a.stepId !== focus.id);
+  const focused = focus ? await markFocus() : [];
+  const { applied, dropped } = await applyActions(ctx, proposed);
+  const all = [...focused, ...applied];
   // the model's line promised what it proposed; when any of that was refused, say what really happened instead
-  const reply = dropped > 0 || (applied.length === 0 && !output.reply) ? confirmation(applied) : output.reply;
-  return { reply, needsAnswer: false, applied };
+  const reply = dropped > 0 || (all.length === 0 && !output.reply) ? confirmation(all) : output.reply;
+  return { reply, needsAnswer: false, applied: all };
 }

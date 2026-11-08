@@ -29,18 +29,20 @@ final class QuickUpdateModel: ChatDraftModel {
     private var listening: Task<Void, Never>?
     /// Set when the chat closes mid-dictation, so what was heard is dropped instead of sent.
     private var discardsHeard = false
+    private let focusStepID: String?
 
-    /// With a `focusTitle` the chat is about one roadmap step: Skillit opens by asking what they did for it, and that
-    /// question goes to the server with the first answer, so it knows which step is meant without asking.
+    /// With a `focus` the chat is about one roadmap step: Skillit opens by asking what they did for it, and every
+    /// update names the step, so the server marks it done without having to guess which one is meant.
     init(
-        service: any QuickUpdateService, dictation: any Dictation, focusTitle: String? = nil,
+        service: any QuickUpdateService, dictation: any Dictation, focus: RoadmapStep? = nil,
         onApplied: @escaping ([AppliedChange]) -> Void,
     ) {
         self.service = service
         self.dictation = dictation
         self.onApplied = onApplied
-        if let focusTitle {
-            messages = [Message(role: .skillit, text: "What did you do for \u{201C}\(focusTitle)\u{201D}? Type it or tap the mic.")]
+        focusStepID = focus?.id
+        if let focus {
+            messages = [Message(role: .skillit, text: "What did you do for \u{201C}\(focus.title)\u{201D}? Type it or tap the mic.")]
             turnStart = 0
         } else {
             messages = [Message(role: .skillit, text: Self.opening)]
@@ -75,7 +77,7 @@ final class QuickUpdateModel: ChatDraftModel {
             if let posting = PostingDetection.detect(text) {
                 try await handle(service.importPosting(posting))
             } else {
-                try await handle(service.quickUpdate(QuickUpdateRequest(message: text, conversation: conversation)))
+                try await handle(service.quickUpdate(QuickUpdateRequest(message: text, conversation: conversation, focusStepID: focusStepID)))
             }
         } catch {
             self.error = error.message

@@ -20,10 +20,18 @@ public struct QuickUpdateLine: Codable, Equatable, Sendable {
 public struct QuickUpdateRequest: Encodable, Equatable, Sendable {
     public var message: String
     public var conversation: [QuickUpdateLine]
+    /// The step whose "Mark done" opened the chat; the server marks it done whatever the words say.
+    public var focusStepID: String?
 
-    public init(message: String, conversation: [QuickUpdateLine] = []) {
+    public init(message: String, conversation: [QuickUpdateLine] = [], focusStepID: String? = nil) {
         self.message = message
         self.conversation = conversation
+        self.focusStepID = focusStepID
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case message, conversation
+        case focusStepID = "focusStepId"
     }
 }
 

@@ -27,7 +27,7 @@ export function updatesRouter(makeDeps: MakeDeps, options: Options = {}) {
   const router = new Hono<AppContext>();
 
   router.post("/", async (c) => {
-    const body = await c.req.json<{ message?: unknown; conversation?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ message?: unknown; conversation?: unknown; focusStepId?: unknown }>().catch(() => null);
     const conversation = body?.conversation === undefined ? [] : parseTranscript(body.conversation);
     if (!body || !conversation || typeof body.message !== "string" || !body.message.trim() || body.message.length > MAX_MESSAGE) {
       return c.json({ error: "send your update, and the conversation so far if there is one" }, 400);
@@ -37,8 +37,10 @@ export function updatesRouter(makeDeps: MakeDeps, options: Options = {}) {
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
     const messages = [...conversation, { role: "user" as const, text: body.message.trim() }];
+    const focusStepId = typeof body.focusStepId === "string" ? body.focusStepId : undefined;
     try {
-      return c.json(await runQuickUpdate(makeDeps(c.env, waitUntil), { userId, messages, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, waitUntil }));
+      const turn = { userId, messages, focusStepId, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, waitUntil };
+      return c.json(await runQuickUpdate(makeDeps(c.env, waitUntil), turn));
     } catch (e) {
       if (e instanceof RunRejected) return c.json({ error: e.message }, e.status);
       if (e instanceof UpdateFailed) return c.json({ error: "Skillit couldn't follow that one. Try saying it another way." }, 502);

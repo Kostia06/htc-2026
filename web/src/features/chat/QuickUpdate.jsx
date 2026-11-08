@@ -15,7 +15,7 @@ const PROFILE_CHANGES = ['add_project', 'add_experience', 'add_skill', 'remove_s
 let nextId = 0
 const line = (role, text) => ({ id: ++nextId, role, text })
 
-export default function QuickUpdate({ focusTitle, onApplied, onClose }) {
+export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClose }) {
   const app = useApp()
   const [messages, setMessages] = useState(() => [
     line('raven', focusTitle ? `What did you do for “${focusTitle}”? Type it or tap the mic.` : OPENING),
@@ -40,7 +40,7 @@ export default function QuickUpdate({ focusTitle, onApplied, onClose }) {
     setError(null)
     setThinking(true)
     try {
-      const reply = await sendUpdate(text, conversation)
+      const reply = await sendUpdate(text, conversation, focusStepId)
       const said = line('raven', reply.reply)
       setMessages((m) => {
         const next = [...m, said]

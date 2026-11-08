@@ -59,7 +59,7 @@ struct RoadmapPath: View {
         }
         // "what did you do?" by text or voice; Skillit marks the step done itself and only asks if it must
         .sheet(item: $model.finishing) { step in
-            QuickUpdateView(focusTitle: step.title) { _ in
+            QuickUpdateView(focus: step) { _ in
                 Task { await model.load() }
             }
         }

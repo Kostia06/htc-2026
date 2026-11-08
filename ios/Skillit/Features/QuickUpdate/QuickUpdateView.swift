@@ -10,7 +10,7 @@ struct QuickUpdateView: View {
     @FocusState private var isTyping: Bool
 
     /// Set when marking one roadmap step done, so the chat starts by asking about that step.
-    var focusTitle: String?
+    var focus: RoadmapStep?
     /// Called after every reply that changed something, so the parent can reload what it shows.
     let onApplied: ([AppliedChange]) -> Void
 
@@ -18,7 +18,7 @@ struct QuickUpdateView: View {
         NavigationStack {
             Group {
                 if let model {
-                    QuickUpdateConversation(model: model, focusTitle: focusTitle, isTyping: $isTyping)
+                    QuickUpdateConversation(model: model, focusTitle: focus?.title, isTyping: $isTyping)
                         // focused once the field exists; setting it before the field is on screen does nothing
                         .task { isTyping = true }
                 } else {
@@ -26,7 +26,7 @@ struct QuickUpdateView: View {
                 }
             }
             .background(Theme.ground)
-            .navigationTitle(focusTitle == nil ? "Update" : "Mark done")
+            .navigationTitle(focus == nil ? "Update" : "Mark done")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -40,10 +40,10 @@ struct QuickUpdateView: View {
             guard model == nil else { return }
             // screenshots and previews run without a signed-in client; they get the offline service and a scripted mic
             if let client = app.client {
-                model = QuickUpdateModel(service: client, dictation: SpeechDictation(), focusTitle: focusTitle, onApplied: applied)
+                model = QuickUpdateModel(service: client, dictation: SpeechDictation(), focus: focus, onApplied: applied)
             } else {
                 model = QuickUpdateModel(
-                    service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), focusTitle: focusTitle, onApplied: applied,
+                    service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), focus: focus, onApplied: applied,
                 )
             }
         }

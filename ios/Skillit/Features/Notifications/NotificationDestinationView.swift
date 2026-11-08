@@ -107,7 +107,7 @@ private struct StepDestination: View {
                 VoiceSessionView(model: session, onPracticeAgain: practice)
             }
             .sheet(isPresented: $isFinishing) {
-                QuickUpdateView(focusTitle: step.title) { app.noteApplied($0) }
+                QuickUpdateView(focus: step) { app.noteApplied($0) }
             }
     }
 

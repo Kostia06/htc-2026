@@ -59,6 +59,32 @@ describe("POST /api/updates", () => {
     expect(goal).toContain("You may ask one clarifying question");
   });
 
+  it("marks the step the chat was opened from done, whatever the model proposes", async () => {
+    const me = await person();
+    const [flask, sql] = await seedSteps(me.id, [step("project", "Build a Flask dashboard"), step("course", "Finish the SQL course")]);
+    const { app } = updatesApp([finish("Which step was that?", [{ type: "complete_step", stepId: "s1" }, { type: "add_skill", name: "Flask" }], true)]);
+
+    const body = await (await send(app, me.token, { message: "shipped it with charts", focusStepId: sql.id })).json<Reply>();
+    expect(body.needsAnswer).toBe(false);
+    expect(body.applied).toEqual([{ type: "complete_step", summary: 'Marked "Finish the SQL course" done' }]);
+    const steps = await loadAll(env, me.id);
+    expect(steps.find((s) => s.id === sql.id)).toMatchObject({ status: "done", note: "shipped it with charts" });
+    expect(steps.find((s) => s.id === flask.id)?.status).toBe("todo");
+  });
+
+  it("still marks the focused step done when the model fails, and never someone else's", async () => {
+    const other = await person();
+    const [theirs] = await seedSteps(other.id, [step("project", "Their project")]);
+    const me = await person();
+    const [mine] = await seedSteps(me.id, [step("project", "My project")]);
+    const broken = () => updatesApp([{ role: "model", parts: [{ text: "hmm" }] }]).app;
+
+    expect((await send(broken(), me.token, { message: "done", focusStepId: mine.id })).status).toBe(200);
+    expect((await loadAll(env, me.id))[0].status).toBe("done");
+    expect((await send(broken(), me.token, { message: "done", focusStepId: theirs.id })).status).toBe(502);
+    expect((await loadAll(env, other.id))[0].status).toBe("todo");
+  });
+
   it("asks one question when the update is ambiguous, then applies with no question left", async () => {
     const me = await person();
     await seedSteps(me.id, [step("project", "Build a Flask dashboard"), step("project", "Ship the portfolio site")]);
