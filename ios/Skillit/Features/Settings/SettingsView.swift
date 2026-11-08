@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Grouped, minimal: who you are, practice, your data, about. Sign out sits alone at the bottom.
+/// Behind the Profile tab's gear: account, voice, your data, about. Sign out sits alone at the bottom.
+/// Headsets and Crossroads have their own doors on the Profile tab, so they aren't repeated here.
 struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @State private var isConfirmingSignOut = false
@@ -12,9 +13,6 @@ struct SettingsView: View {
             }
             .listRowBackground(Theme.raised)
             Section {
-                NavigationLink { PairHeadsetView() } label: {
-                    Label("Pair a headset", systemImage: "visionpro")
-                }
                 LabeledContent {
                     Text("Eric")
                 } label: {
@@ -27,9 +25,6 @@ struct SettingsView: View {
             }
             .listRowBackground(Theme.raised)
             Section("Privacy") {
-                NavigationLink { MemoryView() } label: {
-                    Label("What Skillit remembers", systemImage: "brain")
-                }
                 NavigationLink { PrivacyView() } label: {
                     Label("Your data", systemImage: "lock.shield")
                 }

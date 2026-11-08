@@ -1,4 +1,4 @@
-// SkillsEditor.swift as a sheet at /profile/skills: add (with suggestions), rename in place, remove.
+// SkillsEditor.swift as a sheet at /profile/details/skills: add (with suggestions), rename in place, remove.
 // Nothing is saved until Done, and then it's one patch through the page's `edit`.
 import { useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router'
@@ -40,7 +40,7 @@ export function SkillsEditor() {
 
   return (
     <Sheet
-      onClose={() => navigate('/profile')}
+      onClose={() => navigate('/profile/details')}
       size="detail"
       header={{
         title: 'Edit skills',

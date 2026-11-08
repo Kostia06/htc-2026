@@ -1,10 +1,10 @@
-// ExperienceForm.swift and EducationForm.swift as sheets at /profile/experience/:index and /profile/education/:index
+// ExperienceForm.swift and EducationForm.swift as sheets at /profile/details/experience/:index and /profile/details/education/:index
 // ("new" adds one). Cancel and Save in the bar; an existing entry can also be deleted here.
 import { useEffect, useState } from 'react'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
 import { Sheet } from '../../ui/Sheet'
 
-const BACK = '/profile'
+const BACK = '/profile/details'
 
 function FormSheet({ title, canSave, onSave, onDelete, children }) {
   const navigate = useNavigate()
