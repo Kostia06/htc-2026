@@ -11,4 +11,4 @@ Raven in the Meta Quest Browser: sign in by typing the 4-digit code from the pho
 
 ## Deploy
 
-`pnpm deploy` builds and uploads the static site to https://raven-vr.ilnkostia-dev.workers.dev. The API address comes from `.env.production`; the API only accepts browser calls from origins listed in `ALLOWED_ORIGINS` in `server/wrangler.jsonc`.
+`pnpm run deploy` builds and uploads the static site to https://raven-vr.ilnkostia-dev.workers.dev. The API address comes from `.env.production`; the API only accepts browser calls from origins listed in `ALLOWED_ORIGINS` in `server/wrangler.jsonc`.
