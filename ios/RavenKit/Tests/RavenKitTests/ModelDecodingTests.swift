@@ -2,19 +2,6 @@ import Foundation
 @testable import RavenKit
 import Testing
 
-struct PairingCodeTests {
-    @Test(arguments: ["raven://pair?code=K7M2Q9XD", "K7M2-Q9XD", "k7m2q9xd"])
-    func `reads a code from a link or typed text`(payload: String) throws {
-        let code = try #require(PairingCode(scanned: payload))
-        #expect(code.value == "K7M2Q9XD")
-    }
-
-    @Test(arguments: ["https://evil.example/pair?code=K7M2Q9XD", "K7M2Q9X", "K0M2Q9XD", "raven://other?code=K7M2Q9XD"])
-    func `refuses anything that isn't a Raven pairing code`(payload: String) {
-        #expect(PairingCode(scanned: payload) == nil)
-    }
-}
-
 struct ProfileDecodingTests {
     @Test func `treats missing lists in a draft as empty`() throws {
         let json = Data(#"{"headline":"Student","skills":[{"name":"SQL","source":"self-reported"}]}"#.utf8)

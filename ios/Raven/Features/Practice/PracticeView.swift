@@ -33,11 +33,6 @@ struct PracticeView: View {
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
             .fullScreenCover(item: $activeSession) { VoiceSessionView(model: $0) }
-            .onChange(of: app.pendingPairing, initial: true) { _, code in
-                if code != nil {
-                    isPairing = true
-                }
-            }
         }
     }
 

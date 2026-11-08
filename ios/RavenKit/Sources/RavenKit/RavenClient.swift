@@ -35,10 +35,6 @@ public struct RavenClient: Sendable {
         return response.profile
     }
 
-    public func approveHeadset(_ code: PairingCode) async throws(RavenError) {
-        let _: PairedResponse = try await send(authorized("POST", "api/pairing/\(code.value)/approve"))
-    }
-
     public func deleteProfile() async throws(RavenError) {
         _ = try await responseData(for: authorized("DELETE", "api/me/profile"))
     }
@@ -105,7 +101,6 @@ private struct Request {
 }
 
 private struct ProfileResponse: Decodable { let profile: Profile }
-private struct PairedResponse: Decodable { let paired: Bool }
 private struct ErrorResponse: Decodable { let error: String }
 private struct ConfirmBody: Encodable {
     let documentId: String?

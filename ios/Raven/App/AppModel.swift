@@ -16,8 +16,6 @@ final class AppModel {
     private(set) var phase: Phase = .starting
     private(set) var client: RavenClient?
     var profile: Profile = .empty
-    /// A headset code that arrived from the Camera app before the person reached the pairing screen.
-    var pendingPairing: PairingCode?
     var feed = ForYouModel()
 
     let authenticator: Authenticator
@@ -69,10 +67,5 @@ final class AppModel {
     func finishOnboarding(with profile: Profile) {
         self.profile = profile
         phase = .ready
-    }
-
-    func handle(_ url: URL) {
-        guard let code = PairingCode(link: url) else { return }
-        pendingPairing = code
     }
 }
