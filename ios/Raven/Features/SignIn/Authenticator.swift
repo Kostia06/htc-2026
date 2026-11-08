@@ -21,6 +21,13 @@ final class Authenticator: Sendable {
         auth.currentSession != nil
     }
 
+    /// What to show for the account: the email when there is one; Apple can hide it, so the provider is the fallback.
+    var accountLabel: String {
+        guard let user = auth.currentSession?.user else { return "Not signed in" }
+        if let email = user.email { return email }
+        return user.appMetadata["provider"]?.stringValue == "apple" ? "Apple ID" : "Signed in"
+    }
+
     var accessToken: AccessTokenProvider {
         { [auth] in try await auth.session.accessToken }
     }
