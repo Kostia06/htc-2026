@@ -3,7 +3,7 @@
   "brand": "Raven",
   "wordmark": "raven",
   "links": {
-    "_note": "app / login: the product app's sign-up and sign-in screens. {appUrl} comes from APP_URL (landing/.env.local), default http://localhost:5173.",
+    "_note": "app / login: the product app's sign-up and sign-in screens. {appUrl} comes from APP_URL (landing/.env.local), default /app (same site).",
     "app": "{appUrl}/?mode=signup",
     "login": "{appUrl}/?mode=signin",
     "how": "#how",
