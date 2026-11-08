@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SignedOutError } from '../headset/api.js'
 import { fetchReplay, fetchReplayAudio } from './api.js'
+import { CLIP_CAP_SEC } from './moments.js'
 
 // ElevenLabs finishes the recording a little after the call ends, so a fresh review asks again a few times
 const PROCESSING_RETRY_MS = 5000
@@ -81,16 +82,25 @@ export function useReview({ token, onSignedOut } = {}) {
     setPlayingId(null)
   }, [])
 
-  // the moment's time already sits a second and a half before the answer, so playback catches its first words
+  // the moment's time already sits a second and a half before the answer, so playback catches its first words;
+  // it stops at the clip's end (moments.js clipEnd) instead of running on through the rest of the call
   const playFrom = useCallback((row) => {
     const element = audio.current
     if (!element || !row?.canPlay) return
+    const end = row.end ?? row.t + CLIP_CAP_SEC
+    element.ontimeupdate = () => {
+      if (element.currentTime < end) return
+      element.pause()
+      element.ontimeupdate = null
+      setPlayingId(null)
+    }
     element.currentTime = row.t
     element.play().catch(() => setPlayingId(null))
     setPlayingId(row.id)
   }, [])
 
   const pause = useCallback(() => {
+    if (audio.current) audio.current.ontimeupdate = null
     audio.current?.pause()
     setPlayingId(null)
   }, [])

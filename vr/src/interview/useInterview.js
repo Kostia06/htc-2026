@@ -7,6 +7,7 @@ import { ensureMicrophone, micProblem } from './microphone.js'
 import { voicePathOf } from './voicePath.js'
 import { isLaunch } from './picker.js'
 import { reportAfterCall } from './endOfInterview.js'
+import { useCaptionTrack } from './useCaptionTrack.js'
 
 // Phases: idle -> asking -> listening -> scoring -> asking -> ... -> done
 // 'awaiting' only happens when there is no microphone and we fall back to a button.
@@ -64,6 +65,13 @@ export function useInterview(auth = {}) {
   const [error, setError] = useState(null)
   const [muted, setMuted] = useState(false)
 
+  // The headset caption: the interviewer's words paced to the speech while they
+  // talk, the candidate's own words only during their turn (captionTrack.js).
+  const captionTrack = useCaptionTrack()
+  const dispatchCaption = captionTrack.dispatch
+  useEffect(() => dispatchCaption({ type: 'speaking', speaking }), [speaking, dispatchCaption])
+  useEffect(() => dispatchCaption({ type: 'userText', text: transcript }), [transcript, dispatchCaption])
+
   const alive = useRef(true)
   const running = useRef(false)
   const askedRef = useRef(null) // the exact line the candidate is answering
@@ -96,6 +104,7 @@ export function useInterview(auth = {}) {
     async (text) => {
       if (!text) return
       setCaption(text)
+      dispatchCaption({ type: 'agentText', text })
       if (muted) return
       // Resolve the audio first so the mouth is timed to the real clip, not a
       // word-count guess. Quest Browser has no voices, so when neither a clip
@@ -110,7 +119,7 @@ export function useInterview(auth = {}) {
         if (alive.current) setSpeaking(false)
       }
     },
-    [muted, speaker],
+    [dispatchCaption, muted, speaker],
   )
 
   // Open the mic and let the candidate talk. Ends on its own when they stop.
@@ -265,6 +274,7 @@ export function useInterview(auth = {}) {
         onAgentText: (text) => {
           if (!alive.current || !text) return
           setCaption(text)
+          dispatchCaption({ type: 'agentText', text })
           setQuestion(text)
           askedRef.current = text
         },
@@ -310,7 +320,7 @@ export function useInterview(auth = {}) {
       // still retrying: its onState shows "Reconnecting…", and onError ends it if that runs out
       if (!connected?.ok && agent.state !== 'reconnecting') abandon(agent, connected?.message)
     },
-    [callClock, finishAgentCall, session],
+    [callClock, dispatchCaption, finishAgentCall, session],
   )
 
   // `launch` is what the phone sent ({ companySlug, role }); the Begin button
@@ -386,11 +396,12 @@ export function useInterview(auth = {}) {
     setSummary(null)
     setCaption('')
     setTranscript('')
+    dispatchCaption({ type: 'reset' })
     setError(null)
     setMicDenied(false)
     setRecording(false)
     callClock.reset()
-  }, [callClock, speaker, vad])
+  }, [callClock, dispatchCaption, speaker, vad])
 
   const toggleMute = useCallback(() => {
     setMuted((m) => {
@@ -433,6 +444,7 @@ export function useInterview(auth = {}) {
     summary,
     transcript,
     caption,
+    liveCaption: captionTrack.text,
     speaking,
     speechMs,
     heard,

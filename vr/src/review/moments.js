@@ -24,6 +24,25 @@ const hostOf = (url) => {
   }
 }
 
+// a moment with nothing to end it plays this long at most
+export const CLIP_CAP_SEC = 20
+const MIN_CLIP_SEC = 3
+// `t` sits a second and a half before the answer: an interviewer line inside
+// this window is the question being asked, not the reply that ends the answer
+const ANSWER_LEAD_SEC = 2
+
+/**
+ * Where a moment's clip stops: when the interviewer next speaks (the end of
+ * that answer), else at the next moment, never past CLIP_CAP_SEC or the call.
+ */
+export function clipEnd(t, { transcript = [], nextT = null, durationSec = null } = {}) {
+  const reply = transcript.find((line) => line.speaker === 'agent' && line.t > t + ANSWER_LEAD_SEC)
+  let end = reply ? reply.t : nextT != null && nextT > t ? nextT : t + CLIP_CAP_SEC
+  end = Math.min(end, t + CLIP_CAP_SEC)
+  if (durationSec) end = Math.min(end, durationSec)
+  return Math.max(end, Math.min(t + MIN_CLIP_SEC, durationSec || Infinity))
+}
+
 /**
  * One row per moment, in time order. `canPlay` is false until the recording is ready, and for a session timed only
  * by answer order, where `t` isn't a second in any recording.
@@ -32,8 +51,9 @@ export function reviewRows(replay) {
   if (!replay) return []
   const seconds = replay.timing === 'seconds'
   const playable = seconds && Boolean(replay.audioUrl)
-  return [...replay.moments]
-    .sort((a, b) => a.t - b.t)
+  const transcript = [...(replay.transcript ?? [])].sort((a, b) => a.t - b.t)
+  const sorted = [...replay.moments].sort((a, b) => a.t - b.t)
+  return sorted
     .map((m) => ({
       id: `${m.kind}-${m.turn}-${m.t}`,
       tone: KIND_TONE[m.kind] ?? KIND_TONE.delivery,
@@ -43,6 +63,7 @@ export function reviewRows(replay) {
       better: m.better ?? null,
       when: seconds ? clock(m.t) : `Question ${m.turn + 1}`,
       t: m.t,
+      end: seconds ? clipEnd(m.t, { transcript, nextT: sorted.find((n) => n.t > m.t)?.t ?? null, durationSec: replay.durationSec }) : null,
       canPlay: playable,
       researched: m.kind === 'researched',
       sources: (m.sources ?? []).map((s) => hostOf(s.url)),

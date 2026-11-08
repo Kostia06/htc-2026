@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clock, recordingNote, reviewRows } from './moments.js'
+import { CLIP_CAP_SEC, clipEnd, clock, recordingNote, reviewRows } from './moments.js'
 
 const replay = {
   audioUrl: '/api/voice/sessions/s1/replay/audio',
@@ -41,5 +41,34 @@ describe('review rows', () => {
     expect(clock(7)).toBe('0:07')
     expect(clock(750)).toBe('12:30')
     expect(reviewRows(null)).toEqual([])
+  })
+})
+
+describe('clip ends', () => {
+  const transcript = [
+    { t: 7, speaker: 'agent', text: 'Tell me about yourself.' },
+    { t: 10, speaker: 'person', text: 'I build things.' },
+    { t: 24, speaker: 'agent', text: 'Nice. What went wrong?' },
+  ]
+
+  it('stops when the interviewer replies, not at the question being asked', () => {
+    expect(clipEnd(8.5, { transcript })).toBe(24)
+  })
+
+  it('falls back to the next moment, then to the cap', () => {
+    expect(clipEnd(30, { transcript, nextT: 41 })).toBe(41)
+    expect(clipEnd(30, { transcript })).toBe(30 + CLIP_CAP_SEC)
+    expect(clipEnd(0, { transcript: [{ t: 100, speaker: 'agent', text: 'x' }] })).toBe(CLIP_CAP_SEC)
+  })
+
+  it('never runs past the end of the call, and is never shorter than a few seconds', () => {
+    expect(clipEnd(110, { durationSec: 120 })).toBe(120)
+    expect(clipEnd(30, { nextT: 30.5 })).toBe(33)
+  })
+
+  it('gives each row its end', () => {
+    const rows = reviewRows({ ...replay, transcript })
+    expect(rows.map((r) => r.end)).toEqual([24, 62.5 + CLIP_CAP_SEC])
+    expect(reviewRows({ ...replay, timing: 'order' }).every((r) => r.end === null)).toBe(true)
   })
 })

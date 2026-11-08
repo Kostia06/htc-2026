@@ -63,7 +63,7 @@ function stageOf({ showPairing, phase }) {
 // `review` (useInterviewReview) is the replay of a finished or phone-chosen
 // session, shown beside the summary or the menu; never during an interview.
 export function Scene({ interview, headset, review, captions }) {
-  const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording, usingAgent } = interview
+  const { phase, meta, result, resultAt, summary, caption, liveCaption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording, usingAgent } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const comfort = useComfort(inXR)
@@ -164,7 +164,7 @@ export function Scene({ interview, headset, review, captions }) {
           <>
             {inXR && captions?.on && (
               <Caption
-                text={error ?? (phase === 'listening' ? transcript : caption)}
+                text={error ?? liveCaption}
                 tone={error ? 'negative' : 'text'}
                 position={CAPTION.position}
                 rotation={CAPTION.rotation}
