@@ -100,6 +100,8 @@ struct ResumeView: View {
                 beforeEditing = model.resume
                 editing = area
             }
+            TailoredResumesSection(service: app.tailoredResumeService)
+                .padding(.top, 8)
             footer(model)
         }
     }

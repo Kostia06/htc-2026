@@ -18,6 +18,7 @@ export const USER_TABLES = [
   "headset_devices",
   "headset_launches",
   "user_postings",
+  "user_tailored_resumes",
 ] as const;
 
 export type UserTable = (typeof USER_TABLES)[number];

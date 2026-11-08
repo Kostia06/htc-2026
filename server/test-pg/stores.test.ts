@@ -15,6 +15,7 @@ import { forget, listMemories, recall, remember } from "../src/memory/private/st
 import { deleteProfile, getProfile, updateProfile } from "../src/memory/profile/store";
 import { countSteps, insertSteps, loadCompleted, loadOpen, setStepStatus } from "../src/roadmap/store";
 import { findPosting, listPostings, newPostingId, savePosting } from "../src/postings/store";
+import { deleteTailored, findTailored, listTailored, saveTailored, updateTailored } from "../src/resume/tailor/store";
 import { addTurn, countSessionsSince, createSession, deleteOldSessions, findSession, finishSession, listTurns } from "../src/voice/store";
 import { openTestDatabase } from "./pglite";
 
@@ -28,7 +29,7 @@ beforeAll(async () => {
 });
 afterAll(() => db.pg.close());
 beforeEach(async () => {
-  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "feed_items", "feed_state", "user_postings", "memory_vectors"];
+  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "feed_items", "feed_state", "user_postings", "user_tailored_resumes", "memory_vectors"];
   await db.pg.exec(tables.map((t) => `DELETE FROM ${t}`).join("; "));
 });
 
@@ -197,5 +198,25 @@ describe("job postings (encrypted rows)", () => {
     expect((await listPostings(env, "alice")).map((p) => p.id)).toEqual([saved.id]);
     const { rows } = await db.pg.query<{ company_slug: string }>("SELECT company_slug FROM user_postings");
     expect(rows).toEqual([{ company_slug: "acme" }]);
+  });
+});
+
+describe("tailored resumes (encrypted rows)", () => {
+  it("saves, updates, lists and deletes per user", async () => {
+    const resume = { contact: { name: "A", email: "", phone: "", links: [] }, summary: "s", experience: [], education: [], projects: [], skills: ["SQL"] };
+    const content = {
+      postingId: "po_1", title: "Analyst", company: "Acme", base: resume, resume, changes: [],
+      match: { covered: [{ text: "SQL", topic: "SQL", required: true }], missing: [], coveredBefore: 1 }, editedByHand: false,
+    };
+    const saved = await saveTailored(env, "alice", content, NOW);
+    expect(await findTailored(env, "alice", saved.id)).toEqual(saved);
+    expect(await findTailored(env, "bob", saved.id)).toBeNull();
+    const later = new Date("2026-06-02T00:00:00.000Z");
+    const updated = await updateTailored(env, "alice", saved, { ...content, editedByHand: true }, later);
+    expect(await findTailored(env, "alice", saved.id)).toEqual(updated);
+    expect(await listTailored(env, "alice")).toEqual([{ id: saved.id, postingId: "po_1", title: "Analyst", company: "Acme", covered: 1, total: 1, updatedAt: later.toISOString() }]);
+    expect(await deleteTailored(env, "bob", saved.id)).toBe(false);
+    expect(await deleteTailored(env, "alice", saved.id)).toBe(true);
+    expect(await listTailored(env, "alice")).toEqual([]);
   });
 });

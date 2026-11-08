@@ -10,13 +10,17 @@ import { RaisedButton, Spinner, TextButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonLines } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import Coach from './Coach'
+import TailoredList from './tailored/TailoredList'
+import { useTailoredList } from './tailored/useTailoredList'
 import ResumePaper from './ResumePaper'
 import { useResume } from './useResume'
 import './resume.css'
+import './tailored/tailored.css'
 
 export default function Resume() {
   const navigate = useNavigate()
   const doc = useResume()
+  const tailored = useTailoredList()
   const picker = useRef(null)
   const { resume } = doc
   const canExport = doc.source === 'saved' && doc.saving !== 'failed'
@@ -66,6 +70,7 @@ export default function Resume() {
             <Status doc={doc} onImport={() => picker.current?.click()} />
             {/* a new resume (another file, or a discard) starts the coach over; saving a draft doesn't */}
             <Coach key={doc.generation} resume={resume} onApply={doc.update} />
+            <TailoredList list={tailored} />
           </aside>
           <div className="builder__paper">
             <ResumePaper resume={resume} onEdit={(section) => navigate(`/resume/edit/${section}`)} />
@@ -73,7 +78,7 @@ export default function Resume() {
         </div>
       )}
 
-      <Outlet context={{ resume, update: doc.update }} />
+      <Outlet context={{ resume, update: doc.update, tailored }} />
     </Page>
   )
 }
