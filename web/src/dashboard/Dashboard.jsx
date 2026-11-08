@@ -35,13 +35,13 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   }
 
   const tabs = [
-    { id: 'plan', label: 'Plan', title: 'Your plan', bare: true, render: () => <Plan userId={userId} stamp={stamp} first={first} role={role} onGo={go} /> },
-    { id: 'resume', label: 'Resume', title: 'Your resume', bare: true, render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
+    { id: 'plan', label: 'Plan', title: 'Your plan', render: () => <Plan userId={userId} stamp={stamp} first={first} role={role} onGo={go} /> },
+    { id: 'resume', label: 'Resume', title: 'Your resume', render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
     {
       id: 'jobs',
       label: 'Jobs',
       title: 'Jobs for you',
-      bare: true,
+     
       render: () => (
         <Recommendations
           userId={userId}
@@ -66,7 +66,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       label: 'Courses',
       title: 'Courses',
       student: true,
-      bare: true,
+     
       render: () => (
         <Recommendations
           userId={userId}
@@ -87,7 +87,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       label: 'Research',
       title: 'Research opportunities',
       student: true,
-      bare: true,
+     
       render: () => (
         <Recommendations
           userId={userId}
@@ -107,7 +107,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       id: 'interview',
       label: 'Interview',
       title: 'Interview',
-      bare: true,
+     
       render: () => (
         <Interview
           mode={interviewMode}
@@ -127,7 +127,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       id: 'you',
       label: 'You',
       title: 'You',
-      bare: true,
+     
       render: () => <You name={fullName || first} role={role} answers={answers} syncProblem={syncProblem} onRedo={onRedo} onGo={go} />,
     },
   ]
@@ -157,8 +157,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       <main className="db__main">
         {/* visited panels stay mounted (hidden) so a run in progress isn't lost when switching tabs */}
         {ordered.filter((t) => visited.has(t.id)).map((t) => (
-          <section key={t.id} className={`db__section${t.bare ? ' db__section--bare' : ''}`} hidden={tab !== t.id} aria-label={t.title}>
-            {!t.bare && <h2 className="db__h2">{t.title}</h2>}
+          <section key={t.id} className="db__section" hidden={tab !== t.id} aria-label={t.title}>
             {t.render()}
           </section>
         ))}
