@@ -3,7 +3,7 @@ import { toSlug, voice } from '../lib/agent'
 import { useSkill } from './useSkill'
 import { Problem, Steps, Thinking, Updated } from './ui'
 
-const SOURCES = { reported: 'Asked recently', resume: 'From your resume', behavioral: 'Common question' }
+const SOURCES = { reported: 'Asked recently', resume: 'From your resume', technical: 'Technical', behavioral: 'Common question' }
 
 function CompanyRole({ company, setCompany, role, setRole, companyRequired, idPrefix }) {
   return (
