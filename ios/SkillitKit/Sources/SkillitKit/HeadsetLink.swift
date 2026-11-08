@@ -34,17 +34,23 @@ public struct HeadsetLaunch: Encodable, Equatable, Sendable {
     public var companySlug: String?
     public var role: String?
     public var stepID: String?
+    /// Opens this past session's review in the headset instead of starting an interview.
+    public var reviewSessionID: String?
 
-    public init(mode: PracticeMode, companySlug: String? = nil, role: String? = nil, stepID: String? = nil) {
+    public init(
+        mode: PracticeMode, companySlug: String? = nil, role: String? = nil, stepID: String? = nil, reviewSessionID: String? = nil,
+    ) {
         self.mode = mode
         self.companySlug = companySlug
         self.role = role
         self.stepID = stepID
+        self.reviewSessionID = reviewSessionID
     }
 
     private enum CodingKeys: String, CodingKey {
         case mode, companySlug, role
         case stepID = "stepId"
+        case reviewSessionID = "reviewSessionId"
     }
 }
 

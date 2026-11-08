@@ -14,6 +14,8 @@ struct PracticeSessionDetailView: View {
     let session: PracticeSessionSummary
     let service: any PracticeHistoryService
     let replayService: any ReplayService
+    /// Opens this session's review in a paired headset; nil hides the button.
+    var headset: (any HeadsetLinkService)?
 
     var body: some View {
         ScrollView {
@@ -35,7 +37,7 @@ struct PracticeSessionDetailView: View {
                 case let .ready(detail):
                     if !detail.turns.isEmpty {
                         NavigationLink {
-                            ReplayView(sessionId: session.id, service: replayService)
+                            ReplayView(sessionId: session.id, service: replayService, headset: headset)
                         } label: {
                             ReplayEntryLabel()
                         }

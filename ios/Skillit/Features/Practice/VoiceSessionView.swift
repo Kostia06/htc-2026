@@ -32,7 +32,7 @@ struct VoiceSessionView: View {
         .animation(.smooth, value: model.phase)
         .sheet(isPresented: $isReplaying) {
             if let sessionId = model.sessionId {
-                NavigationStack { ReplayView(sessionId: sessionId, service: app.replayService) }
+                NavigationStack { ReplayView(sessionId: sessionId, service: app.replayService, headset: app.client) }
                     .presentationDragIndicator(.visible)
             }
         }

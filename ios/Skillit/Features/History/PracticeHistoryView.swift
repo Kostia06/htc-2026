@@ -20,6 +20,7 @@ struct PracticeHistoryView: View {
                 .navigationDestination(for: PracticeSessionSummary.self) { session in
                     PracticeSessionDetailView(
                         session: session, service: injectedService ?? app.practiceHistoryService, replayService: app.replayService,
+                        headset: app.client,
                     )
                 }
         }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00DC6E7D80E48B5B7BEB734B /* ReviewInHeadsetButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7AC1588553B0D03EC5BDEE /* ReviewInHeadsetButton.swift */; };
 		0634C2B0F2E35C3F7CEDEF41 /* ReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128D82C133D47EDC1F7330C /* ReplayView.swift */; };
 		08428C065479B192F22F318F /* TailoredResumeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EE614579C04CCC269F9E46 /* TailoredResumeModel.swift */; };
 		0A1B0E3F76C22E2D873500CD /* StepDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0716108051E2CBA5B0329284 /* StepDetailSheet.swift */; };
@@ -287,6 +288,7 @@
 		BA79FCFDC23BEC7874A034D3 /* ProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditor.swift; sourceTree = "<group>"; };
 		BE3CF73DB023793B3B9D15E1 /* CompaniesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompaniesModel.swift; sourceTree = "<group>"; };
 		BE7D58A0FCA1EFF69AB41D74 /* RecapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapService.swift; sourceTree = "<group>"; };
+		BF7AC1588553B0D03EC5BDEE /* ReviewInHeadsetButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewInHeadsetButton.swift; sourceTree = "<group>"; };
 		C06B38677167C8F4F7B45475 /* QuickUpdateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickUpdateModel.swift; sourceTree = "<group>"; };
 		C093D242A4A4572007078CAB /* ResumePDFViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumePDFViewer.swift; sourceTree = "<group>"; };
 		C2B0F429C3DAEB57BDEDE760 /* OptionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionButtonStyle.swift; sourceTree = "<group>"; };
@@ -514,6 +516,7 @@
 				CBA39B508177FE83406C8567 /* ReplayService.swift */,
 				3B8566325918DE4050DA95DB /* ReplayTranscript.swift */,
 				9128D82C133D47EDC1F7330C /* ReplayView.swift */,
+				BF7AC1588553B0D03EC5BDEE /* ReviewInHeadsetButton.swift */,
 			);
 			path = Replay;
 			sourceTree = "<group>";
@@ -916,6 +919,7 @@
 				CEA1DC44320C0F2E3C0F12A8 /* ResumeSectionEditor.swift in Sources */,
 				45617B901BE31E4E2193477A /* ResumeService.swift in Sources */,
 				719A21AB2851DE871467D752 /* ResumeView.swift in Sources */,
+				00DC6E7D80E48B5B7BEB734B /* ReviewInHeadsetButton.swift in Sources */,
 				A9C3CC73C4CC27C0ADD27021 /* RoadProgressLine.swift in Sources */,
 				5953939A9FCD8F034E6C3CC1 /* RoadmapModel.swift in Sources */,
 				EB3BCAA74F62A91C44C9BD97 /* RoadmapPath.swift in Sources */,
