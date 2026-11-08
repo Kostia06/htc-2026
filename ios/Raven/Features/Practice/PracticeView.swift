@@ -32,7 +32,9 @@ struct PracticeView: View {
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
-            .fullScreenCover(item: $activeSession) { VoiceSessionView(model: $0) }
+            .fullScreenCover(item: $activeSession) { session in
+                VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
+            }
         }
     }
 
@@ -80,15 +82,16 @@ struct PracticeView: View {
 
     private func start(_ mode: PracticeMode) {
         let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
-        let request = VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed)
-        activeSession = VoiceSessionModel(request: request, service: service, engine: LocalVoiceEngine())
+        start(VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed))
     }
 
-    /// screenshots run without a signed-in client; they get the offline session instead of the server
-    private var service: any VoicePracticeService {
-        if let client = app.client {
-            return client
+    /// Also how "Practice again" works: a fresh model replaces the one on screen, so the cover stays up.
+    private func start(_ request: VoiceSessionRequest) {
+        guard let client = app.client else {
+            // screenshots run without a signed-in client; they get the scripted session instead of the server
+            activeSession = VoiceSessionModel(request: request, service: PreviewVoicePractice(), engine: PreviewVoiceEngine())
+            return
         }
-        return OfflineVoicePractice()
+        activeSession = VoiceSessionModel(request: request, service: client, engine: ElevenLabsVoiceEngine())
     }
 }

@@ -160,34 +160,6 @@ public struct TurnFeedback: Decodable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey { case scores, delivery, tip }
 }
 
-public struct SessionSummary: Decodable, Equatable, Sendable {
-    public struct PrepStep: Decodable, Equatable, Sendable {
-        public let step: String
-        public let why: String
-
-        public init(step: String, why: String) {
-            self.step = step
-            self.why = why
-        }
-    }
-
-    public let summary: String
-    public let prepList: [PrepStep]
-
-    public init(summary: String, prepList: [PrepStep]) {
-        self.summary = summary
-        self.prepList = prepList
-    }
-
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        summary = try container.decode(String.self, forKey: .summary)
-        prepList = try container.decodeIfPresent([PrepStep].self, forKey: .prepList) ?? []
-    }
-
-    private enum CodingKeys: String, CodingKey { case summary, prepList }
-}
-
 public extension RavenClient {
     func startVoiceSession(_ request: VoiceSessionRequest) async throws(RavenError) -> VoiceSession {
         try await send(authorized("POST", "api/voice/sessions", json: request))
@@ -197,7 +169,7 @@ public extension RavenClient {
         try await send(authorized("POST", "api/voice/sessions/\(sessionId)/turns", json: turn))
     }
 
-    func finishVoiceSession(_ sessionId: String) async throws(RavenError) -> SessionSummary {
+    func finishVoiceSession(_ sessionId: String) async throws(RavenError) -> SessionDebrief {
         try await send(authorized("POST", "api/voice/sessions/\(sessionId)/finish"))
     }
 }

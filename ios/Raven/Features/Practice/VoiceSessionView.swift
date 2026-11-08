@@ -4,6 +4,7 @@ import SwiftUI
 /// The full-screen spoken session: the current question, one voice bar, and a way out.
 struct VoiceSessionView: View {
     let model: VoiceSessionModel
+    let onPracticeAgain: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
@@ -14,9 +15,9 @@ struct VoiceSessionView: View {
             case .live:
                 live
             case .wrappingUp:
-                SessionSummaryView(summary: nil, onDone: { dismiss() })
-            case let .finished(summary):
-                SessionSummaryView(summary: summary, onDone: { dismiss() })
+                SessionSummaryView(debrief: nil, onPracticeAgain: onPracticeAgain, onDone: { dismiss() })
+            case let .finished(debrief):
+                SessionSummaryView(debrief: debrief, onPracticeAgain: onPracticeAgain, onDone: { dismiss() })
             case .closed:
                 Color.clear.onAppear { dismiss() }
             case let .failed(message):
@@ -31,11 +32,7 @@ struct VoiceSessionView: View {
     private var live: some View {
         VStack(spacing: 28) {
             HStack {
-                if let notice = model.notice {
-                    Text(notice)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                scoredBadge
                 Spacer()
                 Button("End", action: end)
                     .buttonStyle(.glass)
@@ -50,6 +47,17 @@ struct VoiceSessionView: View {
             Spacer()
         }
         .padding(24)
+    }
+
+    /// Quiet proof that scoring is happening without pulling attention from the question.
+    private var scoredBadge: some View {
+        Label("\(model.answersScored) scored", systemImage: "checkmark.circle.fill")
+            .font(.caption.weight(.medium))
+            .foregroundStyle(Theme.agent)
+            .opacity(model.answersScored > 0 ? 1 : 0)
+            .contentTransition(.numericText())
+            .animation(.spring(duration: 0.4), value: model.answersScored)
+            .sensoryFeedback(.success, trigger: model.answersScored)
     }
 
     private var questionText: some View {

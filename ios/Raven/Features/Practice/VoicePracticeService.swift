@@ -1,19 +1,18 @@
 import Foundation
 import RavenKit
 
-/// The server calls a voice session makes, so a session can also run offline.
+/// The server calls a voice session makes, so the debug screen can run one without a server.
 protocol VoicePracticeService {
     func startVoiceSession(_ request: VoiceSessionRequest) async throws(RavenError) -> VoiceSession
     func submitTurn(_ turn: VoiceTurn, in sessionId: String) async throws(RavenError) -> TurnFeedback
-    func nextLine(after answer: String, transcript: [TranscriptLine], in sessionId: String) async throws(RavenError) -> NextLine
-    func finishVoiceSession(_ sessionId: String) async throws(RavenError) -> SessionSummary
+    func finishVoiceSession(_ sessionId: String) async throws(RavenError) -> SessionDebrief
 }
 
 extension RavenClient: VoicePracticeService {}
 
-/// A session with no server: generic questions, canned tips, and a summary that says nothing was scored.
-/// Used when the server has no voice provider yet, and for screenshots.
-struct OfflineVoicePractice: VoicePracticeService {
+/// Sample data for the debug screen and screenshots: a scripted session, canned tips and a sample debrief.
+/// Never used in a real session; without the server there is no voice.
+struct PreviewVoicePractice: VoicePracticeService {
     var questions: [PracticeQuestion] = Self.generalQuestions
     var company: String?
 
@@ -21,15 +20,15 @@ struct OfflineVoicePractice: VoicePracticeService {
         switch request.mode {
         case .interview:
             VoiceSession(
-                id: "offline", mode: .interview, provider: "offline",
-                opening: "Hi, thanks for making the time. Let's start whenever you're ready.",
+                id: "preview", mode: .interview, provider: "preview",
+                opening: "Hi, thanks for coming in. Ready to start?",
                 role: request.role, company: company, questions: questions,
             )
         case .networking:
             VoiceSession(
-                id: "offline", mode: .networking, provider: "offline",
-                opening: "Hey, I'm Sam. I don't think we've met. What brings you here tonight?",
-                persona: Persona(name: "Sam", role: "works in tech and comes to most meetups"),
+                id: "preview", mode: .networking, provider: "preview",
+                opening: "Hi! I'm Jessica. Are you enjoying the event?",
+                persona: Persona(name: "Jessica", role: "leads a data team and comes to most meetups"),
                 goals: ["Introduce yourself in a sentence or two", "Ask one real question", "Ask how to follow up"],
             )
         }
@@ -40,20 +39,14 @@ struct OfflineVoicePractice: VoicePracticeService {
         return TurnFeedback(scores: [:], tip: Self.tips.randomElement())
     }
 
-    /// no server to follow up, so the session's own script carries on
-    func nextLine(after _: String, transcript _: [TranscriptLine], in _: String) async throws(RavenError) -> NextLine {
-        throw .offline
-    }
-
-    func finishVoiceSession(_: String) async throws(RavenError) -> SessionSummary {
+    func finishVoiceSession(_: String) async throws(RavenError) -> SessionDebrief {
         try? await Task.sleep(for: .seconds(1.2))
-        return .offline
+        return .sample
     }
 
     private static let generalQuestions = [
         PracticeQuestion(text: "Tell me about a project you're proud of, from start to finish.", source: .behavioral),
         PracticeQuestion(text: "Describe a time you had to learn something quickly.", source: .behavioral),
-        PracticeQuestion(text: "Where do you want to be in two years?", source: .behavioral),
     ]
 
     private static let tips = [
@@ -63,13 +56,53 @@ struct OfflineVoicePractice: VoicePracticeService {
     ]
 }
 
-extension SessionSummary {
-    static let offline = SessionSummary(
-        summary: "This was an offline practice run, so your answers weren't scored. The questions and timing match a real session.",
-        prepList: [
-            .init(step: "Write one story for each question", why: "A prepared story keeps you from rambling when you're nervous."),
-            .init(step: "Practise the first sentence out loud", why: "A clear opening sets up the rest of the answer."),
-            .init(step: "Run a scored session once you're online", why: "Raven can then point at exactly what to fix."),
+extension SessionDebrief {
+    static let sample = SessionDebrief(
+        overall: 68,
+        verdict: "Clear stories with real ownership, but the results stayed vague.",
+        strengths: [
+            .init(quote: "I led the rebuild of our reporting pipeline", why: "You said what you did, not what the team did."),
+            .init(quote: "four hours to forty minutes", why: "A before-and-after number makes the impact land instantly."),
+        ],
+        improvements: [
+            .init(
+                moment: "Why do you want to work on our lending team?",
+                said: "I think fintech is really interesting and I'd learn a lot.",
+                better: "Tie it to something specific about them and something specific about you.",
+                example: "Your lending team shipped instant approvals last year. I spent my co-op on risk models, "
+                    + "so that's the problem I want to work on.",
+            ),
+            .init(
+                moment: "Describe a time you had to learn something quickly.",
+                said: "I picked up dbt pretty fast and it went fine.",
+                better: "Say how you learned it and what it let you ship.",
+                example: "I had two weeks to learn dbt. I rebuilt one model a day from the docs and had the full pipeline "
+                    + "in tests by week two.",
+            ),
+            .init(
+                moment: "Tell me about a project you're proud of.",
+                said: "We got good feedback on it.",
+                better: "End on a result you can measure, in one sentence.",
+                example: "Analysts stopped waiting on the nightly run, and the team picked it as the default pipeline.",
+            ),
+        ],
+        perQuestion: [
+            .init(
+                question: "Why do you want to work on our lending team?", score: 54,
+                oneLineFeedback: "Generic. Name one thing they do that you want in on.",
+            ),
+            .init(
+                question: "Tell me about a project you're proud of, from start to finish.", score: 81,
+                oneLineFeedback: "Strong story, strong number.",
+            ),
+            .init(
+                question: "Describe a time you had to learn something quickly.", score: 69,
+                oneLineFeedback: "Good pace, missing how you actually learned it.",
+            ),
+        ],
+        nextSteps: [
+            "Write one sentence about why this company, with a fact only someone who looked would know.",
+            "Rehearse the lending answer out loud twice, under 60 seconds.",
         ],
     )
 }
