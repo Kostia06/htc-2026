@@ -15,7 +15,8 @@ type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => Agent
 export function onboardingRouter(makeDeps: MakeDeps) {
   const router = new Hono<AppContext>();
 
-  // reads the file, keeps only its text for an hour, and returns a draft profile; nothing is saved to the profile yet
+  // reads the file, keeps only its text for an hour, and returns a draft profile; nothing is saved to the profile yet.
+  // The text goes straight to the agent so the draft takes one model call instead of a tool round trip.
   router.post("/resume", async (c) => {
     const form = await c.req.formData().catch(() => null);
     const file = form?.get("file");
@@ -24,16 +25,18 @@ export function onboardingRouter(makeDeps: MakeDeps) {
 
     const userId = c.var.sessionId;
     let documentId: string;
+    let text: string;
     try {
       const doc = await extractText(c.env, { bytes: new Uint8Array(await file.arrayBuffer()), name: file.name });
       documentId = await saveDocument(c.env, userId, { name: file.name, ...doc });
+      text = doc.text;
     } catch (e) {
       if (e instanceof UnreadableDocument) return c.json({ error: e.message }, 415);
       throw e;
     }
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
-    const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "onboarding-prefill", platform: "app", userId, input: { documentId } });
+    const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "onboarding-prefill", platform: "app", userId, input: { text } });
     if (run.status === "failed") return c.json({ documentId, error: "the resume was read but the draft could not be made, fill it in by hand" }, 502);
     return c.json({ documentId, ...run.output });
   });
