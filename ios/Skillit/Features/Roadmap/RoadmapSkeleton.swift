@@ -1,25 +1,39 @@
 import SwiftUI
 
-/// Stands in for the whole screen on first load: the shape of the progress card and three step cards.
+/// Stands in for the whole screen on first load: the progress card and the first few tiles of the trail.
 struct RoadmapSkeleton: View {
+    @State private var width: CGFloat = 0
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                SkeletonLines(widths: [0.5, 0.35, 0.9], highlighted: 1).skillitCard()
-                VStack(alignment: .leading, spacing: 12) {
-                    Capsule()
-                        .fill(Color(white: 0.2))
-                        .frame(width: 90, height: 14)
-                        .shimmering()
-                    ForEach(0 ..< 3, id: \.self) { index in
-                        SkeletonLines(widths: [0.7, 0.4, 0.9, 0.6], highlighted: index == 0 ? 2 : -1).skillitCard()
+            VStack(spacing: 20) {
+                SkeletonLines(widths: [0.5, 0.35, 0.9], highlighted: 1)
+                    .skillitCard()
+                    .padding(.horizontal, 20)
+                VStack(spacing: 0) {
+                    ForEach(0 ..< 4, id: \.self) { index in
+                        PathRow(width: width, sway: sway(index), previousSway: index == 0 ? nil : sway(index - 1)) {
+                            RoundedRectangle(cornerRadius: 22)
+                                .fill(Theme.secondaryButton)
+                                .frame(width: PathNode.size, height: PathNode.size)
+                                .shimmering()
+                        } label: {
+                            SkeletonLines(widths: [0.2, 0.3], highlighted: -1)
+                        }
                     }
                 }
             }
-            .padding(.horizontal, 20)
             .padding(.vertical, 16)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         }
         .scrollDisabled(true)
+        .accessibilityElement()
+        .accessibilityLabel("Loading your road")
+    }
+
+    /// Same swing as the real trail, so the screen doesn't jump when the steps arrive.
+    private func sway(_ index: Int) -> CGFloat {
+        sin(Double(index) * 0.9) * width * 0.18
     }
 }
 
@@ -35,7 +49,7 @@ struct MoreStepsSkeleton: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Button("Try again", action: retry)
-                    .buttonStyle(.raised(Color(white: 0.22)))
+                    .buttonStyle(.raised(Theme.secondaryButton))
             }
             .skillitCard()
         } else {

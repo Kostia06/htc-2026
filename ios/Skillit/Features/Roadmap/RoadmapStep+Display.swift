@@ -1,4 +1,3 @@
-import Foundation
 import SkillitKit
 import SwiftUI
 
@@ -25,17 +24,6 @@ extension RoadmapStep.Kind {
     }
 }
 
-extension RoadmapStep {
-    /// Interview steps start a spoken session in the app; everything else is marked done by hand.
-    var isPractice: Bool {
-        action != nil
-    }
-
-    var actionTitle: String {
-        action == nil ? "Mark done" : "Start interview"
-    }
-}
-
 extension RoadmapStep.Label {
     var text: String {
         switch self {
@@ -44,27 +32,4 @@ extension RoadmapStep.Label {
         case .longTerm: "Long term"
         }
     }
-}
-
-extension CompletedDay {
-    /// "Today", "Yesterday", or a short date, from the server's `yyyy-MM-dd` key.
-    var title: String {
-        let today = RoadmapPage.dayKey(.now)
-        if day == today {
-            return "Today"
-        }
-        if let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: .now), day == RoadmapPage.dayKey(yesterday) {
-            return "Yesterday"
-        }
-        guard let date = Self.parser.date(from: day) else { return day }
-        return date.formatted(.dateTime.month(.abbreviated).day())
-    }
-
-    private static let parser: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
 }

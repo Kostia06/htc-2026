@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0A1B0E3F76C22E2D873500CD /* StepDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0716108051E2CBA5B0329284 /* StepDetailSheet.swift */; };
-		0ACE21D1D3F48ECF946DA311 /* StepBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F10278FA462591228C9E926 /* StepBadges.swift */; };
 		0C87D9A36A74FA2005CA073C /* InterviewTargetPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59815D96F6C995E7B6EFA23F /* InterviewTargetPicker.swift */; };
 		0D5B378D71B86E36BB9927A7 /* ElevenLabs in Frameworks */ = {isa = PBXBuildFile; productRef = 7364F8F1DACAECEE37D950BA /* ElevenLabs */; };
 		0E17DE1CB3B5F6E0B238F0FA /* AppliedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01C7C64F5ECA123AFABEE4 /* AppliedCard.swift */; };
@@ -171,7 +170,6 @@
 		3D3F78DF59E60EA5171E3D16 /* FeedKind+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedKind+Style.swift"; sourceTree = "<group>"; };
 		3DF9CFCA724FC5CD36BEFD6A /* ShareMemorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMemorySheet.swift; sourceTree = "<group>"; };
 		3ECD8BD6874744D23416D3ED /* CompanyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyModel.swift; sourceTree = "<group>"; };
-		3F10278FA462591228C9E926 /* StepBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepBadges.swift; sourceTree = "<group>"; };
 		4062AD7D148E81AB21DCE47B /* SampleCompanies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCompanies.swift; sourceTree = "<group>"; };
 		41B534B76E95550B5E4AF2E1 /* SampleRoadmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRoadmap.swift; sourceTree = "<group>"; };
 		451AA4DFDCFC1E086FFEFEEA /* SuggestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionCard.swift; sourceTree = "<group>"; };
@@ -575,7 +573,6 @@
 				089B0D464E2E3A6B695ADA5E /* RoadmapStep+Display.swift */,
 				CFFDE6785F6335A66931C51B /* RoadmapView.swift */,
 				41B534B76E95550B5E4AF2E1 /* SampleRoadmap.swift */,
-				3F10278FA462591228C9E926 /* StepBadges.swift */,
 				0716108051E2CBA5B0329284 /* StepDetailSheet.swift */,
 			);
 			path = Roadmap;
@@ -767,7 +764,6 @@
 				E58293C189C27DCCBF5A77EC /* SkillsSummary.swift in Sources */,
 				E58F8E91D899A4E833057A4F /* SpeechDictation.swift in Sources */,
 				305965D6B6F6E47981A43905 /* StartPracticeButton.swift in Sources */,
-				0ACE21D1D3F48ECF946DA311 /* StepBadges.swift in Sources */,
 				0A1B0E3F76C22E2D873500CD /* StepDetailSheet.swift in Sources */,
 				54BA437BEB0AAFA426D8D0F8 /* SuggestionCard.swift in Sources */,
 				CC8FB30CE3520BBAA412AECA /* Theme.swift in Sources */,
@@ -880,7 +876,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kostiailn.skillit;
-				RAVEN_API_URL = "https://htc-mentor.ilnkostia-dev.workers.dev";
+				RAVEN_API_URL = "https://api.skillit.study";
 				SDKROOT = iphoneos;
 				SUPABASE_PUBLISHABLE_KEY = sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1;
 				SUPABASE_URL = "https://pgltmzicvpvcyhbrwqxz.supabase.co";
