@@ -1,15 +1,21 @@
 import SkillitKit
 import SwiftUI
 
-/// One feed item in four lines: what, who and where, the one reason it's here, and when. Tapping opens its details.
+/// One feed item in four lines: what, who and where, the one reason it's here, and the facts that decide a click.
+/// Tapping opens its details.
 struct FeedCardView: View {
     let card: FeedCard
     var onSave: () -> Void = {}
     var onDismiss: () -> Void = {}
     var onOpen: () -> Void = {}
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        // at accessibility sizes the badge sits above the text so the title keeps the full width
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: 14))
+        layout {
             KindBadge(kind: card.kind)
             details
         }
@@ -17,7 +23,10 @@ struct FeedCardView: View {
         .contentShape(.rect(cornerRadius: 20))
         .onTapGesture(perform: onOpen)
         .contextMenu {
-            Button(card.isSaved ? "Unsave" : "Save", systemImage: card.isSaved ? "bookmark.slash" : "bookmark", action: onSave)
+            // there is no unsave on the server, so a saved card only offers what it can actually do
+            if !card.isSaved {
+                Button("Save", systemImage: "bookmark", action: onSave)
+            }
             Button("Not for me", systemImage: "hand.thumbsdown", role: .destructive, action: onDismiss)
         }
         .accessibilityElement(children: .contain)
@@ -30,11 +39,11 @@ struct FeedCardView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(card.title)
                         .font(.headline)
-                        .lineLimit(2)
+                        .lineLimit(3)
                     Text(orgLine)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
                 }
                 Spacer(minLength: 4)
                 bookmark
@@ -42,8 +51,9 @@ struct FeedCardView: View {
             Text(card.why)
                 .font(.footnote)
                 .foregroundStyle(Theme.agent)
-                .lineLimit(1)
-            HStack(spacing: 6) {
+                .lineLimit(2)
+            // wraps instead of truncating, so every chip stays readable at large text sizes
+            FlowLayout(spacing: 6) {
                 chips
             }
             .padding(.top, 2)
@@ -56,15 +66,25 @@ struct FeedCardView: View {
     }
 
     @ViewBuilder private var chips: some View {
-        if card.level == "beginner" {
-            FeedChip(text: "Beginner friendly", systemImage: "leaf")
-        }
-        if let when = whenText {
+        if let when = card.cardWhenText {
             FeedChip(text: when, systemImage: card.date == nil ? "clock" : "calendar")
         }
         if let salary = card.salary {
             FeedChip(text: salary, systemImage: "dollarsign")
         }
+        if let format = shownFormat {
+            FeedChip(text: format, systemImage: "laptopcomputer")
+        }
+        if card.level == "beginner" {
+            FeedChip(text: "Beginner friendly", systemImage: "leaf")
+        }
+    }
+
+    /// "Remote" or "Hybrid" changes whether someone can go at all; skipped when the place line already says it.
+    private var shownFormat: String? {
+        guard let format = card.format, !format.isEmpty else { return nil }
+        let place = card.where?.lowercased() ?? ""
+        return place.contains(format.lowercased()) ? nil : format.capitalized
     }
 
     /// Just the bookmark on the card; dismissing lives in the swipe and the long-press menu.
@@ -72,7 +92,7 @@ struct FeedCardView: View {
         Button(action: onSave) {
             Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
                 .font(.body.weight(.medium))
-                .foregroundStyle(card.isSaved ? Theme.action : .secondary)
+                .foregroundStyle(card.isSaved ? Theme.action : Color.secondary)
                 .frame(width: 44, height: 44)
                 .contentShape(.rect)
                 .contentTransition(.symbolEffect(.replace))
@@ -85,17 +105,6 @@ struct FeedCardView: View {
         .symbolEffect(.bounce, value: card.isSaved)
         .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
         .accessibilityLabel(card.isSaved ? "Saved" : "Save")
-    }
-
-    /// A real date reads as a day; a label such as "ongoing" is shown as the source gave it.
-    private var whenText: String? {
-        if let date = card.date {
-            // a day-only date ("2027-01-26") is parsed as UTC midnight; showing it in local time would say the day before
-            let isDayOnly = card.when?.count == 10
-            let day = date.formatted(Date.FormatStyle(timeZone: isDayOnly ? .gmt : .current).month(.abbreviated).day())
-            return card.kind == .job ? "Posted \(day)" : day
-        }
-        return card.when?.capitalized
     }
 }
 

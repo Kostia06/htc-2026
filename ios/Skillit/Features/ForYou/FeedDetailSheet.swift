@@ -18,12 +18,7 @@ struct FeedDetailSheet: View {
                 ExpandableText(text: summary)
             }
             if let highlights = card.highlights, !highlights.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(highlights, id: \.self) { highlight in
-                        Label(highlight, systemImage: "checkmark")
-                            .font(.subheadline)
-                    }
-                }
+                ListingHighlights(highlights: highlights)
             }
             if let tags = card.tags, !tags.isEmpty, card.kind != .job {
                 topics(tags)
@@ -75,8 +70,8 @@ struct FeedDetailSheet: View {
         if let place = card.where {
             facts.append(.init(label: "Where", value: place))
         }
-        if let when = card.when {
-            facts.append(.init(label: card.kind == .job ? "Posted" : "When", value: whenText(when)))
+        if let day = card.dayText {
+            facts.append(.init(label: card.kind == .job ? "Posted" : "When", value: day))
         }
         if let salary = card.salary {
             facts.append(.init(label: "Salary", value: salary))
@@ -92,7 +87,9 @@ struct FeedDetailSheet: View {
 
     /// Older cards only carry the one `why` line, so fall back to it.
     private var reasons: [String] {
-        if let reasons = card.reasons, !reasons.isEmpty { return reasons }
+        if let reasons = card.reasons, !reasons.isEmpty {
+            return reasons
+        }
         return [card.why]
     }
 
@@ -113,9 +110,11 @@ struct FeedDetailSheet: View {
             Button(action: onSave) {
                 Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
                     .frame(width: 24)
+                    .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.raisedSecondary)
             .frame(width: 72)
+            .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
             .accessibilityLabel(card.isSaved ? "Saved" : "Save")
             Button(websiteTitle) { openURL(card.url) }
                 .buttonStyle(.raised)
@@ -128,13 +127,6 @@ struct FeedDetailSheet: View {
         case .event, .hackathon: "Register on website"
         case .course: "Open course"
         }
-    }
-
-    private func whenText(_ raw: String) -> String {
-        guard let date = card.date else { return raw.capitalized }
-        // a day-only date ("2027-01-26") is parsed as UTC midnight; showing it in local time would say the day before
-        let dayOnly = raw.count == 10
-        return date.formatted(Date.FormatStyle(timeZone: dayOnly ? .gmt : .current).month(.abbreviated).day())
     }
 }
 
@@ -159,5 +151,25 @@ private struct FitReasons: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(Theme.inset, in: .rect(cornerRadius: 16))
+    }
+}
+
+/// What the page itself says, kept apart from "Why it fits you" so the listing's claims never read as Skillit's.
+private struct ListingHighlights: View {
+    let highlights: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("From the listing")
+                .font(.headline)
+            ForEach(highlights, id: \.self) { highlight in
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text("•").foregroundStyle(.secondary).accessibilityHidden(true)
+                    Text(highlight)
+                }
+                .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -121,6 +121,7 @@
 		E8D0207E60E7923BDCC4847D /* ResumePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2714E35E9A1E6BF16B41286E /* ResumePreview.swift */; };
 		EAFCDA26F3DE27B585DE7402 /* FeedCard+Samples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B065DFB9D6072FF2D8102BD /* FeedCard+Samples.swift */; };
 		EB3BCAA74F62A91C44C9BD97 /* RoadmapPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91BB0208DCF306E7696237F1 /* RoadmapPath.swift */; };
+		F01F6A9C6FBC9250FA594E91 /* FeedCard+When.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2488386CDFECC621FB315 /* FeedCard+When.swift */; };
 		F0579AF46F7421DF76C4F9BB /* HeadsetPairingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5928CA0E14E5BE5C45041A /* HeadsetPairingModel.swift */; };
 		F4C20E153D37847BAB35301B /* PostingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9D0AFB591B9E2E3381C73 /* PostingsModel.swift */; };
 		F5CEF857171B81295B01CA64 /* CompanySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37049C8188EB035058A8222E /* CompanySheet.swift */; };
@@ -243,6 +244,7 @@
 		DEF86AD33FEA2AD66917F0E0 /* ChipsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipsSection.swift; sourceTree = "<group>"; };
 		DF7FDB2141745DC18AEE22B9 /* SkillsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsSummary.swift; sourceTree = "<group>"; };
 		E06601A0C6D03EF5E851BCD8 /* HeadsetLinkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsetLinkModel.swift; sourceTree = "<group>"; };
+		E1C2488386CDFECC621FB315 /* FeedCard+When.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedCard+When.swift"; sourceTree = "<group>"; };
 		E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewProgress.swift; sourceTree = "<group>"; };
 		EC68B0ED66432B610FABFF34 /* PracticeHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHistoryView.swift; sourceTree = "<group>"; };
 		ED6148A49BBD6F7C60870578 /* SkillitKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SkillitKit; path = SkillitKit; sourceTree = SOURCE_ROOT; };
@@ -421,6 +423,7 @@
 			isa = PBXGroup;
 			children = (
 				8B065DFB9D6072FF2D8102BD /* FeedCard+Samples.swift */,
+				E1C2488386CDFECC621FB315 /* FeedCard+When.swift */,
 				B869D969CCFD23B397B0EB4E /* FeedCardView.swift */,
 				92DC4DFB55A0D171642620DF /* FeedDetailSheet.swift */,
 				3D3F78DF59E60EA5171E3D16 /* FeedKind+Style.swift */,
@@ -685,6 +688,7 @@
 				DB373C045B24373BE38A3254 /* ExperienceForm.swift in Sources */,
 				D89671F0ECF2C39086B5891E /* FactsSection.swift in Sources */,
 				EAFCDA26F3DE27B585DE7402 /* FeedCard+Samples.swift in Sources */,
+				F01F6A9C6FBC9250FA594E91 /* FeedCard+When.swift in Sources */,
 				5A8FAB531C176A38C41E1A89 /* FeedCardView.swift in Sources */,
 				8CE6B79F97E7B4595D5E881D /* FeedDetailSheet.swift in Sources */,
 				AC657E9108CA02396A152B48 /* FeedKind+Style.swift in Sources */,
