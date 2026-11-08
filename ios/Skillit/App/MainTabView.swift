@@ -21,7 +21,7 @@ struct MainTabView: View {
 
         var title: String {
             switch self {
-            case .roadmap: "Roadmap"
+            case .roadmap: "Road"
             case .forYou: "For you"
             case .practice: "Practice"
             case .profile: "Profile"

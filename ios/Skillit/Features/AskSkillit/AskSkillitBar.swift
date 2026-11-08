@@ -20,8 +20,8 @@ struct AskSkillitBar: View {
                 AskSkillitReplyCard(model: model, onOpenPosting: onOpenPosting)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            GlassEffectContainer(spacing: 12) {
-                HStack(spacing: 12) {
+            GlassEffectContainer(spacing: 8) {
+                HStack(spacing: 8) {
                     if isAsking, let model {
                         input(model)
                     } else {
@@ -31,7 +31,7 @@ struct AskSkillitBar: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 10)
         .padding(.bottom, 4)
         .animation(.spring(duration: 0.45, bounce: 0.2), value: isAsking)
         .onChange(of: isAsking) { _, asking in asking ? open() : close() }
@@ -74,9 +74,9 @@ struct AskSkillitBar: View {
                 Task { await model.sendDraft() }
             } label: {
                 Image(systemName: "arrow.up")
-                    .font(.body.weight(.bold))
+                    .font(.footnote.weight(.bold))
                     .foregroundStyle(Theme.onAction)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 30, height: 30)
                     .background(Theme.action, in: .circle)
             }
             .buttonStyle(.plain)
@@ -84,9 +84,9 @@ struct AskSkillitBar: View {
             .opacity(model.canSend ? 1 : 0.4)
             .accessibilityLabel("Send")
         }
-        .padding(.leading, 8)
-        .padding(.trailing, 8)
-        .frame(minHeight: 52)
+        .padding(.leading, 6)
+        .padding(.trailing, 7)
+        .frame(minHeight: 48)
         .glassEffect(.regular, in: .capsule)
         .glassEffectID("bar", in: glass)
     }
@@ -104,7 +104,7 @@ struct AskSkillitBar: View {
             Image(systemName: model.isListening ? "stop.fill" : "mic.fill")
                 .font(.body.weight(.semibold))
                 .foregroundStyle(Theme.agent)
-                .frame(width: 36, height: 36)
+                .frame(width: 30, height: 30)
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)
@@ -120,7 +120,7 @@ struct AskSkillitBar: View {
             Image(systemName: isAsking ? "xmark" : "waveform")
                 .font(.body.weight(.semibold))
                 .foregroundStyle(isAsking ? .secondary : Theme.action)
-                .frame(width: 52, height: 52)
+                .frame(width: 44, height: 44)
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)

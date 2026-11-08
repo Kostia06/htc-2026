@@ -8,7 +8,7 @@ import SkillitKit
 final class QuickUpdateModel {
     typealias Message = RecapModel.Message
 
-    static let opening = "What's new? One line is enough, I'll update your roadmap and profile."
+    static let opening = "What's new? One line is enough, I'll update your road and profile."
     static let placeholder = "What's new? Or paste a job posting"
 
     private(set) var messages: [Message]

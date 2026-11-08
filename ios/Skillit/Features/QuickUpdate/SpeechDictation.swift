@@ -60,14 +60,7 @@ final class SpeechDictation: Dictation {
             return
         }
         self.request = request
-        task = recognizer.recognitionTask(with: request) { result, error in
-            if let result {
-                continuation.yield(result.bestTranscription.formattedString)
-            }
-            if error != nil || result?.isFinal == true {
-                continuation.finish()
-            }
-        }
+        task = Self.recognize(request, with: recognizer, into: continuation)
         continuation.onTermination = { [weak self] _ in
             Task { @MainActor in self?.tearDown() }
         }
@@ -78,9 +71,7 @@ final class SpeechDictation: Dictation {
         try session.setCategory(.record, mode: .measurement, options: .duckOthers)
         try session.setActive(true, options: .notifyOthersOnDeactivation)
         let input = audioEngine.inputNode
-        let format = input.outputFormat(forBus: 0)
-        nonisolated(unsafe) let sink = request
-        input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in sink.append(buffer) }
+        Self.installTap(on: input, feeding: request)
         audioEngine.prepare()
         try audioEngine.start()
     }
@@ -94,10 +85,37 @@ final class SpeechDictation: Dictation {
 
     private static func authorize() async -> Bool {
         guard await AVAudioApplication.requestRecordPermission() else { return false }
-        let status = await withCheckedContinuation { continuation in
+        return await speechAuthorization() == .authorized
+    }
+
+    // The three callbacks below run on Apple's background queues. Built inside nonisolated functions they stay
+    // nonisolated; written inline in this main-actor class they'd inherit main-actor isolation, and Swift's runtime
+    // check traps the moment the system calls them off the main thread (the mic-button crash).
+
+    nonisolated private static func speechAuthorization() async -> SFSpeechRecognizerAuthorizationStatus {
+        await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
         }
-        return status == .authorized
+    }
+
+    nonisolated private static func installTap(on input: AVAudioInputNode, feeding request: SFSpeechAudioBufferRecognitionRequest) {
+        nonisolated(unsafe) let sink = request
+        input.installTap(onBus: 0, bufferSize: 1024, format: input.outputFormat(forBus: 0)) { buffer, _ in sink.append(buffer) }
+    }
+
+    nonisolated private static func recognize(
+        _ request: SFSpeechAudioBufferRecognitionRequest,
+        with recognizer: SFSpeechRecognizer,
+        into continuation: AsyncThrowingStream<String, any Error>.Continuation,
+    ) -> SFSpeechRecognitionTask {
+        recognizer.recognitionTask(with: request) { result, error in
+            if let result {
+                continuation.yield(result.bestTranscription.formattedString)
+            }
+            if error != nil || result?.isFinal == true {
+                continuation.finish()
+            }
+        }
     }
 }
 
