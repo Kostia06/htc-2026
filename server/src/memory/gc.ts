@@ -1,3 +1,5 @@
+import { db } from "../db";
+import { vectors } from "../db/vectors";
 import type { Env } from "../env";
 import { deleteExpiredPairings } from "../auth/pairing";
 import { deleteExpiredDocuments } from "../documents/store";
@@ -13,20 +15,20 @@ const VECTOR_DELETE_BATCH = 100;
 // swapped out in tests: Vectorize only exists remotely
 export const deps = {
   deleteVectors: async (env: Env, ids: string[]) => {
-    await env.VECTORS.deleteByIds(ids);
+    await vectors(env).deleteByIds(ids);
   },
 };
 
 const daysBefore = (now: Date, days: number) => new Date(now.getTime() - days * DAY_MS).toISOString();
 
 async function deleteIdleMemories(env: Env, now: Date) {
-  const res = await env.DB.prepare("DELETE FROM user_memories WHERE last_used_at < ?").bind(daysBefore(now, MEMORY_IDLE_DAYS)).run();
+  const res = await db(env).prepare("DELETE FROM user_memories WHERE last_used_at < ?").bind(daysBefore(now, MEMORY_IDLE_DAYS)).run();
   return res.meta.changes;
 }
 
 // a fact that hasn't been re-verified in two weeks may no longer be true, so it goes along with its vector
 async function deleteStaleFacts(env: Env, now: Date) {
-  const { results } = await env.DB.prepare("DELETE FROM company_facts WHERE fetched_at < ? RETURNING id")
+  const { results } = await db(env).prepare("DELETE FROM company_facts WHERE fetched_at < ? RETURNING id")
     .bind(daysBefore(now, FACT_MAX_AGE_DAYS))
     .all<{ id: string }>();
   const vectorIds = results.map((row) => `fact:${row.id}`);
@@ -37,7 +39,7 @@ async function deleteStaleFacts(env: Env, now: Date) {
 }
 
 async function deleteExpiredCache(env: Env, now: Date) {
-  const res = await env.DB.prepare("DELETE FROM cache WHERE expires_at <= ?").bind(now.toISOString()).run();
+  const res = await db(env).prepare("DELETE FROM cache WHERE expires_at <= ?").bind(now.toISOString()).run();
   return res.meta.changes;
 }
 

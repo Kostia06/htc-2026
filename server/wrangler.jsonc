@@ -8,8 +8,16 @@
     { "binding": "DB", "database_name": "htc_mentor", "database_id": "3d50f23d-80a2-4817-9196-0f1b02152da1", "migrations_dir": "migrations" }
   ],
   "vectorize": [{ "binding": "VECTORS", "index_name": "htc-mentor-vectors" }],
+  // Supabase cutover (README "Database: Supabase"): paste the id from `wrangler hyperdrive create`, then set DB_BACKEND to "postgres"
+  // "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<hyperdrive id>" }],
   "ai": { "binding": "AI" },
   "triggers": { "crons": ["0 */6 * * *"] },
-  "vars": { "GEMINI_MODEL": "gemini-3.5-flash", "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite", "GEMINI_LIVE_MODEL": "gemini-3.8-live", "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev" },
+  "vars": {
+    "DB_BACKEND": "d1",
+    "GEMINI_MODEL": "gemini-3.5-flash",
+    "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite",
+    "GEMINI_LIVE_MODEL": "gemini-3.8-live",
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev"
+  },
   "observability": { "enabled": true }
 }

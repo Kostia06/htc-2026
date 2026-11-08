@@ -3,6 +3,7 @@ import { agentDirectory } from "./a2a/agent-directory";
 import { a2aRouter } from "./a2a/router";
 import { researchTracked } from "./agents/background";
 import { liveDeps } from "./agents/live";
+import { admin } from "./api/admin";
 import { agent } from "./api/agent";
 import { companies } from "./api/companies";
 import { experiences } from "./api/experiences";
@@ -22,12 +23,19 @@ import { resume } from "./api/resume";
 import { roadmap } from "./api/roadmap";
 import { session } from "./api/session";
 import { requireSession } from "./auth/session";
+import { scopeDb } from "./db";
 import type { AppContext, Env } from "./env";
 import { rebuildStaleFeeds } from "./feed/build";
 import { corsForApi } from "./lib/cors";
 import { collectGarbage } from "./memory/gc";
 
 const app = new Hono<AppContext>();
+
+// first of all: on Postgres every handler in this request shares one database client (a no-op on D1)
+app.use("*", async (c, next) => {
+  c.env = scopeDb(c.env);
+  await next();
+});
 
 // before the session check, so preflights are answered without a token
 app.use("/api/*", corsForApi);
@@ -55,13 +63,15 @@ app.route("/api/feed", feed);
 app.route("/api/roadmap", roadmap);
 app.route("/api/resume", resume);
 app.route("/api/recap", recap);
-// outside the /api CORS and session middleware: the card is public and /a2a checks its own session
+// outside the /api CORS and session middleware: the card is public, /a2a checks its own session, /admin its secret
+app.route("/admin", admin);
 app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));
 
 export default {
   fetch: app.fetch,
   request: app.request,
-  scheduled: async (_event, env, ctx) => {
+  scheduled: async (_event, rawEnv, ctx) => {
+    const env = scopeDb(rawEnv);
     ctx.waitUntil(collectGarbage(env));
     ctx.waitUntil(rebuildStaleFeeds(env));
     ctx.waitUntil(researchTracked(liveDeps(env, (work) => ctx.waitUntil(work))));

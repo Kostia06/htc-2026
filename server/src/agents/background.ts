@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { RunRejected } from "./core/harness";
 import type { AgentDeps, RunResult } from "./core/types";
@@ -10,7 +11,7 @@ const COOLDOWN_MS = 30 * 60_000;
 // atomic: two requests racing for the same company can't both get through the cooldown
 export async function claimResearch(env: Env, slug: string) {
   const now = new Date();
-  const row = await env.DB.prepare(
+  const row = await db(env).prepare(
     "UPDATE companies SET last_researched_at = ? WHERE slug = ? AND (last_researched_at IS NULL OR last_researched_at < ?) RETURNING id",
   )
     .bind(now.toISOString(), slug, new Date(now.getTime() - COOLDOWN_MS).toISOString())
@@ -41,7 +42,7 @@ export async function runResearch(deps: AgentDeps, slug: string) {
 }
 
 export async function researchTracked(deps: AgentDeps) {
-  const { results } = await deps.env.DB.prepare("SELECT slug FROM companies WHERE tracked = 1").all<{ slug: string }>();
+  const { results } = await db(deps.env).prepare("SELECT slug FROM companies WHERE tracked = 1").all<{ slug: string }>();
   for (const { slug } of results) {
     await runResearch(deps, slug).catch((e) => console.error("research failed", slug, (e as Error).message));
   }

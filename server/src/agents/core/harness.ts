@@ -1,3 +1,4 @@
+import { db } from "../../db";
 import type { Env } from "../../env";
 import { schemaError } from "../../lib/json-schema";
 import { scrubStrings } from "../../lib/scrub";
@@ -91,7 +92,7 @@ async function fail(env: Env, runId: string, error: string, toolCalls: ToolCallR
 async function resolveCompany(env: Env, input: unknown): Promise<CompanyRef | undefined> {
   const slug = (input as { company?: unknown }).company;
   if (typeof slug !== "string") return undefined;
-  const company = await env.DB.prepare("SELECT id, slug, name, website FROM companies WHERE slug = ?").bind(slug).first<CompanyRef>();
+  const company = await db(env).prepare("SELECT id, slug, name, website FROM companies WHERE slug = ?").bind(slug).first<CompanyRef>();
   if (!company) throw new RunRejected(`unknown company ${slug}`, 404);
   return company;
 }

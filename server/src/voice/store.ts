@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
 import type { TurnScore } from "./score";
@@ -20,7 +21,7 @@ export async function createSession(
 ): Promise<string> {
   const id = crypto.randomUUID();
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(session.plan));
-  await env.DB.prepare(
+  await db(env).prepare(
     "INSERT INTO voice_sessions (id, user_id, mode, company_slug, ciphertext, iv, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'active', ?)",
   )
     .bind(id, userId, session.mode, session.companySlug, sealed.ciphertext, sealed.iv, now.toISOString())
@@ -29,14 +30,14 @@ export async function createSession(
 }
 
 export async function findSession(env: Env, userId: string, id: string): Promise<VoiceSession | null> {
-  const row = await env.DB.prepare("SELECT * FROM voice_sessions WHERE id = ? AND user_id = ?").bind(id, userId).first<SessionRow>();
+  const row = await db(env).prepare("SELECT * FROM voice_sessions WHERE id = ? AND user_id = ?").bind(id, userId).first<SessionRow>();
   if (!row) return null;
   const plan = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as VoicePlan;
   return { id: row.id, mode: row.mode, companySlug: row.company_slug, plan, status: row.status, createdAt: row.created_at };
 }
 
 export async function countSessionsSince(env: Env, userId: string, since: Date) {
-  const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM voice_sessions WHERE user_id = ? AND created_at > ?")
+  const row = await db(env).prepare("SELECT COUNT(*) AS n FROM voice_sessions WHERE user_id = ? AND created_at > ?")
     .bind(userId, since.toISOString())
     .first<{ n: number }>();
   return row?.n ?? 0;
@@ -45,7 +46,7 @@ export async function countSessionsSince(env: Env, userId: string, since: Date) 
 export async function addTurn(env: Env, userId: string, sessionId: string, turn: { question: string; answer: string; score: TurnScore }) {
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify({ question: turn.question, answer: turn.answer }));
   // the next index is computed inside the insert so two quick turns can't claim the same slot
-  await env.DB.prepare(
+  await db(env).prepare(
     `INSERT INTO voice_turns (session_id, user_id, idx, ciphertext, iv, scores_json, created_at)
      SELECT ?, ?, COALESCE(MAX(idx) + 1, 0), ?, ?, ?, ? FROM voice_turns WHERE session_id = ?`,
   )
@@ -54,7 +55,7 @@ export async function addTurn(env: Env, userId: string, sessionId: string, turn:
 }
 
 export async function listTurns(env: Env, userId: string, sessionId: string): Promise<StoredTurn[]> {
-  const { results } = await env.DB.prepare("SELECT idx, ciphertext, iv, scores_json FROM voice_turns WHERE session_id = ? AND user_id = ? ORDER BY idx")
+  const { results } = await db(env).prepare("SELECT idx, ciphertext, iv, scores_json FROM voice_turns WHERE session_id = ? AND user_id = ? ORDER BY idx")
     .bind(sessionId, userId)
     .all<TurnRow>();
   return Promise.all(
@@ -67,14 +68,14 @@ export async function listTurns(env: Env, userId: string, sessionId: string): Pr
 }
 
 export async function finishSession(env: Env, userId: string, id: string) {
-  await env.DB.prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ? WHERE id = ? AND user_id = ?")
+  await db(env).prepare("UPDATE voice_sessions SET status = 'finished', finished_at = ? WHERE id = ? AND user_id = ?")
     .bind(new Date().toISOString(), id, userId)
     .run();
 }
 
 export async function deleteOldSessions(env: Env, now = new Date()) {
   const cutoff = new Date(now.getTime() - KEEP_DAYS * 86_400_000).toISOString();
-  await env.DB.prepare("DELETE FROM voice_turns WHERE session_id IN (SELECT id FROM voice_sessions WHERE created_at < ?)").bind(cutoff).run();
-  const result = await env.DB.prepare("DELETE FROM voice_sessions WHERE created_at < ?").bind(cutoff).run();
+  await db(env).prepare("DELETE FROM voice_turns WHERE session_id IN (SELECT id FROM voice_sessions WHERE created_at < ?)").bind(cutoff).run();
+  const result = await db(env).prepare("DELETE FROM voice_sessions WHERE created_at < ?").bind(cutoff).run();
   return result.meta.changes;
 }
