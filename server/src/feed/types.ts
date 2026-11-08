@@ -24,8 +24,14 @@ export type FeedCard = {
   where?: string;
   // one short line saying why this person is seeing it, built from their profile, never by a model
   why: string;
+  // up to three such lines, the best first; `why` is the first of them, or a note about the item itself when none fit
+  reasons: string[];
   // the listing's own short description, shown in the app before anyone is sent off-site
   summary?: string;
+  // what the source's own page says about who it is for and how it runs; absent until the page has been read
+  level?: string;
+  format?: string;
+  highlights?: string[];
   salary?: string;
   url: string;
   source: string;
@@ -35,10 +41,24 @@ export type FeedCard = {
   saved?: boolean;
 };
 
+// a project or past role of the person's: a label for the reason line plus the words an item can overlap with
+export type PastWork = { label: string; words: string[] };
+
 // what the feed is ranked against; only these few profile fields leave the encrypted profile row
-export type FeedCriteria = { roles: string[]; skills: string[]; location?: string; fields?: FeedField[]; avoidTags?: string[] };
+export type FeedCriteria = {
+  roles: string[];
+  skills: string[];
+  location?: string;
+  fields?: FeedField[];
+  avoidTags?: string[];
+  work?: PastWork[];
+  // studying, between school and a first role, or saying so in their goals
+  earlyCareer?: boolean;
+  // the profile names AI tools or machine learning anywhere
+  usesAI?: boolean;
+};
 
 // a card before ranking: the text the ranker matches against plus when it was posted or when it happens
-export type Candidate = { card: Omit<FeedCard, "why">; text: string; postedAt?: string; startsAt?: string; fields?: FeedField[] };
+export type Candidate = { card: Omit<FeedCard, "why" | "reasons">; text: string; postedAt?: string; startsAt?: string; fields?: FeedField[] };
 
 export type FeedPage = { items: FeedCard[]; nextCursor: string | null; building: boolean; builtAt: string | null; section: FeedSection };

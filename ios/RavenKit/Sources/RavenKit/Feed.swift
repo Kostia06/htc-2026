@@ -31,8 +31,16 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
     public let when: String?
     public let `where`: String?
     public let why: String
-    /// The listing's own short description (jobs today); nil when the source gives none.
+    /// Up to three lines on why this fits the person, the best first; `why` repeats the first. Nil from an older server.
+    public let reasons: [String]?
+    /// The listing's own short description; nil when the source gives none or its page has not been read yet.
     public let summary: String?
+    /// Who the source's own page says it is for: "beginner", "all levels" or "experienced".
+    public let level: String?
+    /// How it runs, as the page states it, such as "48-hour, in person".
+    public let format: String?
+    /// Up to three short facts from the page: prizes, themes, cost.
+    public let highlights: [String]?
     public let salary: String?
     public let url: URL
     public let source: String
@@ -44,7 +52,8 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
 
     public init(
         id: String, kind: Kind, title: String, org: String, when: String? = nil, where place: String? = nil,
-        why: String, summary: String? = nil, salary: String? = nil, url: URL, source: String,
+        why: String, reasons: [String]? = nil, summary: String? = nil, level: String? = nil, format: String? = nil,
+        highlights: [String]? = nil, salary: String? = nil, url: URL, source: String,
         attribution: Attribution? = nil, tags: [String]? = nil, saved: Bool = false,
     ) {
         self.id = id
@@ -54,7 +63,11 @@ public struct FeedCard: Codable, Sendable, Hashable, Identifiable {
         self.when = when
         self.where = place
         self.why = why
+        self.reasons = reasons
         self.summary = summary
+        self.level = level
+        self.format = format
+        self.highlights = highlights
         self.salary = salary
         self.url = url
         self.source = source

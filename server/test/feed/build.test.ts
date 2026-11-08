@@ -1,7 +1,9 @@
 import { env } from "cloudflare:workers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildFeed, rebuildStaleFeeds } from "../../src/feed/build";
+import { buildFeed, rebuildClaimed, rebuildStaleFeeds } from "../../src/feed/build";
+import { enrichCuratedItems } from "../../src/feed/enrich";
 import { cachedJobSearch } from "../../src/feed/jobs";
+import type { FeedCard } from "../../src/feed/types";
 import type { JobQuery } from "../../src/integrations/adzuna";
 import { updateProfile } from "../../src/memory/profile/store";
 
@@ -40,6 +42,36 @@ describe("feed building", () => {
     await buildFeed(env, "u2", sources);
     await buildFeed(env, "nobody", sources);
     expect(queries.map((q) => q.what)).toEqual(["Python SQL"]);
+  });
+
+  it("saves the feed before reading any curated page, then saves it again carrying what the pages said", async () => {
+    const saves: number[] = [];
+    const extracted = { summary: "A weekend hackathon for students.", level: "beginner", format: "24-hour, in person", highlights: ["Free"] };
+    const sources = {
+      searchJobs: async () => [],
+      enrichCurated: async () => {
+        saves.push((await env.DB.prepare("SELECT COUNT(*) AS n FROM feed_items WHERE user_id = 'u3'").first<{ n: number }>())?.n ?? 0);
+        return enrichCuratedItems(env, { readPage: async () => "page", extract: async () => extracted });
+      },
+    };
+    await updateProfile(env, "u3", { targetRoles: ["Developer"] });
+    await rebuildClaimed(env, "u3", sources);
+
+    expect(saves).toEqual([expect.any(Number)]);
+    expect(saves[0]).toBeGreaterThan(0);
+    const { results } = await env.DB.prepare("SELECT card FROM feed_items WHERE user_id = 'u3' AND section = 'all'").all<{ card: string }>();
+    const cards = results.map((r) => JSON.parse(r.card) as FeedCard);
+    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.filter((c) => c.summary === extracted.summary).length).toBeGreaterThan(0);
+    expect(cards.every((c) => Array.isArray(c.reasons))).toBe(true);
+  });
+
+  it("keeps the feed when enrichment itself blows up", async () => {
+    await updateProfile(env, "u4", { targetRoles: ["Nurse"] });
+    await rebuildClaimed(env, "u4", { searchJobs: async () => [], enrichCurated: async () => Promise.reject(new Error("boom")) });
+    const row = await env.DB.prepare("SELECT built_at, building_since FROM feed_state WHERE user_id = 'u4'").first<{ built_at: string | null; building_since: string | null }>();
+    expect(row?.built_at).not.toBeNull();
+    expect(row?.building_since).toBeNull();
   });
 
   it("the cron rebuilds only feeds older than six hours", async () => {
