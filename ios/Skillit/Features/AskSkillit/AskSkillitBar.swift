@@ -5,6 +5,9 @@ import SwiftUI
 /// morphs the capsule into an input bar (type, or talk with on-device dictation); Skillit's reply floats just above it.
 /// Built by hand because the system search tab can't carry a mic or a reply card; the glass shapes share ids so they morph.
 struct AskSkillitBar: View {
+    /// Bar height plus its gap above the home indicator; tabs pad their content by this much.
+    static let reservedHeight: CGFloat = 76
+
     @Environment(AppModel.self) private var app
     @Binding var selection: MainTabView.Section
     @Binding var isAsking: Bool
@@ -48,7 +51,7 @@ struct AskSkillitBar: View {
                         Text(section.title).font(.caption2)
                     }
                     .foregroundStyle(selection == section ? Theme.action : .secondary)
-                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .frame(maxWidth: .infinity, minHeight: 62)
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
@@ -76,7 +79,7 @@ struct AskSkillitBar: View {
             Image(systemName: isAsking ? "xmark" : "waveform")
                 .font(.body.weight(.semibold))
                 .foregroundStyle(isAsking ? Color.secondary : Theme.action)
-                .frame(width: 44, height: 44)
+                .frame(width: 52, height: 52)
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)
