@@ -64,7 +64,7 @@ struct NotificationDestinationView: View {
             switch target {
             case let .feed(id): loaded = try await .feed(client.feedCard(id: id))
             case let .step(id): loaded = try await step(id, using: client).map { .step($0) }
-            case let .report(id): loaded = try await client.practiceHistory().sessions.first { $0.id == id }.map { .report($0) }
+            case let .report(id): loaded = try await .report(report(id, using: client))
             case let .resume(id): loaded = try await .resume(client.tailoredResume(id: id), client)
             case .company, .unknown: return
             }
@@ -72,6 +72,12 @@ struct NotificationDestinationView: View {
         } catch {
             failure = error.message
         }
+    }
+
+    /// The history row when it's on the first page (it carries the score); otherwise the session itself, by id.
+    private func report(_ id: String, using client: SkillitClient) async throws(SkillitError) -> PracticeSessionSummary {
+        if let listed = try await client.practiceHistory().sessions.first(where: { $0.id == id }) { return listed }
+        return try await PracticeSessionSummary(client.practiceSession(id: id))
     }
 
     private func step(_ id: String, using client: SkillitClient) async throws(SkillitError) -> RoadmapStep? {

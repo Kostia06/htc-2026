@@ -19,6 +19,19 @@ struct PracticeHistoryTests {
         #expect(detail.turns[0].delivery?.fillerWords == 1)
     }
 
+    @Test func `sums up a session loaded by id when it isn't on the first page`() {
+        let detail = PracticeSessionDetail(
+            id: "s9", mode: .interview, companySlug: "atb", status: .finished, createdAt: "2026-11-01T08:00:00.000Z",
+            turns: [PracticeTurn(idx: 0, question: "Q1", answer: "A1"), PracticeTurn(idx: 1, question: "Q2", answer: "A2")],
+        )
+        let summary = PracticeSessionSummary(detail)
+        #expect(summary.id == "s9")
+        #expect(summary.companySlug == "atb")
+        #expect(summary.createdAt == "2026-11-01T08:00:00.000Z")
+        #expect(summary.turnCount == 2)
+        #expect(summary.score == nil)
+    }
+
     @Test func `appending a page skips sessions already shown`() {
         var page = PracticeHistoryPage(sessions: [.sample(id: "a"), .sample(id: "b")], nextCursor: "c1")
         page.append(PracticeHistoryPage(sessions: [.sample(id: "b"), .sample(id: "c")], nextCursor: nil))

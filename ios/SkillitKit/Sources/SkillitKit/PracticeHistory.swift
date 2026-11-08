@@ -117,6 +117,17 @@ public struct PracticeSessionDetail: Decodable, Equatable, Sendable, Identifiabl
     }
 }
 
+public extension PracticeSessionSummary {
+    /// For a session opened by id (a notification) that the first history page no longer holds; the name and score
+    /// only come with the history list, so they stay empty here.
+    init(_ detail: PracticeSessionDetail) {
+        self.init(
+            id: detail.id, mode: detail.mode, companySlug: detail.companySlug, status: detail.status,
+            createdAt: detail.createdAt, turnCount: detail.turns.count,
+        )
+    }
+}
+
 public extension SkillitClient {
     /// Newest first. Pass the page's `nextCursor` for the next one.
     func practiceHistory(cursor: String? = nil) async throws(SkillitError) -> PracticeHistoryPage {
