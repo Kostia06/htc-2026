@@ -4,9 +4,13 @@ import SwiftUI
 /// Go back over an interview: the recording with a dot at every moment, the moments as a feed, and the transcript.
 struct ReplayView: View {
     @State private var model: ReplayModel
+    private let sessionId: String
+    private let headset: (any HeadsetLinkService)?
 
-    init(sessionId: String, service: any ReplayService) {
+    init(sessionId: String, service: any ReplayService, headset: (any HeadsetLinkService)? = nil) {
         _model = State(initialValue: ReplayModel(sessionId: sessionId, service: service))
+        self.sessionId = sessionId
+        self.headset = headset
     }
 
     var body: some View {
@@ -23,6 +27,11 @@ struct ReplayView: View {
         .background(Theme.ground)
         .navigationTitle("Replay")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let headset {
+                ToolbarItem(placement: .primaryAction) { ReviewInHeadsetButton(sessionId: sessionId, service: headset) }
+            }
+        }
         .task { await model.load() }
         .onDisappear { model.stop() }
     }

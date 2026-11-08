@@ -60,6 +60,13 @@ extension AppModel {
                     better: "Your lending team shipped instant approvals last year. I spent my co-op on risk models.",
                     said: "fintech is really interesting", question: "Why our lending team?", turn: 1,
                 ),
+                ReplayMoment(
+                    seconds: 104, kind: .researched, title: "How their interviewers hear it",
+                    detail: "Their careers page says they hire people who own outcomes, so name what you owned.",
+                    better: "I owned the risk model end to end and cut review time by [number].",
+                    said: "fintech is really interesting", question: "Why our lending team?", turn: 1,
+                    sources: [ReplaySource(title: "Our values", url: URL(string: "https://example.com/careers/values")!)],
+                ),
             ],
             transcript: [
                 ReplayLine(seconds: 0, speaker: .agent, text: "Tell me about a project you're proud of."),

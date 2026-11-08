@@ -12,11 +12,23 @@ final class SignInModel {
         case enteringCode(EmailAddress)
     }
 
+    enum PasswordMode: String, CaseIterable {
+        case signIn = "Sign in"
+        case signUp = "Create account"
+    }
+
+    // Supabase's own minimum; asking for more on sign-in would lock out people with older passwords
+    static let minimumNewPassword = 8
+
     var step: Step = .choosing
     var typedEmail = ""
     var typedCode = ""
+    var typedPassword = ""
+    var passwordMode = PasswordMode.signIn
     private(set) var isWorking = false
     var errorMessage: String?
+    /// Not an error: e.g. "check your inbox to confirm" after creating an account.
+    var notice: String?
 
     /// Kept between the Apple request and its completion; Supabase needs the unhashed half.
     private var pendingNonce: SignInNonce?
@@ -31,6 +43,35 @@ final class SignInModel {
 
     var canVerifyCode: Bool {
         OneTimeCode(typed: typedCode) != nil && !isWorking
+    }
+
+    var canSubmitPassword: Bool {
+        let needed = passwordMode == .signUp ? Self.minimumNewPassword : 1
+        return EmailAddress(typed: typedEmail) != nil && typedPassword.count >= needed && !isWorking
+    }
+
+    /// True when the person is signed in; creating an account that needs email confirmation returns false with a notice.
+    func submitPassword(with authenticator: Authenticator) async -> Bool {
+        guard let email = EmailAddress(typed: typedEmail) else { return false }
+        let password = typedPassword
+        switch passwordMode {
+        case .signIn:
+            return await attempt(orSay: "That email and password don't match. Try again, or get a code instead.") {
+                try await authenticator.signIn(email: email, password: password)
+            }
+        case .signUp:
+            var hasSession = false
+            let worked = await attempt(orSay: "Skillit couldn't create that account. It may already exist; try signing in.") {
+                hasSession = try await authenticator.signUp(email: email, password: password)
+            }
+            guard worked else { return false }
+            if !hasSession {
+                notice = "Check \(email.value) for a confirmation link, then sign in here."
+                passwordMode = .signIn
+                typedPassword = ""
+            }
+            return hasSession
+        }
     }
 
     func prepare(_ request: ASAuthorizationAppleIDRequest) {

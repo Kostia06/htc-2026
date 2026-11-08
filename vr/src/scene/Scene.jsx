@@ -8,6 +8,8 @@ import { Veil, useFadeSwap } from './Fade.jsx'
 import { MenuPanel } from './ui/MenuPanel.jsx'
 import { Caption } from './ui/Caption.jsx'
 import { HintCard } from './ui/HintCard.jsx'
+import { RecordingBadge } from './RecordingBadge.jsx'
+import { ReviewMoments } from './ReviewMoments.jsx'
 import { useHints } from '../ui/useHints.js'
 import { useComfort } from './useComfort.js'
 import { useSpatialVoice } from './useSpatialVoice.js'
@@ -34,6 +36,10 @@ const SIDE_PANEL = { position: [-0.5, 1.2, -1.0], rotation: [-0.1, 0.46, 0] }
 const SUMMARY_PANEL = { position: [0, 1.14, -1.12], rotation: [-0.14, 0, 0] }
 const CAPTION = { position: [0, 0.9, -1.15], rotation: [-0.35, 0, 0] }
 const BUTTON = { position: [0, 0.88, -0.58], rotation: [-0.8, 0, 0] }
+// the replay sits opposite the score card, on the right
+const REVIEW_MOMENTS = { position: [0.62, 1.22, -0.92], rotation: [-0.1, -0.6, 0] }
+// lying on the desk beside the answer key
+const RECORDING_BADGE = { position: [0.25, 0.87, -0.6], rotation: [-0.8, 0, 0] }
 const GREETING_MS = 1800
 const REVIEW_VISIBLE_MS = 6000
 
@@ -47,8 +53,10 @@ function stageOf({ showPairing, phase }) {
 // `headset` comes from useHeadsetSession: { phase, profile, signedInAt, claim }.
 // Until it is signedIn the scene shows the keypad instead of the menu, unless the
 // candidate chose to carry on with example data.
-export function Scene({ interview, headset }) {
-  const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub } = interview
+// `review` (useInterviewReview) is the replay of a finished or phone-chosen
+// session, shown beside the summary or the menu; never during an interview.
+export function Scene({ interview, headset, review }) {
+  const { phase, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, micDenied, getAmplitude, actions, isStub, recording } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const comfort = useComfort(inXR)
@@ -151,6 +159,8 @@ export function Scene({ interview, headset }) {
             {buttonProps && (
               <ActionButton {...buttonProps} position={BUTTON.position} rotation={BUTTON.rotation} reducedMotion={reducedMotion} />
             )}
+            {/* consent, not chatter: the candidate must know the call is recorded */}
+            {recording && <RecordingBadge position={RECORDING_BADGE.position} rotation={RECORDING_BADGE.rotation} />}
           </>
         )}
 
@@ -164,6 +174,11 @@ export function Scene({ interview, headset }) {
             rotation={SUMMARY_PANEL.rotation}
             reducedMotion={reducedMotion}
           />
+        )}
+
+        {/* after an interview, or a past one opened from the phone */}
+        {(stage === 'summary' || stage === 'menu') && review?.sessionId && (
+          <ReviewMoments review={review} position={REVIEW_MOMENTS.position} rotation={REVIEW_MOMENTS.rotation} reducedMotion={reducedMotion} />
         )}
       </group>
     </>

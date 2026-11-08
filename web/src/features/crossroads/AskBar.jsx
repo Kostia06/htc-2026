@@ -1,0 +1,68 @@
+// Ask Crossroads: the chat composer pinned under the lanes. Answers come only from the two lanes, and what they
+// cite lights up on the page; the server allows one clarifying question per conversation.
+import { useEffect, useRef, useState } from 'react'
+import { crossroadsApi } from '../../lib/client'
+import { useStickToBottom } from '../../lib/hooks'
+import { Bubble, Composer, TypingIndicator } from '../../ui/Chat'
+import { useDictation } from '../chat/useDictation'
+import '../chat/chat.css'
+
+let nextId = 0
+const line = (role, text) => ({ id: ++nextId, role, text })
+
+export function AskBar({ onCited }) {
+  const [messages, setMessages] = useState([])
+  const [draft, setDraft] = useState('')
+  const [thinking, setThinking] = useState(false)
+  const [error, setError] = useState(null)
+  const latest = useRef(messages)
+  useEffect(() => {
+    latest.current = messages
+  })
+  const end = useStickToBottom(messages.length + (thinking ? 1 : 0))
+
+  const send = async (text) => {
+    if (thinking || !text.trim()) return
+    const conversation = latest.current.map((m) => ({ speaker: m.role === 'user' ? 'user' : 'raven', text: m.text }))
+    setMessages((m) => [...m, line('user', text)])
+    setDraft('')
+    setError(null)
+    setThinking(true)
+    try {
+      const answer = await crossroadsApi.ask(text, conversation)
+      setMessages((m) => [...m, line('raven', answer.reply)])
+      onCited(answer.cites ?? [])
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setThinking(false)
+    }
+  }
+
+  const mic = useDictation({ onHeard: setDraft, onFinished: send, onError: setError })
+
+  return (
+    <div className="xr-ask">
+      {messages.length > 0 && (
+        <div className="xr-ask__log chat" aria-live="polite">
+          {messages.map((m) => (
+            <Bubble key={m.id} from={m.role}>
+              {m.text}
+            </Bubble>
+          ))}
+          {thinking && <TypingIndicator />}
+          <div ref={end} />
+        </div>
+      )}
+      <Composer
+        value={draft}
+        onChange={setDraft}
+        onSend={() => send(draft.trim())}
+        placeholder="Ask where your road meets theirs"
+        disabled={thinking || Boolean(mic?.listening)}
+        mic={mic}
+        error={error}
+      />
+    </div>
+  )
+}

@@ -22,6 +22,8 @@ export const USER_TABLES = [
   "user_notifications",
   "notification_settings",
   "notification_devices",
+  "road_pattern_votes",
+  "path_outcomes",
 ] as const;
 
 export type UserTable = (typeof USER_TABLES)[number];

@@ -205,6 +205,7 @@ function recordingFetch() {
     ['/turns', { scores: { structure: 4.2, relevance: 3.8, specificity: 3.5, confidence: 4 }, delivery: { words: 28, fillerWords: 1, wordsPerMinute: 140 }, tip: 'Close with a number.' }],
     ['/next', { say: SECOND, kind: 'question' }],
     ['/finish', { summary: 'Solid structure.', prepList: [{ step: 'Add numbers', why: 'Verifiable' }] }],
+    ['/conversation', { ok: true }],
     ['/api/voice/sessions', { sessionId: 'sess_1', companySlug: 'acme', opening: OPENING, questions: [{ text: FIRST }, { text: SECOND }] }],
   ]
 
@@ -271,6 +272,20 @@ describe('createApiSession', () => {
     expect(api.of('/turns')[0].body).toEqual({ question, answer: SOLID, durationMs: 12000 })
     expect(score.scores.structure).toBe(4.2)
     expect(next).toEqual({ say: SECOND, kind: 'question' })
+  })
+
+  it('sends the live timestamps with a scored turn, and marks a reconnect conversation', async () => {
+    const s = session()
+    const { question } = await s.start()
+    expect(s.sessionId).toBe('sess_1')
+    await s.scoreTurn({ question, answer: SOLID, answerStartSec: 6.04, atSec: 14.26 })
+    await s.scoreTurn({ question, answer: SOLID, answerStartSec: Number.NaN })
+    expect(api.of('/turns')[0].body).toMatchObject({ answerStartSec: 6, atSec: 14.3 })
+    expect(api.of('/turns')[1].body).not.toHaveProperty('answerStartSec')
+
+    await s.attachConversation('conv_1')
+    await s.attachConversation('conv_2', { reconnect: true })
+    expect(api.of('/conversation').map((c) => c.body)).toEqual([{ conversationId: 'conv_1' }, { conversationId: 'conv_2', reconnect: true }])
   })
 
   // THE ONE THAT MATTERS. The Worker keeps no state: it finds its place by

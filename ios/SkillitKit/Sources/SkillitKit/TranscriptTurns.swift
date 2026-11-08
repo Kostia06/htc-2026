@@ -11,8 +11,24 @@ public struct TranscriptTurns: Sendable {
     private var answer: [String] = []
     private var answerStartedAt: Date?
     private var lastAnswerAt: Date?
+    /// When the agent last stopped talking with no answer yet: the person starts speaking around here.
+    private var floorOpenedAt: Date?
+    /// When the call connected; turns carry timestamps only once this is known.
+    private var callStartedAt: Date?
 
     public init() {}
+
+    /// Marks the start of the call's clock. Only the first call counts, so a late duplicate can't shift every timestamp.
+    public mutating func callStarted(at time: Date = .now) {
+        callStartedAt = callStartedAt ?? time
+    }
+
+    /// The agent stopped talking. A transcript line arrives only once the person finishes it, so this is the
+    /// better guess at when an answer began.
+    public mutating func floorOpened(at time: Date = .now) {
+        guard question != nil, answer.isEmpty else { return }
+        floorOpenedAt = time
+    }
 
     /// The turn that just completed, if this line closed one.
     public mutating func add(_ speaker: Speaker, _ text: String, at time: Date = .now) -> VoiceTurn? {
@@ -20,7 +36,8 @@ public struct TranscriptTurns: Sendable {
         guard !trimmed.isEmpty else { return nil }
         switch speaker {
         case .agent:
-            let finished = flush()
+            let finished = flush(at: time)
+            floorOpenedAt = nil
             // the scorer should see the question as asked, not the voice's stage directions
             let spoken = trimmed.withoutAudioTags
             if !spoken.isEmpty { question = spoken }
@@ -35,16 +52,25 @@ public struct TranscriptTurns: Sendable {
     }
 
     /// The turn in progress, for when the conversation ends mid-answer.
-    public mutating func flush() -> VoiceTurn? {
+    public mutating func flush(at time: Date = .now) -> VoiceTurn? {
         defer {
             answer = []
             answerStartedAt = nil
             lastAnswerAt = nil
+            floorOpenedAt = nil
         }
         guard let question, !answer.isEmpty else { return nil }
         let seconds = (lastAnswerAt ?? .now).timeIntervalSince(answerStartedAt ?? .now)
         // a one-line answer has no span of its own; a few seconds is closer than zero
         let durationMs = max(Int(seconds * 1000), 2000)
-        return VoiceTurn(question: question, answer: answer.joined(separator: " "), durationMs: durationMs)
+        let began = floorOpenedAt ?? answerStartedAt
+        return VoiceTurn(
+            question: question, answer: answer.joined(separator: " "), durationMs: durationMs,
+            answerStartSec: began.flatMap(secondsIntoCall), atSec: secondsIntoCall(time),
+        )
+    }
+
+    private func secondsIntoCall(_ time: Date) -> Double? {
+        callStartedAt.map { max(0, time.timeIntervalSince($0)) }
     }
 }

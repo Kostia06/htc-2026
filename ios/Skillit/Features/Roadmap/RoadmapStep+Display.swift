@@ -12,6 +12,7 @@ extension RoadmapStep.Kind {
         case .application: "paperplane.fill"
         case .interviewPractice: "mic.fill"
         case .networkingPractice: "person.2.wave.2.fill"
+        case .exploreMemory: "signpost.right.and.left.fill"
         }
     }
 
@@ -19,6 +20,7 @@ extension RoadmapStep.Kind {
         switch self {
         case .interviewPractice: "Interview practice"
         case .networkingPractice: "Networking"
+        case .exploreMemory: "Crossroads"
         default: rawValue.capitalized
         }
     }

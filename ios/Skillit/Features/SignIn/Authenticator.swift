@@ -44,6 +44,16 @@ final class Authenticator: Sendable {
         try await auth.verifyOTP(email: email.value, token: code.value, type: .email)
     }
 
+    func signIn(email: EmailAddress, password: String) async throws {
+        try await auth.signIn(email: email.value, password: password)
+    }
+
+    /// False when the project asks new people to confirm their email first, so there's no session yet.
+    func signUp(email: EmailAddress, password: String) async throws -> Bool {
+        let response = try await auth.signUp(email: email.value, password: password)
+        return response.session != nil
+    }
+
     /// Ends the session on this device only; a paired headset keeps its own token.
     func signOut() async {
         // the local session is cleared even when the server can't be reached

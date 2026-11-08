@@ -34,7 +34,7 @@ struct SignInView: View {
         case .choosing:
             SignInChoices(model: model, signedIn: signedIn)
         case .enteringEmail:
-            EmailEntry(model: model)
+            EmailEntry(model: model, signedIn: signedIn)
         case let .enteringCode(email):
             CodeEntry(model: model, email: email, signedIn: signedIn)
         }
@@ -43,7 +43,7 @@ struct SignInView: View {
     private var headline: String {
         switch model.step {
         case .choosing: "Your next role, one step at a time."
-        case .enteringEmail: "What's your email?"
+        case .enteringEmail: model.passwordMode == .signUp ? "Create your account" : "Welcome back"
         case .enteringCode: "Check your inbox."
         }
     }
@@ -51,7 +51,7 @@ struct SignInView: View {
     private var subtitle: String {
         switch model.step {
         case .choosing: "Skillit learns what you've done and plans the shortest path to the job you want."
-        case .enteringEmail: "We'll send you a six-digit code. No password to remember."
+        case .enteringEmail: "Use your email and a password, or get a one-time code instead."
         case let .enteringCode(email): "Enter the code we sent to \(email.value)."
         }
     }
@@ -89,7 +89,7 @@ private struct SignInChoices: View {
             .frame(height: 54)
             .clipShape(.capsule)
             .disabled(model.isWorking)
-            Button("Use email instead") { model.step = .enteringEmail }
+            Button("Use email and password") { model.step = .enteringEmail }
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .foregroundStyle(.secondary)
         }

@@ -13,6 +13,7 @@ struct PracticeView: View {
     @State private var openedPosting: JobPosting?
     @State private var isPairing = false
     @State private var isRecapping = false
+    @State private var replaying: PracticeSessionSummary?
 
     var body: some View {
         NavigationStack {
@@ -21,14 +22,23 @@ struct PracticeView: View {
                     if let history {
                         PracticeProgressCard(model: history) { isShowingHistory = true }
                     }
-                    interviewChoice
+                    VStack(spacing: 10) {
+                        interviewChoice
+                        vrLink
+                    }
                     // said before the call starts, so nobody is surprised that ElevenLabs keeps the audio
                     Label("Recorded so you can replay it", systemImage: "waveform")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 4)
+                    if let history {
+                        RecordingsSection(
+                            sessions: history.sessions,
+                            onOpen: { replaying = $0 },
+                            onSeeAll: { isShowingHistory = true }
+                        )
+                    }
                     yourPostings
-                    vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
                 }
                 .padding(24)
@@ -45,6 +55,10 @@ struct PracticeView: View {
                 InterviewTargetPicker(postings: postings.postings) { pending = $0 }
             }
             .sheet(item: $openedPosting) { PostingView(posting: $0) }
+            .sheet(item: $replaying) { session in
+                NavigationStack { ReplayView(sessionId: session.id, service: app.replayService) }
+                    .presentationDragIndicator(.visible)
+            }
             .fullScreenCover(item: $activeSession) { session in
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
@@ -99,7 +113,7 @@ struct PracticeView: View {
     }
 
     private var vrLink: some View {
-        row("Practice in VR", systemImage: "visionpro") { isPairing = true }
+        row("Or practise in VR", systemImage: "visionpro") { isPairing = true }
     }
 
     private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
