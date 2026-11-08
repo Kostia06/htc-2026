@@ -34,8 +34,14 @@ struct SkillitApp: App {
 }
 
 enum AppConfiguration {
-    /// Set per build configuration in project.yml; Debug points at the local Worker.
+    /// Set per build configuration in project.yml. Debug builds honour a SKILLIT_API_URL
+    /// environment override so a simulator can talk to a local server.
     static let apiBaseURL: URL = {
+        #if DEBUG
+        if let override = ProcessInfo.processInfo.environment["SKILLIT_API_URL"], let url = URL(string: override) {
+            return url
+        }
+        #endif
         guard let value = Bundle.main.object(forInfoDictionaryKey: "RavenAPIURL") as? String, let url = URL(string: value) else {
             preconditionFailure("RavenAPIURL is missing from Info.plist")
         }

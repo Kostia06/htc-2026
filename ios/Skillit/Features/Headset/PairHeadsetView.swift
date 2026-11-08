@@ -75,8 +75,8 @@ struct PairHeadsetView: View {
     }
 
     private var instructions: some View {
-        // the address on a line of its own so it never breaks at a hyphen
-        Text("On your headset, open\n**raven-vr.ilnkostia-dev.workers.dev**\nand enter this code")
+        // the address on a line of its own so it never wraps mid-word
+        Text("On your headset, open\n**vr.skillit.study**\nand enter this code")
             .font(.body)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)

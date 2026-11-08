@@ -50,8 +50,9 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
       configs:
+        # a phone can't reach localhost; set SKILLIT_API_URL in the scheme's environment to use a local server
         Debug:
-          RAVEN_API_URL: "http://localhost:8799"
+          RAVEN_API_URL: "https://api.skillit.study"
         Release:
           RAVEN_API_URL: "https://api.skillit.study"
     info:
