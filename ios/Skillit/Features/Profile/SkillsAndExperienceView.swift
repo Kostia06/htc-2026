@@ -8,7 +8,7 @@ struct SkillsAndExperienceView: View {
     @State private var experienceSheet: RowSheet<Profile.Experience>?
     @State private var educationSheet: RowSheet<Profile.Education>?
     @State private var isEditingSkills = false
-    @State private var github = GithubConnectModel()
+    @State private var work = WorkConnectionsModel()
 
     var body: some View {
         List {
@@ -33,8 +33,12 @@ struct SkillsAndExperienceView: View {
             .listRowBackground(Theme.raised)
             experienceSection
             educationSection
-            Section("Connected accounts") {
-                GithubConnectRow(model: github) { await reloadProfile() }
+            Section {
+                BringYourWorkList(model: work) { await reloadProfile() }
+            } header: {
+                Text("Bring your work")
+            } footer: {
+                Text("Each one is optional. Disconnecting removes only what that service added.")
             }
             .listRowBackground(Theme.raised)
         }
@@ -91,7 +95,7 @@ struct SkillsAndExperienceView: View {
         Binding(get: { editor.failure != nil }, set: { if !$0 { editor.dismissFailure() } })
     }
 
-    /// imported GitHub projects land in the profile on the server; this brings them onto the screen
+    /// imported projects land in the profile on the server; this brings them onto the screen
     private func reloadProfile() async {
         guard let client = app.client, let profile = try? await client.profile() else { return }
         app.profile = profile

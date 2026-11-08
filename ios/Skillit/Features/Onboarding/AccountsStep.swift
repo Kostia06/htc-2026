@@ -1,16 +1,18 @@
 import SwiftUI
 
-/// The optional onboarding step after the resume: connect GitHub, review a LinkedIn PDF, or move on.
+/// The optional onboarding step after the resume: bring work from any service, review a LinkedIn PDF, or skip it all.
 struct AccountsStep: View {
-    @State private var github = GithubConnectModel()
+    @State private var work = WorkConnectionsModel()
     @State private var isReviewingLinkedin = false
     let next: () -> Void
 
     var body: some View {
         VStack(spacing: 12) {
-            GithubConnectRow(model: github)
-                .padding(16)
-                .background(Theme.raised, in: .rect(cornerRadius: 16))
+            VStack(alignment: .leading, spacing: 12) {
+                BringYourWorkList(model: work)
+            }
+            .padding(16)
+            .background(Theme.raised, in: .rect(cornerRadius: 16))
             Button { isReviewingLinkedin = true } label: {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
@@ -22,7 +24,8 @@ struct AccountsStep: View {
                 }
             }
             .buttonStyle(OptionButtonStyle(isSelected: false))
-            Button(github.isConnected ? "Continue" : "Skip for now", action: next)
+            // every row is optional and so is the whole step
+            Button(work.hasAnyConnected ? "Continue" : "Skip for now", action: next)
                 .buttonStyle(.raised)
                 .padding(.top, 12)
         }
