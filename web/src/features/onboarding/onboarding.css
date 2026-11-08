@@ -1,0 +1,186 @@
+.ob {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.ob__header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 8px 16px 8px;
+  background: linear-gradient(var(--ground) 70%, transparent);
+}
+.ob__header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ob__back {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  color: var(--text-2);
+  border-radius: 12px;
+  transition: opacity 0.2s, background 0.15s;
+}
+.ob__back:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.05);
+}
+.ob__progress {
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--grey-18);
+  overflow: hidden;
+}
+.ob__progress span {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--action);
+  transition: width 0.4s var(--spring);
+}
+/* the glossy strip along the top of the fill */
+.ob__progress span::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 3px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.25);
+}
+.ob__reading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 0 56px;
+}
+.ob__scroll {
+  flex: 1;
+  padding: 16px 24px;
+  overflow-x: hidden;
+}
+.ob__question {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.ob__question > p {
+  margin-top: -14px;
+}
+.ob__question--forward {
+  animation: ob-in-right 0.35s var(--smooth);
+}
+.ob__question--back {
+  animation: ob-in-left 0.35s var(--smooth);
+}
+@keyframes ob-in-right {
+  from { opacity: 0; transform: translateX(48px); }
+}
+@keyframes ob-in-left {
+  from { opacity: 0; transform: translateX(-48px); }
+}
+.ob__tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--agent);
+  background: rgb(227 209 173 / 0.16);
+  animation: pop-in 0.3s var(--spring);
+  margin-bottom: -12px;
+}
+.ob__options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ob__options .option-tile.is-over .option-tile__face {
+  border-style: dashed;
+  border-color: var(--action);
+}
+.ob__sub {
+  font-weight: 400;
+}
+.ob__flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ob__flow .option-tile__face {
+  min-height: 28px;
+}
+.ob__other {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+.ob__other .field {
+  padding-right: 72px;
+}
+.ob__add {
+  position: absolute;
+  right: 16px;
+  min-height: 44px;
+}
+.ob__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ob__error {
+  padding: 12px 16px;
+  border-radius: 16px;
+  color: var(--negative);
+  background: rgb(255 158 148 / 0.08);
+  border: 1px solid rgb(255 158 148 / 0.2);
+}
+.ob__bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 24px calc(8px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--ground) 30%);
+}
+.ob__bar .raised-btn {
+  flex: 1;
+}
+.ob__skip {
+  min-width: 72px;
+  min-height: 52px;
+}
+.ob__finishing {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px;
+  text-align: center;
+  background: var(--ground);
+  animation: fade-in 0.3s ease-out;
+}
+.ob__finishing-icon {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@media (min-width: 900px) {
+  .ob__header { padding-top: 32px; }
+  .ob__scroll { padding-top: 40px; }
+  .ob__bar { padding-bottom: 40px; }
+}
