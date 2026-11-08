@@ -8,6 +8,7 @@ struct SkillsAndExperienceView: View {
     @State private var experienceSheet: RowSheet<Profile.Experience>?
     @State private var educationSheet: RowSheet<Profile.Education>?
     @State private var isEditingSkills = false
+    @State private var github = GithubConnectModel()
 
     var body: some View {
         List {
@@ -32,6 +33,10 @@ struct SkillsAndExperienceView: View {
             .listRowBackground(Theme.raised)
             experienceSection
             educationSection
+            Section("Connected accounts") {
+                GithubConnectRow(model: github) { await reloadProfile() }
+            }
+            .listRowBackground(Theme.raised)
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
@@ -84,6 +89,12 @@ struct SkillsAndExperienceView: View {
 
     private var hasFailure: Binding<Bool> {
         Binding(get: { editor.failure != nil }, set: { if !$0 { editor.dismissFailure() } })
+    }
+
+    /// imported GitHub projects land in the profile on the server; this brings them onto the screen
+    private func reloadProfile() async {
+        guard let client = app.client, let profile = try? await client.profile() else { return }
+        app.profile = profile
     }
 
     private func apply(_ edit: ProfileEdit) {

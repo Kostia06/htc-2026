@@ -5,7 +5,7 @@ import Testing
 struct OnboardingQuestionTests {
     @Test func `mirrors the web questions in the same order`() {
         let ids = OnboardingQuestion.all.map(\.id)
-        #expect(ids == ["resume", "stage", "school", "roles", "situation", "skills", "where", "time"])
+        #expect(ids == ["resume", "accounts", "stage", "school", "roles", "situation", "skills", "where", "time"])
     }
 
     @Test func `asks about school only while studying`() {

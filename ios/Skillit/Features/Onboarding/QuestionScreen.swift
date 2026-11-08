@@ -37,6 +37,9 @@ struct QuestionScreen: View {
         switch question.kind {
         case .resume:
             ResumeChoice(pick: pickResume, skip: skipResume)
+        case .accounts:
+            // like the resume, it has its own way forward, so skipping it is the same move
+            AccountsStep(next: skipResume)
         case let .text(fields):
             TextFieldsQuestion(fields: fields, answer: answer, onChange: onChange)
         case .single, .multi:
