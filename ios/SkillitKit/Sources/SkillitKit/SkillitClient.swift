@@ -47,6 +47,9 @@ public struct SkillitClient: Sendable {
         let token: String
         do {
             token = try await accessToken()
+        } catch let error as SkillitError {
+            // the provider says why: only a missing session means signed out, a busy sign-in service doesn't
+            throw error
         } catch {
             throw .unauthorized
         }
