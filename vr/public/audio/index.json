@@ -1,0 +1,65 @@
+{
+  "voice": "Samantha",
+  "clips": {
+    "85907480": {
+      "file": "85907480.m4a",
+      "ms": 3067,
+      "text": "Why this company, and why this role specifically?"
+    },
+    "ced67137": {
+      "file": "ced67137.m4a",
+      "ms": 4368,
+      "text": "Walk me through a project where you had to learn a new technology under a deadline."
+    },
+    "b3fd1e53": {
+      "file": "b3fd1e53.m4a",
+      "ms": 4203,
+      "text": "Tell me about a time you disagreed with a teammate. How did you resolve it?"
+    },
+    "2bc4f2cf": {
+      "file": "2bc4f2cf.m4a",
+      "ms": 3607,
+      "text": "Describe a bug you could not reproduce. What did you do about it?"
+    },
+    "bf41a364": {
+      "file": "bf41a364.m4a",
+      "ms": 4253,
+      "text": "You named the technology but the result stayed vague. Close with one number."
+    },
+    "9fb1e145": {
+      "file": "9fb1e145.m4a",
+      "ms": 4590,
+      "text": "You described the disagreement but not the resolution. Say what changed your mind."
+    },
+    "c4944b73": {
+      "file": "c4944b73.m4a",
+      "ms": 2856,
+      "text": "Cut the preamble and get to your own actions faster."
+    },
+    "c8cee2d9": {
+      "file": "c8cee2d9.m4a",
+      "ms": 8056,
+      "text": "That was very short. Interviewers read brevity here as not having an example ready — give the situation, your action, then the result."
+    },
+    "9eb19b55": {
+      "file": "9eb19b55.m4a",
+      "ms": 5133,
+      "text": "Thanks for coming in. I have 3 questions about your experience. Take your time."
+    },
+    "25b450d2": {
+      "file": "25b450d2.m4a",
+      "ms": 5156,
+      "text": "Thanks for coming in. I have 4 questions about your experience. Take your time."
+    },
+    "3ab4956f": {
+      "file": "3ab4956f.m4a",
+      "ms": 5214,
+      "text": "Thanks for coming in. I have 5 questions about your experience. Take your time."
+    },
+    "7dc7cf9c": {
+      "file": "7dc7cf9c.m4a",
+      "ms": 5203,
+      "text": "Thanks for coming in. I have 6 questions about your experience. Take your time."
+    }
+  }
+}

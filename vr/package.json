@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "avatar": "node scripts/fetch-avatar.mjs"
+    "avatar": "node scripts/fetch-avatar.mjs",
+    "speech": "node scripts/render-speech.mjs",
+    "tts": "node scripts/tts-server.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
