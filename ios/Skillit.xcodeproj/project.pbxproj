@@ -1066,7 +1066,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kostiailn.skillit;
-				RAVEN_API_URL = "http://localhost:8799";
+				RAVEN_API_URL = "https://api.skillit.study";
 				SDKROOT = iphoneos;
 				SUPABASE_PUBLISHABLE_KEY = sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1;
 				SUPABASE_URL = "https://pgltmzicvpvcyhbrwqxz.supabase.co";
