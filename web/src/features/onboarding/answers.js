@@ -7,8 +7,6 @@ const list = (value) => (Array.isArray(value) ? value : value ? [value] : [])
 const optionsOf = (id) => QUESTIONS.find((q) => q.id === id).options
 const blank = (text) => !text || !String(text).trim()
 
-export const RESUME_ACCEPT = '.pdf,.doc,.docx,.odt,.rtf,.txt,.md,.html,.pptx,image/*'
-
 export function isAnswered(question, value) {
   if (question.type === 'text') return Object.values(value ?? {}).some((v) => !blank(v))
   return Array.isArray(value) ? value.length > 0 : !blank(value)
