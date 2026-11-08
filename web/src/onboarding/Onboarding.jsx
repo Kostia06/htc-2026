@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { visibleQuestions } from './questions'
+import { visibleQuestions } from '../features/onboarding/questions'
 import { draftToAnswers, RESUME_ACCEPT, saveAnswers, syncProfile, uploadResume } from './store'
 import './onboarding.css'
 

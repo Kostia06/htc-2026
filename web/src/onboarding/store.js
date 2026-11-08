@@ -1,6 +1,6 @@
 import { api } from '../lib/api'
 import { supabase } from '../lib/supabase'
-import { QUESTIONS } from './questions'
+import { QUESTIONS } from '../features/onboarding/questions'
 
 // Answers stay on this device (local memory) and are also sent to the user's profile on the server,
 // which stores it encrypted, so the plan and the agent can use them.
