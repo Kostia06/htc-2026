@@ -64,3 +64,101 @@ export function labelFor(resume, path) {
   const name = SECTION_TITLES[at.section]
   return detail ? `${name} · ${detail}` : name
 }
+
+
+const lineText = (value) => (typeof value === 'string' ? value.trim() : typeof value?.text === 'string' ? value.text.trim() : '')
+const lines = (value) => (Array.isArray(value) ? value.map(lineText).filter(Boolean) : [])
+const strings = (value) => (Array.isArray(value) ? value.filter((item) => typeof item === 'string' && item.trim()).map((item) => item.trim()) : [])
+
+/** Builds an analysis-only copy of the resume, excluding direct contact details. */
+export function resumeToAnalysisText(resume = {}) {
+  const sections = []
+  if (resume.summary?.trim()) sections.push(`SUMMARY\n${resume.summary.trim()}`)
+
+  if (resume.skills?.length) sections.push(`SKILLS\n${strings(resume.skills).join(', ')}`)
+
+  if (resume.experience?.length) {
+    const entries = resume.experience.map((item) => {
+      const heading = [item.role, item.org, [item.start, item.end].filter(Boolean).join(' – ')].filter(Boolean).join(' | ')
+      return [heading, ...lines(item.bullets).map((bullet) => `- ${bullet}`)].filter(Boolean).join('\n')
+    })
+    sections.push(`EXPERIENCE\n${entries.join('\n\n')}`)
+  }
+
+  if (resume.projects?.length) {
+    const entries = resume.projects.map((item) => {
+      const heading = [item.name, item.link].filter(Boolean).join(' | ')
+      return [heading, ...lines(item.bullets).map((bullet) => `- ${bullet}`)].filter(Boolean).join('\n')
+    })
+    sections.push(`PROJECTS\n${entries.join('\n\n')}`)
+  }
+
+  if (resume.education?.length) {
+    sections.push(`EDUCATION\n${resume.education.map((item) => [item.school, item.program, item.year].filter(Boolean).join(' | ')).join('\n')}`)
+  }
+
+  return sections.join('\n\n').slice(0, 30000)
+}
+
+function generatedDates(value) {
+  const dates = typeof value === 'string' ? value.trim() : ''
+  const match = /^(.*?)\s+(?:–|—|-|to)\s+(.*?)$/i.exec(dates)
+  return match ? { start: match[1].trim(), end: match[2].trim() } : { start: dates, end: '' }
+}
+
+/** Converts the AI draft into the existing editor's data model, retaining the person's contact details. */
+export function applyGeneratedResume(generated = {}, current = {}) {
+  const existing = normalizeResume(current)
+  const next = { ...existing }
+
+  const summary = generated.professionalSummary ?? generated.summary
+  if (typeof summary === 'string' && summary.trim()) next.summary = summary.trim()
+
+  const skills = strings(generated.technicalSkills ?? generated.skills)
+  if (skills.length) next.skills = skills
+
+  if (Array.isArray(generated.experience) && generated.experience.length) {
+    next.experience = generated.experience
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => {
+        const dates = generatedDates(item.dates)
+        return {
+          role: typeof item.role === 'string' ? item.role : '',
+          org: typeof (item.organization ?? item.org) === 'string' ? (item.organization ?? item.org) : '',
+          start: typeof item.start === 'string' ? item.start : dates.start,
+          end: typeof item.end === 'string' ? item.end : dates.end,
+          bullets: lines(item.bullets),
+        }
+      })
+      .filter((item) => item.role || item.org)
+  }
+
+  if (Array.isArray(generated.projects) && generated.projects.length) {
+    next.projects = generated.projects
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => {
+        const bullets = lines(item.bullets)
+        const technologies = strings(item.technologies)
+        if (technologies.length) bullets.unshift(`Technologies: ${technologies.join(', ')}`)
+        return {
+          name: typeof (item.name ?? item.title) === 'string' ? (item.name ?? item.title) : '',
+          bullets,
+          link: typeof (item.link ?? item.url) === 'string' ? (item.link ?? item.url) : '',
+        }
+      })
+      .filter((item) => item.name)
+  }
+
+  if (Array.isArray(generated.education) && generated.education.length) {
+    next.education = generated.education
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => ({
+        school: typeof (item.institution ?? item.school) === 'string' ? (item.institution ?? item.school) : '',
+        program: typeof (item.credential ?? item.program) === 'string' ? (item.credential ?? item.program) : '',
+        year: typeof (item.dates ?? item.year) === 'string' ? (item.dates ?? item.year) : '',
+      }))
+      .filter((item) => item.school)
+  }
+
+  return normalizeResume(next)
+}
