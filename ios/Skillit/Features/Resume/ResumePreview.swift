@@ -5,6 +5,7 @@ import SwiftUI
 struct ResumePreview: View {
     let resume: Resume
     let onEdit: (ResumeArea) -> Void
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     private let ink = Color(white: 0.12)
     private let faint = Color(white: 0.45)
@@ -58,9 +59,15 @@ struct ResumePreview: View {
 
     private func entry(title: String, note: String, bullets: [String], plain: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline) {
+            // at accessibility sizes the dates drop under the title instead of squeezing it into a sliver
+            let layout = typeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+                : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+            layout {
                 Text(title).font(.footnote.weight(.semibold))
-                Spacer(minLength: 8)
+                if !typeSize.isAccessibilitySize {
+                    Spacer(minLength: 0)
+                }
                 Text(note).font(.caption2).foregroundStyle(faint)
             }
             ForEach(Array(bullets.enumerated()), id: \.offset) { _, bullet in

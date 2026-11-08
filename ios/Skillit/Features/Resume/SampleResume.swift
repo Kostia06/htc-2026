@@ -1,6 +1,7 @@
 #if DEBUG
     import Foundation
     import SkillitKit
+    import UIKit
 
     /// Sample resume and coach replies for screenshots and previews; never talks to the server.
     struct SampleResume: ResumeService {
@@ -69,15 +70,15 @@
         }
 
         func resumePDFData() async throws(SkillitError) -> Data {
-            Data(Self.minimalPDF.utf8)
+            // a real one-page PDF: the viewer rejects files PDFKit can't open, as a hand-written stub would be
+            let page = CGRect(x: 0, y: 0, width: 612, height: 792)
+            return UIGraphicsPDFRenderer(bounds: page).pdfData { context in
+                context.beginPage()
+                let name = NSAttributedString(string: Self.resume.contact.name, attributes: [.font: UIFont.boldSystemFont(ofSize: 24)])
+                name.draw(at: CGPoint(x: 54, y: 54))
+                let summary = NSAttributedString(string: Self.resume.summary, attributes: [.font: UIFont.systemFont(ofSize: 12)])
+                summary.draw(in: CGRect(x: 54, y: 94, width: 504, height: 60))
+            }
         }
-
-        private static let minimalPDF = """
-        %PDF-1.4
-        1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
-        2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
-        3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >> endobj
-        trailer << /Root 1 0 R >>
-        """
     }
 #endif

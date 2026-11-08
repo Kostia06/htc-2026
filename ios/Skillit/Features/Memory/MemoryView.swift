@@ -2,6 +2,7 @@ import SkillitKit
 import SwiftUI
 
 /// Everything Skillit has written down about the person, with a way to delete any of it or share a note anonymously.
+/// Pushed inside Settings' navigation stack, so it brings no stack of its own.
 struct MemoryView: View {
     @Environment(AppModel.self) private var app
     @State private var model: MemoryModel?
@@ -18,23 +19,21 @@ struct MemoryView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Theme.ground)
-                .navigationTitle("What Skillit remembers")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        .task {
-            guard model == nil else { return }
-            let model = MemoryModel(service: service)
-            self.model = model
-            await model.load()
-        }
-        .sheet(item: $sharing) { memory in
-            ShareMemorySheet(memory: memory, service: service)
-        }
-        .sensoryFeedback(.impact(weight: .medium), trigger: deletions)
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Theme.ground)
+            .navigationTitle("What Skillit remembers")
+            .navigationBarTitleDisplayMode(.inline)
+            .task {
+                guard model == nil else { return }
+                let model = MemoryModel(service: service)
+                self.model = model
+                await model.load()
+            }
+            .sheet(item: $sharing) { memory in
+                ShareMemorySheet(memory: memory, service: service)
+            }
+            .sensoryFeedback(.impact(weight: .medium), trigger: deletions)
     }
 
     @ViewBuilder private var content: some View {

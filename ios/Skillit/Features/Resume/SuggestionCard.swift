@@ -63,15 +63,21 @@ struct SuggestionCard: View {
                     .font(.footnote)
                     .foregroundStyle(Theme.agent)
             }
-            HStack(spacing: 12) {
-                Button("Skip", action: onSkip)
-                    .buttonStyle(.raised(Color(white: 0.22)))
-                Button("Accept", action: onAccept)
-                    .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
+            // side by side normally; stacked at accessibility sizes so neither label truncates
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) { actions }
+                VStack(spacing: 10) { actions }
             }
         }
         .skillitCard()
         .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Theme.agent.opacity(0.35)))
+    }
+
+    @ViewBuilder private var actions: some View {
+        Button("Skip", action: onSkip)
+            .buttonStyle(.raised(Theme.secondaryButton))
+        Button("Accept", action: onAccept)
+            .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
     }
 
     /// "[add number]" is the one thing the person must fill in, so it is the one thing in orange.

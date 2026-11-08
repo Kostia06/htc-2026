@@ -9,6 +9,8 @@ struct ResumeView: View {
     @State private var model: ResumeModel?
     @State private var editing: ResumeArea?
     @State private var isViewingPDF = false
+    /// The resume as it was when a section sheet opened, so closing it saves only real changes.
+    @State private var beforeEditing: Resume?
 
     init() {}
 
@@ -46,10 +48,10 @@ struct ResumeView: View {
             }
         }
         .refreshable { await model?.load() }
-        .sheet(item: $editing) { area in
+        .sheet(item: $editing, onDismiss: finishEditing) { area in
             if let model {
                 @Bindable var model = model
-                ResumeSectionEditor(area: area, resume: $model.resume) { model.commit() }
+                ResumeSectionEditor(area: area, resume: $model.resume)
             }
         }
         .task {
@@ -94,7 +96,10 @@ struct ResumeView: View {
                     .foregroundStyle(.secondary)
                     .transition(.opacity)
             }
-            ResumePreview(resume: model.resume) { editing = $0 }
+            ResumePreview(resume: model.resume) { area in
+                beforeEditing = model.resume
+                editing = area
+            }
             footer(model)
         }
     }
@@ -104,7 +109,7 @@ struct ResumeView: View {
             if model.saveFailed {
                 Label("Your last change didn't save. Pull to refresh or edit again.", systemImage: "exclamationmark.triangle")
                     .font(.footnote)
-                    .foregroundStyle(Theme.action)
+                    .foregroundStyle(Theme.negative)
             }
             Link(destination: ResumeLinks.webBuilder) {
                 Label("Open the web builder", systemImage: "arrow.up.right.square")
@@ -137,6 +142,12 @@ struct ResumeView: View {
         .background(Theme.ground.opacity(0.92))
         .animation(.spring(duration: 0.3), value: model.isImproving)
         .sensoryFeedback(.impact(weight: .medium), trigger: model.isImproving) { _, running in running }
+    }
+
+    private func finishEditing() {
+        guard let model, let beforeEditing else { return }
+        model.finishEditing(from: beforeEditing)
+        self.beforeEditing = nil
     }
 
     private var service: any ResumeService {

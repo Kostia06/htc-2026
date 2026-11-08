@@ -81,7 +81,7 @@ struct ShareMemorySheet: View {
                     Task { await send() }
                 } label: {
                     if phase == .sending {
-                        ProgressView().tint(.white)
+                        ProgressView().tint(Theme.onAction)
                     } else {
                         Text("Share")
                     }
@@ -91,7 +91,7 @@ struct ShareMemorySheet: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
                 if case let .failed(message) = phase {
-                    Text(message).font(.footnote).foregroundStyle(Theme.action).listRowBackground(Color.clear)
+                    Text(message).font(.footnote).foregroundStyle(Theme.negative).listRowBackground(Color.clear)
                 }
             }
         }
