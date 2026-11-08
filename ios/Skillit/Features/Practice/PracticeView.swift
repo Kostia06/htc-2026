@@ -22,7 +22,10 @@ struct PracticeView: View {
                     if let history {
                         PracticeProgressCard(model: history) { isShowingHistory = true }
                     }
-                    interviewChoice
+                    VStack(spacing: 10) {
+                        interviewChoice
+                        vrLink
+                    }
                     // said before the call starts, so nobody is surprised that ElevenLabs keeps the audio
                     Label("Recorded so you can replay it", systemImage: "waveform")
                         .font(.footnote)
@@ -36,7 +39,6 @@ struct PracticeView: View {
                         )
                     }
                     yourPostings
-                    vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
                 }
                 .padding(24)
@@ -111,7 +113,7 @@ struct PracticeView: View {
     }
 
     private var vrLink: some View {
-        row("Practice in VR", systemImage: "visionpro") { isPairing = true }
+        row("Or practise in VR", systemImage: "visionpro") { isPairing = true }
     }
 
     private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
