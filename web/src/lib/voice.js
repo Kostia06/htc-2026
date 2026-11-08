@@ -78,6 +78,16 @@ export async function startVoice(rawCredentials, on) {
 }
 
 /**
+ * The interviewer's goodbye after the last planned question (VoiceSession+Questions.swift). Hanging up once it
+ * is said saves the paid seconds the agent would sit waiting for silence. A question is never a goodbye.
+ */
+export function isSignOff(line, questionNumber, questionCount) {
+  const spoken = line.replace(/\[[^\]]*\]/g, '')
+  if (!questionCount || questionNumber !== questionCount || spoken.includes('?')) return false
+  return /\b(good\s?)?bye\b/i.test(spoken)
+}
+
+/**
  * Pairs a live transcript into scorable turns (TranscriptTurns.swift): everything the person says after one
  * interviewer line, until the interviewer speaks again.
  */

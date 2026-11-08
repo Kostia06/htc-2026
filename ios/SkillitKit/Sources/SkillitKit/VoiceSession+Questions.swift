@@ -14,6 +14,15 @@ public extension VoiceSession {
         }
     }
 
+    /// The interviewer's goodbye after the last planned question. Hanging up once it is said saves
+    /// the paid seconds the agent would otherwise sit waiting for silence.
+    /// A question is never a goodbye, so a probe like "what would your next steps be?" can't end the call.
+    func isSignOff(_ spokenLine: String, afterQuestion number: Int?) -> Bool {
+        let spoken = spokenLine.withoutAudioTags
+        guard !questions.isEmpty, number == questions.count, !spoken.contains("?") else { return false }
+        return spoken.range(of: #"\b(good\s?)?bye\b"#, options: [.regularExpression, .caseInsensitive]) != nil
+    }
+
     private static func comparable(_ text: String) -> String {
         text.withoutAudioTags
             .lowercased()

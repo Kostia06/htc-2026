@@ -7,7 +7,7 @@ import { CircleCheck, UsersRound, AudioWaveform } from 'lucide-react'
 import { Ambient } from '../../app/Shell'
 import { roadmapApi, voiceApi } from '../../lib/client'
 import { withoutAudioTags } from '../../lib/format'
-import { MicDenied, startVoice, TranscriptTurns } from '../../lib/voice'
+import { isSignOff, MicDenied, startVoice, TranscriptTurns } from '../../lib/voice'
 import { RaisedButton } from '../../ui/Button'
 import { ContentUnavailable, ThinProgressBar } from '../../ui/Feedback'
 import SessionSummary from './SessionSummary'
@@ -62,6 +62,9 @@ function VoiceSession() {
   const transcript = useRef(new TranscriptTurns())
   const scoring = useRef([])
   const wrapping = useRef(false)
+  const reached = useRef(null) // the latest planned question asked, readable from the voice callbacks
+  // the interviewer said goodbye after the last question; the call ends once it stops speaking
+  const signingOff = useRef(false)
 
   const leave = () => navigate(stepId ? '/roadmap' : request.companySlug ? `/companies/${request.companySlug}` : '/practice', { replace: true })
 
@@ -115,6 +118,7 @@ function VoiceSession() {
     if (index >= 0) {
       setQuestion(questions[index])
       setQuestionNumber(index + 1)
+      reached.current = index + 1
     } else setQuestion({ text: spoken })
   }
 
@@ -145,10 +149,17 @@ function VoiceSession() {
       setQuestionCount(started_.questions?.length ?? 0)
       try {
         voice.current = await startVoice(started_.credentials, {
-          state: (s) => alive.current && setVoiceState(s),
+          state: (s) => {
+            if (!alive.current) return
+            setVoiceState(s)
+            if (signingOff.current && s === 'listening') voice.current?.stop()
+          },
           line: (speaker, text) => {
             if (!alive.current) return
-            if (speaker === 'agent') showQuestion(text)
+            if (speaker === 'agent') {
+              showQuestion(text)
+              if (isSignOff(text, reached.current, started_.questions?.length ?? 0)) signingOff.current = true
+            }
             const turn = transcript.current.add(speaker, text)
             if (turn) submit(turn)
           },

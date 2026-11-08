@@ -31,6 +31,8 @@ final class VoiceSessionModel: Identifiable {
     private var session: VoiceSession?
     private var transcript = TranscriptTurns()
     private var scoring: [Task<Void, Never>] = []
+    /// The interviewer said goodbye after the last question; the call ends once it stops speaking.
+    private var isSigningOff = false
 
     init(request: VoiceSessionRequest, service: any VoicePracticeService, engine: any VoiceEngine) {
         self.request = request
@@ -91,12 +93,16 @@ final class VoiceSessionModel: Identifiable {
         switch event {
         case let .stateChanged(state):
             voiceState = state
+            if isSigningOff, state == .listening {
+                engine.stop()
+            }
         case let .level(newLevel):
             // rise at once, fall gently, so the bars don't flicker between readings
             level = max(newLevel, level * 0.8)
         case let .transcript(speaker, text):
             if speaker == .agent {
                 showQuestion(from: text, in: session)
+                isSigningOff = isSigningOff || session.isSignOff(text, afterQuestion: questionNumber)
             }
             if let turn = transcript.add(speaker == .agent ? .agent : .person, text) {
                 submit(turn, in: session)
