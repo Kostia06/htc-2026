@@ -1,4 +1,6 @@
 /* The signed-in home: same dark ground, card surfaces and orange accent as onboarding. */
+@import '@fontsource/questrial/latin-400.css';
+
 .db {
   position: fixed;
   inset: 0;
@@ -7,6 +9,7 @@
   background: #080808;
   color: #e6e6e6;
   text-align: left;
+  font-family: Questrial, system-ui, sans-serif;
   font-size: 16px;
 }
 
