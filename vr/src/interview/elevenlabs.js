@@ -30,6 +30,7 @@ import {
 
 const BACKOFF_MS = [500, 1200, 2500]
 const INIT_TIMEOUT_MS = 12000
+const NORMAL_CLOSE = 1000
 
 // 'pcm_16000' -> 16000. Anything else (mp3_*, ulaw_8000) returns null and we
 // keep the audio.js default, because this module only knows how to play PCM16.
@@ -80,6 +81,7 @@ export function createElevenLabsSession({
   onSpeakingChange = null,
   onTurn = null,
   onError = null,
+  onEnded = null, // the agent ended the conversation; not called when we disconnect
   socketFactory = null, // lets a test stand a mock in for WebSocket
   refreshSignedUrl = null, // optional async () => url, for reconnects after expiry
 } = {}) {
@@ -327,10 +329,21 @@ export function createElevenLabsSession({
   }
 
   function handleClose(event) {
+    const wasLive = initialized
     socket = null
     initialized = false
     mic.setEnabled(false)
     if (stopped) return
+
+    // 1000 is the agent hanging up (goodbye, max duration, silence). Redialing would open a new
+    // billed conversation that starts the interview over, and that one would hang up and redial too.
+    if (wasLive && event?.code === NORMAL_CLOSE) {
+      stopped = true
+      flushTurn()
+      setState('closed')
+      onEnded?.()
+      return
+    }
 
     if (attempt >= BACKOFF_MS.length) {
       setState('closed')
