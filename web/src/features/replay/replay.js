@@ -1,11 +1,22 @@
 // The pure parts of a replay, mirroring SessionReplay.swift: clock labels, the current line, what a screen reader hears.
-import { AudioWaveform, Check, CircleAlert, MessageSquareQuote } from 'lucide-react'
+import { AudioWaveform, Check, CircleAlert, MessageSquareQuote, Mic, Search } from 'lucide-react'
 
 export const KINDS = {
   mistake: { label: 'Mistake', icon: CircleAlert, color: 'var(--negative)' },
   better: { label: 'Better phrasing', icon: MessageSquareQuote, color: 'var(--agent)' },
+  researched: { label: 'Researched tip', icon: Search, color: 'var(--agent)' },
   strength: { label: 'Strength', icon: Check, color: 'var(--positive)' },
   filler: { label: 'Filler words', icon: AudioWaveform, color: 'var(--text-2)' },
+  delivery: { label: 'Delivery', icon: Mic, color: 'var(--text-2)' },
+}
+
+/** "acme.com" for a source chip. */
+export function sourceHost(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
 }
 
 /** "0:07", "12:30" */

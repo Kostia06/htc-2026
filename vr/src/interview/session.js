@@ -86,10 +86,11 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
 
     // Scoring only. The realtime voice agent drives the conversation itself, so
     // there is no /next call on that path — just score what was said.
-    async scoreTurn({ question, answer = '', durationMs = 0 }) {
+    // answerStartSec/atSec are seconds since the call connected; the replay seeks to them without re-reading the transcript
+    async scoreTurn({ question, answer = '', durationMs = 0, answerStartSec, atSec }) {
       const score = await call(`/api/voice/sessions/${sessionId}/turns`, {
         method: 'POST',
-        body: { question, answer: answer || '(no answer given)', durationMs: Math.round(durationMs) },
+        body: { question, answer: answer || '(no answer given)', durationMs: Math.round(durationMs), ...secondsOf({ answerStartSec, atSec }) },
       })
       scored++
       return score
@@ -122,9 +123,15 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
       return { score: scoring.status === 'fulfilled' ? scoring.value : null, next }
     },
 
-    // Links the ElevenLabs recording to this session, so it can be replayed on the phone and deleted with it.
-    attachConversation(conversationId) {
-      return call(`/api/voice/sessions/${sessionId}/conversation`, { method: 'POST', body: { conversationId } })
+    get sessionId() {
+      return sessionId
+    },
+
+    // Links the ElevenLabs recording to this session, so it can be replayed and deleted with it. A reconnect's
+    // new conversation is linked too, only so deleting the session deletes it; the replay stays on the first.
+    attachConversation(conversationId, { reconnect = false } = {}) {
+      const body = reconnect ? { conversationId, reconnect: true } : { conversationId }
+      return call(`/api/voice/sessions/${sessionId}/conversation`, { method: 'POST', body })
     },
 
     async finish() {
@@ -218,6 +225,10 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
     },
   }
 }
+
+// only real, non-negative numbers go out; anything else is left for the server's transcript fallback
+const secondsOf = (timing) =>
+  Object.fromEntries(Object.entries(timing).filter(([, v]) => typeof v === 'number' && Number.isFinite(v) && v >= 0).map(([k, v]) => [k, Math.round(v * 10) / 10]))
 
 const clamp = (n) => Math.min(5, Math.max(1, n))
 const overallOf = (scores) => {

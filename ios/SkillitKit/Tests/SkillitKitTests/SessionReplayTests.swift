@@ -25,6 +25,20 @@ struct SessionReplayTests {
         #expect(replay.moments[0].better == nil)
     }
 
+    @Test func `reads researched tips with their sources, and a kind it doesn't know as delivery`() throws {
+        let moments = #"""
+        [{"t":30,"kind":"researched","title":"How their interviewers hear it","detail":"Acme hires for ownership.",
+          "question":"Q1","turn":0,"sources":[{"title":"Our values","url":"https://www.acme.com/values"}]},
+         {"t":40,"kind":"pause","title":"Long pause","detail":"d","question":"Q1","turn":0}]
+        """#
+        let decoded = try JSONDecoder().decode([ReplayMoment].self, from: Data(moments.utf8))
+        #expect(decoded[0].kind == .researched)
+        #expect(decoded[0].sources.first?.host == "acme.com")
+        #expect(decoded[1].kind == .delivery)
+        #expect(decoded[1].sources.isEmpty)
+        #expect(replay.moments[0].sources.isEmpty)
+    }
+
     @Test func `the current line is the last one that started`() {
         #expect(replay.lineIndex(at: 0) == 0)
         #expect(replay.lineIndex(at: 39.9) == 1)

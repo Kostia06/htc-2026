@@ -1,5 +1,6 @@
 import type { Env } from "../env";
 import { generateJson } from "../integrations/gemini";
+import type { ReportTip } from "./coach/report";
 import type { StoredTurn } from "./store";
 import type { VoicePlan } from "./types";
 
@@ -10,6 +11,8 @@ export type Debrief = {
   improvements: { moment: string; said: string; better: string; example: string }[];
   perQuestion: { question: string; score: number; oneLineFeedback: string }[];
   nextSteps: string[];
+  /** Rewrites written during the call; "researched" ones cite the page they rest on. */
+  liveTips?: ReportTip[];
 };
 
 const text = { type: "string" };

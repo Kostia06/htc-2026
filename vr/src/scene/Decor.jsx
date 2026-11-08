@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox } from '@react-three/drei'
 import * as THREE from 'three'
+export { Plant, TablePlant } from './Plant.jsx'
 import { createRng, makeBookSpinesTexture, makeBottleLabelTexture, makeCertificateTexture, makePaintingTexture } from './textures.js'
 
 // The things that make a meeting room look like somebody works there: art on the
@@ -73,44 +74,6 @@ export function Bookcase({ width = 0.9, height = 1.9, depth = 0.34, shelves = 5,
           <planeGeometry args={[width - 0.08, gap * 0.78]} />
           <meshStandardMaterial map={map} transparent alphaTest={0.5} roughness={0.8} />
         </mesh>
-      ))}
-    </group>
-  )
-}
-
-/**
- * A potted plant: a ring of long leaves arching out of a pot. `size` 1 is a
- * floor plant about a metre tall; 0.3 sits on a cabinet.
- */
-export function Plant({ size = 1, pot = '#e8e4dc', seed = 1, ...props }) {
-  const leaves = useMemo(() => {
-    const rng = createRng(seed)
-    const count = size > 0.6 ? 14 : 9
-    return Array.from({ length: count }, (_, i) => {
-      const around = (i / count) * Math.PI * 2 + rng() * 0.4
-      const lean = 0.25 + rng() * 0.6
-      const length = 0.45 + rng() * 0.35
-      return { around, lean, length, shade: ['#3f6b3a', '#4f7d43', '#36592f', '#5b8a4c'][Math.floor(rng() * 4)] }
-    })
-  }, [size, seed])
-  const potH = 0.32 * size
-  return (
-    <group {...props}>
-      <mesh position={[0, potH / 2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.17 * size, 0.13 * size, potH, 20]} />
-        <meshStandardMaterial color={pot} roughness={0.55} />
-      </mesh>
-      <mesh position={[0, potH - 0.01 * size, 0]}>
-        <cylinderGeometry args={[0.155 * size, 0.155 * size, 0.01, 20]} />
-        <meshStandardMaterial color="#3a2e24" roughness={1} />
-      </mesh>
-      {leaves.map(({ around, lean, length, shade }, i) => (
-        <group key={i} position={[0, potH, 0]} rotation={[0, around, 0]}>
-          <mesh position={[0, (length * size) / 2, 0]} rotation={[lean, 0, 0]} scale={[0.07 * size, (length * size) / 2, 0.012 * size]} castShadow>
-            <sphereGeometry args={[1, 10, 8]} />
-            <meshStandardMaterial color={shade} roughness={0.6} />
-          </mesh>
-        </group>
       ))}
     </group>
   )
@@ -227,51 +190,6 @@ export function WaterBottle({ brand = 'SkilliT', cap = '#1d5fa8', ...props }) {
         <cylinderGeometry args={[0.0152, 0.0152, 0.017, 28]} />
         <meshStandardMaterial color={cap} roughness={0.38} flatShading />
       </mesh>
-    </group>
-  )
-}
-
-/** A small succulent in a concrete pot, for the corner of the table. */
-export function TablePlant({ seed = 6, ...props }) {
-  const leaves = useMemo(() => {
-    const rng = createRng(seed)
-    const rings = [
-      { count: 9, lean: 1.15, length: 0.042, y: 0.004 },
-      { count: 7, lean: 0.85, length: 0.036, y: 0.008 },
-      { count: 5, lean: 0.5, length: 0.028, y: 0.012 },
-      { count: 3, lean: 0.25, length: 0.018, y: 0.016 },
-    ]
-    return rings.flatMap((ring, r) =>
-      Array.from({ length: ring.count }, (_, i) => ({
-        around: (i / ring.count) * Math.PI * 2 + r * 0.45 + rng() * 0.2,
-        lean: ring.lean + (rng() - 0.5) * 0.15,
-        length: ring.length * (0.9 + rng() * 0.2),
-        y: ring.y,
-        color: ['#7fa48e', '#86ab95', '#749a86', '#8fb29b'][Math.floor(rng() * 4)],
-      })),
-    )
-  }, [seed])
-  const potH = 0.065
-  return (
-    <group {...props}>
-      <mesh position={[0, potH / 2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.052, 0.046, potH, 28]} />
-        <meshStandardMaterial color="#bcb7ad" roughness={0.9} />
-      </mesh>
-      <mesh position={[0, potH - 0.004, 0]}>
-        <cylinderGeometry args={[0.046, 0.046, 0.004, 28]} />
-        <meshStandardMaterial color="#4a3b2e" roughness={1} />
-      </mesh>
-      {leaves.map(({ around, lean, length, y, color }, i) => (
-        <group key={i} position={[0, potH + y - 0.004, 0]} rotation={[0, around, 0]}>
-          <group rotation={[lean, 0, 0]}>
-            <mesh position={[0, length * 0.55, 0]} scale={[length * 0.42, length * 0.6, length * 0.16]} castShadow>
-              <sphereGeometry args={[1, 12, 8]} />
-              <meshStandardMaterial color={color} roughness={0.45} />
-            </mesh>
-          </group>
-        </group>
-      ))}
     </group>
   )
 }

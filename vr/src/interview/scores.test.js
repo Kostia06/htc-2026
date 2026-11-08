@@ -30,10 +30,20 @@ describe('toPanelScore', () => {
 describe('toPanelSummary', () => {
   it('reads the debrief overall as is, already out of 100', () => {
     const summary = toPanelSummary({ overall: 72, verdict: 'Solid session.', nextSteps: ['Add numbers.', 'Slow down.'] })
-    expect(summary).toEqual({ overall: 72, summary: 'Solid session. Add numbers.' })
+    expect(summary).toEqual({
+      overall: 72,
+      summary: 'Solid session. Add numbers.',
+      verdict: 'Solid session.',
+      nextSteps: ['Add numbers.', 'Slow down.'],
+    })
   })
 
   it('takes the example summary as written', () => {
-    expect(toPanelSummary({ overall: 60, summary: 'Your structure is solid.' })).toEqual({ overall: 60, summary: 'Your structure is solid.' })
+    expect(toPanelSummary({ overall: 60, summary: 'Your structure is solid.' })).toEqual({
+      overall: 60,
+      summary: 'Your structure is solid.',
+      verdict: null,
+      nextSteps: [],
+    })
   })
 })

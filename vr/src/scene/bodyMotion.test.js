@@ -116,6 +116,19 @@ describe('body language', () => {
     expect(nods({})).toBe(0)
   })
 
+  it('nods once as the candidate finishes answering', () => {
+    const m = createBodyMotion(seeded())
+    updateBodyMotion(m, 1 / 60, { listening: true })
+    m.nodStart = -10 // no listening nod in flight
+    updateBodyMotion(m, 1 / 60, { listening: false })
+    let peak = 0
+    for (let i = 0; i < 40; i++) {
+      updateBodyMotion(m, 1 / 60, {})
+      peak = Math.max(peak, m.nod)
+    }
+    expect(peak).toBeGreaterThan(0.05)
+  })
+
   it('scales gestures down for reduced motion', () => {
     const full = createBodyMotion(seeded())
     const reduced = createBodyMotion(seeded())

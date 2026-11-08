@@ -1,4 +1,5 @@
 import { speechKey } from './speechKey.js'
+import { connectToSpeakers } from './spatialAudio.js'
 
 // Voice in and out. Also a seam: the Worker will return Gemini TTS audio, which
 // goes through speaker.playBuffer() — that path exposes a real AnalyserNode, so
@@ -68,7 +69,7 @@ export function createSpeaker() {
       analyser = ctx.createAnalyser()
       analyser.fftSize = 256
       analyser.smoothingTimeConstant = 0.6
-      analyser.connect(ctx.destination)
+      connectToSpeakers(ctx, analyser)
     }
     return ctx
   }

@@ -5,6 +5,7 @@ import { laneOf } from "../crossroads/lanes";
 import { pathsFor } from "../crossroads/paths";
 import { getProfile } from "../memory/profile/store";
 import { backgroundOf, goalOf, skillsOf } from "./background";
+import { ensureResumeSteps, hasPriorWork } from "./prefill";
 import { groupByDay, streakDays } from "./progress";
 import { refineTemplates } from "./refine";
 import { countSteps, insertSteps, loadCompleted, loadOpen, nextPosition } from "./store";
@@ -28,9 +29,11 @@ export type RoadmapOptions = {
 // null when the cursor points past the open steps
 export async function roadmapPage(deps: AgentDeps, userId: string, cursor: number, options: RoadmapOptions): Promise<RoadmapPage | null> {
   const profile = await getProfile(deps.env, userId);
-  const person = personFor(goalOf(profile), skillsOf(profile));
+  const person = personFor(goalOf(profile), skillsOf(profile), hasPriorWork(profile));
   const { env } = deps;
 
+  // what the resume already shows is done before the plan starts, so a strong resume never starts at zero
+  if (cursor === 0) await ensureResumeSteps(env, userId, profile);
   let counts = await countSteps(env, userId);
   if (cursor > counts.open) return null;
 
@@ -38,7 +41,7 @@ export async function roadmapPage(deps: AgentDeps, userId: string, cursor: numbe
   const added = cursor === 0 && (await ensureExploreStep(env, userId, person.goal));
   let next = await loadOpen(env, userId, cursor, PAGE_STEPS);
   if (next.length < PAGE_STEPS && counts.total < MAX_STEPS) {
-    const wanted = counts.total === 0 ? FIRST_BATCH : PAGE_STEPS - next.length;
+    const wanted = counts.open === 0 ? FIRST_BATCH : PAGE_STEPS - next.length;
     await extend(deps, userId, person, wanted);
     options.waitUntil(refineTemplates(deps, { userId, person, background: backgroundOf(profile) }, options.refineDeadlineMs));
     counts = await countSteps(env, userId);

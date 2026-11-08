@@ -1,30 +1,26 @@
-import { RoundedBox, Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
-import { FONT, FONT_BOLD, GOOD, INK, MUTED, Panel } from './Panels.jsx'
+import { Card, Label, Logo, Outline, RaisedButton, Surface, TextLink, color, space, type } from '../theme/index.js'
 import { CODE_LENGTH, KEYPAD_ROWS, isComplete, keyFromKeyboard, messageFor, pressKey } from '../headset/keypad.js'
 
-// The sign-in keypad, in the room. Sits where the question panel will be once
-// the candidate is in, so the eye line does not move when it swaps out.
+// The sign-in keypad, drawn like the phone's code screen: big rounded digits,
+// the app's raised keys, sage for the slot you are typing into. Sits dead ahead
+// where the menu will be once the candidate is in, so the eye line does not
+// move when it swaps out.
 //
-// Everything is metres. Keys are 0.11 m wide: at the ~1 m reach they sit, that
-// is about six degrees — big enough to hit with a controller ray without
-// aiming, and the gaps keep a wobbly hand from pressing two.
+// Keys are 0.12 m wide: at the 1.2 m the panel floats that is nearly six
+// degrees, big enough to hit with a controller ray without aiming, and the gaps
+// keep a wobbly hand from pressing two.
 
-const KEY_W = 0.11
-const KEY_H = 0.075
-const KEY_GAP = 0.018
-const SLOT_W = 0.075
-const SLOT_H = 0.1
-const SLOT_GAP = 0.02
+const KEY_W = 0.12
+const KEY_H = 0.078
+const KEY_GAP = 0.02
+const SLOT_W = 0.085
+const SLOT_H = 0.11
+const SLOT_GAP = 0.022
 
-const WIDTH = 0.5
-const HEIGHT = 0.72
-
-const ACCENT = '#2f6f8a'
-const KEY_BG = '#1c2330'
-const KEY_HOVER = '#27303f'
-const BAD = '#f08f7a'
+const WIDTH = KEY_W * 3 + KEY_GAP * 2 + space.xl * 2
+const HEIGHT = 0.92
 
 // props:
 //   status   'keypad' | 'restoring' | 'reconnecting' | 'signedIn'
@@ -39,8 +35,6 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
   const body = useRef()
   const claimRef = useRef(claim)
   claimRef.current = claim
-  const codeRef = useRef(code)
-  codeRef.current = code
 
   const press = (key) => {
     if (busy || feedback?.ok) return
@@ -96,35 +90,34 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
   })
 
   const half = HEIGHT / 2
-  const message = messageOf({ status, busy, feedback, greeting })
+  const message = messageOf({ status, busy, feedback })
+  const locked = busy || Boolean(feedback?.ok)
 
   return (
     <group position={position} rotation={rotation}>
       <group ref={body}>
-        <Panel width={WIDTH} height={HEIGHT}>
-          <Text font={FONT_BOLD} fontSize={0.04} color={INK} anchorX="center" anchorY="top"
-            position={[0, half - 0.04, 0]}>
+        <Card width={WIDTH} height={HEIGHT}>
+          <Logo size={0.07} position={[0, half - space.xl - 0.035, 0.001]} />
+          <Label variant="title2" anchorX="center" anchorY="top" position={[0, half - space.xl - 0.085, 0]}>
             {feedback?.ok ? greeting : 'Sign in to Skillit'}
-          </Text>
-          <Text font={FONT} fontSize={0.021} color={MUTED} anchorX="center" anchorY="top" maxWidth={WIDTH - 0.08}
-            position={[0, half - 0.092, 0]} textAlign="center">
-            {feedback?.ok ? 'Taking you in…' : 'On your phone: Practice → Practice in VR'}
-          </Text>
+          </Label>
+          <Label variant="subhead" tone="text2" anchorX="center" anchorY="top" textAlign="center" maxWidth={WIDTH - space.xl * 2} position={[0, half - space.xl - 0.13, 0]}>
+            {feedback?.ok ? 'Taking you in' : 'On your phone, open Practice, then Practice in VR'}
+          </Label>
 
-          <DigitSlots code={code} error={Boolean(feedback?.problem)} ok={Boolean(feedback?.ok)} position={[0, half - 0.19, 0]} />
+          <DigitSlots code={code} error={Boolean(feedback?.problem)} ok={Boolean(feedback?.ok)} position={[0, half - 0.33, 0]} />
 
-          <Text font={FONT_BOLD} fontSize={0.02} color={message.color} anchorX="center" anchorY="middle"
-            position={[0, half - 0.265, 0]} letterSpacing={0.04}>
+          <Label variant="footnote" weight="semibold" tone={message.tone} anchorX="center" anchorY="middle" position={[0, half - 0.415, 0]}>
             {message.text}
-          </Text>
+          </Label>
 
-          <group position={[0, half - 0.33, 0]}>
+          <group position={[0, half - 0.485, 0.003]}>
             {KEYPAD_ROWS.map((row, r) =>
               row.map((key, c) => (
                 <Key
                   key={key}
                   label={key}
-                  disabled={busy || Boolean(feedback?.ok)}
+                  disabled={locked}
                   reducedMotion={reducedMotion}
                   onPress={() => press(key)}
                   position={[(c - 1) * (KEY_W + KEY_GAP), -r * (KEY_H + KEY_GAP), 0]}
@@ -134,26 +127,26 @@ export function PairingPanel({ status, claim, greeting, onSkip, reducedMotion, p
           </group>
 
           {onSkip && !feedback?.ok && (
-            <SkipLink onClick={onSkip} position={[0, -half + 0.03, 0]} />
+            <TextLink label="Try with example data instead" onPress={onSkip} position={[0, -half + space.l, 0]} reducedMotion={reducedMotion} />
           )}
-        </Panel>
+        </Card>
       </group>
     </group>
   )
 }
 
-function messageOf({ status, busy, feedback, greeting }) {
-  if (feedback?.ok) return { text: greeting ? 'SIGNED IN' : '', color: GOOD }
-  if (feedback?.problem) return { text: messageFor(feedback.problem).toUpperCase(), color: BAD }
-  if (busy) return { text: 'CHECKING…', color: MUTED }
-  if (status === 'restoring') return { text: 'SIGNING YOU BACK IN…', color: MUTED }
-  if (status === 'reconnecting') return { text: 'RECONNECTING… OR TYPE A NEW CODE', color: MUTED }
-  return { text: 'TYPE THE 4-DIGIT CODE', color: MUTED }
+function messageOf({ status, busy, feedback }) {
+  if (feedback?.ok) return { text: 'Signed in', tone: 'positive' }
+  if (feedback?.problem) return { text: messageFor(feedback.problem), tone: 'negative' }
+  if (busy) return { text: 'Checking', tone: 'text2' }
+  if (status === 'restoring') return { text: 'Signing you back in', tone: 'text2' }
+  if (status === 'reconnecting') return { text: 'Reconnecting, or type a new code', tone: 'text2' }
+  return { text: 'Enter the 4-digit code from your phone', tone: 'text2' }
 }
 
 function DigitSlots({ code, error, ok, position }) {
   const total = CODE_LENGTH * SLOT_W + (CODE_LENGTH - 1) * SLOT_GAP
-  const edge = error ? BAD : ok ? GOOD : ACCENT
+  const ring = error ? color.negative : ok ? color.positive : color.action
   return (
     <group position={position}>
       {Array.from({ length: CODE_LENGTH }, (_, i) => {
@@ -162,17 +155,11 @@ function DigitSlots({ code, error, ok, position }) {
         const active = i === code.length && !ok
         return (
           <group key={i} position={[x, 0, 0]}>
-            <RoundedBox args={[SLOT_W, SLOT_H, 0.01]} radius={0.01} smoothness={3}>
-              <meshStandardMaterial
-                color={filled ? '#1a2231' : '#141a26'}
-                emissive={active || error || ok ? edge : '#000000'}
-                emissiveIntensity={active ? 0.25 : error || ok ? 0.35 : 0}
-                roughness={0.5}
-              />
-            </RoundedBox>
-            <Text font={FONT_BOLD} fontSize={0.056} color={INK} anchorX="center" anchorY="middle" position={[0, 0, 0.007]}>
+            <Surface width={SLOT_W} height={SLOT_H} radius={0.02} face={color.inset} />
+            {(active || error || ok) && <Outline width={SLOT_W} height={SLOT_H} radius={0.02} line={0.003} tone={ring} z={0.0009} />}
+            <Label variant="score" tone={filled ? 'text' : 'text3'} anchorX="center" anchorY="middle" fontSize={type.largeTitle * 1.5} position={[0, 0.004, 0.001]}>
               {filled ? code[i] : active ? '_' : ''}
-            </Text>
+            </Label>
           </group>
         )
       })}
@@ -180,83 +167,33 @@ function DigitSlots({ code, error, ok, position }) {
   )
 }
 
-// Plain words: the bundled Inter subset has no ⌫ glyph.
+// Plain words: the bundled Inter subset has no backspace glyph.
 const KEY_LABELS = { backspace: 'Back', clear: 'Clear' }
 
-// Same interaction model as ActionButton in Panels.jsx: R3F pointer events, so
-// a Quest controller ray, a hand pointer and a desktop mouse all work.
 function Key({ label, onPress, disabled, reducedMotion, position }) {
-  const [hovered, setHovered] = useState(false)
-  const [pressed, setPressed] = useState(false)
-  const body = useRef()
   const isAction = label === 'backspace' || label === 'clear'
-
-  useFrame(() => {
-    if (!body.current || reducedMotion) return
-    const target = disabled ? 1 : pressed ? 0.94 : hovered ? 1.05 : 1
-    body.current.scale.x += (target - body.current.scale.x) * 0.3
-    body.current.scale.y = body.current.scale.x
-  })
-
   return (
-    <group
-      ref={body}
+    <RaisedButton
+      tone={isAction ? 'secondary' : 'chip'}
+      width={KEY_W}
+      height={KEY_H}
+      radius={0.022}
+      disabled={disabled}
+      onPress={onPress}
+      reducedMotion={reducedMotion}
       position={position}
-      onClick={(e) => {
-        e.stopPropagation()
-        if (!disabled) onPress()
-      }}
-      onPointerDown={(e) => {
-        e.stopPropagation()
-        setPressed(true)
-      }}
-      onPointerUp={() => setPressed(false)}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => {
-        setHovered(false)
-        setPressed(false)
-      }}
     >
-      <RoundedBox args={[KEY_W, KEY_H, 0.02]} radius={0.01} smoothness={3}>
-        <meshStandardMaterial
-          color={hovered && !disabled ? KEY_HOVER : KEY_BG}
-          emissive={ACCENT}
-          emissiveIntensity={disabled ? 0 : pressed ? 0.6 : hovered ? 0.3 : 0.06}
-          roughness={0.45}
-        />
-      </RoundedBox>
-      <Text
-        font={FONT_BOLD}
-        fontSize={isAction ? 0.024 : 0.04}
-        color={disabled ? '#5c6472' : isAction ? MUTED : INK}
+      <Label
+        variant={isAction ? 'subhead' : 'score'}
+        weight={isAction ? 'semibold' : 'rounded'}
+        fontSize={isAction ? type.subhead : type.title}
+        tone={disabled ? 'text3' : isAction ? 'text2' : 'text'}
         anchorX="center"
         anchorY="middle"
-        position={[0, 0, 0.012]}
+        position={[0, 0.002, 0]}
       >
         {KEY_LABELS[label] ?? label}
-      </Text>
-    </group>
-  )
-}
-
-function SkipLink({ onClick, position }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <group position={position}>
-      <mesh
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick()
-        }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-      >
-        <planeGeometry args={[0.3, 0.04]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
-      <Text font={FONT} fontSize={0.018} color={hovered ? INK : MUTED} anchorX="center" anchorY="middle" position={[0, 0, 0.001]}>
-        Try with example data instead
-      </Text>
-    </group>
+      </Label>
+    </RaisedButton>
   )
 }

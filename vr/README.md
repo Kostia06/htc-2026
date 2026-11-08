@@ -14,7 +14,52 @@ npm run dev          # http://localhost:5173
 ```
 
 Desktop: `Enter` begins and advances, hold `Space` while answering, `M` mutes the
-interviewer, drag to orbit. In VR: trigger to begin/advance, hold it to answer.
+interviewer, `Esc` ends the interview, drag to orbit. In VR: point and pull the
+trigger to press a panel or key; during the interview the trigger (or A) starts
+an answer and releasing it finishes; B ends the interview. The menu has
+Seated / Standing, Recenter and "How it works". Clicking the thumbstick
+re-levels your eye height; pushing it up or down nudges it.
+
+A first-run "How it works" card explains the controls once per device
+(desktop and headset separately); dismissed, it stays gone.
+
+## Run the full XR flow without a headset
+
+Meta's Immersive Web Emulator Runtime ([`iwer`](https://www.npmjs.com/package/iwer)
+and [`@iwer/devui`](https://www.npmjs.com/package/@iwer/devui), both MIT, pinned at
+2.8.0 as devDependencies) can stand in for a Quest 3:
+
+```bash
+npm run dev
+open "http://localhost:5173/?emulate"   # then press Enter VR
+```
+
+The emulator replaces `navigator.xr` before the app loads, so Enter VR, the
+controller rays, the trigger, B and haptic calls all run in a desktop browser.
+The DevUI panel moves the headset and controllers; from devtools,
+`window.__xrDevice.controllers.right` can be posed and its trigger set with
+`updateButtonValue('trigger', 1)`. It is dev only: a production build drops
+`src/emulator.js`'s imports unless built with `VITE_EMULATE=1` (and then still
+needs `?emulate`).
+
+## The look
+
+`src/theme/` is the one source of truth for the in-room UI: the app's palette
+(green-charcoal surfaces, sage = press this, sand = the interviewer/AI, teal
+good, coral needs work), type ramp in points (1 pt = 1.8 mm), card radius,
+slab depth, key travel and the Skillit mark. Panels are matte slabs ~2 cm thick
+with softened edges and a soft shadow; keys stand 7 mm proud, lighten and come
+forward under the ray, travel in on press and tick the controller's haptics.
+`Panel` (from `Panels.jsx`) is the app's card, and `src/theme/Report.jsx` has the
+phone report's pieces (score headline, list rows, meters) for any new panel.
+
+During the interview the room stays as close to a real one as possible: no
+status text or spinners and nothing over the interviewer, just the desk key
+(Answer / Done), captions under him in the headset, and the score card on the
+left for six seconds after an answer. His voice is spatialised from his mouth
+(`src/interview/spatialAudio.js`), and he nods as you finish an answer.
+
+Assets and licences: [ASSETS.md](./ASSETS.md).
 
 ## Signing in and the API
 

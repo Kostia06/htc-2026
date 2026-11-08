@@ -39,4 +39,29 @@ struct TranscriptTurnsTests {
         #expect(turn?.durationMs == 2000)
         #expect(turns.flush() == nil)
     }
+
+    @Test func `stamps each turn with seconds into the call, starting when the agent handed over`() {
+        var turns = TranscriptTurns()
+        turns.callStarted(at: start)
+        _ = turns.add(.agent, "Tell me about a project.", at: start.addingTimeInterval(1))
+        turns.floorOpened(at: start.addingTimeInterval(6))
+        _ = turns.add(.person, "I built an API.", at: start.addingTimeInterval(11))
+        let turn = turns.add(.agent, "What was your part?", at: start.addingTimeInterval(14))
+        #expect(turn?.answerStartSec == 6)
+        #expect(turn?.atSec == 14)
+    }
+
+    @Test func `keeps the first connect as the clock and leaves turns unstamped without one`() {
+        var unstamped = TranscriptTurns()
+        _ = unstamped.add(.agent, "Why us?", at: start)
+        _ = unstamped.add(.person, "Because of the team.", at: start.addingTimeInterval(3))
+        #expect(unstamped.flush(at: start.addingTimeInterval(4))?.answerStartSec == nil)
+
+        var turns = TranscriptTurns()
+        turns.callStarted(at: start)
+        turns.callStarted(at: start.addingTimeInterval(30))
+        _ = turns.add(.agent, "Why us?", at: start)
+        _ = turns.add(.person, "Because of the team.", at: start.addingTimeInterval(3))
+        #expect(turns.flush(at: start.addingTimeInterval(4))?.answerStartSec == 3)
+    }
 }

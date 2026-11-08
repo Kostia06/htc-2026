@@ -24,6 +24,8 @@ final class VoiceSessionModel: Identifiable {
     private(set) var company: String?
     private(set) var tip: String?
     private(set) var answersScored = 0
+    /// The provider named the call, so it is being recorded for the replay.
+    private(set) var isRecording = false
 
     let request: VoiceSessionRequest
     private let service: any VoicePracticeService
@@ -98,6 +100,9 @@ final class VoiceSessionModel: Identifiable {
         switch event {
         case let .stateChanged(state):
             voiceState = state
+            if state == .listening {
+                transcript.floorOpened()
+            }
             if isSigningOff, state == .listening {
                 engine.stop()
             }
@@ -113,6 +118,9 @@ final class VoiceSessionModel: Identifiable {
                 submit(turn, in: session)
             }
         case let .conversationStarted(conversationId):
+            // the recording's clock starts here, so every answer can be stamped against it as it happens
+            transcript.callStarted()
+            isRecording = true
             // without this link there is no replay, but the interview itself carries on regardless
             Task { try? await service.attachConversation(conversationId, to: session.id) }
         case let .failed(message):

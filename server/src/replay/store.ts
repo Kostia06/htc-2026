@@ -22,6 +22,36 @@ export async function conversationOf(env: Env, userId: string, sessionId: string
   return row?.conversation_id ?? null;
 }
 
+// a headset that drops mid-call can only redial into a new conversation; a handful is plenty for one session
+const MAX_EXTRA = 5;
+const extraIds = (json: string | null): string[] => (json ? (JSON.parse(json) as string[]) : []);
+
+/**
+ * Records a conversation a reconnect opened, so deleting the session deletes it too. It is never played: the
+ * replay stays on the first recording, which the live timestamps are measured against.
+ */
+export async function attachReconnect(env: Env, userId: string, sessionId: string, conversationId: string): Promise<boolean> {
+  const row = await db(env).prepare("SELECT conversation_id, extra_conversation_ids FROM voice_sessions WHERE id = ? AND user_id = ?")
+    .bind(sessionId, userId)
+    .first<{ conversation_id: string | null; extra_conversation_ids: string | null }>();
+  if (!row) return false;
+  if (!row.conversation_id) return attachConversation(env, userId, sessionId, conversationId);
+  const extras = extraIds(row.extra_conversation_ids);
+  if (row.conversation_id === conversationId || extras.includes(conversationId)) return true;
+  if (extras.length >= MAX_EXTRA) return false;
+  await db(env).prepare("UPDATE voice_sessions SET extra_conversation_ids = ? WHERE id = ? AND user_id = ?")
+    .bind(JSON.stringify([...extras, conversationId]), sessionId, userId)
+    .run();
+  return true;
+}
+
+export async function recordingsOf(env: Env, userId: string, sessionId: string): Promise<string[]> {
+  const row = await db(env).prepare("SELECT conversation_id, extra_conversation_ids FROM voice_sessions WHERE id = ? AND user_id = ? AND conversation_id IS NOT NULL")
+    .bind(sessionId, userId)
+    .first<RecordingRow>();
+  return row ? recordingIds([row]) : [];
+}
+
 // the report quotes what the person said, so it is sealed like the answers it came from
 export async function saveReport(env: Env, userId: string, sessionId: string, report: Debrief) {
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(report));
@@ -41,18 +71,26 @@ export async function loadReplayRecord(env: Env, userId: string, sessionId: stri
   return { conversationId: row.conversation_id, report };
 }
 
+type RecordingRow = { conversation_id: string; extra_conversation_ids: string | null };
+// a session's main recording plus any opened by a headset reconnect, so a sweep never leaves one behind
+const recordingIds = (rows: RecordingRow[]) => rows.flatMap((row) => [row.conversation_id, ...extraIds(row.extra_conversation_ids)]);
+
 export async function conversationsOfUser(env: Env, userId: string): Promise<string[]> {
-  const { results } = await db(env).prepare("SELECT conversation_id FROM voice_sessions WHERE user_id = ? AND conversation_id IS NOT NULL")
+  const { results } = await db(env).prepare(
+    "SELECT conversation_id, extra_conversation_ids FROM voice_sessions WHERE user_id = ? AND conversation_id IS NOT NULL",
+  )
     .bind(userId)
-    .all<{ conversation_id: string }>();
-  return results.map((row) => row.conversation_id);
+    .all<RecordingRow>();
+  return recordingIds(results);
 }
 
 export async function conversationsBefore(env: Env, cutoff: string): Promise<string[]> {
-  const { results } = await db(env).prepare("SELECT conversation_id FROM voice_sessions WHERE created_at < ? AND conversation_id IS NOT NULL")
+  const { results } = await db(env).prepare(
+    "SELECT conversation_id, extra_conversation_ids FROM voice_sessions WHERE created_at < ? AND conversation_id IS NOT NULL",
+  )
     .bind(cutoff)
-    .all<{ conversation_id: string }>();
-  return results.map((row) => row.conversation_id);
+    .all<RecordingRow>();
+  return recordingIds(results);
 }
 
 export async function deleteSession(env: Env, userId: string, sessionId: string) {

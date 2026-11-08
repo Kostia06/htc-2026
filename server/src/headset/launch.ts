@@ -7,7 +7,8 @@ export const LAUNCH_LIFETIME_MS = 2 * 60 * 1000;
 export const MAX_WAIT_MS = 20_000;
 const CHECK_INTERVAL_MS = 1500;
 
-export type Launch = { mode: VoiceMode; companySlug?: string; role?: string; stepId?: string };
+/** `reviewSessionId` opens that past session's review instead of a new interview; the headset proves ownership when it loads it. */
+export type Launch = { mode: VoiceMode; companySlug?: string; role?: string; stepId?: string; reviewSessionId?: string };
 
 // swapped out in tests, which must not wait real seconds
 export const deps = {
@@ -24,38 +25,50 @@ const optionalText = (value: unknown, max: number) => {
 /** The phone's request body, or null when it isn't a launch. Same fields `POST /api/voice/sessions` takes, plus the roadmap step. */
 export function parseLaunch(body: unknown): Launch | null {
   if (!body || typeof body !== "object") return null;
-  const { mode, companySlug, role, stepId } = body as Record<string, unknown>;
+  const { mode, companySlug, role, stepId, reviewSessionId } = body as Record<string, unknown>;
   if (!VOICE_MODES.includes(mode as VoiceMode)) return null;
-  const fields = { companySlug: optionalText(companySlug, 100), role: optionalText(role, 100), stepId: optionalText(stepId, 100) };
+  const fields = {
+    companySlug: optionalText(companySlug, 100),
+    role: optionalText(role, 100),
+    stepId: optionalText(stepId, 100),
+    reviewSessionId: optionalText(reviewSessionId, 100),
+  };
   if (Object.values(fields).includes(null)) return null;
   const launch: Launch = { mode: mode as VoiceMode };
   if (fields.companySlug) launch.companySlug = fields.companySlug;
   if (fields.role) launch.role = fields.role;
   if (fields.stepId) launch.stepId = fields.stepId;
+  if (fields.reviewSessionId) launch.reviewSessionId = fields.reviewSessionId;
   return launch;
 }
 
 export async function queueLaunch(env: Env, userId: string, launch: Launch, now = new Date()) {
   const expiresAt = new Date(now.getTime() + LAUNCH_LIFETIME_MS).toISOString();
   await db(env).prepare(
-    `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT (user_id) DO UPDATE SET mode = excluded.mode, company_slug = excluded.company_slug, role = excluded.role, step_id = excluded.step_id, created_at = excluded.created_at, expires_at = excluded.expires_at`,
+    `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, review_session_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (user_id) DO UPDATE SET mode = excluded.mode, company_slug = excluded.company_slug, role = excluded.role, step_id = excluded.step_id,
+       review_session_id = excluded.review_session_id, created_at = excluded.created_at, expires_at = excluded.expires_at`,
   )
-    .bind(userId, launch.mode, launch.companySlug ?? null, launch.role ?? null, launch.stepId ?? null, now.toISOString(), expiresAt)
+    .bind(userId, launch.mode, launch.companySlug ?? null, launch.role ?? null, launch.stepId ?? null, launch.reviewSessionId ?? null, now.toISOString(), expiresAt)
     .run();
   return { expiresAt };
 }
 
+type LaunchRow = { mode: VoiceMode; company_slug: string | null; role: string | null; step_id: string | null; review_session_id: string | null };
+
 /** Removes and returns the person's pending launch; of two headsets polling, only one gets it. */
 export async function takeLaunch(env: Env, userId: string, now = new Date()): Promise<Launch | null> {
-  const row = await db(env).prepare("DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id")
+  const row = await db(env).prepare(
+    "DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id, review_session_id",
+  )
     .bind(userId, now.toISOString())
-    .first<{ mode: VoiceMode; company_slug: string | null; role: string | null; step_id: string | null }>();
+    .first<LaunchRow>();
   if (!row) return null;
   const launch: Launch = { mode: row.mode };
   if (row.company_slug) launch.companySlug = row.company_slug;
   if (row.role) launch.role = row.role;
   if (row.step_id) launch.stepId = row.step_id;
+  if (row.review_session_id) launch.reviewSessionId = row.review_session_id;
   return launch;
 }
 
