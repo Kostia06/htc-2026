@@ -6,7 +6,9 @@ import SkillitKit
 /// so one slow or failing call leaves the others on screen.
 @Observable
 final class ProfileOverviewModel {
+    /// The Road's own count (`RoadmapPage.trailProgress`), so both screens always agree.
     private(set) var road: RoadmapProgress?
+    private(set) var roadFromResume = 0
     private(set) var tailored: [TailoredResumeSummary] = []
     private(set) var postings: [JobPosting] = []
     /// The first requirement the weakest tailored resume still misses, e.g. "SQL".
@@ -25,7 +27,10 @@ final class ProfileOverviewModel {
 
         tailored = await tailoredItems ?? tailored
         postings = await postingItems ?? postings
-        road = await roadPage?.progress ?? road
+        if let page = await roadPage {
+            road = page.trailProgress
+            roadFromResume = page.resumeSteps.count
+        }
         headsetCount = await headsetStatus.map(\.devices.count) ?? headsetCount
         missingTopic = await firstMissingTopic(using: resumes)
         hasLoaded = true

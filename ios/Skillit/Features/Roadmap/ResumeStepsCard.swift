@@ -1,11 +1,6 @@
 import SkillitKit
 import SwiftUI
 
-extension RoadmapStep {
-    /// The server writes this line on steps it copied from the resume.
-    var isFromResume: Bool { why == "From your resume" }
-}
-
 /// The resume's finished steps folded into one card, so the path starts where the person is now.
 struct ResumeStepsCard: View {
     let steps: [RoadmapStep]

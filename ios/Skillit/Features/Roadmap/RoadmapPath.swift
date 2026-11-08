@@ -115,7 +115,7 @@ struct RoadmapPath: View {
 
     /// What the resume already showed: one summary card instead of a long run of done tiles.
     private var fromResume: [RoadmapStep] {
-        page.completed.reversed().flatMap { $0.steps.reversed() }.filter(\.isFromResume)
+        page.resumeSteps
     }
 
     private var stops: [RoadmapStep] {
@@ -127,12 +127,9 @@ struct RoadmapPath: View {
         index < stops.count - 1 || page.nextCursor == nil
     }
 
-    /// The big count covers the trail only; resume steps sit in their own card and line.
+    /// The big count covers the trail only; resume steps sit in their own card and line. Profile shows the same.
     private var trailProgress: RoadmapProgress {
-        var progress = page.progress
-        progress.done = max(0, progress.done - fromResume.count)
-        progress.total = max(progress.done, progress.total - fromResume.count)
-        return progress
+        page.trailProgress
     }
 
     private func state(of step: RoadmapStep) -> PathNode.State {

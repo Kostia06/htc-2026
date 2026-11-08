@@ -62,10 +62,15 @@ export default function Profile() {
 }
 
 function RoadProgress({ road }) {
-  const steps = `${road.done} of ${road.total} steps on your road`
+  // the Road's numbers and wording: the trail count, resume steps apart
+  const parts = [
+    `${road.done} of ${road.total} steps on your road`,
+    road.fromResume > 0 && `+${road.fromResume} from your resume`,
+    road.streakDays > 1 && `${road.streakDays}-day streak`,
+  ]
   return (
     <div className="stack you__road">
-      <p className="t-subhead c-2">{road.streakDays > 1 ? `${steps} · ${road.streakDays}-day streak` : steps}</p>
+      <p className="t-subhead c-2">{parts.filter(Boolean).join(' · ')}</p>
       <ThinProgressBar value={road.done / road.total} tint="var(--positive)" label="Road progress" />
     </div>
   )

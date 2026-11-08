@@ -22,16 +22,15 @@ struct PathNode: View {
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(state == .upcoming ? Color.secondary : Theme.onAction)
         }
-        .buttonStyle(TileStyle(face: state == .upcoming ? Theme.secondaryButton : Theme.action, size: Self.size))
+        .buttonStyle(TileStyle(face: face, size: Self.size))
         .overlay(alignment: .top) {
             if state == .current {
                 Text("You're here")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(Theme.ground)
+                    .foregroundStyle(Theme.onAction)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    // white rather than sand: sand is kept for things the agent does
-                    .background(Color.primary, in: .capsule)
+                    .background(Theme.agent, in: .capsule)
                     .fixedSize()
                     .offset(y: -22)
             }
@@ -39,6 +38,15 @@ struct PathNode: View {
         .accessibilityLabel("\(step.title), \(meta)")
         .accessibilityValue(state == .current ? "You're here" : "")
         .accessibilityHint("Shows the step's details")
+    }
+
+    /// Done tiles are green, the current one warm yellow so "you're here" stands apart, the rest grey.
+    private var face: Color {
+        switch state {
+        case .done: Theme.action
+        case .current: Theme.agent
+        case .upcoming: Theme.secondaryButton
+        }
     }
 }
 

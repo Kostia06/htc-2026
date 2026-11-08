@@ -131,6 +131,10 @@
   --face: var(--action);
   --icon: var(--on-action);
 }
+/* "you're here" in warm yellow, apart from the green of what's done */
+.path-node.is-current {
+  --face: var(--agent);
+}
 .path-node__face {
   display: grid;
   place-items: center;
@@ -150,7 +154,7 @@
   transition-timing-function: ease-out;
 }
 .path-node.is-current .path-node__face {
-  box-shadow: inset 0 1.5px 0 rgb(255 255 255 / 0.25), 0 0 0 6px rgb(168 199 163 / 0.12), 0 0 32px rgb(168 199 163 / 0.25);
+  box-shadow: inset 0 1.5px 0 rgb(255 255 255 / 0.25), 0 0 0 6px rgb(227 209 173 / 0.14), 0 0 32px rgb(227 209 173 / 0.28);
 }
 .path-node__here {
   position: absolute;
