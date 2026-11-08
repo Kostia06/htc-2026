@@ -6,9 +6,10 @@ enum Theme {
     /// The pastels are light, so text and icons sitting on them are dark rather than white.
     static let onAction = Color(red: 0.08, green: 0.05, blue: 0.16)
     static let agent = Color(red: 0.89, green: 0.82, blue: 0.68)
-    static let ground = Color(red: 0.03, green: 0.03, blue: 0.03)
-    static let raised = Color(white: 0.09)
-    static let hairline = Color(white: 1, opacity: 0.08)
+    // a deep green-charcoal instead of pure black, so the background belongs with the sage and sand
+    static let ground = Color(red: 0.06, green: 0.075, blue: 0.065)
+    static let raised = Color(red: 0.11, green: 0.13, blue: 0.115)
+    static let hairline = Color(red: 0.85, green: 0.92, blue: 0.85, opacity: 0.09)
 }
 
 extension View {
