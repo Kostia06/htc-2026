@@ -1,0 +1,3206 @@
+[
+  {
+    "contents" : {
+      "guid" : "Workspace:/Users/kostiailn/Projects/htc-2026/ios/RavenKit",
+      "name" : "RavenKit",
+      "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit",
+      "projects" : [
+        "084a7d5b261891f03b06cb673f5a4a6d11e112a7ed0ea88454c1a7e9d5c5a799",
+        "b58b0e5f9151bde6779a5fc9696533bfc2f9ff069c91521dc13162b97d337602"
+      ]
+    },
+    "signature" : "8f31ce22c9b05a3cbd8e010f6b19f55de920e4950ee62418f2896ce68ce52778",
+    "type" : "workspace"
+  },
+  {
+    "contents" : {
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "CLANG_ENABLE_MODULES[__platform_filter=driverkit]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=ios-maccatalyst]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=ios;ios-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=macos]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=tvos;tvos-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=watchos;watchos-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=xros;xros-simulator]" : "YES",
+            "CODE_SIGNING_REQUIRED" : "NO",
+            "CODE_SIGN_IDENTITY" : "",
+            "COMPILER_WORKING_DIRECTORY" : "$(WORKSPACE_DIR)",
+            "COPY_PHASE_STRIP" : "NO",
+            "DEBUG_INFORMATION_FORMAT" : "dwarf",
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=driverkit]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=ios-maccatalyst]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=ios;ios-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=macos]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=tvos;tvos-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=watchos;watchos-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=xros;xros-simulator]" : "@rpath",
+            "ENABLE_NS_ASSERTIONS" : "YES",
+            "ENABLE_TESTABILITY" : "YES",
+            "ENABLE_TESTING_SEARCH_PATHS" : "YES",
+            "ENTITLEMENTS_REQUIRED" : "NO",
+            "GCC_OPTIMIZATION_LEVEL" : "0",
+            "GCC_PREPROCESSOR_DEFINITIONS" : [
+              "$(inherited)",
+              "SWIFT_PACKAGE",
+              "DEBUG=1"
+            ],
+            "INDEX_ENABLE_DATA_STORE" : "YES",
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "KEEP_PRIVATE_EXTERNS" : "NO",
+            "LIBTOOL_NO_WARNING_FOR_NO_SYMBOLS" : "YES",
+            "LINKER_DRIVER" : "auto",
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "ONLY_ACTIVE_ARCH" : "YES",
+            "OTHER_CFLAGS" : [
+              "$(inherited)",
+              "-DXcode"
+            ],
+            "OTHER_LDRFLAGS" : [
+
+            ],
+            "OTHER_SWIFT_FLAGS" : [
+              "$(inherited)",
+              "-DXcode"
+            ],
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SKIP_INSTALL" : "YES",
+            "SPECIALIZATION_SDK_OPTIONS[__platform_filter=ios;ios-simulator]" : [
+
+            ],
+            "SPECIALIZATION_SDK_OPTIONS[__platform_filter=macos]" : [
+
+            ],
+            "SUPPORTED_PLATFORMS" : [
+              "$(AVAILABLE_PLATFORMS)"
+            ],
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_PACKAGE",
+              "DEBUG"
+            ],
+            "SWIFT_INSTALL_OBJC_HEADER" : "NO",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "",
+            "SWIFT_OPTIMIZATION_LEVEL" : "-Onone",
+            "TARGETED_DEVICE_FAMILY" : "",
+            "TVOS_DEPLOYMENT_TARGET" : "15.0",
+            "USE_HEADERMAP" : "NO",
+            "WATCHOS_DEPLOYMENT_TARGET" : "9.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE:ravenkit::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "CLANG_ENABLE_MODULES[__platform_filter=driverkit]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=ios-maccatalyst]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=ios;ios-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=macos]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=tvos;tvos-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=watchos;watchos-simulator]" : "YES",
+            "CLANG_ENABLE_MODULES[__platform_filter=xros;xros-simulator]" : "YES",
+            "CODE_SIGNING_REQUIRED" : "NO",
+            "CODE_SIGN_IDENTITY" : "",
+            "COMPILER_WORKING_DIRECTORY" : "$(WORKSPACE_DIR)",
+            "COPY_PHASE_STRIP" : "YES",
+            "DEBUG_INFORMATION_FORMAT" : "dwarf-with-dsym",
+            "DEPLOYMENT_POSTPROCESSING" : "YES",
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=driverkit]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=ios-maccatalyst]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=ios;ios-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=macos]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=tvos;tvos-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=watchos;watchos-simulator]" : "@rpath",
+            "DYLIB_INSTALL_NAME_BASE[__platform_filter=xros;xros-simulator]" : "@rpath",
+            "ENABLE_TESTING_SEARCH_PATHS" : "YES",
+            "ENTITLEMENTS_REQUIRED" : "NO",
+            "GCC_OPTIMIZATION_LEVEL" : "s",
+            "GCC_PREPROCESSOR_DEFINITIONS" : [
+              "$(inherited)",
+              "SWIFT_PACKAGE"
+            ],
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "KEEP_PRIVATE_EXTERNS" : "NO",
+            "LIBTOOL_NO_WARNING_FOR_NO_SYMBOLS" : "YES",
+            "LINKER_DRIVER" : "auto",
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "OTHER_CFLAGS" : [
+              "$(inherited)",
+              "-DXcode"
+            ],
+            "OTHER_LDRFLAGS" : [
+
+            ],
+            "OTHER_SWIFT_FLAGS" : [
+              "$(inherited)",
+              "-DXcode"
+            ],
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SKIP_INSTALL" : "YES",
+            "SPECIALIZATION_SDK_OPTIONS[__platform_filter=ios;ios-simulator]" : [
+
+            ],
+            "SPECIALIZATION_SDK_OPTIONS[__platform_filter=macos]" : [
+
+            ],
+            "SUPPORTED_PLATFORMS" : [
+              "$(AVAILABLE_PLATFORMS)"
+            ],
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_PACKAGE"
+            ],
+            "SWIFT_INSTALL_OBJC_HEADER" : "NO",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "",
+            "SWIFT_OPTIMIZATION_LEVEL" : "-Owholemodule",
+            "TARGETED_DEVICE_FAMILY" : "",
+            "TVOS_DEPLOYMENT_TARGET" : "15.0",
+            "USE_HEADERMAP" : "NO",
+            "WATCHOS_DEPLOYMENT_TARGET" : "9.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE:ravenkit::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "defaultConfigurationName" : "Release",
+      "groupTree" : {
+        "children" : [
+          {
+            "children" : [
+
+            ],
+            "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_0",
+            "name" : "AdditionalFiles",
+            "path" : "/",
+            "sourceTree" : "<absolute>",
+            "type" : "group"
+          },
+          {
+            "children" : [
+
+            ],
+            "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_1",
+            "name" : "Binaries",
+            "path" : "/",
+            "sourceTree" : "<absolute>",
+            "type" : "group"
+          },
+          {
+            "children" : [
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_0",
+                "name" : "AudioTagsTests.swift",
+                "path" : "AudioTagsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_1",
+                "name" : "CompaniesTests.swift",
+                "path" : "CompaniesTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_2",
+                "name" : "FeedActionsTests.swift",
+                "path" : "FeedActionsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_3",
+                "name" : "FeedTests.swift",
+                "path" : "FeedTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_4",
+                "name" : "FeedTimelineTests.swift",
+                "path" : "FeedTimelineTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_5",
+                "name" : "HeadsetLinkTests.swift",
+                "path" : "HeadsetLinkTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_6",
+                "name" : "HeadsetPairingTests.swift",
+                "path" : "HeadsetPairingTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_7",
+                "name" : "MemoriesTests.swift",
+                "path" : "MemoriesTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_8",
+                "name" : "ModelDecodingTests.swift",
+                "path" : "ModelDecodingTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_9",
+                "name" : "OnboardingAnswersTests.swift",
+                "path" : "OnboardingAnswersTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_10",
+                "name" : "PostingsTests.swift",
+                "path" : "PostingsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_11",
+                "name" : "PracticeHistoryTests.swift",
+                "path" : "PracticeHistoryTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_12",
+                "name" : "ProfileEditTests.swift",
+                "path" : "ProfileEditTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_13",
+                "name" : "QuickUpdateTests.swift",
+                "path" : "QuickUpdateTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_14",
+                "name" : "RavenClientTests.swift",
+                "path" : "RavenClientTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_15",
+                "name" : "RecapTests.swift",
+                "path" : "RecapTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_16",
+                "name" : "ResumeTests.swift",
+                "path" : "ResumeTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_17",
+                "name" : "RoadmapProgressTests.swift",
+                "path" : "RoadmapProgressTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_18",
+                "name" : "RoadmapTests.swift",
+                "path" : "RoadmapTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_19",
+                "name" : "SignInTests.swift",
+                "path" : "SignInTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_20",
+                "name" : "TranscriptTurnsTests.swift",
+                "path" : "TranscriptTurnsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_21",
+                "name" : "VoiceSessionQuestionsTests.swift",
+                "path" : "VoiceSessionQuestionsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_22",
+                "name" : "VoiceSessionsTests.swift",
+                "path" : "VoiceSessionsTests.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              }
+            ],
+            "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_2",
+            "name" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Tests/RavenKitTests",
+            "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Tests/RavenKitTests",
+            "sourceTree" : "<absolute>",
+            "type" : "group"
+          },
+          {
+            "children" : [
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_0",
+                "name" : "AudioTags.swift",
+                "path" : "AudioTags.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_1",
+                "name" : "Companies.swift",
+                "path" : "Companies.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_2",
+                "name" : "ElevenLabsCredentials.swift",
+                "path" : "ElevenLabsCredentials.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_3",
+                "name" : "Experiences.swift",
+                "path" : "Experiences.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_4",
+                "name" : "Feed.swift",
+                "path" : "Feed.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_5",
+                "name" : "FeedTimeline.swift",
+                "path" : "FeedTimeline.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_6",
+                "name" : "HeadsetLink.swift",
+                "path" : "HeadsetLink.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_7",
+                "name" : "HeadsetPairing.swift",
+                "path" : "HeadsetPairing.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_8",
+                "name" : "InterviewTarget.swift",
+                "path" : "InterviewTarget.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_9",
+                "name" : "JSONValue.swift",
+                "path" : "JSONValue.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_10",
+                "name" : "Memories.swift",
+                "path" : "Memories.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_11",
+                "name" : "Multipart.swift",
+                "path" : "Multipart.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_12",
+                "name" : "Onboarding.swift",
+                "path" : "Onboarding.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_13",
+                "name" : "OnboardingAnswers.swift",
+                "path" : "OnboardingAnswers.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_14",
+                "name" : "OnboardingQuestion.swift",
+                "path" : "OnboardingQuestion.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_15",
+                "name" : "Postings.swift",
+                "path" : "Postings.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_16",
+                "name" : "PracticeHistory.swift",
+                "path" : "PracticeHistory.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_17",
+                "name" : "Profile.swift",
+                "path" : "Profile.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_18",
+                "name" : "ProfileEdit.swift",
+                "path" : "ProfileEdit.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_19",
+                "name" : "QuickUpdate.swift",
+                "path" : "QuickUpdate.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_20",
+                "name" : "RavenClient+Companies.swift",
+                "path" : "RavenClient+Companies.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_21",
+                "name" : "RavenClient+Feed.swift",
+                "path" : "RavenClient+Feed.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_22",
+                "name" : "RavenClient+HeadsetLink.swift",
+                "path" : "RavenClient+HeadsetLink.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_23",
+                "name" : "RavenClient+HeadsetPairing.swift",
+                "path" : "RavenClient+HeadsetPairing.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_24",
+                "name" : "RavenClient+Postings.swift",
+                "path" : "RavenClient+Postings.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_25",
+                "name" : "RavenClient+ProfileEdits.swift",
+                "path" : "RavenClient+ProfileEdits.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_26",
+                "name" : "RavenClient+QuickUpdate.swift",
+                "path" : "RavenClient+QuickUpdate.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_27",
+                "name" : "RavenClient+Recap.swift",
+                "path" : "RavenClient+Recap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_28",
+                "name" : "RavenClient+Resume.swift",
+                "path" : "RavenClient+Resume.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_29",
+                "name" : "RavenClient+Roadmap.swift",
+                "path" : "RavenClient+Roadmap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_30",
+                "name" : "RavenClient.swift",
+                "path" : "RavenClient.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_31",
+                "name" : "RavenError.swift",
+                "path" : "RavenError.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_32",
+                "name" : "Recap.swift",
+                "path" : "Recap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_33",
+                "name" : "RelativeTime.swift",
+                "path" : "RelativeTime.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_34",
+                "name" : "Resume+Suggestions.swift",
+                "path" : "Resume+Suggestions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_35",
+                "name" : "Resume.swift",
+                "path" : "Resume.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_36",
+                "name" : "ResumeDraft+Init.swift",
+                "path" : "ResumeDraft+Init.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_37",
+                "name" : "Roadmap.swift",
+                "path" : "Roadmap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_38",
+                "name" : "RoadmapPage+Progress.swift",
+                "path" : "RoadmapPage+Progress.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_39",
+                "name" : "SessionDebrief.swift",
+                "path" : "SessionDebrief.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_40",
+                "name" : "SignIn.swift",
+                "path" : "SignIn.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_41",
+                "name" : "TranscriptTurns.swift",
+                "path" : "TranscriptTurns.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_42",
+                "name" : "VoiceSession+Questions.swift",
+                "path" : "VoiceSession+Questions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_43",
+                "name" : "VoiceSessions.swift",
+                "path" : "VoiceSessions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              }
+            ],
+            "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_3",
+            "name" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit",
+            "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit",
+            "sourceTree" : "<absolute>",
+            "type" : "group"
+          },
+          {
+            "children" : [
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_0",
+                "name" : "AudioTags.swift",
+                "path" : "AudioTags.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_1",
+                "name" : "Companies.swift",
+                "path" : "Companies.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_2",
+                "name" : "ElevenLabsCredentials.swift",
+                "path" : "ElevenLabsCredentials.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_3",
+                "name" : "Experiences.swift",
+                "path" : "Experiences.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_4",
+                "name" : "Feed.swift",
+                "path" : "Feed.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_5",
+                "name" : "FeedTimeline.swift",
+                "path" : "FeedTimeline.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_6",
+                "name" : "HeadsetLink.swift",
+                "path" : "HeadsetLink.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_7",
+                "name" : "HeadsetPairing.swift",
+                "path" : "HeadsetPairing.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_8",
+                "name" : "InterviewTarget.swift",
+                "path" : "InterviewTarget.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_9",
+                "name" : "JSONValue.swift",
+                "path" : "JSONValue.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_10",
+                "name" : "Memories.swift",
+                "path" : "Memories.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_11",
+                "name" : "Multipart.swift",
+                "path" : "Multipart.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_12",
+                "name" : "Onboarding.swift",
+                "path" : "Onboarding.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_13",
+                "name" : "OnboardingAnswers.swift",
+                "path" : "OnboardingAnswers.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_14",
+                "name" : "OnboardingQuestion.swift",
+                "path" : "OnboardingQuestion.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_15",
+                "name" : "Postings.swift",
+                "path" : "Postings.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_16",
+                "name" : "PracticeHistory.swift",
+                "path" : "PracticeHistory.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_17",
+                "name" : "Profile.swift",
+                "path" : "Profile.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_18",
+                "name" : "ProfileEdit.swift",
+                "path" : "ProfileEdit.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_19",
+                "name" : "QuickUpdate.swift",
+                "path" : "QuickUpdate.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_20",
+                "name" : "RavenClient+Companies.swift",
+                "path" : "RavenClient+Companies.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_21",
+                "name" : "RavenClient+Feed.swift",
+                "path" : "RavenClient+Feed.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_22",
+                "name" : "RavenClient+HeadsetLink.swift",
+                "path" : "RavenClient+HeadsetLink.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_23",
+                "name" : "RavenClient+HeadsetPairing.swift",
+                "path" : "RavenClient+HeadsetPairing.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_24",
+                "name" : "RavenClient+Postings.swift",
+                "path" : "RavenClient+Postings.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_25",
+                "name" : "RavenClient+ProfileEdits.swift",
+                "path" : "RavenClient+ProfileEdits.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_26",
+                "name" : "RavenClient+QuickUpdate.swift",
+                "path" : "RavenClient+QuickUpdate.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_27",
+                "name" : "RavenClient+Recap.swift",
+                "path" : "RavenClient+Recap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_28",
+                "name" : "RavenClient+Resume.swift",
+                "path" : "RavenClient+Resume.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_29",
+                "name" : "RavenClient+Roadmap.swift",
+                "path" : "RavenClient+Roadmap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_30",
+                "name" : "RavenClient.swift",
+                "path" : "RavenClient.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_31",
+                "name" : "RavenError.swift",
+                "path" : "RavenError.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_32",
+                "name" : "Recap.swift",
+                "path" : "Recap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_33",
+                "name" : "RelativeTime.swift",
+                "path" : "RelativeTime.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_34",
+                "name" : "Resume+Suggestions.swift",
+                "path" : "Resume+Suggestions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_35",
+                "name" : "Resume.swift",
+                "path" : "Resume.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_36",
+                "name" : "ResumeDraft+Init.swift",
+                "path" : "ResumeDraft+Init.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_37",
+                "name" : "Roadmap.swift",
+                "path" : "Roadmap.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_38",
+                "name" : "RoadmapPage+Progress.swift",
+                "path" : "RoadmapPage+Progress.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_39",
+                "name" : "SessionDebrief.swift",
+                "path" : "SessionDebrief.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_40",
+                "name" : "SignIn.swift",
+                "path" : "SignIn.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_41",
+                "name" : "TranscriptTurns.swift",
+                "path" : "TranscriptTurns.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_42",
+                "name" : "VoiceSession+Questions.swift",
+                "path" : "VoiceSession+Questions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              },
+              {
+                "fileType" : "sourcecode.swift",
+                "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_43",
+                "name" : "VoiceSessions.swift",
+                "path" : "VoiceSessions.swift",
+                "sourceTree" : "<group>",
+                "type" : "file"
+              }
+            ],
+            "guid" : "PACKAGE:ravenkit::MAINGROUP::REF_4",
+            "name" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit",
+            "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit",
+            "sourceTree" : "<absolute>",
+            "type" : "group"
+          }
+        ],
+        "guid" : "PACKAGE:ravenkit::MAINGROUP",
+        "name" : "",
+        "path" : "",
+        "sourceTree" : "<group>",
+        "type" : "group"
+      },
+      "guid" : "PACKAGE:ravenkit",
+      "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Package.swift",
+      "projectDirectory" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit",
+      "projectIsPackage" : "true",
+      "projectName" : "RavenKit",
+      "targets" : [
+        "8f2814d32ef25bc89b65e8c3f354f55fbfad542d446d51ad9bfe202aa07e17d5",
+        "48c6d7966358d94856c8a5350741e1654f0f016468b056962f8a8d74c14bfd74",
+        "7aa9ab5b041f76e29483ac7f1cda48b29eacbd3683a1687b4dc7add6db749933",
+        "9e6403b830476b3d686a3273af9c96a8827883ddd0757c4139b28fda8530e2db",
+        "fabee3b050015910d1ce3ad87565290fd760c58587e5f6d6bbfe23cbb5279c8e",
+        "3e505cb03585c2b0ab369f53cf9e6d4e035f864db605ff82d9270bbb7247a47d",
+        "0f62041befff1b5a98cdf6162eecb602b7cc14fb9c5286a07da8b504e2aafc9a"
+      ]
+    },
+    "signature" : "084a7d5b261891f03b06cb673f5a4a6d11e112a7ed0ea88454c1a7e9d5c5a799",
+    "type" : "project"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "APPLE_TEST_BUNDLE_RPATH" : "$(APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_$(SHALLOW_BUNDLE:default=NO))",
+            "APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_NO" : "@loader_path/../../..",
+            "APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_YES" : "@loader_path/../..",
+            "BUILD_SERVER_PROTOCOL_TARGET_TAGS" : [
+              "$(inherited)",
+              "test"
+            ],
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "GENERATE_EMBED_IN_CODE_ACCESSORS" : "NO",
+            "GENERATE_INFOPLIST_FILE" : "YES",
+            "GENERATE_RESOURCE_ACCESSORS" : "YES",
+            "INDEX_ENABLE_DATA_STORE" : "YES",
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "LD_RUNPATH_SEARCH_PATHS" : [
+              "$(RPATH_ORIGIN)/Frameworks",
+              "$(RPATH_ORIGIN)/../Frameworks",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=driverkit]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=ios-maccatalyst]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=ios;ios-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=macos]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=tvos;tvos-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=watchos;watchos-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=xros;xros-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKitTests",
+            "PRODUCT_MODULE_NAME" : "RavenKitTests",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKitTests.symbolgraphs",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKitTests.symbolgraphs",
+            "TARGET_NAME" : "RavenKitTests",
+            "TARGET_TEMP_DIR_SUFFIX" : "-p",
+            "TVOS_DEPLOYMENT_TARGET" : "17.0",
+            "WATCHOS_DEPLOYMENT_TARGET" : "26.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "APPLE_TEST_BUNDLE_RPATH" : "$(APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_$(SHALLOW_BUNDLE:default=NO))",
+            "APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_NO" : "@loader_path/../../..",
+            "APPLE_TEST_BUNDLE_RPATH_SHALLOW_BUNDLE_YES" : "@loader_path/../..",
+            "BUILD_SERVER_PROTOCOL_TARGET_TAGS" : [
+              "$(inherited)",
+              "test"
+            ],
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "GENERATE_EMBED_IN_CODE_ACCESSORS" : "NO",
+            "GENERATE_INFOPLIST_FILE" : "YES",
+            "GENERATE_RESOURCE_ACCESSORS" : "YES",
+            "INDEX_ENABLE_DATA_STORE" : "YES",
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "LD_RUNPATH_SEARCH_PATHS" : [
+              "$(RPATH_ORIGIN)/Frameworks",
+              "$(RPATH_ORIGIN)/../Frameworks",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=driverkit]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=ios-maccatalyst]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=ios;ios-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=macos]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=tvos;tvos-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=watchos;watchos-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "LD_RUNPATH_SEARCH_PATHS[__platform_filter=xros;xros-simulator]" : [
+              "$(APPLE_TEST_BUNDLE_RPATH)",
+              "$(inherited)"
+            ],
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKitTests",
+            "PRODUCT_MODULE_NAME" : "RavenKitTests",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKitTests.symbolgraphs",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKitTests.symbolgraphs",
+            "TARGET_NAME" : "RavenKitTests",
+            "TARGET_TEMP_DIR_SUFFIX" : "-p",
+            "TVOS_DEPLOYMENT_TARGET" : "17.0",
+            "WATCHOS_DEPLOYMENT_TARGET" : "26.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_0",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::0",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_1",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::1",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_2",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::2",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_3",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::3",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_4",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::4",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_5",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::5",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_6",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::6",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_7",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::7",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_8",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::8",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_9",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::9",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_10",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::10",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_11",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::11",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_12",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::12",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_13",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::13",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_14",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::14",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_15",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::15",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_16",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::16",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_17",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::17",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_18",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::18",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_19",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::19",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_20",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::20",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_21",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::21",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_2::REF_22",
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0::22",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            }
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.sources"
+        },
+        {
+          "buildFiles" : [
+            {
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_1::0",
+              "platformFilters" : [
+
+              ],
+              "targetReference" : "PACKAGE-TARGET:RavenKit"
+            }
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests::BUILDPHASE_1",
+          "type" : "com.apple.buildphase.frameworks"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-TARGET:RavenKit",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests",
+      "name" : "RavenKitTests-product",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests",
+        "name" : "$(EXECUTABLE_NAME)",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "com.apple.product-type.bundle.unit-test",
+      "type" : "standard"
+    },
+    "signature" : "8f2814d32ef25bc89b65e8c3f354f55fbfad542d446d51ad9bfe202aa07e17d5",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "LD_RUNPATH_SEARCH_PATHS" : [
+              "$(inherited)",
+              "$(RPATH_ORIGIN)"
+            ],
+            "LINKER_DRIVER" : "swiftc",
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKitTests-test-runner",
+            "PRODUCT_MODULE_NAME" : "RavenKitTests_test_runner",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "NO",
+            "SWIFT_VERSION" : "5.0",
+            "TARGET_NAME" : "RavenKitTests-test-runner",
+            "TVOS_DEPLOYMENT_TARGET" : "17.0",
+            "WATCHOS_DEPLOYMENT_TARGET" : "26.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "DRIVERKIT_DEPLOYMENT_TARGET" : "21.0",
+            "IPHONEOS_DEPLOYMENT_TARGET" : "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET[__platform_filter=ios-maccatalyst]" : "26.0",
+            "LD_RUNPATH_SEARCH_PATHS" : [
+              "$(inherited)",
+              "$(RPATH_ORIGIN)"
+            ],
+            "LINKER_DRIVER" : "swiftc",
+            "MACOSX_DEPLOYMENT_TARGET" : "26.0",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKitTests-test-runner",
+            "PRODUCT_MODULE_NAME" : "RavenKitTests_test_runner",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "NO",
+            "SWIFT_VERSION" : "5.0",
+            "TARGET_NAME" : "RavenKitTests-test-runner",
+            "TVOS_DEPLOYMENT_TARGET" : "17.0",
+            "WATCHOS_DEPLOYMENT_TARGET" : "26.0",
+            "XROS_DEPLOYMENT_TARGET" : "1.0"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+
+          ],
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.sources"
+        },
+        {
+          "buildFiles" : [
+            {
+              "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner::BUILDPHASE_1::0",
+              "platformFilters" : [
+
+              ],
+              "targetReference" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests"
+            }
+          ],
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner::BUILDPHASE_1",
+          "type" : "com.apple.buildphase.frameworks"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner",
+      "name" : "RavenKitTests-test-runner",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-TARGET:RavenKitTests_test_runner",
+        "name" : "RavenKitTests-test-runner",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "com.apple.product-type.tool.swiftpm-test-runner",
+      "type" : "standard"
+    },
+    "signature" : "48c6d7966358d94856c8a5350741e1654f0f016468b056962f8a8d74c14bfd74",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "TARGET_NAME" : "RavenKit-product",
+            "TARGET_TEMP_DIR_SUFFIX" : "-p",
+            "USES_SWIFTPM_UNSAFE_FLAGS" : "NO"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "TARGET_NAME" : "RavenKit-product",
+            "TARGET_TEMP_DIR_SUFFIX" : "-p",
+            "USES_SWIFTPM_UNSAFE_FLAGS" : "NO"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+            {
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit::BUILDPHASE_0::0",
+              "platformFilters" : [
+
+              ],
+              "targetReference" : "PACKAGE-TARGET:RavenKit"
+            }
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.frameworks"
+        },
+        {
+          "buildFiles" : [
+
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit::BUILDPHASE_1",
+          "type" : "com.apple.buildphase.sources"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-TARGET:RavenKit",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "dynamicTargetVariantGuid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic",
+      "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit",
+      "name" : "RavenKit-product",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit",
+        "name" : "$(EXECUTABLE_NAME)",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "com.apple.product-type.library.static",
+      "type" : "standard"
+    },
+    "signature" : "7aa9ab5b041f76e29483ac7f1cda48b29eacbd3683a1687b4dc7add6db749933",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "DEFINES_MODULE" : "YES",
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "GENERATE_PRELINK_OBJECT_FILE" : "NO",
+            "MODULEMAP_FILE_CONTENTS" : "module RavenKit {\nheader \"RavenKit-Swift.h\"\nexport *\n}",
+            "MODULEMAP_PATH" : "$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "STRIP_INSTALLED_PRODUCT" : "NO",
+            "SUPPORTS_TEXT_BASED_API" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE"
+            ],
+            "SWIFT_DISABLE_COMPILATION_FOR_STATIC_LINKING_WHEN_ANY_TARGET_IS_PROMOTED_TO_DYNAMIC[__platform_filter=windows-msvc]" : [
+              "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_OBJC_INTERFACE_HEADER_DIR" : "$(GENERATED_MODULEMAP_DIR)",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "RavenKit-Swift.h",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TAPI_DYLIB_INSTALL_NAME" : "RavenKit",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TARGET_NAME" : "RavenKit",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKit::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+              "FRAMEWORK_SEARCH_PATHS" : [
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_RUNPATH_SEARCH_PATHS" : [
+                "$(RPATH_ORIGIN)",
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_WARN_DUPLICATE_LIBRARIES" : "NO",
+              "OTHER_CFLAGS" : [
+                "-fmodule-map-file=$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+                "$(inherited)"
+              ]
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "DEFINES_MODULE" : "YES",
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "GENERATE_PRELINK_OBJECT_FILE" : "NO",
+            "MODULEMAP_FILE_CONTENTS" : "module RavenKit {\nheader \"RavenKit-Swift.h\"\nexport *\n}",
+            "MODULEMAP_PATH" : "$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "STRIP_INSTALLED_PRODUCT" : "NO",
+            "SUPPORTS_TEXT_BASED_API" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE"
+            ],
+            "SWIFT_DISABLE_COMPILATION_FOR_STATIC_LINKING_WHEN_ANY_TARGET_IS_PROMOTED_TO_DYNAMIC[__platform_filter=windows-msvc]" : [
+              "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_OBJC_INTERFACE_HEADER_DIR" : "$(GENERATED_MODULEMAP_DIR)",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "RavenKit-Swift.h",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TAPI_DYLIB_INSTALL_NAME" : "RavenKit",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TARGET_NAME" : "RavenKit",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKit::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+              "FRAMEWORK_SEARCH_PATHS" : [
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_RUNPATH_SEARCH_PATHS" : [
+                "$(RPATH_ORIGIN)",
+                "$(inherited)"
+              ],
+              "LD_WARN_DUPLICATE_LIBRARIES" : "NO",
+              "OTHER_CFLAGS" : [
+                "-fmodule-map-file=$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+                "$(inherited)"
+              ]
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_0",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::0",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_1",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::1",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_2",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::2",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_3",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::3",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_4",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::4",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_5",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::5",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_6",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::6",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_7",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::7",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_8",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::8",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_9",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::9",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_10",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::10",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_11",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::11",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_12",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::12",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_13",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::13",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_14",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::14",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_15",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::15",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_16",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::16",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_17",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::17",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_18",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::18",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_19",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::19",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_20",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::20",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_21",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::21",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_22",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::22",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_23",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::23",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_24",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::24",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_25",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::25",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_26",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::26",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_27",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::27",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_28",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::28",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_29",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::29",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_30",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::30",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_31",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::31",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_32",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::32",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_33",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::33",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_34",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::34",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_35",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::35",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_36",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::36",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_37",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::37",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_38",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::38",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_39",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::39",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_40",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::40",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_41",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::41",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_42",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::42",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_3::REF_43",
+              "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0::43",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            }
+          ],
+          "guid" : "PACKAGE-TARGET:RavenKit::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.sources"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+
+      ],
+      "dynamicTargetVariantGuid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic",
+      "guid" : "PACKAGE-TARGET:RavenKit",
+      "name" : "RavenKit",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-TARGET:RavenKit",
+        "name" : "$(EXECUTABLE_NAME)",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "org.swift.product-type.library.static",
+      "type" : "standard"
+    },
+    "signature" : "fabee3b050015910d1ce3ad87565290fd760c58587e5f6d6bbfe23cbb5279c8e",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit-RavenKitPackageTests.RavenKitPackageTests::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit-RavenKitPackageTests.RavenKitPackageTests::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests",
+          "platformFilters" : [
+
+          ]
+        },
+        {
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "PACKAGE-PRODUCT:ravenkit-RavenKitPackageTests.RavenKitPackageTests",
+      "name" : "RavenKitPackageTests-product",
+      "type" : "aggregate"
+    },
+    "signature" : "0f62041befff1b5a98cdf6162eecb602b7cc14fb9c5286a07da8b504e2aafc9a",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "TARGET_NAME" : "RavenKit-product",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t",
+            "USES_SWIFTPM_UNSAFE_FLAGS" : "NO"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "TARGET_NAME" : "RavenKit-product",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t",
+            "USES_SWIFTPM_UNSAFE_FLAGS" : "NO"
+          },
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+            {
+              "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::0",
+              "platformFilters" : [
+
+              ],
+              "targetReference" : "PACKAGE-TARGET:RavenKit"
+            }
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.frameworks"
+        },
+        {
+          "buildFiles" : [
+
+          ],
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_1",
+          "type" : "com.apple.buildphase.sources"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-TARGET:RavenKit",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic",
+      "name" : "RavenKitdynamic-product",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit--2D52DE7CDF2AE1D4-dynamic",
+        "name" : "$(EXECUTABLE_NAME)",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "com.apple.product-type.library.dynamic",
+      "type" : "standard"
+    },
+    "signature" : "9e6403b830476b3d686a3273af9c96a8827883ddd0757c4139b28fda8530e2db",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "approvedByUser" : "true",
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "DEFINES_MODULE" : "YES",
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "MODULEMAP_FILE_CONTENTS" : "module RavenKit {\nheader \"RavenKit-Swift.h\"\nexport *\n}",
+            "MODULEMAP_PATH" : "$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SUPPORTS_TEXT_BASED_API" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_OBJC_INTERFACE_HEADER_DIR" : "$(GENERATED_MODULEMAP_DIR)",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "RavenKit-Swift.h",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TARGET_NAME" : "RavenKit",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+              "FRAMEWORK_SEARCH_PATHS" : [
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_RUNPATH_SEARCH_PATHS" : [
+                "$(RPATH_ORIGIN)",
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_WARN_DUPLICATE_LIBRARIES" : "NO",
+              "OTHER_CFLAGS" : [
+                "-fmodule-map-file=$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+                "$(inherited)"
+              ]
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "DEFINES_MODULE" : "YES",
+            "DOCC_EXTRACT_PROJECT_HEADERS_DOCUMENTATION" : "YES",
+            "EXECUTABLE_PREFIX" : "lib",
+            "EXECUTABLE_PREFIX[__platform_filter=windows-msvc]" : "",
+            "MODULEMAP_FILE_CONTENTS" : "module RavenKit {\nheader \"RavenKit-Swift.h\"\nexport *\n}",
+            "MODULEMAP_PATH" : "$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+            "PACKAGE_RESOURCE_TARGET_KIND" : "regular",
+            "PRODUCT_BUNDLE_IDENTIFIER" : "ravenkit.RavenKit",
+            "PRODUCT_MODULE_NAME" : "RavenKit",
+            "PRODUCT_NAME" : "RavenKit",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SUPPORTS_TEXT_BASED_API" : "NO",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : [
+              "$(inherited)",
+              "SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE"
+            ],
+            "SWIFT_DISABLE_PARSE_AS_LIBRARY" : "NO",
+            "SWIFT_ENABLE_BARE_SLASH_REGEX" : "NO",
+            "SWIFT_LIBRARIES_ONLY" : "YES",
+            "SWIFT_OBJC_INTERFACE_HEADER_DIR" : "$(GENERATED_MODULEMAP_DIR)",
+            "SWIFT_OBJC_INTERFACE_HEADER_NAME" : "RavenKit-Swift.h",
+            "SWIFT_PACKAGE_NAME" : "ravenkit",
+            "SWIFT_VERSION" : "6",
+            "SYMBOL_GRAPH_EXTRACTOR_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TAPI_EXTRACT_API_OUTPUT_DIR" : "$(TARGET_BUILD_DIR)/$(CURRENT_ARCH)/RavenKit.symbolgraphs",
+            "TARGET_NAME" : "RavenKit",
+            "TARGET_TEMP_DIR_SUFFIX" : "-t"
+          },
+          "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+              "FRAMEWORK_SEARCH_PATHS" : [
+                "$(BUILT_PRODUCTS_DIR)/PackageFrameworks",
+                "$(inherited)"
+              ],
+              "LD_RUNPATH_SEARCH_PATHS" : [
+                "$(RPATH_ORIGIN)",
+                "$(inherited)"
+              ],
+              "LD_WARN_DUPLICATE_LIBRARIES" : "NO",
+              "OTHER_CFLAGS" : [
+                "-fmodule-map-file=$(GENERATED_MODULEMAP_DIR)/RavenKit.modulemap",
+                "$(inherited)"
+              ]
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+        {
+          "buildFiles" : [
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_0",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::0",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_1",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::1",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_2",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::2",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_3",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::3",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_4",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::4",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_5",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::5",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_6",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::6",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_7",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::7",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_8",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::8",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_9",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::9",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_10",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::10",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_11",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::11",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_12",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::12",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_13",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::13",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_14",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::14",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_15",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::15",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_16",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::16",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_17",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::17",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_18",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::18",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_19",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::19",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_20",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::20",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_21",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::21",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_22",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::22",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_23",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::23",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_24",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::24",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_25",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::25",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_26",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::26",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_27",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::27",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_28",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::28",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_29",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::29",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_30",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::30",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_31",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::31",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_32",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::32",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_33",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::33",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_34",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::34",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_35",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::35",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_36",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::36",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_37",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::37",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_38",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::38",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_39",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::39",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_40",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::40",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_41",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::41",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_42",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::42",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            },
+            {
+              "codeSignOnCopy" : "false",
+              "fileReference" : "PACKAGE:ravenkit::MAINGROUP::REF_4::REF_43",
+              "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0::43",
+              "platformFilters" : [
+
+              ],
+              "removeHeadersOnCopy" : "false"
+            }
+          ],
+          "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic::BUILDPHASE_0",
+          "type" : "com.apple.buildphase.sources"
+        }
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+
+      ],
+      "guid" : "PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic",
+      "name" : "RavenKit",
+      "productReference" : {
+        "guid" : "PRODUCTREF-PACKAGE-TARGET:RavenKit--2D52DE7CDF2AE1D4-dynamic",
+        "name" : "$(EXECUTABLE_NAME)",
+        "type" : "file"
+      },
+      "productTypeIdentifier" : "com.apple.product-type.library.dynamic",
+      "type" : "standard"
+    },
+    "signature" : "3e505cb03585c2b0ab369f53cf9e6d4e035f864db605ff82d9270bbb7247a47d",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "YES",
+            "SUPPORTED_PLATFORMS" : [
+              "$(AVAILABLE_PLATFORMS)"
+            ]
+          },
+          "guid" : "AGGREGATE::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+            "PRODUCT_NAME" : "$(TARGET_NAME)",
+            "SDKROOT" : "auto",
+            "SDK_VARIANT" : "auto",
+            "SKIP_INSTALL" : "YES",
+            "SUPPORTED_PLATFORMS" : [
+              "$(AVAILABLE_PLATFORMS)"
+            ]
+          },
+          "guid" : "AGGREGATE::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "defaultConfigurationName" : "Release",
+      "developmentRegion" : "en",
+      "groupTree" : {
+        "children" : [
+
+        ],
+        "guid" : "AGGREGATE::MAINGROUP",
+        "name" : "",
+        "path" : "",
+        "sourceTree" : "<group>",
+        "type" : "group"
+      },
+      "guid" : "AGGREGATE",
+      "path" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Package.swift",
+      "projectDirectory" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit",
+      "projectIsPackage" : "true",
+      "projectName" : "Aggregate",
+      "targets" : [
+        "4c3cdf613a6369c7195a17b0609ff27d59f821e8df5e730d5709c8062bcf68be",
+        "a2b498489f867d867a214f61d4550180da98ec1570bd7cce85870dbc8687d73c"
+      ]
+    },
+    "signature" : "b58b0e5f9151bde6779a5fc9696533bfc2f9ff069c91521dc13162b97d337602",
+    "type" : "project"
+  },
+  {
+    "contents" : {
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "ALL-INCLUDING-TESTS::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "ALL-INCLUDING-TESTS::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKitTests.RavenKitTests",
+          "platformFilters" : [
+
+          ]
+        },
+        {
+          "guid" : "PACKAGE-TARGET:RavenKitTests_test_runner",
+          "platformFilters" : [
+
+          ]
+        },
+        {
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit",
+          "platformFilters" : [
+
+          ]
+        },
+        {
+          "guid" : "PACKAGE-TARGET:RavenKit",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "ALL-INCLUDING-TESTS",
+      "name" : "AllIncludingTests",
+      "type" : "aggregate"
+    },
+    "signature" : "4c3cdf613a6369c7195a17b0609ff27d59f821e8df5e730d5709c8062bcf68be",
+    "type" : "target"
+  },
+  {
+    "contents" : {
+      "buildConfigurations" : [
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "ALL-EXCLUDING-TESTS::BUILDCONFIG_0",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Debug"
+        },
+        {
+          "buildSettings" : {
+
+          },
+          "guid" : "ALL-EXCLUDING-TESTS::BUILDCONFIG_1",
+          "impartedBuildProperties" : {
+            "buildSettings" : {
+
+            }
+          },
+          "name" : "Release"
+        }
+      ],
+      "buildPhases" : [
+
+      ],
+      "buildRules" : [
+
+      ],
+      "customTasks" : [
+
+      ],
+      "dependencies" : [
+        {
+          "guid" : "PACKAGE-PRODUCT:ravenkit_RavenKit.RavenKit",
+          "platformFilters" : [
+
+          ]
+        },
+        {
+          "guid" : "PACKAGE-TARGET:RavenKit",
+          "platformFilters" : [
+
+          ]
+        }
+      ],
+      "guid" : "ALL-EXCLUDING-TESTS",
+      "name" : "AllExcludingTests",
+      "type" : "aggregate"
+    },
+    "signature" : "a2b498489f867d867a214f61d4550180da98ec1570bd7cce85870dbc8687d73c",
+    "type" : "target"
+  }
+]

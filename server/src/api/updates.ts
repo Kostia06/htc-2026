@@ -41,8 +41,8 @@ export function updatesRouter(makeDeps: MakeDeps, options: Options = {}) {
       return c.json(await runQuickUpdate(makeDeps(c.env, waitUntil), { userId, messages, timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS, waitUntil }));
     } catch (e) {
       if (e instanceof RunRejected) return c.json({ error: e.message }, e.status);
-      if (e instanceof UpdateFailed) return c.json({ error: "Raven couldn't follow that one. Try saying it another way." }, 502);
-      if (e instanceof UpdateTimedOut) return c.json({ error: "Raven took too long. Try that again." }, 504);
+      if (e instanceof UpdateFailed) return c.json({ error: "Skillit couldn't follow that one. Try saying it another way." }, 502);
+      if (e instanceof UpdateTimedOut) return c.json({ error: "Skillit took too long. Try that again." }, 504);
       throw e;
     }
   });

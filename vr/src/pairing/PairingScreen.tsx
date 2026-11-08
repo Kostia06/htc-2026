@@ -12,7 +12,7 @@ const NOTICE_COPY: Record<ClaimProblem, string> = {
   wrong: "That code isn't right. Check your phone and try again.",
   rate_limited: "Too many wrong codes. Wait a few minutes, then try again.",
   offline: "This headset is offline. Check its Wi-Fi, then enter the code again.",
-  unavailable: "Raven isn't answering. Enter the code again in a moment.",
+  unavailable: "Skillit isn't answering. Enter the code again in a moment.",
 };
 
 export function PairingScreen({ onSignIn }: { onSignIn: (session: HeadsetSession) => void }) {
@@ -29,7 +29,7 @@ export function PairingScreen({ onSignIn }: { onSignIn: (session: HeadsetSession
     return (
       <main className="screen centered">
         <h1>You're signed in</h1>
-        <p className="lead">Opening Raven</p>
+        <p className="lead">Opening Skillit</p>
       </main>
     );
   }
@@ -39,12 +39,12 @@ export function PairingScreen({ onSignIn }: { onSignIn: (session: HeadsetSession
 
   return (
     <main className="screen pairing">
-      <p className="wordmark">Raven</p>
+      <p className="wordmark">Skillit</p>
       <div className="pairing-layout">
         <section className="pairing-details">
-          <h1>Sign in to Raven</h1>
+          <h1>Sign in to Skillit</h1>
           <p className="lead">
-            On your phone, open Raven, go to Practice, then <strong>Practice in VR</strong>. Enter the 4 digits it shows.
+            On your phone, open Skillit, go to Practice, then <strong>Practice in VR</strong>. Enter the 4 digits it shows.
           </p>
           <DigitBoxes digits={state.digits} isChecking={isChecking} isWrong={notice === "wrong"} shakes={state.shakes} />
           <p className={notice ? "pairing-status is-problem" : "pairing-status"} aria-live="polite">

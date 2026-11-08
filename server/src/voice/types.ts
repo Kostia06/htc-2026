@@ -5,7 +5,7 @@ export type VoiceMode = (typeof VOICE_MODES)[number];
 export const DIFFICULTIES = ["easy", "standard", "hard"] as const;
 export type Difficulty = (typeof DIFFICULTIES)[number];
 
-export type QuestionSource = "reported" | "resume" | "technical" | "behavioral";
+export type QuestionSource = "reported" | "resume" | "posting" | "technical" | "behavioral";
 export type PlannedQuestion = { text: string; source: QuestionSource; reportedIn?: string | null };
 
 export type InterviewPlan = {

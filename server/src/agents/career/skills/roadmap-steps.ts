@@ -8,7 +8,7 @@ export const MAX_ROADMAP_STEPS = 10;
 // no tools: the caller puts the profile in the goal, so one model call is enough and it runs after the response
 export const roadmapSteps: Skill<RoadmapStepsInput> = {
   name: "roadmap-steps",
-  description: "Write the next personal steps on this person's roadmap to their goal job, in any field.",
+  description: "Write the next personal steps on this person's road to their goal job, in any field.",
   platforms: ["app"],
   personal: true,
   tools: [],

@@ -55,7 +55,7 @@ export const QUESTIONS = [
   {
     id: 'situation',
     title: 'How is the search going so far?',
-    hint: 'Raven starts from where you actually are.',
+    hint: 'Skillit starts from where you actually are.',
     type: 'single',
     options: ['Just starting, no idea where to begin', 'Applying, but no callbacks', 'Getting interviews', 'Have a job, looking for the next one'],
   },
@@ -71,7 +71,7 @@ export const QUESTIONS = [
   {
     id: 'where',
     title: 'Where are you looking?',
-    hint: 'Raven picks local events and companies.',
+    hint: 'Skillit picks local events and companies.',
     type: 'single',
     options: ['Calgary', 'Remote', 'Anywhere in Canada'],
     other: true,

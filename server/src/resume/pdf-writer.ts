@@ -87,7 +87,7 @@ export function writePDF(ops: Op[], title: string): Uint8Array {
     `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}\nendstream`,
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",
-    `<< /Title ${pdfString(title)} /Producer (Raven) >>`,
+    `<< /Title ${pdfString(title)} /Producer (Skillit) >>`,
   ];
 
   let body = "%PDF-1.4\n%âãÏÓ\n";

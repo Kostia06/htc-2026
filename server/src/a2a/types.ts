@@ -1,5 +1,5 @@
 // A2A protocol v1.0.0 (https://a2a-protocol.org/latest/specification/), JSON-RPC binding only.
-// Only the fields Raven sends or reads are modelled.
+// Only the fields Skillit sends or reads are modelled.
 
 export const PROTOCOL_VERSION = "1.0";
 

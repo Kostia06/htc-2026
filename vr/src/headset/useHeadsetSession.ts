@@ -34,7 +34,7 @@ export function useHeadsetSession() {
   const session = state.phase === "signedOut" ? null : state.session;
   const refreshToken = session?.refreshToken;
   const expiresAt = session?.expiresAt;
-  // without a live token there's nothing to show, so refresh right away (and keep trying while Raven is unreachable)
+  // without a live token there's nothing to show, so refresh right away (and keep trying while Skillit is unreachable)
   const isUrgent = state.phase === "restoring" || state.phase === "reconnecting";
 
   useEffect(() => {

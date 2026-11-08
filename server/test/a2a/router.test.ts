@@ -14,7 +14,7 @@ function setup() {
     const token = opts.token ?? (await issueSessionFor(env.SESSION_SECRET, opts.user ?? "u1"));
     if (token) headers.Authorization = `Bearer ${token}`;
     if (opts.version !== null) headers["A2A-Version"] = opts.version ?? "1.0";
-    const res = await app.request("https://raven.example/a2a", { method: "POST", headers, body: typeof body === "string" ? body : JSON.stringify(body) }, env);
+    const res = await app.request("https://skillit.example/a2a", { method: "POST", headers, body: typeof body === "string" ? body : JSON.stringify(body) }, env);
     return { status: res.status, headers: res.headers, body: (await res.json()) as RpcBody };
   };
   return { fake, rpc };

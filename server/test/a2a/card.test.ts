@@ -4,10 +4,10 @@ import { a2aRouter, wellKnownCard } from "../../src/a2a";
 import { cards, fakeDirectory } from "./fake-directory";
 
 describe("wellKnownCard", () => {
-  const card = wellKnownCard("https://raven.example", cards);
+  const card = wellKnownCard("https://skillit.example", cards);
 
   it("carries the AgentCard required fields", () => {
-    expect(card.name).toBe("Raven");
+    expect(card.name).toBe("Skillit");
     expect(card.description).toBeTruthy();
     expect(card.version).toBeTruthy();
     expect(card.capabilities).toEqual({ streaming: false, pushNotifications: false, extendedAgentCard: false });
@@ -16,7 +16,7 @@ describe("wellKnownCard", () => {
   });
 
   it("points its JSON-RPC interface at /a2a on the given origin", () => {
-    expect(card.supportedInterfaces).toEqual([{ url: "https://raven.example/a2a", protocolBinding: "JSONRPC", protocolVersion: "1.0" }]);
+    expect(card.supportedInterfaces).toEqual([{ url: "https://skillit.example/a2a", protocolBinding: "JSONRPC", protocolVersion: "1.0" }]);
   });
 
   it("declares bearer auth and requires it", () => {
@@ -40,10 +40,10 @@ describe("wellKnownCard", () => {
 describe("GET /.well-known/agent-card.json", () => {
   it("serves the card without auth, using the request origin", async () => {
     const app = a2aRouter(() => fakeDirectory().directory);
-    const res = await app.request("https://raven.example/.well-known/agent-card.json", {}, env);
+    const res = await app.request("https://skillit.example/.well-known/agent-card.json", {}, env);
     expect(res.status).toBe(200);
     const body = (await res.json()) as { supportedInterfaces: { url: string }[]; skills: unknown[] };
-    expect(body.supportedInterfaces[0]!.url).toBe("https://raven.example/a2a");
+    expect(body.supportedInterfaces[0]!.url).toBe("https://skillit.example/a2a");
     expect(body.skills).toHaveLength(2);
   });
 });
