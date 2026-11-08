@@ -139,6 +139,7 @@
 		CEA1DC44320C0F2E3C0F12A8 /* ResumeSectionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831DF7B7419958E668A175D /* ResumeSectionEditor.swift */; };
 		D0219FB00100BC73E055BDBE /* TailorChangeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD19404ABAB350D379EDAC /* TailorChangeRow.swift */; };
 		D069F1E614A9030F075CA360 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C786259BF948166738A786 /* RootView.swift */; };
+		D0BA593033FE2289C96AF153 /* MomentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DCF9C304226C7E7B868A90 /* MomentCard.swift */; };
 		D1215BD75C68249FC29D147C /* RaisedSurfaceStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B13D24283AAD131887B200 /* RaisedSurfaceStyle.swift */; };
 		D13B9ACBFABF2F86871AC603 /* MemoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A846BC8ADD3AF596C1B846 /* MemoryModel.swift */; };
 		D42F438FC24276349D3D5035 /* SkillitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1AB3924979AC1A44FD2EF2 /* SkillitApp.swift */; };
@@ -163,6 +164,7 @@
 		F5CEF857171B81295B01CA64 /* CompanySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37049C8188EB035058A8222E /* CompanySheet.swift */; };
 		F820071A08B54ABA24870226 /* NextMoveCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ED74D4782E7EED8203D2A1 /* NextMoveCard.swift */; };
 		F849D76AD77C4A4EC2FE414A /* ThinProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E84B4D25E4AB389D35FA79 /* ThinProgressBar.swift */; };
+		FA486194DE0220B98182A066 /* RecordingDot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8876C71109C0FD07625B17E /* RecordingDot.swift */; };
 		FB32CD2ADD427AF2F3AB2346 /* PostingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECEAA4D8308D02897196E49 /* PostingCard.swift */; };
 		FC183938B710EAE8D7AD03AA /* CodeCountdownRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF26EB625EC67FC5EE06601 /* CodeCountdownRing.swift */; };
 		FF6F953CE287CE2087FF494D /* PreviewVoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966D3989EF154F072250543B /* PreviewVoiceEngine.swift */; };
@@ -238,6 +240,7 @@
 		59815D96F6C995E7B6EFA23F /* InterviewTargetPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewTargetPicker.swift; sourceTree = "<group>"; };
 		5BFBC9CFAE8A5F325ED58780 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		5D83394F42B6C946BDD40B95 /* RecapBubbles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapBubbles.swift; sourceTree = "<group>"; };
+		63DCF9C304226C7E7B868A90 /* MomentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentCard.swift; sourceTree = "<group>"; };
 		666E50B93E9B6779629168A6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		66CDC4007B33C3177C5CF184 /* ProfileDoors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDoors.swift; sourceTree = "<group>"; };
 		68E0508FC0FAC0CE7A9ECEF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -289,6 +292,7 @@
 		C2B0F429C3DAEB57BDEDE760 /* OptionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionButtonStyle.swift; sourceTree = "<group>"; };
 		C2C786259BF948166738A786 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		C47BF59EDDE6E6B2998DFF5A /* RoadmapSkeleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapSkeleton.swift; sourceTree = "<group>"; };
+		C8876C71109C0FD07625B17E /* RecordingDot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDot.swift; sourceTree = "<group>"; };
 		CA11DB0AC48E4243A109766A /* TailorJobModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailorJobModel.swift; sourceTree = "<group>"; };
 		CBA39B508177FE83406C8567 /* ReplayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayService.swift; sourceTree = "<group>"; };
 		CC99BCA264AC1AFA000C3460 /* RecapSharedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapSharedCard.swift; sourceTree = "<group>"; };
@@ -385,6 +389,7 @@
 				3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */,
 				FC6E2301E658B586D135965B /* PracticeView.swift */,
 				966D3989EF154F072250543B /* PreviewVoiceEngine.swift */,
+				C8876C71109C0FD07625B17E /* RecordingDot.swift */,
 				16B1176230A3A7B62060707C /* SessionSummaryView.swift */,
 				7FF9F2DF6F57E7E2660A7247 /* VoiceBar.swift */,
 				B4475A386131EA20D47A0691 /* VoiceEngine.swift */,
@@ -501,6 +506,7 @@
 		5A752F8D23EB632849F1B789 /* Replay */ = {
 			isa = PBXGroup;
 			children = (
+				63DCF9C304226C7E7B868A90 /* MomentCard.swift */,
 				DE7189343C17EE4E33CF0891 /* MomentRow.swift */,
 				4C1E4DFB75F5BF13385A9019 /* ReplayEntryRow.swift */,
 				0ED5047FA091D718D2D5B30C /* ReplayModel.swift */,
@@ -845,6 +851,7 @@
 				D13B9ACBFABF2F86871AC603 /* MemoryModel.swift in Sources */,
 				C19EC830797390FC652A233B /* MemoryService.swift in Sources */,
 				A72068C90100C08856B68ED6 /* MemoryView.swift in Sources */,
+				D0BA593033FE2289C96AF153 /* MomentCard.swift in Sources */,
 				9EBB009F9C92021D4A91BBB8 /* MomentRow.swift in Sources */,
 				F820071A08B54ABA24870226 /* NextMoveCard.swift in Sources */,
 				87CEF293DB9AB256CA685F82 /* NotificationBell.swift in Sources */,
@@ -894,6 +901,7 @@
 				A2B790A9248537DB41C953E7 /* RecapSharedCard.swift in Sources */,
 				9F3E25D8F109B2B454CDECC6 /* RecapView.swift in Sources */,
 				8923BBD5674CF5CBEB371802 /* RecapVoice.swift in Sources */,
+				FA486194DE0220B98182A066 /* RecordingDot.swift in Sources */,
 				2B3E8C6F805C2A053E778BC7 /* ReplayEntryRow.swift in Sources */,
 				58211C86211FF3D66BD5CD9D /* ReplayModel.swift in Sources */,
 				1B1E4D1D540D6510275C7672 /* ReplayScrubBar.swift in Sources */,

@@ -45,6 +45,11 @@ struct VoiceSessionView: View {
             HStack {
                 scoredBadge
                 Spacer()
+                if model.isRecording {
+                    RecordingDot()
+                        .transition(.opacity)
+                }
+                Spacer()
                 Button("End", action: end)
                     .buttonStyle(.glass)
             }

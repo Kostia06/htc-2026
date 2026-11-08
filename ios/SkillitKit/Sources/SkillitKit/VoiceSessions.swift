@@ -121,11 +121,17 @@ public struct VoiceTurn: Encodable, Equatable, Sendable {
     public let question: String
     public let answer: String
     public let durationMs: Int
+    /// Seconds since the call connected when the person began answering; the replay seeks here, less a short lead-in.
+    public let answerStartSec: Double?
+    /// Seconds since the call connected when the answer was sent for scoring.
+    public let atSec: Double?
 
-    public init(question: String, answer: String, durationMs: Int) {
+    public init(question: String, answer: String, durationMs: Int, answerStartSec: Double? = nil, atSec: Double? = nil) {
         self.question = question
         self.answer = answer
         self.durationMs = durationMs
+        self.answerStartSec = answerStartSec
+        self.atSec = atSec
     }
 }
 

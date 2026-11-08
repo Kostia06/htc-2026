@@ -6,9 +6,9 @@ extension ReplayMoment.Kind {
     var tint: Color {
         switch self {
         case .mistake: Theme.negative
-        case .better: Theme.agent
+        case .better, .researched: Theme.agent
         case .strength: Theme.positive
-        case .filler: .secondary
+        case .filler, .delivery: .secondary
         }
     }
 
@@ -16,8 +16,10 @@ extension ReplayMoment.Kind {
         switch self {
         case .mistake: "exclamationmark"
         case .better: "quote.bubble"
+        case .researched: "magnifyingglass"
         case .strength: "checkmark"
         case .filler: "waveform"
+        case .delivery: "person.wave.2"
         }
     }
 }
@@ -37,6 +39,9 @@ struct MomentRow: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(alignment: .firstTextBaseline) {
                         Text(moment.title).font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
+                        if moment.kind == .researched {
+                            ResearchedBadge()
+                        }
                         Spacer(minLength: 8)
                         Text(when).font(.caption).monospacedDigit().foregroundStyle(.secondary)
                     }
@@ -66,38 +71,5 @@ struct MomentGlyph: View {
             .frame(width: size, height: size)
             .background(kind.tint.opacity(0.16), in: .circle)
             .accessibilityHidden(true)
-    }
-}
-
-/// The open moment under the bar: what happened, what they said, and the line to say instead.
-struct MomentCard: View {
-    let moment: ReplayMoment
-    let when: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 10) {
-                MomentGlyph(kind: moment.kind)
-                Text(moment.title).font(.headline)
-                Spacer(minLength: 8)
-                Text(when).font(.caption).monospacedDigit().foregroundStyle(.secondary)
-            }
-            Text(moment.detail).font(.body)
-            if let said = moment.said, !said.isEmpty {
-                Text("You said “\(said)”").font(.subheadline).foregroundStyle(.secondary)
-            }
-            if let better = moment.better, !better.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Try saying").font(.caption.weight(.semibold)).foregroundStyle(Theme.agent)
-                    Text(better).font(.subheadline)
-                }
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.agent.opacity(0.12), in: .rect(cornerRadius: 12))
-            }
-            Text(moment.question).font(.caption).foregroundStyle(.tertiary)
-        }
-        .skillitCard()
-        .accessibilityElement(children: .combine)
     }
 }
