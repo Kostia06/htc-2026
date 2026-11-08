@@ -97,6 +97,7 @@ export function useKeyboard({ actions }, enabled = true) {
       if (e.code === 'Enter') {
         a.advance()
       }
+      if (e.code === 'KeyQ') a.beginQuick() // no-op unless the room is idle
       if (e.code === 'KeyM') a.toggleMute()
       if (e.code === 'Escape') a.restart()
     }

@@ -17,7 +17,7 @@ Desktop: `Enter` begins and advances, hold `Space` while answering, `M` mutes th
 interviewer, `Esc` ends the interview, drag to orbit. In VR: point and pull the
 trigger to press a panel or key; during the interview the trigger (or A) starts
 an answer and releasing it finishes; B ends the interview. The menu has
-Seated / Standing, Recenter and "How it works". Clicking the thumbstick
+Seated / Standing, Recenter, Captions and "How it works". Clicking the thumbstick
 re-levels your eye height; pushing it up or down nudges it.
 
 A first-run "How it works" card explains the controls once per device
@@ -54,9 +54,13 @@ forward under the ray, travel in on press and tick the controller's haptics.
 phone report's pieces (score headline, list rows, meters) for any new panel.
 
 During the interview the room stays as close to a real one as possible: no
-status text or spinners and nothing over the interviewer, just the desk key
-(Answer / Done), captions under him in the headset, and the score card on the
-left for six seconds after an answer. His voice is spatialised from his mouth
+status text or spinners and nothing over or under the interviewer, just the desk
+key (Answer / Done), a small Recording pill beside it while the call is recorded,
+and the score card on the left for six seconds after an answer. Captions are
+opt-in: the Captions switch in the headset menu (or the desktop bar) puts them
+under him; screen readers get every line either way. After the interview the
+review sits on the right, the same size and height as the score card, upright.
+Controller models and rays only exist inside an XR session. His voice is spatialised from his mouth
 (`src/interview/spatialAudio.js`), and he nods as you finish an answer.
 
 Assets and licences: [ASSETS.md](./ASSETS.md).
