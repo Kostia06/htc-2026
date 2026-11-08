@@ -16,7 +16,6 @@ const NOW = "2026-11-07T10:00:00.000Z";
 const TABLES = [
   "user_profiles",
   "user_memories",
-  "roadmap_units",
   "roadmap_steps",
   "feed_items",
   "feed_state",
@@ -25,6 +24,10 @@ const TABLES = [
   "user_documents",
   "agent_runs",
   "pairing_offers",
+  "feed_actions",
+  "user_resumes",
+  "headset_devices",
+  "headset_launches",
 ];
 
 async function seed(userId: string) {
@@ -32,15 +35,18 @@ async function seed(userId: string) {
   await env.DB.batch([
     env.DB.prepare("INSERT INTO user_profiles (user_id, ciphertext, iv, updated_at) VALUES (?, 'c', 'i', ?)").bind(userId, NOW),
     env.DB.prepare("INSERT INTO user_memories (id, user_id, kind, ciphertext, iv, created_at, last_used_at) VALUES (?, ?, 'note', 'c', 'i', ?, ?)").bind(`m-${tag}`, userId, NOW, NOW),
-    env.DB.prepare("INSERT INTO roadmap_units (user_id, idx, ciphertext, iv, created_at) VALUES (?, 0, 'c', 'i', ?)").bind(userId, NOW),
-    env.DB.prepare("INSERT INTO roadmap_steps (id, user_id, unit_idx, status, updated_at) VALUES (?, ?, 0, 'todo', ?)").bind(`s-${tag}`, userId, NOW),
-    env.DB.prepare("INSERT INTO feed_items (user_id, position, card) VALUES (?, 0, '{}')").bind(userId),
+    env.DB.prepare("INSERT INTO roadmap_steps (id, user_id, position, source, ciphertext, iv, status, created_at, updated_at) VALUES (?, ?, 0, 'template', 'c', 'i', 'todo', ?, ?)").bind(`s-${tag}`, userId, NOW, NOW),
+    env.DB.prepare("INSERT INTO feed_items (user_id, section, position, card) VALUES (?, 'jobs', 0, '{}')").bind(userId),
     env.DB.prepare("INSERT INTO feed_state (user_id, built_at) VALUES (?, ?)").bind(userId, NOW),
     env.DB.prepare("INSERT INTO voice_sessions (id, user_id, mode, ciphertext, iv, status, created_at) VALUES (?, ?, 'interview', 'c', 'i', 'finished', ?)").bind(`v-${tag}`, userId, NOW),
     env.DB.prepare("INSERT INTO voice_turns (session_id, user_id, idx, ciphertext, iv, scores_json, created_at) VALUES (?, ?, 0, 'c', 'i', '{}', ?)").bind(`v-${tag}`, userId, NOW),
     env.DB.prepare("INSERT INTO user_documents (id, user_id, ciphertext, iv, created_at, expires_at) VALUES (?, ?, 'c', 'i', ?, ?)").bind(`d-${tag}`, userId, NOW, NOW),
     env.DB.prepare("INSERT INTO agent_runs (id, user_id, skill, platform, status, created_at) VALUES (?, ?, 'x', 'ios', 'done', ?)").bind(`a-${tag}`, userId, NOW),
     env.DB.prepare("INSERT INTO pairing_offers (user_id, code, status, created_at, expires_at) VALUES (?, ?, 'waiting', ?, ?)").bind(userId, `code-${tag}`, NOW, NOW),
+    env.DB.prepare("INSERT INTO feed_actions (user_id, item_id, action, card, created_at) VALUES (?, 'job-1', 'save', '{}', ?)").bind(userId, NOW),
+    env.DB.prepare("INSERT INTO user_resumes (user_id, ciphertext, iv, updated_at) VALUES (?, 'c', 'i', ?)").bind(userId, NOW),
+    env.DB.prepare("INSERT INTO headset_devices (id, user_id, name, refresh_hash, refresh_expires_at, created_at, last_seen_at) VALUES (?, ?, 'Quest 3', 'h', ?, ?, ?)").bind(`h-${tag}`, userId, NOW, NOW, NOW),
+    env.DB.prepare("INSERT INTO headset_launches (user_id, mode, created_at, expires_at) VALUES (?, 'interview', ?, ?)").bind(userId, NOW, NOW),
   ]);
 }
 
