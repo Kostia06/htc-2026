@@ -99,7 +99,7 @@ describe("/api/voice", () => {
     vi.stubGlobal("fetch", async () => Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify(debriefReply) }] } }] }));
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
-    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API.", durationMs: 3000 });
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API that 2,000 staff used every day.", durationMs: 3000 });
     const finished = await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {});
     expect(finished.status).toBe(200);
     expect(await finished.json()).toEqual(debriefReply);

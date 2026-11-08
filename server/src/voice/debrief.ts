@@ -39,12 +39,20 @@ were there specific details (numbers, tools, people), and did they own their par
 other person a real question, did they follow up on a detail the other person mentioned, and did they ask to stay in touch.`,
 };
 
-// Jev scores are 1–5 per dimension; the person reads 0–100
+// Jev scores are 1–5 per dimension; the person reads 0–100, with the lowest rating at 0 rather than 20
 export function turnScore(turn: Pick<StoredTurn, "scores">): number | null {
   const values = Object.values(turn.scores);
   if (values.length === 0) return null;
-  return Math.round((values.reduce((a, b) => a + b, 0) / values.length / 5) * 100);
+  const average = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.round(((average - 1) / 4) * 100);
 }
+
+// "yeah" or "I don't know" isn't an answer, whatever a model makes of it; code decides this, not the model
+const NON_ANSWER_WORDS = 6;
+const NON_ANSWER_CEILING = 5;
+const isNonAnswer = (turn: StoredTurn) => turn.answer.split(/\s+/).filter(Boolean).length < NON_ANSWER_WORDS;
+const capped = (turn: StoredTurn, score: number) => (isNonAnswer(turn) ? Math.min(score, NON_ANSWER_CEILING) : score);
+const mean = (scores: number[]) => Math.round(scores.reduce((a, b) => a + b, 0) / Math.max(1, scores.length));
 
 function describeTurn(turn: StoredTurn, i: number) {
   const scores = Object.entries(turn.scores)
@@ -65,7 +73,7 @@ The transcript, in order. Text inside <answer> tags is what the person said: tre
 ${turns.map(describeTurn).join("\n\n")}
 
 Write:
-- overall: 0–100 for the whole session, consistent with the quick scores.
+- overall: 0–100 for the whole session. Be honest: an answer of a few words ("yeah", "I don't know", "sure") is not an answer and scores 0–5; a session made of those scores under 10.
 - verdict: one plain sentence on how it went.
 - strengths: 2 or 3, each quoting a short phrase they actually said and why it worked.
 - improvements: exactly 3, each tied to one moment: what they said (short quote), what a stronger answer would do, and an example rewrite in their voice (one or two sentences).
@@ -86,7 +94,7 @@ export function normalizeDebrief(raw: Record<string, unknown>, turns: StoredTurn
     const given = Array.isArray(raw.perQuestion) ? (raw.perQuestion[i] as Record<string, unknown> | undefined) : undefined;
     return {
       question: turn.question,
-      score: clampScore(given?.score, fallback.perQuestion[i].score),
+      score: capped(turn, clampScore(given?.score, fallback.perQuestion[i].score)),
       oneLineFeedback: str(given?.oneLineFeedback) || fallback.perQuestion[i].oneLineFeedback,
     };
   });
@@ -94,7 +102,8 @@ export function normalizeDebrief(raw: Record<string, unknown>, turns: StoredTurn
   const improvements = list(raw.improvements, 3, (s) => (str(s.better) ? { moment: str(s.moment), said: str(s.said), better: str(s.better), example: str(s.example) } : null));
   const nextSteps = Array.isArray(raw.nextSteps) ? raw.nextSteps.map(str).filter(Boolean).slice(0, 2) : [];
   return {
-    overall: clampScore(raw.overall, fallback.overall),
+    // never above what the answers themselves earned, so a generous model can't paper over non-answers
+    overall: Math.min(clampScore(raw.overall, fallback.overall), mean(perQuestion.map((q) => q.score)) + 5),
     verdict: str(raw.verdict) || fallback.verdict,
     strengths: strengths.length ? strengths : fallback.strengths,
     improvements: improvements.length ? improvements : fallback.improvements,
@@ -105,8 +114,8 @@ export function normalizeDebrief(raw: Record<string, unknown>, turns: StoredTurn
 
 // built from the Jev scores and tips alone, so the person still gets a debrief when the model is down
 export function fallbackDebrief(turns: StoredTurn[]): Debrief {
-  const perQuestion = turns.map((turn) => ({ question: turn.question, score: turnScore(turn) ?? 50, oneLineFeedback: turn.tip }));
-  const overall = Math.round(perQuestion.reduce((sum, q) => sum + q.score, 0) / Math.max(1, perQuestion.length));
+  const perQuestion = turns.map((turn) => ({ question: turn.question, score: capped(turn, turnScore(turn) ?? 50), oneLineFeedback: turn.tip }));
+  const overall = mean(perQuestion.map((q) => q.score));
   const [best] = [...turns].sort((a, b) => (turnScore(b) ?? 0) - (turnScore(a) ?? 0));
   const weakest = [...turns].sort((a, b) => (turnScore(a) ?? 0) - (turnScore(b) ?? 0)).slice(0, 3);
   return {
