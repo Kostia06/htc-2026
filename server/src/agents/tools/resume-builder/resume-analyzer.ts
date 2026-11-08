@@ -2,9 +2,7 @@
 import type { Env } from "../../../env";
 import { generateJson } from "../../../integrations/gemini";
 
-// ============================================================
 // TYPES
-// ============================================================
 
 export type ResumeSkill = {
     name: string;
@@ -44,10 +42,7 @@ export type ResumeAnalysis = {
     certifications: string[];
 };
 
-// ============================================================
 // GEMINI RESPONSE SCHEMA
-// ============================================================
-
 const RESUME_SCHEMA = {
     type: "object",
     properties: {
