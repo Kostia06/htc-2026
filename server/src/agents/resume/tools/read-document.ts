@@ -5,7 +5,7 @@ import { text } from "../../shared-tools/args";
 const MAX_CHARS = 20_000;
 
 // the person's own file, but still data: a resume can contain text that tries to steer the model
-const wrapUserDocument = (content: string) => `<user-document>\n${content.replace(/<\/?user-document>/gi, "")}\n</user-document>`;
+export const wrapUserDocument = (content: string) => `<user-document>\n${content.replace(/<\/?user-document>/gi, "")}\n</user-document>`;
 
 export const readDocumentTool: ToolDefinition = {
   name: "read_document",

@@ -10,17 +10,16 @@ import { getProfile } from "../../src/memory/profile/store";
 import { call, fakeDeps } from "../agents/fakes";
 import { samples } from "../documents/samples";
 
-// reads the document id out of the goal, then drafts from whatever read_document returned
+// the resume text arrives in the goal, so the draft comes back from the first model call
+const goals: string[] = [];
 const draftingModel: Model = async (contents) => {
-  const goal = contents[0].parts[0].text ?? "";
-  if (contents.length === 1) return call("read_document", { document_id: goal.match(/document (\S+?)\.?$/)?.[1] ?? "" });
+  goals.push(contents[0].parts[0].text ?? "");
   return call("finish", {
     summary: "Computer science student",
     skills: [
       { name: "Python", source: "resume", evidence: "Built a Python Flask API" },
       { name: "Rust", source: "resume", evidence: "Wrote a Rust compiler" },
     ],
-    missing: ["Which role do you want next?"],
   });
 };
 
@@ -45,12 +44,15 @@ function upload(app: Hono<AppContext>, token: string, file: File) {
 describe("/api/onboarding", () => {
   it("turns an uploaded Word resume into a checked draft without saving it", async () => {
     const me = await person();
+    goals.length = 0;
     const res = await upload(onboardingApp(), me.token, new File([samples.docx], "resume.docx"));
     expect(res.status).toBe(200);
     const body = await res.json<{ documentId: string; draft: { skills: { name: string }[] }; missing: string[]; droppedClaims: number }>();
     expect(body.draft.skills.map((s) => s.name)).toEqual(["Python"]);
-    expect(body).toMatchObject({ missing: ["Which role do you want next?"], droppedClaims: 1 });
+    expect(body).toMatchObject({ missing: [], droppedClaims: 1 });
     expect((await getProfile(env, me.id)).skills).toEqual([]);
+    expect(goals).toHaveLength(1);
+    expect(goals[0]).toContain("Built a Python Flask API");
   });
 
   it("refuses files it cannot read and oversized uploads", async () => {
