@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { memories as memoryApi } from '../lib/agent'
 import { supabase } from '../lib/supabase'
-import { InterviewPrep, Practice } from './Interview'
+import Interview from './Interview'
 import Plan from './Plan'
 import Recommendations from './Recommendations'
 import ResumeBuilder from './Resume'
@@ -99,10 +99,14 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
   const [tab, setTab] = useState('plan')
   const [visited, setVisited] = useState(() => new Set(['plan']))
   const [practicePreset, setPracticePreset] = useState(null)
+  const [interviewMode, setInterviewMode] = useState('mock')
 
   useEffect(() => pruneResults(userId, stamp), [userId, stamp])
 
-  const go = (id) => {
+  const go = (target) => {
+    // prep and practice are two modes of the one interview page
+    const id = target === 'prep' || target === 'practice' ? 'interview' : target
+    if (id !== target) setInterviewMode(target === 'prep' ? 'prep' : 'mock')
     setTab(id)
     setVisited((v) => (v.has(id) ? v : new Set(v).add(id)))
   }
@@ -177,26 +181,24 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
       ),
     },
     {
-      id: 'prep',
-      label: 'Interview prep',
-      title: 'Interview prep',
+      id: 'interview',
+      label: 'Interview',
+      title: 'Interview',
+      bare: true,
       render: () => (
-        <InterviewPrep
+        <Interview
+          mode={interviewMode}
+          onMode={setInterviewMode}
           userId={userId}
           stamp={stamp}
           defaultRole={role}
+          preset={practicePreset}
           onPractice={(preset) => {
             setPracticePreset({ ...preset, key: Date.now() })
             go('practice')
           }}
         />
       ),
-    },
-    {
-      id: 'practice',
-      label: 'Practice',
-      title: 'Mock interview',
-      render: () => <Practice key={practicePreset?.key ?? 'practice'} defaultRole={role} preset={practicePreset} />,
     },
     { id: 'memory', label: 'What Raven knows', title: 'What Raven knows about you', render: () => <Memory /> },
     { id: 'profile', label: 'Profile', title: 'Your answers', render: () => <Profile answers={answers} syncProblem={syncProblem} onRedo={onRedo} /> },
