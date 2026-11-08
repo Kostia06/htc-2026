@@ -1,0 +1,78 @@
+import type { Env } from "../env";
+import { VOICE_MODES, type VoiceMode } from "../voice/types";
+
+// long enough to put the headset on, short enough that a forgotten tap doesn't start a session tomorrow
+export const LAUNCH_LIFETIME_MS = 2 * 60 * 1000;
+export const MAX_WAIT_MS = 20_000;
+const CHECK_INTERVAL_MS = 1500;
+
+export type Launch = { mode: VoiceMode; companySlug?: string; role?: string; stepId?: string };
+
+// swapped out in tests, which must not wait real seconds
+export const deps = {
+  sleep: (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
+};
+
+const optionalText = (value: unknown, max: number) => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") return null;
+  const text = value.trim().slice(0, max);
+  return text || undefined;
+};
+
+/** The phone's request body, or null when it isn't a launch. Same fields `POST /api/voice/sessions` takes, plus the roadmap step. */
+export function parseLaunch(body: unknown): Launch | null {
+  if (!body || typeof body !== "object") return null;
+  const { mode, companySlug, role, stepId } = body as Record<string, unknown>;
+  if (!VOICE_MODES.includes(mode as VoiceMode)) return null;
+  const fields = { companySlug: optionalText(companySlug, 100), role: optionalText(role, 100), stepId: optionalText(stepId, 100) };
+  if (Object.values(fields).includes(null)) return null;
+  const launch: Launch = { mode: mode as VoiceMode };
+  if (fields.companySlug) launch.companySlug = fields.companySlug;
+  if (fields.role) launch.role = fields.role;
+  if (fields.stepId) launch.stepId = fields.stepId;
+  return launch;
+}
+
+export async function queueLaunch(env: Env, userId: string, launch: Launch, now = new Date()) {
+  const expiresAt = new Date(now.getTime() + LAUNCH_LIFETIME_MS).toISOString();
+  await env.DB.prepare(
+    `INSERT INTO headset_launches (user_id, mode, company_slug, role, step_id, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (user_id) DO UPDATE SET mode = excluded.mode, company_slug = excluded.company_slug, role = excluded.role, step_id = excluded.step_id, created_at = excluded.created_at, expires_at = excluded.expires_at`,
+  )
+    .bind(userId, launch.mode, launch.companySlug ?? null, launch.role ?? null, launch.stepId ?? null, now.toISOString(), expiresAt)
+    .run();
+  return { expiresAt };
+}
+
+/** Removes and returns the person's pending launch; of two headsets polling, only one gets it. */
+export async function takeLaunch(env: Env, userId: string, now = new Date()): Promise<Launch | null> {
+  const row = await env.DB.prepare("DELETE FROM headset_launches WHERE user_id = ? AND expires_at > ? RETURNING mode, company_slug, role, step_id")
+    .bind(userId, now.toISOString())
+    .first<{ mode: VoiceMode; company_slug: string | null; role: string | null; step_id: string | null }>();
+  if (!row) return null;
+  const launch: Launch = { mode: row.mode };
+  if (row.company_slug) launch.companySlug = row.company_slug;
+  if (row.role) launch.role = row.role;
+  if (row.step_id) launch.stepId = row.step_id;
+  return launch;
+}
+
+/** Long poll: checks every second and a half until a launch arrives or `waitMs` is up. */
+export async function waitForLaunch(env: Env, userId: string, waitMs: number, now: () => Date = () => new Date()): Promise<Launch | null> {
+  // counted by what was slept, not the wall clock, so a test with an instant sleep still ends
+  let remaining = Math.min(Math.max(waitMs, 0), MAX_WAIT_MS);
+  for (;;) {
+    const launch = await takeLaunch(env, userId, now());
+    if (launch) return launch;
+    if (remaining <= 0) return null;
+    const nap = Math.min(CHECK_INTERVAL_MS, remaining);
+    await deps.sleep(nap);
+    remaining -= nap;
+  }
+}
+
+export async function deleteExpiredLaunches(env: Env, now = new Date()) {
+  const result = await env.DB.prepare("DELETE FROM headset_launches WHERE expires_at <= ?").bind(now.toISOString()).run();
+  return result.meta.changes;
+}

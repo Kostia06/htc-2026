@@ -6,6 +6,7 @@ import { liveDeps } from "./agents/live";
 import { agent } from "./api/agent";
 import { experiences } from "./api/experiences";
 import { feed } from "./api/feed";
+import { headset } from "./api/headset";
 import { memories } from "./api/memories";
 import { memory } from "./api/memory";
 import { onboarding } from "./api/onboarding";
@@ -26,8 +27,8 @@ const app = new Hono<AppContext>();
 // before the session check, so preflights are answered without a token
 app.use("/api/*", corsForApi);
 app.use("/api/*", async (c, next) => {
-  // pairing checks its own session: the headset claiming a code has none yet
-  if (c.req.path === "/api/session" || c.req.path.startsWith("/api/pairing")) return next();
+  // pairing checks its own session: the headset claiming a code has none yet, and one refreshing may hold an expired one
+  if (c.req.path === "/api/session" || c.req.path.startsWith("/api/pairing") || c.req.path === "/api/headset/refresh") return next();
   return requireSession(c, next);
 });
 
@@ -39,6 +40,7 @@ app.route("/api/me/memories", memories);
 app.route("/api/me/profile", profile);
 app.route("/api/onboarding", onboarding);
 app.route("/api/pairing", pairing);
+app.route("/api/headset", headset);
 app.route("/api/voice", voice);
 app.route("/api/agent", agent);
 app.route("/api/feed", feed);

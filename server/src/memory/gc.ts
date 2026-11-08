@@ -1,6 +1,8 @@
 import type { Env } from "../env";
 import { deleteExpiredPairings } from "../auth/pairing";
 import { deleteExpiredDocuments } from "../documents/store";
+import { deleteStaleHeadsets } from "../headset/devices";
+import { deleteExpiredLaunches } from "../headset/launch";
 import { deleteOldSessions } from "../voice/store";
 
 const DAY_MS = 86_400_000;
@@ -46,6 +48,8 @@ export async function collectGarbage(env: Env, now = new Date()) {
     cacheDeleted: await deleteExpiredCache(env, now),
     documentsDeleted: await deleteExpiredDocuments(env, now),
     pairingsDeleted: await deleteExpiredPairings(env, now),
+    headsetsDeleted: await deleteStaleHeadsets(env, now),
+    launchesDeleted: await deleteExpiredLaunches(env, now),
     voiceSessionsDeleted: await deleteOldSessions(env, now),
   };
 }

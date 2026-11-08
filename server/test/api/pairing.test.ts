@@ -4,7 +4,7 @@ import app from "../../src/index";
 import { issueSession, verifySession } from "../../src/auth/session";
 
 type Offer = { code: string; expiresAt: string };
-type Claimed = { token: string; expiresAt: string };
+type Claimed = { token: string; expiresAt: string; refreshToken: string; refreshExpiresAt: string };
 
 const request = (path: string, init: RequestInit = {}) => app.request(path, init, env);
 
@@ -57,11 +57,14 @@ describe("headset pairing", () => {
 
     const res = await claim(code);
     expect(res.status).toBe(200);
-    const { token, expiresAt } = await res.json<Claimed>();
+    const { token, expiresAt, refreshToken, refreshExpiresAt } = await res.json<Claimed>();
     expect(await verifySession(token, env.SESSION_SECRET)).toBe(phone.userId);
-    const lifetimeHours = (Date.parse(expiresAt) - Date.now()) / 3_600_000;
-    expect(lifetimeHours).toBeGreaterThan(11.9);
-    expect(lifetimeHours).toBeLessThanOrEqual(12);
+    // the access token is short; the refresh credential is what keeps the headset signed in
+    const lifetimeMinutes = (Date.parse(expiresAt) - Date.now()) / 60_000;
+    expect(lifetimeMinutes).toBeGreaterThan(59);
+    expect(lifetimeMinutes).toBeLessThanOrEqual(60);
+    expect(refreshToken).toBeTruthy();
+    expect((Date.parse(refreshExpiresAt) - Date.now()) / 86_400_000).toBeGreaterThan(59.9);
     expect(await status(code, phone.token)).toEqual({ status: "claimed" });
   });
 
