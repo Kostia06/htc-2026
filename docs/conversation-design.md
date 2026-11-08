@@ -1,0 +1,61 @@
+# How Raven's practice conversations should sound
+
+Used by the voice planner (`server/src/voice/`), the iOS voice engine and the VR scenes. Goal: feel like a real
+person across the table, not a quiz read aloud.
+
+## Interview room
+
+Real interviews follow a predictable arc. Raven copies it, kept short (about 8–10 minutes):
+
+| Stage | What the interviewer does | Example line |
+|---|---|---|
+| Warm-up (1 turn) | Easy question to settle nerves | "Thanks for coming in. How's your week going?" |
+| About you (1 turn) | Open prompt | "Walk me through what you're working on right now." |
+| Resume dig (1–2 turns) | Picks one real thing from the resume | "I saw you did research for Starfish. Tell me about that." |
+| Behavioural (1–2 turns) | "Tell me about a time…", tied to the target role | "Tell me about a time a project didn't go to plan." |
+| Role / technical (1–2 turns) | Matched to the person's field | CS: "How would you find a slow query?" · Business: "How would you size the market for X?" · Design: "Walk me through one design decision you'd change." |
+| Their questions (1 turn) | "What questions do you have for me?" | — |
+| Close | Next steps, thanks | "Great talking with you. We'll be in touch this week." |
+
+**Follow-ups are where it feels real.** Interviewers usually need 2–3 probes to get a full answer
+(Situation, Task, Action, Result). Raven asks at most one or two per question, and only when something is missing:
+
+- missing the *action* → "What did you do, specifically?"
+- missing the *result* → "How did it turn out?"
+- vague or "we" everywhere → "What was your part in that?"
+- interesting detail → "Why did you pick that approach?"
+
+Rules: every line ≤ 20 words, one question at a time, open-ended, never leading, refer to something the person
+actually said. Never read a list. Never lecture mid-interview — feedback comes after each answer on screen, and
+in full at the end.
+
+## Networking (two people, two voices)
+
+A networking chat is a different rhythm: shorter turns, both sides ask, no scoring tone. The AI plays a person
+at a Calgary meetup (e.g. a data analyst at ATB) with a **different voice from the interviewer**.
+
+| Stage | AI person | What Raven checks the user does |
+|---|---|---|
+| Open | Friendly, a bit busy: "Hey, I don't think we've met. I'm Priya." | Introduces themselves in one or two lines |
+| Their work | Answers briefly, waits to be asked more | Asks something better than "what do you do?" — e.g. "What does a normal week look like for you?" |
+| Follow the thread | Mentions one specific detail | Picks up that detail ("You said you moved from support to data — how?") |
+| Give back | Asks about the user | Short, specific answer about themselves |
+| Exit | Starts wrapping up | Asks to stay in touch: "Could I add you on LinkedIn / grab a coffee next week?" |
+
+Feedback afterwards: did they introduce themselves, ask a real question, follow up on something said, and ask to
+stay in touch (and follow up within 24–48 hours).
+
+## Turn-taking (what makes it feel human)
+
+- **Short pauses are thinking, not the end.** Candidates pause mid-answer. End the turn after ~0.7 s of silence
+  only once they've said something substantial; allow longer pauses early in an answer.
+- **Barge-in:** if the person starts talking, the AI stops immediately and listens.
+- **Backchannels aren't interruptions:** a quick "mm-hm" or "yeah" from the person shouldn't stop the AI.
+- **Fast replies:** aim for ~1 s from end of answer to the AI's first word. Keep the planned next question ready
+  so a slow model never leaves silence (fallback after ~2.5 s).
+
+## Sources
+
+- Interview structure and STAR probing: [Indeed – interview structures](https://ca.indeed.com/career-advice/interviewing/interview-structures-and-types), [CodeSignal – probing with STAR](https://codesignal.com/learn/courses/preparing-and-conducting-effective-interviews/lessons/probing-with-star), [Univ. of Kentucky – behavioural interview guide](https://hr.uky.edu/sites/default/files/bbi_quick_guide.pdf), [SCU career center](https://scu.edu/careercenter/toolkit/practice-for-interviews)
+- Networking flow: [The Muse](https://www.themuse.com/advice/a-surefire-way-to-get-anyone-talking-at-a-networking-event), [Duke – small talk guide](https://careerhub.students.duke.edu/resources/making-small-talk-guide/), [JHU – conversation cues](https://studentaffairs.jhu.edu/career-services/wp-content/uploads/sites/58/2017/08/Conversation_Cues_Networking.pdf)
+- Voice turn-taking: [LiveKit – turn tuning](https://docs.livekit.io/agents/logic/turns/tuning/), [Lorikeet – waiting vs listening](https://www.lorikeetcx.ai/blog/if-your-voice-ai-cant-wait-it-cant-listen), [CodeSignal – conversation practice](https://codesignal.com/blog/introducing-conversation-practice/)
