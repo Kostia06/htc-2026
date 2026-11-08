@@ -161,6 +161,23 @@ export const resumeApi = {
   /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
   upload: (file) => upload('/api/resume/upload', file),
   pdf: () => pdfBlob('/api/resume/pdf'),
+  /** LinkedIn's "Save to PDF" export, read once and kept nowhere: { targetRole, suggestions: [{ area, quote, suggestion, why }] } */
+  reviewLinkedin: (file) => request('/api/resume/linkedin', { method: 'POST', form: formWith(file), timeout: 120000 }),
+}
+
+function formWith(file) {
+  const form = new FormData()
+  form.append('file', file)
+  return form
+}
+
+/** GitHub, read-only through the server: { configured, status, projects, suggestions, importing }. Never a token. */
+export const connectionsApi = {
+  github: () => request('/api/connections').then((r) => r.github),
+  /** the hosted sign-in to open; returnTo must be one of our own origins */
+  connectGithub: (returnTo) => post('/api/connections/github', { returnTo }).then((r) => r.url),
+  importGithub: () => post('/api/connections/github/import').then((r) => r.github),
+  disconnectGithub: () => request('/api/connections/github', { method: 'DELETE' }).then((r) => r.github),
 }
 
 async function pdfBlob(path) {
