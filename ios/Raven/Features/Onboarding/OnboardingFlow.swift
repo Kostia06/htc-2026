@@ -1,100 +1,129 @@
+import RavenKit
 import SwiftUI
 import UniformTypeIdentifiers
 
 struct OnboardingFlow: View {
     @Environment(AppModel.self) private var app
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var model: OnboardingModel
+    @State private var isPickingFile = false
 
     init(model: OnboardingModel = OnboardingModel()) {
         _model = State(initialValue: model)
     }
 
-    @State private var isPickingFile = false
-
     var body: some View {
-        NavigationStack {
-            Group {
-                switch model.step {
-                case .choosing:
-                    ResumePrompt(choose: { isPickingFile = true }, skip: model.startFromScratch)
-                case let .reading(fileName):
-                    ReadingResumeView(fileName: fileName)
-                case .reviewing, .saving:
-                    DraftReviewView(model: model, confirm: confirm)
-                }
+        VStack(spacing: 0) {
+            OnboardingHeader(progress: model.progress, isReadingResume: model.isReadingResume, canGoBack: model.position > 0) {
+                move(model.goBack)
             }
-            .animation(.smooth, value: model.step)
+            QuestionScreen(
+                question: model.question,
+                answer: model.answers[model.question.id],
+                isFromResume: model.fromResume.contains(model.question.id),
+                onChange: pick,
+                pickResume: { isPickingFile = true },
+                skipResume: { move(model.goForward) },
+            )
+            .id(model.question.id)
+            .transition(slide)
+            .frame(maxHeight: .infinity, alignment: .top)
         }
+        .background(Theme.ground)
+        .safeAreaInset(edge: .bottom) {
+            if model.question.id != "resume" {
+                bottomBar
+            }
+        }
+        .overlay {
+            if model.isWaitingForResume {
+                FinishingUpView().transition(.opacity)
+            }
+        }
+        .animation(.smooth(duration: 0.25), value: model.isWaitingForResume)
+        .sensoryFeedback(.selection, trigger: model.answers)
         .fileImporter(isPresented: $isPickingFile, allowedContentTypes: Self.resumeTypes) { result in
             guard case let .success(url) = result, let client = app.client else { return }
-            Task { await model.read(fileAt: url, using: client) }
-        }
-        .alert("Something went wrong", isPresented: Binding(get: { model.errorMessage != nil }, set: {
-            if !$0 {
-                model.errorMessage = nil
+            guard let file = OnboardingModel.load(url) else {
+                model.errorMessage = "Couldn't open that file. Try another one, or answer the questions instead."
+                return
             }
-        })) {
+            move { model.read(file, using: client) }
+        }
+        .alert("Something went wrong", isPresented: isShowingError) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(model.errorMessage ?? "")
         }
     }
 
-    private func confirm() {
+    private var bottomBar: some View {
+        HStack(spacing: 12) {
+            if model.canSkip {
+                Button("Skip") { advance() }
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .frame(minWidth: 72, minHeight: 52)
+            }
+            Button(action: advance) {
+                if model.isFinishing {
+                    ProgressView().tint(.white)
+                } else {
+                    Text(model.isLast ? "Finish" : "Continue")
+                }
+            }
+            .buttonStyle(model.isAnswered ? .raised : .raised(Color(white: 0.22), foreground: Color(white: 0.5)))
+            .disabled(!model.isAnswered || model.isFinishing)
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(Theme.ground)
+    }
+
+    /// slides like turning a page; a plain fade when Reduce Motion is on
+    private var slide: AnyTransition {
+        guard !reduceMotion else { return .opacity }
+        let leading = AnyTransition.move(edge: .leading).combined(with: .opacity)
+        let trailing = AnyTransition.move(edge: .trailing).combined(with: .opacity)
+        return model.direction == .forward
+            ? .asymmetric(insertion: trailing, removal: leading)
+            : .asymmetric(insertion: leading, removal: trailing)
+    }
+
+    private func move(_ change: () -> Void) {
+        withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(duration: 0.35, bounce: 0.1), change)
+    }
+
+    /// a single pick is the answer, so it moves on by itself after a beat; the last one waits for Finish
+    private func pick(_ answer: OnboardingAnswer) {
+        model.answer(answer)
+        guard case .single = model.question.kind, !model.isLast else { return }
+        let questionID = model.question.id
+        Task {
+            try? await Task.sleep(for: .milliseconds(250))
+            move { model.goForward(from: questionID) }
+        }
+    }
+
+    private func advance() {
+        guard model.isLast else { return move(model.goForward) }
         guard let client = app.client else { return }
         Task {
-            if let saved = await model.confirm(using: client) {
+            if let saved = await model.finish(using: client) {
                 app.finishOnboarding(with: saved)
             }
         }
     }
 
+    private var isShowingError: Binding<Bool> {
+        Binding(get: { model.errorMessage != nil }, set: {
+            if !$0 {
+                model.errorMessage = nil
+            }
+        })
+    }
+
     private static let resumeTypes: [UTType] = [.pdf, .rtf, .plainText, .html, .image, .heic]
         + ["docx", "odt", "pptx", "md"].compactMap { UTType(filenameExtension: $0) }
-}
-
-private struct ResumePrompt: View {
-    let choose: () -> Void
-    let skip: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Spacer()
-            Text("Start with your resume.")
-                .font(.largeTitle.bold())
-            Text("Raven reads it and fills in your profile. You check everything before it's saved, and the file itself is never kept.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Button(action: choose) {
-                Label("Choose a file", systemImage: "doc.badge.arrow.up")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
-            }
-            .buttonStyle(.glassProminent)
-            .controlSize(.large)
-            Button("Fill it in myself", action: skip)
-                .frame(maxWidth: .infinity)
-                .foregroundStyle(.secondary)
-        }
-        .padding(24)
-    }
-}
-
-private struct ReadingResumeView: View {
-    let fileName: String
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Label("Reading \(fileName)", systemImage: "sparkles")
-                    .font(.headline)
-                    .foregroundStyle(Theme.agent)
-                ForEach(0 ..< 3, id: \.self) { _ in
-                    SkeletonLines().ravenCard()
-                }
-            }
-            .padding(24)
-        }
-    }
 }
