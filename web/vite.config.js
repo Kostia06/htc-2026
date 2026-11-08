@@ -6,7 +6,7 @@ import { defineConfig, loadEnv } from 'vite'
 // A production build talks to https://api.skillit.study directly instead (see VITE_API_BASE in lib/client.js).
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, import.meta.dirname, '')
-  const target = env.API_PROXY_TARGET || 'http://localhost:8787'
+  const target = env.API_PROXY_TARGET || 'http://127.0.0.1:8787'
   return {
     plugins: [react()],
     // in dev the landing server (5180) forwards /app and /api here, so the app lives under /app/;

@@ -26,8 +26,7 @@ const ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#
 let APP_URL = '/app';
 
 // the web app's dev server (web/, base /app/); this server forwards /app and /api to it
-const WEB_DEV = 'http://localhost:5173';
-const API_DEV = 'http://127.0.0.1:8787';
+const WEB_DEV = 'http://127.0.0.1:5173';
 
 /** Replace {{ key.path }} (escaped) and {{{ key.path }}} (raw) with values from src/content.json. */
 function fill(html) {
@@ -76,16 +75,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5180,
       strictPort: true,
-      proxy: {
-        '/app/': {
-          target: WEB_DEV,
-          ws: true,
-        },
-        '/api': {
-          target: API_DEV,
-          changeOrigin: true,
-        },
-      },
+      proxy: { '/app/': { target: WEB_DEV, ws: true }, '/api': { target: WEB_DEV } },
     },
     preview: { port: 4173, strictPort: true },
   };
