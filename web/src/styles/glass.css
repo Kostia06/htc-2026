@@ -189,3 +189,8 @@ a.card:active {
     animation: none;
   }
 }
+
+a.glass-button,
+a.glass-prominent {
+  text-decoration: none;
+}
