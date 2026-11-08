@@ -1,0 +1,128 @@
+/* Resume: the editor as the main card, Raven's suggestions in the side rail. */
+.rs__file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 12px 12px 20px;
+  border: 1px solid #262626;
+  border-radius: 16px;
+  background: #101010;
+}
+
+.rs__file > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rs__file-name {
+  overflow: hidden;
+  max-width: 260px;
+  color: #f5f5f5;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rs__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 16px 20px;
+  border: 1px solid #262626;
+  border-radius: 18px;
+  font-size: 15px;
+}
+
+.rs__note p { margin: 0; color: #a3a3a3; line-height: 1.5; }
+.rs__note strong { color: #f5f5f5; font-weight: 400; }
+
+.rs__start { align-items: flex-start; }
+
+.rs__doc { gap: 28px; padding: 40px; }
+
+.rs__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rs__editor:disabled { opacity: 0.6; }
+.rs__group { display: flex; flex-direction: column; gap: 14px; }
+.rs__group .db__h3 { margin: 0; color: #8c8c8c; font-size: 13px; font-weight: 400; letter-spacing: 1px; }
+
+.db .rs__doc .db__item {
+  gap: 14px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #0b0b0b;
+}
+
+.rs__doc .ob__field input,
+.rs__doc .db__answer { width: 100%; }
+
+.rs__remove,
+.rs__add { align-self: flex-start; }
+.rs__hint { margin: 0; color: #8c8c8c; font-size: 13px; }
+
+.rs__bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -40px -40px;
+  padding: 18px 40px;
+  border-top: 1px solid #1f1f1f;
+  border-radius: 0 0 30px 30px;
+  background: rgba(16, 16, 16, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+.rs__side { flex-basis: 340px; gap: 12px; }
+
+.rs__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid #262626;
+  border-radius: 24px;
+  background: #101010;
+}
+
+.rs__n { color: #fe4a23; font-size: 12px; }
+.rs__line { display: flex; flex-direction: column; gap: 6px; }
+.rs__line p { margin: 0; line-height: 1.5; }
+.rs__before { color: #a3a3a3; font-size: 15px; text-decoration: line-through; text-decoration-color: #3e3e3e; }
+.rs__after { color: #f5f5f5; font-size: 16px; }
+.rs__why { margin: 0; color: #8c8c8c; font-size: 13px; line-height: 1.45; }
+.rs__aside-note { padding: 0 4px; }
+
+.rs__blank {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(254, 74, 35, 0.18);
+  color: #ffa58f;
+}
+
+.rs__warn { margin: 0; padding: 0 4px; color: #ffa58f; font-size: 14px; line-height: 1.5; }
+
+/* on narrow screens the suggestions come first, so they aren't buried under the whole editor */
+@media (max-width: 920px) {
+  .rs__side { order: -1; }
+}
+
+@media (max-width: 600px) {
+  .rs__doc { padding: 20px; }
+  .rs__bar { margin: 0 -20px -20px; padding: 14px 20px; border-radius: 0 0 22px 22px; }
+  .rs__file { width: 100%; box-sizing: border-box; }
+}
