@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
  * `large` shows a 34px title that hands over to the inline one as it scrolls away.
  * `back` is { to, label } for pushed screens; `actions` sit on the right of the bar.
  */
-export function PageHeader({ title, large = false, back, actions, children }) {
+export function PageHeader({ title, large = false, showTitle = true, back, actions, children }) {
   const sentinel = useRef(null)
   const [scrolled, setScrolled] = useState(false)
 
@@ -31,7 +31,7 @@ export function PageHeader({ title, large = false, back, actions, children }) {
             </Link>
           )}
         </div>
-        <div className={`nav-bar__title t-headline${!large || scrolled ? ' is-shown' : ''}`} aria-hidden={large && !scrolled}>
+        <div className={`nav-bar__title t-headline${(large ? scrolled : showTitle) ? ' is-shown' : ''}`} aria-hidden={large ? !scrolled : !showTitle}>
           {title}
         </div>
         <div className="nav-bar__side nav-bar__side--end">{actions}</div>
@@ -122,5 +122,9 @@ export function GroupRow({ to, onClick, chevron = Boolean(to), destructive, chil
 
 /** The content column every tab screen sits in. `wide` lets lists spread into two columns. */
 export function Page({ children, wide = false, className = '' }) {
+  // a screen opens at its top; sheets over it are child routes, so they leave it where it was
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   return <main className={`page${wide ? ' page--wide' : ''} ${className}`}>{children}</main>
 }

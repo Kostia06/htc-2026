@@ -1,0 +1,183 @@
+.roadmap__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 16px;
+}
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+}
+.progress-card__count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.progress-card__done {
+  font-size: 44px;
+  line-height: 1;
+  transition: all 0.45s var(--spring);
+}
+.progress-card__streak {
+  gap: 5px;
+}
+.roadmap__earlier {
+  align-self: center;
+  color: var(--text-2);
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  transition: color 0.15s, background 0.15s;
+}
+.roadmap__earlier:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.04);
+}
+
+/* ---------- the trail ---------- */
+.trail {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.path-row {
+  position: relative;
+  animation: fade-in 0.4s ease-out;
+}
+.path-row__trail {
+  position: absolute;
+  inset: 0 auto auto 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.path-row__trail path {
+  fill: none;
+  stroke: var(--grey-30);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 9;
+}
+.path-row__tile {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+}
+.path-row__label {
+  position: absolute;
+  transform: translateY(-50%);
+}
+.path-row__label.is-left {
+  text-align: right;
+}
+.stop-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* PathNode.swift: 68px tile, radius 22, a 6px ledge 35% darker */
+.path-node {
+  --face: var(--grey-20);
+  --icon: rgb(255 255 255 / 0.55);
+  position: relative;
+  display: block;
+  width: 68px;
+  height: 74px;
+  isolation: isolate;
+}
+.path-node::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  height: 68px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--face) 65%, black);
+  z-index: -1;
+}
+.path-node.is-done,
+.path-node.is-current {
+  --face: var(--action);
+  --icon: var(--on-action);
+}
+.path-node__face {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  background: var(--face);
+  color: var(--icon);
+  box-shadow: inset 0 1.5px 0 rgb(255 255 255 / 0.2);
+  transition: transform 0.15s var(--spring), filter 0.15s;
+}
+.path-node:hover .path-node__face {
+  filter: brightness(1.07);
+}
+.path-node:active .path-node__face {
+  transform: translateY(6px);
+  transition-timing-function: ease-out;
+}
+.path-node.is-current .path-node__face {
+  box-shadow: inset 0 1.5px 0 rgb(255 255 255 / 0.25), 0 0 0 6px rgb(168 199 163 / 0.12), 0 0 32px rgb(168 199 163 / 0.25);
+}
+.path-node__here {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--agent);
+  color: var(--on-action);
+  white-space: nowrap;
+  animation: here-bob 2.4s ease-in-out infinite;
+}
+@keyframes here-bob {
+  50% { transform: translate(-50%, -3px); }
+}
+.goal-tile {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  background: var(--agent);
+  color: var(--on-action);
+  box-shadow: 0 0 40px rgb(227 209 173 / 0.18);
+}
+.roadmap__more {
+  padding: 12px 0 0;
+}
+.roadmap__more-failed {
+  gap: 12px;
+}
+.roadmap__skeleton {
+  gap: 12px;
+}
+.roadmap__skeleton-head {
+  width: 90px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--grey-20);
+}
+
+/* ---------- step sheet ---------- */
+.step-sheet__why {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.step-sheet__why svg {
+  flex: none;
+  margin-top: 2px;
+}
+.step-sheet__block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
