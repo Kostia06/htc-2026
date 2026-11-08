@@ -1,7 +1,8 @@
 // 2D chrome around the canvas. Invisible once the headset takes over, so this is
 // for the desktop preview, the judges watching the cast, and screen readers.
-export function Overlay({ interview, onEnterVR, vrSupported }) {
+export function Overlay({ interview, headset, onEnterVR, vrSupported }) {
   const { phase, caption, question, isStub, sttSupported, muted, transcript, actions } = interview
+  const signedIn = headset?.phase === 'signedIn'
 
   return (
     <div className="overlay">
@@ -12,6 +13,16 @@ export function Overlay({ interview, onEnterVR, vrSupported }) {
         </div>
         <div className="bar-actions">
           {isStub && <span className="chip chip-warn">Example data</span>}
+          {signedIn ? (
+            <>
+              <span className="chip">Signed in{headset.session?.deviceName ? ` · ${headset.session.deviceName}` : ''}</span>
+              <button type="button" className="ghost" onClick={headset.signOut}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            headset && <span className="chip">Type the 4-digit code from your phone</span>
+          )}
           <button type="button" className="ghost" onClick={actions.toggleMute} aria-pressed={muted}>
             {muted ? 'Voice off' : 'Voice on'}
           </button>

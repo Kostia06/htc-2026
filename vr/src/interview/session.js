@@ -22,6 +22,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { DEFAULT_SCORE, EXAMPLE_QUESTIONS, EXAMPLE_SCORES } from './questions.js'
+import { createVoiceSession } from './voiceSession.js'
 
 const STUB_LATENCY_MS = 650 // pretend the model is thinking, so timing bugs show up early
 const DIMENSIONS = ['structure', 'clarity', 'confidence', 'relevance']
@@ -36,11 +37,18 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
   return {
     isStub: true,
 
-    async start() {
+    // A phone launch may name a company/role; the stub shows them and asks
+    // the same example questions regardless.
+    async start(launch = {}) {
       await wait(200)
       index = 0
       scored = []
-      return { company, role, questionCount: EXAMPLE_QUESTIONS.length, live: null }
+      return {
+        company: launch.companySlug ?? company,
+        role: launch.role ?? role,
+        questionCount: EXAMPLE_QUESTIONS.length,
+        live: null,
+      }
     },
 
     async nextQuestion() {
@@ -187,7 +195,12 @@ function summarize(scores) {
 
 const API_URL = import.meta.env?.VITE_API_URL
 
-export const createSession = (options = {}) =>
-  API_URL
+// Signed in on the keypad -> the Raven voice API with that bearer token.
+// Otherwise the pre-existing behaviour: VITE_API_URL picks the older API,
+// nothing picks the example data.
+export function createSession({ getToken, onSignedOut, ...options } = {}) {
+  if (getToken) return createVoiceSession({ getToken, onSignedOut, ...options })
+  return API_URL
     ? createApiSession({ baseUrl: API_URL, companySlug: 'example-co', role: 'Software Developer', ...options })
     : createStubSession(options)
+}

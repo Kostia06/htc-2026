@@ -6,16 +6,31 @@ import * as THREE from 'three'
 import { Scene } from './scene/Scene.jsx'
 import { Overlay } from './ui/Overlay.jsx'
 import { useInterview } from './interview/useInterview.js'
+import { useHeadsetSession } from './headset/useHeadsetSession.js'
+import { useLaunchPolling } from './headset/useLaunchPolling.js'
 
 export default function App() {
   const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false }), [])
-  const interview = useInterview()
+  const headset = useHeadsetSession()
+  const interview = useInterview({ token: headset.token, onSignedOut: headset.signOut })
   const vrSupported = useVRSupport()
+
+  // "Practice in VR" on the phone queues a launch; pick it up while the room is
+  // idle and start that interview. Paused during one so a second tap cannot
+  // restart it.
+  useLaunchPolling(headset.session, {
+    enabled: headset.phase === 'signedIn' && interview.phase === 'idle',
+    onLaunch: (launch) => interview.actions.begin(launch),
+    onSignedOut: headset.signOut,
+  })
 
   // Devtools on a Quest are awkward; this makes the state machine pokeable from
   // chrome://inspect while wearing the headset.
   useEffect(() => {
-    if (import.meta.env.DEV) window.__interview = interview
+    if (import.meta.env.DEV) {
+      window.__interview = interview
+      window.__headset = headset
+    }
   })
 
   return (
@@ -32,7 +47,7 @@ export default function App() {
         }}
       >
         <XR store={store}>
-          <Scene interview={interview} />
+          <Scene interview={interview} headset={headset} />
           <Preload all />
         </XR>
         {/* Desktop preview only: inside XR the headset drives the camera and
@@ -50,6 +65,7 @@ export default function App() {
 
       <Overlay
         interview={interview}
+        headset={headset}
         vrSupported={vrSupported}
         onEnterVR={() => store.enterVR()}
       />

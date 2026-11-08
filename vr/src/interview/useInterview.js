@@ -3,8 +3,27 @@ import { createSession } from './session.js'
 import { createListener, createSpeaker } from './speech.js'
 
 // Phases: idle -> asking -> awaiting -> listening -> scoring -> review -> done
-export function useInterview() {
-  const session = useMemo(() => createSession(), [])
+//
+// `auth` is optional: { token, onSignedOut }. With a token the questions and
+// scores come from the Raven voice API; without one the session falls back to
+// whatever createSession picked before (env-selected API or example data).
+// The token is read through a ref so a silent refresh mid-interview does not
+// rebuild the session and lose its id.
+export function useInterview(auth = {}) {
+  const { token = null, onSignedOut } = auth
+  const tokenRef = useRef(token)
+  tokenRef.current = token
+  const onSignedOutRef = useRef(onSignedOut)
+  onSignedOutRef.current = onSignedOut
+
+  const signedIn = Boolean(token)
+  const session = useMemo(
+    () =>
+      createSession(
+        signedIn ? { getToken: () => tokenRef.current, onSignedOut: () => onSignedOutRef.current?.() } : {},
+      ),
+    [signedIn],
+  )
   const speaker = useMemo(() => createSpeaker(), [])
   const listener = useMemo(() => createListener(), [])
 
@@ -85,19 +104,26 @@ export function useInterview() {
     }
   }, [say, session])
 
-  const begin = useCallback(async () => {
+  // `launch` is what the phone sent ({ companySlug, role }); the Begin button
+  // and the keyboard call this with nothing.
+  const begin = useCallback(async (launch) => {
     setError(null)
     setSummary(null)
+    setPhase('asking')
     try {
-      const started = await session.start()
+      const started = await session.start(launch && typeof launch === 'object' ? launch : undefined)
       if (!alive.current) return
       setMeta(started)
       await say(
-        `Thanks for coming in. I have ${started.questionCount} questions about your experience. Take your time.`,
+        started.opening ??
+          `Thanks for coming in. I have ${started.questionCount} questions about your experience. Take your time.`,
       )
       await ask()
     } catch (err) {
-      if (alive.current) setError(err.message ?? 'Could not start the interview.')
+      if (alive.current) {
+        setError(err.message ?? 'Could not start the interview.')
+        setPhase('idle')
+      }
     }
   }, [ask, say, session])
 

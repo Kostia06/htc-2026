@@ -5,12 +5,16 @@ import { XROrigin, useXR, useXRInputSourceState } from '@react-three/xr'
 import { Room } from './Room.jsx'
 import { Interviewer } from './Interviewer.jsx'
 import { ActionButton, Captions, QuestionPanel, ReviewPanel } from './Panels.jsx'
+import { PairingPanel } from './PairingPanel.jsx'
 import { useReducedMotion } from '../ui/useReducedMotion.js'
 
 // Laid out for a candidate sitting at the near edge of the desk, looking down -Z.
 // These are the values you actually tune while wearing the headset.
 const INTERVIEWER = { position: [0, 0, -1.63], rotation: [0, 0, 0] }
 const QUESTION_PANEL = { position: [0.54, 1.2, -1.02], rotation: [-0.1, -0.45, 0] }
+// Dead ahead and a touch closer than the panels: the keypad is pressed, not read.
+const PAIRING_PANEL = { position: [0, 1.22, -0.92], rotation: [-0.14, 0, 0] }
+const GREETING_MS = 1800
 const REVIEW_PANEL = { position: [-0.56, 1.22, -0.98], rotation: [-0.1, 0.47, 0] }
 const BUTTON = { position: [0, 0.9, -0.56], rotation: [-0.8, 0, 0] }
 const CAPTIONS = { position: [0, 0.94, -1.16], rotation: [-0.22, 0, 0] }
@@ -101,14 +105,23 @@ function useHeightOffset(inXR) {
   return { offset, measured: measured.current, calibrated: calibrated.current }
 }
 
-export function Scene({ interview }) {
+// `headset` comes from useHeadsetSession: { phase, profile, signedInAt, claim }.
+// Until it is signedIn the room shows the keypad instead of the question panel,
+// unless the candidate chose to carry on with example data.
+export function Scene({ interview, headset }) {
   const { phase, question, meta, result, summary, transcript, caption, error, speaking, speechMs, getAmplitude, actions } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const { offset: heightOffset, measured, calibrated } = useHeightOffset(inXR)
 
-  useControllerInput(interview)
-  useKeyboard(interview)
+  const signedIn = headset?.phase === 'signedIn'
+  const [skippedSignIn, setSkippedSignIn] = useState(false)
+  const greeting = useGreeting(headset?.signedInAt, GREETING_MS)
+  const showPairing = Boolean(headset) && ((!signedIn && !skippedSignIn) || (signedIn && greeting))
+
+  // While the keypad is up, trigger and Enter belong to it, not to Begin.
+  useControllerInput(interview, !showPairing)
+  useKeyboard(interview, !showPairing)
 
   // The spec is explicit: the score shows for about six seconds after an answer
   // and never while one is being given. Reading feedback mid-answer is the single
@@ -145,17 +158,31 @@ export function Scene({ interview }) {
         />
       )}
 
-      <QuestionPanel
-        phase={phase}
-        question={question}
-        meta={meta}
-        transcript={transcript}
-        error={error}
-        position={QUESTION_PANEL.position}
-        rotation={QUESTION_PANEL.rotation}
-      />
+      {showPairing && (
+        <PairingPanel
+          status={signedIn ? 'signedIn' : headset.phase === 'signedOut' ? 'keypad' : headset.phase}
+          claim={headset.claim}
+          greeting={`Hi ${headset.profile?.name ?? 'there'}`}
+          onSkip={() => setSkippedSignIn(true)}
+          reducedMotion={reducedMotion}
+          position={PAIRING_PANEL.position}
+          rotation={PAIRING_PANEL.rotation}
+        />
+      )}
 
-      {(showReview || phase === 'done') && (
+      {!showPairing && (
+        <QuestionPanel
+          phase={phase}
+          question={question}
+          meta={meta}
+          transcript={transcript}
+          error={error}
+          position={QUESTION_PANEL.position}
+          rotation={QUESTION_PANEL.rotation}
+        />
+      )}
+
+      {!showPairing && (showReview || phase === 'done') && (
         <ReviewPanel
           result={phase === 'done' ? null : result}
           summary={phase === 'done' ? summary : null}
@@ -164,7 +191,7 @@ export function Scene({ interview }) {
         />
       )}
 
-      {buttonProps && (
+      {!showPairing && buttonProps && (
         <ActionButton
           {...buttonProps}
           position={BUTTON.position}
@@ -216,9 +243,26 @@ function useTimedVisibility(active, ms) {
   return active || visible
 }
 
+// True for `ms` after a sign-in made on this page load. Computed from the
+// timestamp rather than set in an effect, so the keypad never unmounts for a
+// frame between "signed in" and "say hi" and loses its success state.
+function useGreeting(signedInAt, ms) {
+  const [, rerender] = useState(0)
+  const active = signedInAt != null && Date.now() - signedInAt < ms
+
+  useEffect(() => {
+    if (!active) return undefined
+    const timer = setTimeout(() => rerender((n) => n + 1), ms - (Date.now() - signedInAt))
+    return () => clearTimeout(timer)
+  }, [active, signedInAt, ms])
+
+  return active
+}
+
 // Trigger or A advances; hold either to answer. B ends the interview. Polled
 // rather than event-subscribed so a missed event can never leave the mic open.
-function useControllerInput({ phase, actions }) {
+// `enabled` false while the keypad owns the trigger.
+function useControllerInput({ phase, actions }, enabled = true) {
   const right = useXRInputSourceState('controller', 'right')
   const left = useXRInputSourceState('controller', 'left')
   const wasAdvanceDown = useRef(false)
@@ -229,7 +273,7 @@ function useControllerInput({ phase, actions }) {
   useFrame(() => {
     const source = right ?? left
     const pad = source?.gamepad
-    if (!pad) return
+    if (!pad || !enabled) return
 
     const advance =
       pad['xr-standard-trigger']?.state === 'pressed' || pad['a-button']?.state === 'pressed'
@@ -259,11 +303,12 @@ function useControllerInput({ phase, actions }) {
 }
 
 // Desktop parity, and the keyboard half of the accessibility requirement.
-function useKeyboard({ actions }) {
+function useKeyboard({ actions }, enabled = true) {
   const actionsRef = useRef(actions)
   actionsRef.current = actions
 
   useEffect(() => {
+    if (!enabled) return undefined
     const onDown = (e) => {
       if (e.repeat) return
       const a = actionsRef.current
@@ -290,5 +335,5 @@ function useKeyboard({ actions }) {
       window.removeEventListener('keydown', onDown)
       window.removeEventListener('keyup', onUp)
     }
-  }, [])
+  }, [enabled])
 }

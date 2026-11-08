@@ -2,13 +2,13 @@ import { RoundedBox, Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 
-const FONT = '/fonts/Inter-Regular.woff'
-const FONT_BOLD = '/fonts/Inter-SemiBold.woff'
+export const FONT = '/fonts/Inter-Regular.woff'
+export const FONT_BOLD = '/fonts/Inter-SemiBold.woff'
 
-const INK = '#f4f6fa'
-const MUTED = '#9aa6b8'
-const GOOD = '#7fd4a8'
-const PANEL_BG = '#111620'
+export const INK = '#f4f6fa'
+export const MUTED = '#9aa6b8'
+export const GOOD = '#7fd4a8'
+export const PANEL_BG = '#111620'
 
 const DIMENSIONS = ['structure', 'clarity', 'confidence', 'relevance']
 
@@ -107,7 +107,9 @@ export function ReviewPanel({ result, summary, position, rotation }) {
   const height = 0.54
   if (!result && !summary) return null
 
-  const overall = result ? mean(DIMENSIONS.map((d) => result[d] ?? 0)) : (summary?.overall ?? 0)
+  // The live voice API scores a slightly different four; a result may say which.
+  const dimensions = result?.dimensions ?? DIMENSIONS
+  const overall = result ? mean(dimensions.map((d) => result[d] ?? 0)) : (summary?.overall ?? 0)
   const half = height / 2
 
   return (
@@ -128,7 +130,7 @@ export function ReviewPanel({ result, summary, position, rotation }) {
 
       {result && (
         <group position={[width / 2 - 0.215, half - 0.045, 0]}>
-          {DIMENSIONS.map((dim, i) => (
+          {dimensions.map((dim, i) => (
             <Meter key={dim} label={dim} value={result[dim] ?? 0} position={[0, -i * 0.05, 0]} />
           ))}
         </group>
