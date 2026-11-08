@@ -1,5 +1,5 @@
 {
-  "name": "ai_mentor_vr",
+  "name": "skillit-vr",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,8 @@
     "avatar": "node scripts/fetch-avatar.mjs",
     "speech": "node scripts/render-speech.mjs",
     "tts": "node scripts/tts-server.mjs",
-    "headset": "node scripts/headset.mjs"
+    "headset": "node scripts/headset.mjs",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -22,8 +23,10 @@
     "three": "^0.187.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.67.0",
     "@vitejs/plugin-react": "^6.2.1",
     "vite": "^8.3.6",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "^4.158.0"
   }
 }
