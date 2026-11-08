@@ -3,9 +3,8 @@ import SwiftUI
 /// One row of the winding trail: a tile swung left or right of centre, its label on the roomier side,
 /// and a dotted trail back up to the previous tile.
 struct PathRow<Tile: View, Label: View>: View {
-    static var height: CGFloat {
-        118
-    }
+    /// Grows with Dynamic Type so a two-line label never spills into the rows above and below it.
+    @ScaledMetric(relativeTo: .subheadline) private var height: CGFloat = 118
 
     let width: CGFloat
     let sway: CGFloat
@@ -21,16 +20,17 @@ struct PathRow<Tile: View, Label: View>: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             if let previousSway {
-                DottedTrail(startX: width / 2 + previousSway, endX: tileX, rowHeight: Self.height)
+                DottedTrail(startX: width / 2 + previousSway, endX: tileX, rowHeight: height)
             }
             tile()
-                .position(x: tileX, y: Self.height / 2)
+                .position(x: tileX, y: height / 2)
             label()
                 .frame(width: labelWidth, alignment: labelOnLeft ? .trailing : .leading)
                 .multilineTextAlignment(labelOnLeft ? .trailing : .leading)
-                .position(x: labelCentreX, y: Self.height / 2)
+                .frame(maxHeight: height)
+                .position(x: labelCentreX, y: height / 2)
         }
-        .frame(width: width, height: Self.height)
+        .frame(width: width, height: height)
     }
 
     private var labelOnLeft: Bool {

@@ -61,6 +61,8 @@ struct RoadmapView: View {
     private func startPractice(_ step: RoadmapStep) {
         guard let action = step.action else { return }
         if let last = lastPractice, last.step.id == step.id {
+            // the summary is on screen, so the first run already counts before the second one starts
+            recordIfFinished(last)
             let launch = PracticeLaunch(step: step, session: app.voiceSession(last.session.request))
             lastPractice = launch
             practice = launch
@@ -77,10 +79,17 @@ struct RoadmapView: View {
         practice = launch
     }
 
-    /// A session that reached its summary counts as the step done; one closed early leaves the step as it was.
+    /// Runs when the cover goes away. Swapping in a "Practice again" session also dismisses the old cover,
+    /// so only forget the launch once nothing is presented any more.
     private func finishPractice() {
-        defer { lastPractice = nil }
-        guard let launch = lastPractice, case let .finished(debrief) = launch.session.phase else { return }
+        guard practice == nil, let launch = lastPractice else { return }
+        lastPractice = nil
+        recordIfFinished(launch)
+    }
+
+    /// A session that reached its summary counts as the step done; one closed early leaves the step as it was.
+    private func recordIfFinished(_ launch: PracticeLaunch) {
+        guard case let .finished(debrief) = launch.session.phase else { return }
         withAnimation(.spring(duration: 0.5)) {
             model?.complete(launch.step, note: String("Scored \(debrief.overall)/100. \(debrief.verdict)".prefix(160)))
         }
@@ -113,7 +122,9 @@ struct PracticeLaunch: Identifiable {
     let step: RoadmapStep
     let session: VoiceSessionModel
 
-    var id: String {
-        step.id
+    // keyed by session, not step: "Practice again" on the same step must present a fresh cover, or the
+    // session view keeps its identity and its `.task` never runs the new session
+    var id: ObjectIdentifier {
+        ObjectIdentifier(session)
     }
 }

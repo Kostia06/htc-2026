@@ -13,8 +13,7 @@ struct ProgressCard: View {
             Text("On the way to \(goal)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .truncationMode(.tail)
+                .lineLimit(2)
             count
             ThinProgressBar(fraction: fraction)
             if progress.streakDays > 0 {
@@ -44,9 +43,9 @@ struct ProgressCard: View {
     private var streak: some View {
         Label("\(progress.streakDays)-day streak", systemImage: "flame.fill")
             .font(.footnote.weight(.semibold))
-            .foregroundStyle(Theme.action)
+            // teal, not the sage accent: the streak is an outcome, nothing to tap
+            .foregroundStyle(Theme.positive)
             .lineLimit(1)
-            .fixedSize()
             .contentTransition(.numericText())
             .transition(.opacity)
     }

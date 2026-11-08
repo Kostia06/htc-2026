@@ -12,29 +12,33 @@ struct PathNode: View {
 
     let step: RoadmapStep
     let state: State
+    /// The line written beside the tile ("Course · 2h", "Done today"), read out with the title.
+    let meta: String
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
             Image(systemName: state == .done ? "checkmark" : step.kind.symbol)
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(state == .upcoming ? Color(white: 0.55) : Theme.onAction)
+                .foregroundStyle(state == .upcoming ? Color.secondary : Theme.onAction)
         }
-        .buttonStyle(TileStyle(face: state == .upcoming ? Color(white: 0.2) : Theme.action, size: Self.size))
+        .buttonStyle(TileStyle(face: state == .upcoming ? Theme.secondaryButton : Theme.action, size: Self.size))
         .overlay(alignment: .top) {
             if state == .current {
                 Text("You're here")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(Theme.onAction)
+                    .foregroundStyle(Theme.ground)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Theme.agent, in: .capsule)
+                    // white rather than sand: sand is kept for things the agent does
+                    .background(Color.primary, in: .capsule)
                     .fixedSize()
                     .offset(y: -22)
             }
         }
-        .accessibilityLabel(step.title)
-        .accessibilityValue(state == .done ? "Done" : state == .current ? "You're here" : "")
+        .accessibilityLabel("\(step.title), \(meta)")
+        .accessibilityValue(state == .current ? "You're here" : "")
+        .accessibilityHint("Shows the step's details")
     }
 }
 

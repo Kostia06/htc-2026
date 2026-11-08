@@ -23,7 +23,7 @@ struct StepDetailSheet: View {
                 Label(step.why, systemImage: "target")
                     .font(.subheadline)
                     .foregroundStyle(Theme.agent)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             FactGrid(facts: facts)
             if let slug = step.action?.companySlug {
@@ -61,7 +61,7 @@ struct StepDetailSheet: View {
         if isDone {
             facts.append(.init(label: "Status", value: doneLine, tint: Theme.positive))
         } else {
-            facts.append(.init(label: "Status", value: step.label.text))
+            facts.append(.init(label: "Readiness", value: step.label.text))
         }
         if !step.estimate.isEmpty {
             facts.append(.init(label: "Time", value: step.estimate))
