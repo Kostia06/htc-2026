@@ -4,7 +4,7 @@
 
     /// Opens one screen with sample data: launch with `-RavenScreen review` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, reading, review, roadmap, forYou, practice, voice, summary, profile
+        case signIn, reading, review, roadmap, forYou, forYouBuilding, practice, voice, summary, profile
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -21,7 +21,8 @@
                 OnboardingFlow(model: .preview(step: .reviewing, draft: .sample, missing: Self.sampleQuestions))
                     .environment(AppModel.preview(profile: .empty))
             case .roadmap: tabs(.roadmap)
-            case .forYou: tabs(.forYou)
+            case .forYou: forYou(.preview(cards: FeedCard.samples))
+            case .forYouBuilding: forYou(.preview(cards: [], isBuilding: true))
             case .practice: tabs(.practice)
             case .voice: DebugVoiceSession()
             case .summary: SessionSummaryView(summary: .offline, onDone: {})
@@ -31,6 +32,12 @@
 
         private func tabs(_ section: MainTabView.Section) -> some View {
             MainTabView(selection: section).environment(AppModel.preview(profile: .sample))
+        }
+
+        private func forYou(_ feed: ForYouModel) -> some View {
+            let app = AppModel.preview(profile: .sample)
+            app.feed = feed
+            return MainTabView(selection: .forYou).environment(app)
         }
 
         private static let sampleQuestions = ["Which role do you want next?", "Any projects you'd like to show?"]
