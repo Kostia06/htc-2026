@@ -122,6 +122,11 @@ export function createApiSession({ getToken, onSignedOut, baseUrl = API_URL, com
       return { score: scoring.status === 'fulfilled' ? scoring.value : null, next }
     },
 
+    // Links the ElevenLabs recording to this session, so it can be replayed on the phone and deleted with it.
+    attachConversation(conversationId) {
+      return call(`/api/voice/sessions/${sessionId}/conversation`, { method: 'POST', body: { conversationId } })
+    },
+
     async finish() {
       // The server 400s if nothing was ever scored.
       if (!scored) return { summary: 'No answers were recorded.', prepList: [] }
