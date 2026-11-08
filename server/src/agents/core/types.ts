@@ -13,6 +13,7 @@ export const PLATFORMS: readonly Platform[] = ["app", "vr", "background"];
 import type { MemoryKind, PrivateMemory } from "../../memory/private/store";
 import type { Profile, ProfilePatch } from "../../memory/profile/types";
 import type { RepoSummary } from "../../connections/store";
+import type { AppReadTool } from "../../connections/app-tools";
 
 export type { MemoryKind, PrivateMemory };
 export type PrivateMemoryPort = {
@@ -22,6 +23,13 @@ export type PrivateMemoryPort = {
   updateProfile(patch: ProfilePatch): Promise<Profile>;
   // the person's imported GitHub repos as Skillit keeps them (allowlisted facts, grounded summaries); [] when not connected
   githubProjects(): Promise<RepoSummary[]>;
+  // the person's other connected apps (beyond the curated connectors): read-only, and only on their own connections
+  apps: ConnectedAppsPort;
+};
+export type ConnectedAppsPort = {
+  list(): Promise<{ slug: string; name: string }[]>;
+  readTools(app: string, search?: string): Promise<AppReadTool[]>;
+  read(app: string, tool: string, args: Record<string, unknown>): Promise<unknown>;
 };
 export const MEMORY_KINDS: readonly MemoryKind[] = ["goal", "skill", "weakness", "preference", "note"];
 

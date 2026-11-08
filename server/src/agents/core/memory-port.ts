@@ -1,3 +1,4 @@
+import { connectedAppsFor, readToolsFor, runAppRead } from "../../connections/app-tools";
 import { getConnection } from "../../connections/store";
 import type { Env } from "../../env";
 import { recall, remember } from "../../memory/private/store";
@@ -14,6 +15,11 @@ export function memoryFor(env: Env, userId: string): PrivateMemoryPort {
     githubProjects: async () => {
       const connection = await getConnection(env, userId, "github");
       return connection?.status === "active" ? (connection.derived?.items ?? []) : [];
+    },
+    apps: {
+      list: () => connectedAppsFor(env, userId),
+      readTools: (app, search) => readToolsFor(env, userId, app, search),
+      read: (app, tool, args) => runAppRead(env, userId, app, tool, args),
     },
   };
 }

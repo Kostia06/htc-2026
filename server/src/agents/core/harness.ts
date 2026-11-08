@@ -30,6 +30,7 @@ const NO_MEMORY: PrivateMemoryPort = {
   profile: noPrivateAccess,
   updateProfile: noPrivateAccess,
   githubProjects: noPrivateAccess,
+  apps: { list: noPrivateAccess, readTools: noPrivateAccess, read: noPrivateAccess },
 };
 
 // validates and records the run, then hands back its result as a promise so callers can wait or not

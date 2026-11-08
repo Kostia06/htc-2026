@@ -21,7 +21,7 @@ describe("career-snapshot skill", () => {
     });
     const result = await runSkill(deps, request({ companies: ["acme"] }));
     expect(result).toMatchObject({ status: "done", output });
-    expect(toolNames[0]).toEqual(["recall", "company_insights", "github_profile", "finish"]);
+    expect(toolNames[0]).toEqual(["recall", "company_insights", "github_profile", "connected_apps", "app_read_tools", "app_read", "finish"]);
     expect(conversations[0][0].parts[0].text).toContain("acme");
   });
 });
