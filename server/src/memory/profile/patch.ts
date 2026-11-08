@@ -1,5 +1,5 @@
 import { anonymize } from "../../lib/anonymize";
-import { SKILL_SOURCES, type Profile, type ProfilePatch, type ProfileSkill, type SkillSource } from "./types";
+import { SKILL_SOURCES, type Profile, type ProfilePatch, type ProfileRemovals, type ProfileSkill, type SkillSource } from "./types";
 
 const MAX_TEXT = 300;
 const LIMITS = { skills: 50, targetRoles: 10, goals: 10, education: 5, experience: 15, projects: 15, certifications: 20, highlights: 6 };
@@ -64,20 +64,52 @@ const parsers = {
   projects: parseRecord("name", ["summary"]),
 };
 
+function parseLists(input: Fields, listParsers: Record<string, (item: unknown) => unknown>): Fields {
+  const lists: Fields = {};
+  for (const [field, parse] of Object.entries(listParsers)) {
+    const list = cleanList(input[field], parse);
+    if (list?.length) lists[field] = list;
+  }
+  return lists;
+}
+
 // boundary for anything a model or a client sends: unknown fields and malformed entries are dropped, never trusted
 export function parsePatch(input: unknown): ProfilePatch | null {
   if (!isFields(input)) return null;
-  const patch: Fields = {};
+  const patch: Fields = parseLists(input, parsers);
   const headline = cleanText(input.headline);
   if (headline) patch.headline = headline;
-  for (const [field, parse] of Object.entries(parsers)) {
-    const list = cleanList(input[field], parse as (item: unknown) => unknown);
-    if (list?.length) patch[field] = list;
+  if (isFields(input.remove)) {
+    const remove = parseLists(input.remove, { ...parsers, skills: cleanText });
+    if (Object.keys(remove).length) patch.remove = remove;
   }
   return patch as ProfilePatch;
 }
 
 const keyOf = (text: string) => text.toLowerCase();
+const educationKey = (e: Profile["education"][number]) => keyOf(`${e.school}|${e.program ?? ""}`);
+const experienceKey = (e: Profile["experience"][number]) => keyOf(`${e.role}|${e.org}|${e.start ?? ""}`);
+
+function without<T>(current: T[], removed: T[] | undefined, key: (item: T) => string) {
+  if (!removed?.length) return current;
+  const gone = new Set(removed.map(key));
+  return current.filter((item) => !gone.has(key(item)));
+}
+
+// removals run before additions, so editing a row is one patch: remove the old identity, add the new one
+function withoutRemoved(profile: Profile, remove: ProfileRemovals | undefined): Profile {
+  if (!remove) return profile;
+  return {
+    ...profile,
+    skills: without(profile.skills, remove.skills?.map((name) => ({ name }) as ProfileSkill), (s) => keyOf(s.name)),
+    targetRoles: without(profile.targetRoles, remove.targetRoles, keyOf),
+    goals: without(profile.goals, remove.goals, keyOf),
+    certifications: without(profile.certifications, remove.certifications, keyOf),
+    education: without(profile.education, remove.education, educationKey),
+    experience: without(profile.experience, remove.experience, experienceKey),
+    projects: without(profile.projects, remove.projects, (p) => keyOf(p.name)),
+  };
+}
 
 function mergeSkills(current: ProfileSkill[], incoming: ProfileSkill[]) {
   const byName = new Map(current.map((skill) => [keyOf(skill.name), skill]));
@@ -95,16 +127,17 @@ function mergeBy<T>(current: T[], incoming: T[] | undefined, key: (item: T) => s
 }
 
 // re-parsed here so no write path can skip the scrubbing and limits, even with an already-typed patch
-export function applyPatch(profile: Profile, unchecked: ProfilePatch): Profile {
+export function applyPatch(current: Profile, unchecked: ProfilePatch): Profile {
   const patch = parsePatch(unchecked) ?? {};
+  const profile = withoutRemoved(current, patch.remove);
   return {
     headline: patch.headline ?? profile.headline,
     skills: mergeSkills(profile.skills, patch.skills ?? []),
     targetRoles: mergeBy(profile.targetRoles, patch.targetRoles, keyOf, LIMITS.targetRoles),
     goals: mergeBy(profile.goals, patch.goals, keyOf, LIMITS.goals),
     certifications: mergeBy(profile.certifications, patch.certifications, keyOf, LIMITS.certifications),
-    education: mergeBy(profile.education, patch.education, (e) => keyOf(`${e.school}|${e.program ?? ""}`), LIMITS.education),
-    experience: mergeBy(profile.experience, patch.experience, (e) => keyOf(`${e.role}|${e.org}|${e.start ?? ""}`), LIMITS.experience),
+    education: mergeBy(profile.education, patch.education, educationKey, LIMITS.education),
+    experience: mergeBy(profile.experience, patch.experience, experienceKey, LIMITS.experience),
     projects: mergeBy(profile.projects, patch.projects, (p) => keyOf(p.name), LIMITS.projects),
     updatedAt: new Date().toISOString(),
   };

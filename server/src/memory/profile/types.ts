@@ -18,4 +18,9 @@ export type Profile = {
   updatedAt?: string;
 };
 
-export type ProfilePatch = Partial<Omit<Profile, "updatedAt">>;
+type ProfileLists = Omit<Profile, "updatedAt" | "headline">;
+
+// chips go by name; rows go by the same identity the merge uses
+export type ProfileRemovals = Partial<Omit<ProfileLists, "skills"> & { skills: string[] }>;
+
+export type ProfilePatch = Partial<Omit<Profile, "updatedAt">> & { remove?: ProfileRemovals };
