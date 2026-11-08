@@ -1,0 +1,109 @@
+.companies__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 1180px) {
+  .companies__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.companies__empty {
+  padding-top: 80px;
+}
+.company-row {
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+}
+.company-row .stack {
+  gap: 2px;
+  min-width: 0;
+}
+.monogram {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 12px;
+  background: var(--chip);
+}
+
+.company__stack {
+  gap: 20px;
+}
+.company__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+}
+.company__header a {
+  color: inherit;
+}
+.company__research {
+  gap: 8px;
+  padding-top: 4px;
+  animation: rise-in 0.3s var(--smooth);
+}
+.company__research.is-running { color: var(--agent); }
+.company__research.is-done { color: var(--positive); }
+.company__research.is-refused { color: var(--negative); }
+.company__recap {
+  width: 100%;
+  margin-top: -8px;
+}
+.company__facts {
+  gap: 20px;
+}
+.company__fact-section {
+  gap: 6px;
+}
+.company__fact-head {
+  gap: 5px;
+  padding-left: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.company__rows {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.company__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 10px 0;
+}
+.company__row + .company__row {
+  border-top: 1px solid var(--hairline);
+}
+.company__fact {
+  text-align: left;
+}
+.company__row a {
+  align-self: flex-start;
+}
+.company__question {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+}
+.company__question .stack {
+  gap: 2px;
+}
+.company__count {
+  width: 40px;
+  flex: none;
+}
+.company__questions {
+  gap: 16px;
+}
+.company__unlock {
+  gap: 8px;
+}
+.company__none {
+  padding: 8px 4px;
+}

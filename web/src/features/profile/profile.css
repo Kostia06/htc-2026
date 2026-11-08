@@ -1,0 +1,191 @@
+.profile__stack {
+  gap: 28px;
+}
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 4px;
+}
+.profile-header__role {
+  font-size: 34px;
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.profile-header__headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  text-align: left;
+  min-height: 32px;
+}
+.profile-header__headline:hover {
+  opacity: 0.85;
+}
+.profile-header__input {
+  min-height: 44px;
+}
+.resume-row__inner {
+  gap: 14px;
+}
+.resume-row .stack {
+  gap: 2px;
+}
+.page-thumb {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 34px;
+  height: 44px;
+  flex: none;
+  padding: 6px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+.page-thumb span {
+  height: 2px;
+  border-radius: 1px;
+  background: rgb(0 0 0 / 0.18);
+}
+.page-thumb .page-thumb__title {
+  width: 50%;
+  height: 3px;
+  margin-bottom: 1px;
+  background: var(--action);
+}
+.profile__pdf,
+.profile__add {
+  gap: 8px;
+}
+.chips-editor {
+  gap: 12px;
+  width: 100%;
+}
+.chips-editor__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.edit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px 6px 12px;
+  border-radius: 999px;
+  background: var(--chip);
+  border: 1px solid var(--hairline);
+  animation: pop-in 0.25s var(--spring);
+}
+.edit-chip button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--text-2);
+  transition: background 0.15s, color 0.15s;
+}
+.edit-chip button:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--text);
+}
+.edit-chip--plain {
+  border-color: transparent;
+}
+@media (hover: hover) {
+  .edit-chip--plain {
+    padding-right: 12px;
+  }
+  .edit-chip--plain button {
+    display: none;
+  }
+  .edit-chip--plain:hover {
+    padding-right: 4px;
+  }
+  .edit-chip--plain:hover button {
+    display: grid;
+  }
+}
+.chips-editor__add {
+  gap: 10px;
+  min-height: 36px;
+}
+.chips-editor__input {
+  background: none;
+  border: 0;
+  outline: none;
+  min-height: 36px;
+}
+.chips-editor__input::placeholder {
+  color: var(--text-3);
+}
+.skills__more {
+  align-self: flex-start;
+  min-height: 32px;
+}
+
+/* ---------- form sheets (iOS Form) ---------- */
+.sheet-text-btn {
+  min-height: 38px;
+  padding: 0 4px;
+}
+.sheet-text-btn:disabled {
+  opacity: 0.35;
+}
+.form-sheet {
+  gap: 8px;
+}
+.form-sheet__group {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+}
+.form-sheet__field {
+  min-height: 48px;
+  padding: 0 16px;
+  background: none;
+  border: 0;
+  outline: none;
+}
+.form-sheet__field + .form-sheet__field {
+  border-top: 1px solid var(--hairline);
+}
+.form-sheet__field::placeholder {
+  color: var(--text-3);
+}
+.form-sheet__field:focus {
+  background: rgb(255 255 255 / 0.02);
+}
+textarea.form-sheet__field {
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 22px;
+}
+.form-sheet__header {
+  padding: 16px 16px 0;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+.form-sheet__footer {
+  padding: 0 16px;
+  color: var(--text-2);
+}
+.form-sheet__delete {
+  margin-top: 24px;
+  min-height: 48px;
+  border-radius: 14px;
+  color: var(--negative);
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+}
+.form-sheet__delete:hover {
+  background: #222823;
+}
