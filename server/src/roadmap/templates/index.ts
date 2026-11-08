@@ -28,13 +28,14 @@ export function detectField(goal: string): Field {
   return FIELD_PATTERNS.find(([, pattern]) => pattern.test(goal))?.[0] ?? "general";
 }
 
-export function personFor(goal: string, skills: string[]): Person {
-  return { goal, skills, field: detectField(goal) };
+export function personFor(goal: string, skills: string[], headStart = false): Person {
+  return { goal, skills, field: detectField(goal), headStart };
 }
 
 // the deterministic, instant plan: positions `from` onward, the same for the same person, and never running out
 export function templateSteps(person: Person, from: number, count: number): StepContent[] {
-  return Array.from({ length: count }, (_, i) => fill(templateAt(person.field, from + i), person));
+  const skip = person.headStart && STEPS[person.field][0].kind === "project" ? 1 : 0;
+  return Array.from({ length: count }, (_, i) => fill(templateAt(person.field, from + i + skip), person));
 }
 
 function templateAt(field: Field, position: number): TemplateStep {
