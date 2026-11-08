@@ -46,7 +46,7 @@
                 questions: [PracticeQuestion(text: "Why do you want to work on our lending team?", source: .reported)],
                 company: "ATB Financial",
             ),
-            engine: DemoVoiceEngine(),
+            engine: LocalVoiceEngine(),
         )
 
         var body: some View {

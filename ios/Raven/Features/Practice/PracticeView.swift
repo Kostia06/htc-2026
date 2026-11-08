@@ -86,7 +86,7 @@ struct PracticeView: View {
     private func start(_ mode: PracticeMode) {
         let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
         let request = VoiceSessionRequest(mode: mode, role: trimmed.isEmpty ? nil : trimmed)
-        activeSession = VoiceSessionModel(request: request, service: service, engine: DemoVoiceEngine())
+        activeSession = VoiceSessionModel(request: request, service: service, engine: LocalVoiceEngine())
     }
 
     /// screenshots run without a signed-in client; they get the offline session instead of the server
