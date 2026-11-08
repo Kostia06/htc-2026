@@ -1,7 +1,7 @@
-// SettingsView.swift and PrivacyView.swift: account, headset, voice, privacy and about; and what Skillit keeps,
+// SettingsView.swift and PrivacyView.swift, behind the Profile page's gear: account, voice, privacy and about; and what Skillit keeps,
 // with the one button that deletes all of it.
 import { useState } from 'react'
-import { Brain, FileLock, FileText, Glasses, Lock, Route, AudioWaveform } from 'lucide-react'
+import { Brain, FileLock, FileText, Lock, Route, AudioWaveform } from 'lucide-react'
 import { useApp } from '../../app/context'
 import { profileApi } from '../../lib/client'
 import { Spinner } from '../../ui/Button'
@@ -29,12 +29,6 @@ export function Settings() {
           </GroupRow>
           <GroupRow destructive onClick={() => setConfirming(true)}>
             Sign out
-          </GroupRow>
-        </Group>
-
-        <Group header="Headset">
-          <GroupRow to="/settings/headset">
-            <IconLabel icon={Glasses}>Pair a headset</IconLabel>
           </GroupRow>
         </Group>
 

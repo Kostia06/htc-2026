@@ -32,6 +32,7 @@ const companies = () => import('../features/companies/Companies')
 const CompaniesList = named(companies, 'CompaniesList')
 const CompanyView = named(companies, 'CompanyView')
 const Profile = lazy(() => import('../features/profile/Profile'))
+const ProfileDetails = lazy(() => import('../features/profile/ProfileDetails'))
 const profileForms = () => import('../features/profile/ProfileForms')
 const ExperienceForm = named(profileForms, 'ExperienceForm')
 const EducationForm = named(profileForms, 'EducationForm')
@@ -158,12 +159,18 @@ export default function App() {
               <Route path="recap" element={<CompanyRecap />} />
             </Route>
 
-            <Route path="profile" element={<Profile />}>
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile/details" element={<ProfileDetails />}>
               <Route path="experience/:index" element={<ExperienceForm />} />
               <Route path="education/:index" element={<EducationForm />} />
               <Route path="skills" element={<SkillsEditor />} />
-              <Route path="pdf" element={<PdfSheet back="/profile" />} />
             </Route>
+            <Route path="profile/headsets" element={<PairHeadset back={{ to: '/profile', label: 'Profile' }} />} />
+            {/* the editors and the PDF moved behind the Profile page's doors */}
+            <Route path="profile/experience/*" element={<Moved to="/profile/details/experience" />} />
+            <Route path="profile/education/*" element={<Moved to="/profile/details/education" />} />
+            <Route path="profile/skills" element={<Navigate to="/profile/details/skills" replace />} />
+            <Route path="profile/pdf" element={<Navigate to="/resume/pdf" replace />} />
             <Route path="profile/resume/*" element={<Moved to="/resume" />} />
 
             <Route path="resume" element={<Resume />}>
@@ -174,7 +181,7 @@ export default function App() {
             </Route>
 
             <Route path="settings" element={<Settings />} />
-            <Route path="settings/headset" element={<PairHeadset back={{ to: '/settings', label: 'Settings' }} />} />
+            <Route path="settings/headset" element={<Navigate to="/profile/headsets" replace />} />
             <Route path="settings/privacy" element={<Privacy />} />
             <Route path="settings/memory" element={<Memory />}>
               <Route path=":id/share" element={<ShareMemory />} />
