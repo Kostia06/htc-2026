@@ -6,9 +6,22 @@
 .work__list { gap: 16px; margin: 0; padding: 0; list-style: none; }
 .work__row { gap: 10px; }
 .work__head { gap: 12px; align-items: center; }
-.work__projects { gap: 8px; padding-left: 34px; margin: 0; list-style: none; }
+.work__projects { gap: 8px; padding-left: 48px; margin: 0; list-style: none; }
 .work__idea { gap: 6px; align-items: flex-start; color: var(--agent); }
 .work__note { gap: 6px; align-items: center; }
+
+/* each service's logo on its brand colour; the app is dark-only, so the near-black GitHub tile gets an edge */
+.logo { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 9px; color: #fff; }
+.logo svg { width: 20px; height: 20px; }
+.logo--github { background: #181717; box-shadow: inset 0 0 0 1px var(--hairline); }
+.logo--gitlab { background: #fc6d26; }
+.logo--bitbucket { background: #0052cc; }
+.logo--dribbble { background: #ea4c89; }
+.logo--notion { background: #fff; color: #000; }
+.logo--googledrive { background: #fff; }
+.logo--googledrive svg { width: 22px; }
+.logo--youtube { background: #f00; }
+.logo--other { background: var(--inset); }
 
 .li { gap: 12px; }
 .li__list { gap: 12px; }

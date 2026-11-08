@@ -1,16 +1,14 @@
 // WorkConnectionRow.swift: one service, what Skillit reads from it, Connect / Disconnect, and once connected what it took.
-import { Code, FileText, Folder, Lightbulb, Link, Palette, SquarePlay } from 'lucide-react'
+import { Lightbulb } from 'lucide-react'
 import { Spinner, TextButton } from '../../ui/Button'
-
-const ICONS = { code: Code, design: Palette, writing: FileText, documents: Folder, video: SquarePlay }
+import ServiceLogo from './ServiceLogo'
 
 export default function ConnectionRow({ connection: c, busy, onConnect, onDisconnect }) {
-  const Icon = ICONS[c.category] ?? Link
   const connected = c.status === 'connected'
   return (
     <div className="stack work__row">
       <div className="row work__head">
-        <Icon size={22} strokeWidth={2.2} className={c.configured ? 'c-action' : 'c-2'} aria-hidden />
+        <ServiceLogo connection={c} />
         <span className="stack grow">
           <span className="t-headline">{c.name}</span>
           <span className="t-footnote c-2">{statusLine(c)}</span>

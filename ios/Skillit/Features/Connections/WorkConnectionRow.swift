@@ -11,11 +11,7 @@ struct WorkConnectionRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                Image(systemName: connection.category.symbol)
-                    .font(.title3)
-                    .foregroundStyle(connection.configured ? Theme.action : .secondary)
-                    .frame(width: 28)
-                    .accessibilityHidden(true)
+                ServiceLogo(connection: connection)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(connection.name).font(.headline)
                     Text(statusLine).font(.footnote).foregroundStyle(.secondary)
@@ -79,7 +75,7 @@ private struct ImportedWorkList: View {
                     .foregroundStyle(Theme.agent)
             }
         }
-        .padding(.leading, 40)
+        .padding(.leading, 48)
     }
 }
 
