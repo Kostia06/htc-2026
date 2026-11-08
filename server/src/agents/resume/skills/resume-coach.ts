@@ -18,8 +18,8 @@ export const resumeCoach: Skill<CoachInput> = {
   description: "Rewrite resume bullets to be specific and results-focused for the person's target role, without inventing anything.",
   platforms: ["app"],
   personal: true,
-  tools: ["profile", "company_insights", "github_profile"],
-  maxSteps: 5,
+  tools: ["profile", "company_insights", "github_profile", "resume_playbook"],
+  maxSteps: 6,
   instructions: `Improve this person's resume lines for the role they want. Each line is listed with its path.
 Rewrite only the lines worth changing: start with a strong verb, say what was done, how, and what it led to.
 Honesty rules:
@@ -27,6 +27,8 @@ Honesty rules:
 - Never invent a number. Where a result needs one, write [add number] in its place so the person fills it in.
 - No "perfect fit", "ideal candidate", "guaranteed", "definitely" or percentages about the person.
 When a company is set, call company_insights once and match wording to what they value; use profile if the target role is unclear.
+Call resume_playbook once with the target role's field: its bullet patterns and verbs show the shape of a strong line,
+and its common mistakes what to fix. They only shape wording; never take a fact, tool or number from them.
 For a project line, github_profile shows what that repo really is; it only helps you word the line, never adds to what the line claims.
 Call finish with suggestions: path copied exactly, before copied word for word, after as the rewrite, why in one sentence.`,
   inputSchema: {

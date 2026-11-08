@@ -31,14 +31,15 @@ export const interviewPrep: Skill<{ company: string; role?: string }> = {
   description: "Pick five interview questions for this person and company, weighted toward their weak spots.",
   platforms: ["app", "vr"],
   personal: true,
-  tools: ["company_insights", "recall", "company_facts", "queue_research"],
+  tools: ["company_insights", "recall", "company_facts", "queue_research", "question_bank"],
   maxSteps: 8,
   instructions: `Pick exactly ${QUESTION_COUNT} interview questions this person should practise for the company and role in the goal.
 1. Call company_insights. Questions with example: false were reported by real candidates, most recent first
    (last_reported_at is the month of the latest report). Use those first, copied word for word, starting from the top.
 2. Call recall for this person's weaknesses and goals. Choose the remaining questions to work on their weak spots.
 3. If the company has few facts or no reported questions, call queue_research so there is more next time,
-   then fill the gaps with questions typical for the role.
+   then fill the gaps from question_bank for the role's field (changer or non_student when that fits the person better).
+   Questions from question_bank or with example: true are examples, never reports: set "reported" to false for them.
 For each question, "why" says in one sentence why it matters for this person.
 Set "reported" to true only for questions copied from company_insights reports.
 "focus" is one to three short themes this person should work on before the interview.`,

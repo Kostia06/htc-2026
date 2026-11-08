@@ -5,5 +5,6 @@ import { readProfile, updateProfileTool } from "../shared-tools/profile";
 import { card } from "./card";
 import { resumeSkills } from "./skills";
 import { readDocumentTool } from "./tools/read-document";
+import { resumePlaybook } from "./tools/resume-playbook";
 
-export const resumeAgent = defineAgent(card, resumeSkills, [readDocumentTool, readProfile, updateProfileTool, companyInsights, githubProfile]);
+export const resumeAgent = defineAgent(card, resumeSkills, [readDocumentTool, readProfile, updateProfileTool, companyInsights, githubProfile, resumePlaybook]);

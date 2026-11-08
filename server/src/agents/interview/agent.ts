@@ -9,10 +9,11 @@ import { card } from "./card";
 import { interviewSkills } from "./skills";
 import { devtoSearch } from "./tools/devto-search";
 import { hnSearch } from "./tools/hn-search";
+import { questionBank } from "./tools/question-bank";
 import { queueResearch } from "./tools/queue-research";
 import { remember } from "./tools/remember";
 
-const own = [hnSearch, devtoSearch, queueResearch, remember];
+const own = [hnSearch, devtoSearch, queueResearch, remember, questionBank];
 const shared = [companyFacts, companyInsights, fetchPage, recall, saveFact, webSearch];
 
 export const interviewAgent = defineAgent(card, interviewSkills, [...own, ...shared]);
