@@ -2,9 +2,9 @@
     import RavenKit
     import SwiftUI
 
-    /// Opens one screen with sample data: launch with `-RavenScreen review` (Debug builds only), for screenshots and design review.
+    /// Opens one screen with sample data: launch with `-RavenScreen onboarding` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, reading, review, roadmap, forYou, forYouBuilding, practice, voice, summary, profile
+        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -14,12 +14,8 @@
             switch self {
             case .signIn:
                 SignInView().environment(AppModel.preview(profile: .empty, phase: .signedOut))
-            case .reading:
-                OnboardingFlow(model: .preview(step: .reading(fileName: "Jordan_Lee_Resume.pdf"), draft: .empty, missing: []))
-                    .environment(AppModel.preview(profile: .empty))
-            case .review:
-                OnboardingFlow(model: .preview(step: .reviewing, draft: .sample, missing: Self.sampleQuestions))
-                    .environment(AppModel.preview(profile: .empty))
+            case .onboarding:
+                OnboardingFlow(model: .debugPreview()).environment(AppModel.preview(profile: .empty))
             case .roadmap: tabs(.roadmap)
             case .forYou: forYou(.preview(cards: FeedCard.samples))
             case .forYouBuilding: forYou(.preview(cards: [], isBuilding: true))
@@ -40,7 +36,6 @@
             return MainTabView(selection: .forYou).environment(app)
         }
 
-        private static let sampleQuestions = ["Which role do you want next?", "Any projects you'd like to show?"]
     }
 
     /// Holds its model in state so a re-render doesn't start a second session.
