@@ -23,6 +23,10 @@ struct RoadmapPath: View {
                 VStack(spacing: 20) {
                     ProgressCard(goal: page.goal, progress: page.progress)
                         .padding(.horizontal, 20)
+                    if !fromResume.isEmpty {
+                        ResumeStepsCard(steps: fromResume) { selected = $0 }
+                            .padding(.horizontal, 20)
+                    }
                     if done.count > Self.recentDoneCount {
                         Button(showsAllDone ? "Hide earlier steps" : "Show \(done.count - Self.recentDoneCount) earlier steps") {
                             withAnimation(.snappy) { showsAllDone.toggle() }
@@ -101,7 +105,12 @@ struct RoadmapPath: View {
 
     /// Oldest finished step first, so the trail reads top to bottom as the journey so far.
     private var done: [RoadmapStep] {
-        page.completed.reversed().flatMap { $0.steps.reversed() }
+        page.completed.reversed().flatMap { $0.steps.reversed() }.filter { !$0.isFromResume }
+    }
+
+    /// What the resume already showed: one summary card instead of a long run of done tiles.
+    private var fromResume: [RoadmapStep] {
+        page.completed.reversed().flatMap { $0.steps.reversed() }.filter(\.isFromResume)
     }
 
     private var stops: [RoadmapStep] {
