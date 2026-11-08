@@ -25,7 +25,8 @@ export async function nextLine(env: Env, plan: VoicePlan, turn: { answer: string
   const { current, justAsked } = locate(lines, turn.transcript);
   const upcoming = lines[current + 1];
   const moveOn: NextLine = upcoming ? { say: upcoming, kind: "question" } : { say: WRAP_UP, kind: "wrap_up" };
-  if (!justAsked) return moveOn;
+  // a quick interview is a one-minute taster, so it never digs: answer, next question, goodbye
+  if (!justAsked || plan.length === "quick") return moveOn;
 
   const followUp = await followUpFor(env, { role: plan.role, question: lines[current], answer: turn.answer });
   return followUp ? { say: followUp, kind: "follow_up" } : moveOn;

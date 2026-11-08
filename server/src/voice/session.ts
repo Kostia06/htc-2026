@@ -6,12 +6,12 @@ import { liveInstructions, openingLine } from "./instructions";
 import { voiceProvider } from "./providers";
 import { buildInterviewPlan, type PlanInputs } from "./plan";
 import { createSession } from "./store";
-import type { Difficulty, VoiceMode, VoicePlan } from "./types";
+import type { Difficulty, InterviewLength, VoiceMode, VoicePlan } from "./types";
 
 export class UnknownCompany extends Error {}
 export class UnknownPosting extends Error {}
 
-type StartRequest = { mode: VoiceMode; companySlug?: string; role?: string; difficulty?: Difficulty; postingId?: string };
+type StartRequest = { mode: VoiceMode; companySlug?: string; role?: string; difficulty?: Difficulty; length?: InterviewLength; postingId?: string };
 
 // a posting decides the role and the company; a role or company sent alongside it is ignored
 async function withPosting(env: Env, userId: string, request: StartRequest) {
@@ -33,13 +33,14 @@ async function planInputs(env: Env, userId: string, start: StartRequest): Promis
     facts: insights?.facts ?? [],
     profile,
     difficulty: request.difficulty,
+    length: request.length,
     posting: request.posting && { requirements: request.posting.requirements.map(({ text, have }) => ({ text, have })), responsibilities: request.posting.responsibilities },
   };
 }
 
 // what the client shows before the voice starts; the full plan stays server-side in the live instructions
 function publicPlan(plan: VoicePlan) {
-  return { questions: plan.questions.map(({ text, source }) => ({ text, source })) };
+  return { length: plan.length ?? "full", questions: plan.questions.map(({ text, source }) => ({ text, source })) };
 }
 
 export async function startVoiceSession(env: Env, userId: string, request: StartRequest) {

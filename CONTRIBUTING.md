@@ -39,4 +39,7 @@ Stay inside your folder. Changing something another folder depends on (an API ro
 - Few comments. Only write one when the *why* isn't obvious.
 - No boilerplate docstrings, no "// Initialize the X".
 - Tests next to the code they cover (`*.test.ts`). Server: `cd server && pnpm test`. Web: `cd web && npm run build`.
-- Accessibility is part of done: keyboard, focus, captions, reduced motion.
+- Accessibility is part of done: keyboard, focus, captions, reduced motion. Captions may be
+  opt-in (the VR room keeps them off by default for realism, with a Captions toggle in the
+  headset menu and the desktop bar), as long as the switch is easy to find and screen
+  readers always get the text.

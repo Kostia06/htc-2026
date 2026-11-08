@@ -102,4 +102,14 @@ describe("next line", () => {
     expect(line.say.split(/\s+/).length).toBeLessThanOrEqual(20);
     expect(line.say).not.toContain('"');
   });
+
+  it("never follows up in a quick interview and wraps up after the second answer", async () => {
+    const quick = buildInterviewPlan(inputs({ length: "quick" }));
+    const [first, second] = quick.questions.map((q) => q.text);
+    const afterFirst = said(["interviewer", first], ["candidate", VAGUE]);
+    expect(await nextLine(env, quick, { answer: VAGUE, transcript: afterFirst })).toEqual({ say: second, kind: "question" });
+    const afterSecond = said(["interviewer", first], ["candidate", VAGUE], ["interviewer", second], ["candidate", VAGUE]);
+    expect((await nextLine(env, quick, { answer: VAGUE, transcript: afterSecond })).kind).toBe("wrap_up");
+    expect(modelRequests).toHaveLength(0);
+  });
 });

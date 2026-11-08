@@ -14,6 +14,7 @@ struct PracticeView: View {
     @State private var isPairing = false
     @State private var isRecapping = false
     @State private var replaying: PracticeSessionSummary?
+    @AppStorage(InterviewTargetPicker.lastChoiceKey) private var lastChoice: Data?
 
     var body: some View {
         NavigationStack {
@@ -23,6 +24,7 @@ struct PracticeView: View {
                         PracticeProgressCard(model: history) { isShowingHistory = true }
                     }
                     VStack(spacing: 10) {
+                        quickInterview
                         interviewChoice
                         vrLink
                     }
@@ -71,6 +73,41 @@ struct PracticeView: View {
                 await model.refresh()
             }
         }
+    }
+
+    /// One tap, no picker: the last target, else their first target role, else whatever the server picks.
+    private var quickTarget: InterviewTarget? {
+        lastChoice.flatMap { try? JSONDecoder().decode(InterviewTarget.self, from: $0) }
+            ?? app.profile.targetRoles.first.map(InterviewTarget.role)
+    }
+
+    private var quickInterview: some View {
+        Button {
+            start(.quick(target: quickTarget, difficulty: .preferred))
+        } label: {
+            HStack(spacing: 16) {
+                Image(systemName: "bolt.fill")
+                    .font(.title2)
+                    .foregroundStyle(Theme.onAction)
+                    .frame(width: 36)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quick interview · 1 min")
+                        .font(.title3.bold())
+                    Text(quickTarget.map { "Two questions for \($0.title)" } ?? "Two questions, no follow-ups")
+                        .font(.subheadline)
+                        .opacity(0.85)
+                        .multilineTextAlignment(.leading)
+                }
+                .foregroundStyle(Theme.onAction)
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, 12)
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.action, in: .rect(cornerRadius: 20))
+        }
+        .buttonStyle(RaisedSurfaceStyle(surface: Theme.action, outline: .card(cornerRadius: 20)))
+        .accessibilityHint("Starts a one-minute voice interview right away")
     }
 
     private var interviewChoice: some View {

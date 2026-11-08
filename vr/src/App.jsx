@@ -11,13 +11,17 @@ import { useHeadsetSession } from './headset/useHeadsetSession.js'
 import { useLaunchPolling } from './headset/useLaunchPolling.js'
 import { color } from './theme/tokens.js'
 import { useInterviewReview } from './review/useInterviewReview.js'
+import { useCaptions } from './ui/useCaptions.js'
 
 export default function App() {
+  // Controllers, hands and their rays are the store's defaults, which mount only
+  // for input sources of a live XR session: the desktop view never shows them.
   const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false }), [])
   const headset = useHeadsetSession()
   const interview = useInterview({ token: headset.token, onSignedOut: headset.signOut })
   const vrSupported = useVRSupport()
   const review = useInterviewReview(interview, headset)
+  const captions = useCaptions()
 
   // "Practice in VR" on the phone queues a launch; pick it up while the room is
   // idle and start that interview. Paused during one so a second tap cannot
@@ -58,7 +62,7 @@ export default function App() {
         }}
       >
         <XR store={store}>
-          <Scene interview={interview} headset={headset} review={review} />
+          <Scene interview={interview} headset={headset} review={review} captions={captions} />
           <Preload all />
         </XR>
         {/* Desktop preview only: inside XR the headset drives the camera and
@@ -79,6 +83,7 @@ export default function App() {
         interview={interview}
         headset={headset}
         vrSupported={vrSupported}
+        captions={captions}
         onEnterVR={() => store.enterVR()}
       />
     </>

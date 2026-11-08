@@ -15,6 +15,11 @@ public enum PracticeDifficulty: String, Codable, Sendable, CaseIterable {
     case easy, standard, hard
 }
 
+/// Quick is the one-minute taster: two questions and no follow-ups. The server treats a missing value as `full`.
+public enum InterviewLength: String, Codable, Sendable, CaseIterable {
+    case quick, full
+}
+
 public struct VoiceSessionRequest: Encodable, Equatable, Sendable {
     public var mode: PracticeMode
     public var companySlug: String?
@@ -22,16 +27,25 @@ public struct VoiceSessionRequest: Encodable, Equatable, Sendable {
     public var difficulty: PracticeDifficulty?
     /// A saved posting: the server takes the role and company from it and asks about its requirements.
     public var postingId: String?
+    public var length: InterviewLength?
 
     public init(
         mode: PracticeMode, companySlug: String? = nil, role: String? = nil,
-        difficulty: PracticeDifficulty? = nil, postingId: String? = nil,
+        difficulty: PracticeDifficulty? = nil, postingId: String? = nil, length: InterviewLength? = nil,
     ) {
         self.mode = mode
         self.companySlug = companySlug
         self.role = role
         self.difficulty = difficulty
         self.postingId = postingId
+        self.length = length
+    }
+
+    /// The one-tap quick interview: the target last picked, or none, so the server opens with their profile's role.
+    public static func quick(target: InterviewTarget?, difficulty: PracticeDifficulty) -> VoiceSessionRequest {
+        var request = target?.request(difficulty: difficulty) ?? VoiceSessionRequest(mode: .interview, difficulty: difficulty)
+        request.length = .quick
+        return request
     }
 }
 
