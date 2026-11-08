@@ -5,11 +5,11 @@ import { liveInstructions, openingLine } from "./instructions";
 import { voiceProvider } from "./providers";
 import { buildInterviewPlan, buildNetworkingPlan, type PlanInputs } from "./plan";
 import { createSession } from "./store";
-import type { VoiceMode, VoicePlan } from "./types";
+import type { Difficulty, VoiceMode, VoicePlan } from "./types";
 
 export class UnknownCompany extends Error {}
 
-type StartRequest = { mode: VoiceMode; companySlug?: string; role?: string };
+type StartRequest = { mode: VoiceMode; companySlug?: string; role?: string; difficulty?: Difficulty };
 
 async function planInputs(env: Env, userId: string, request: StartRequest): Promise<PlanInputs> {
   const profile = await getProfile(env, userId);
@@ -21,6 +21,7 @@ async function planInputs(env: Env, userId: string, request: StartRequest): Prom
     reportedQuestions: insights?.questions ?? [],
     facts: insights?.facts ?? [],
     profile,
+    difficulty: request.difficulty,
   };
 }
 

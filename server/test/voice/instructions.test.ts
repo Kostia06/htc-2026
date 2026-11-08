@@ -39,4 +39,26 @@ describe("live instructions", () => {
     expect(text).toMatch(/wait/i);
     expect(openingLine(plan)).toMatch(/^hi/i);
   });
+
+  it("probes instead of assuming: vague answers get a concrete question back", () => {
+    const text = interview();
+    expect(text).toMatch(/never assume you understood/i);
+    expect(text).toMatch(/concrete/i);
+    expect(text).toMatch(/what exactly|which tool|how many|what was your part/i);
+  });
+
+  it("never writes stage directions or bracketed audio tags, which end up in the transcript", () => {
+    expect(interview()).toMatch(/never write anything in square brackets/i);
+    expect(liveInstructions(buildNetworkingPlan(inputs()))).toMatch(/never write anything in square brackets/i);
+  });
+
+  it("changes how hard the interviewer pushes with the difficulty", () => {
+    const easy = liveInstructions(buildInterviewPlan(inputs({ difficulty: "easy" })));
+    const hard = liveInstructions(buildInterviewPlan(inputs({ difficulty: "hard" })));
+    expect(easy).toMatch(/patient/i);
+    expect(easy).not.toMatch(/push back/i);
+    expect(hard).toMatch(/push back/i);
+    expect(hard).toMatch(/up to two follow-ups/i);
+    expect(interview()).toMatch(/standard first-round/i);
+  });
 });

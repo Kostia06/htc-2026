@@ -106,6 +106,14 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q", answer: "A", durationMs: 1 })).status).toBe(409);
   });
 
+  it("passes the chosen difficulty into the interviewer's instructions and rejects unknown ones", async () => {
+    const me = await person();
+    const hard = await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", difficulty: "hard" });
+    expect(hard.status).toBe(201);
+    expect(tokenRequests.at(-1)).toMatch(/push back/i);
+    expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", difficulty: "brutal" })).status).toBe(400);
+  });
+
   it("rejects bad input and too many sessions", async () => {
     const me = await person();
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "karaoke" })).status).toBe(400);

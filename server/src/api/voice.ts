@@ -7,7 +7,7 @@ import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany } from "../voice/session";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns } from "../voice/store";
-import { VOICE_MODES, type VoiceMode } from "../voice/types";
+import { DIFFICULTIES, type Difficulty, VOICE_MODES, type VoiceMode } from "../voice/types";
 
 const SESSIONS_PER_HOUR = 10;
 const MAX_ANSWER = 4000;
@@ -30,14 +30,17 @@ export function voiceRouter() {
   const router = new Hono<AppContext>();
 
   router.post("/sessions", async (c) => {
-    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown }>().catch(() => null);
     if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview or networking" }, 400);
+    if (body.difficulty !== undefined && !DIFFICULTIES.includes(body.difficulty as Difficulty)) {
+      return c.json({ error: "difficulty must be easy, standard or hard" }, 400);
+    }
     const userId = c.var.sessionId;
     if ((await countSessionsSince(c.env, userId, new Date(Date.now() - 3600_000))) >= SESSIONS_PER_HOUR) {
       return c.json({ error: "that's a lot of practice for one hour, take a break and try again soon" }, 429);
     }
     try {
-      const started = await startVoiceSession(c.env, userId, { mode: body.mode as VoiceMode, companySlug: optionalText(body.companySlug), role: optionalText(body.role) });
+      const started = await startVoiceSession(c.env, userId, { mode: body.mode as VoiceMode, companySlug: optionalText(body.companySlug), role: optionalText(body.role), difficulty: body.difficulty as Difficulty | undefined });
       return c.json(started, 201);
     } catch (e) {
       if (e instanceof UnknownCompany) return c.json({ error: "unknown company" }, 404);
