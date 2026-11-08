@@ -109,3 +109,45 @@ describe("live instructions", () => {
     expect(quick).not.toMatch(/Dig for specifics/);
   });
 });
+
+describe("interview manners", () => {
+  const full = () => liveInstructions(buildInterviewPlan(inputs()));
+  const quick = () => liveInstructions(buildInterviewPlan(inputs({ length: "quick" })));
+
+  it("opens a full interview with small talk, then gets to the role", () => {
+    expect(openingLine(buildInterviewPlan(inputs()))).toBe("Hi, thanks for coming in. How are you today?");
+    expect(full()).toMatch(/how to open/i);
+    expect(full()).toMatch(/react to what they said naturally/i);
+    expect(full()).toMatch(/today is about the Junior data analyst role at Acme/);
+  });
+
+  it("skips small talk in a quick interview but keeps the closing question", () => {
+    expect(openingLine(buildInterviewPlan(inputs({ length: "quick" })))).toMatch(/Ready to start\?/);
+    expect(quick()).not.toMatch(/how to open/i);
+    expect(quick()).toContain("Do you have any questions for me?");
+  });
+
+  it("always asks for the candidate's questions and answers only from research", () => {
+    const text = full();
+    expect(text).toContain("Do you have any questions for me?");
+    expect(text).toMatch(/say only what is in the facts/i);
+    expect(text).toMatch(/never invent/i);
+    expect(text).toMatch(/say so honestly/i);
+    expect(text).toContain("- Acme opened a Calgary office in 2026.");
+    expect(text).toMatch(/<company_facts>[\s\S]*<\/company_facts>/);
+  });
+
+  it("admits it knows nothing about the company when there is no research", () => {
+    const text = liveInstructions(buildInterviewPlan(inputs({ facts: [] })));
+    expect(text).toMatch(/no researched facts about Acme/);
+    expect(text).not.toContain("<company_facts>");
+  });
+
+  it("keeps the existing rules", () => {
+    const text = full();
+    expect(text).toContain(CONDUCT_CLOSE);
+    expect(text).toMatch(/end_call/);
+    expect(text).toMatch(/Dig for specifics/);
+    expect(text).toMatch(/Difficulty: a standard/);
+  });
+});

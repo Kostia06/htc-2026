@@ -15,6 +15,8 @@ export type Debrief = {
   liveTips?: ReportTip[];
   /** Set when the interviewer hung up because of the candidate's conduct (voice/conduct.ts). */
   endedEarly?: "conduct";
+  /** Whether they asked questions of their own when invited at the end (voice/interest.ts). */
+  interest?: { asked: boolean; quote: string | null };
 };
 
 const text = { type: "string" };

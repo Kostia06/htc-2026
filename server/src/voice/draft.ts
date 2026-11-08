@@ -1,6 +1,7 @@
 import type { Env } from "../env";
 import { withLiveTips } from "./coach/report";
 import { askForDebrief, buildDebrief, type Debrief, normalizeDebrief } from "./debrief";
+import { withInterest } from "./interest";
 import { claimDraftBuild, clearDraftWanted, dropDraftBuild, markDraftWanted, readDraft, releaseDraftBuild, saveDraft } from "./draft-store";
 import { listTurns, type StoredTurn, type VoiceSession } from "./store";
 
@@ -55,7 +56,7 @@ async function waitForFullDraft(env: Env, userId: string, sessionId: string, tur
 export async function finalReport(env: Env, userId: string, session: VoiceSession, turns: StoredTurn[]): Promise<Debrief> {
   const draft = await waitForFullDraft(env, userId, session.id, turns.length);
   const report = draft ? normalizeDebrief(draft, turns) : await buildDebrief(env, session.plan, turns);
-  return withLiveTips(report, turns);
+  return withInterest(withLiveTips(report, turns), turns);
 }
 
 /** The latest draft, normalized over the turns it was built from, for a preview while the interview runs. */

@@ -20,6 +20,8 @@ export type InterviewPlan = {
   length?: InterviewLength;
   company: string | null;
   questions: PlannedQuestion[];
+  // short researched facts about the company, the only thing the interviewer may say about it when asked
+  companyFacts?: string[];
 };
 
 export type VoicePlan = InterviewPlan;

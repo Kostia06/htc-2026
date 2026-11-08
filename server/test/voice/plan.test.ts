@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { emptyProfile } from "../../src/memory/profile/patch";
-import { buildInterviewPlan, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
+import { buildInterviewPlan, companyFacts, MAX_COMPANY_FACTS, MAX_QUESTIONS, MAX_WORDS } from "../../src/voice/plan";
 import { inputs, profile } from "./fixtures";
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
@@ -87,5 +87,28 @@ describe("interview plan", () => {
 
   it("is a full interview unless asked otherwise", () => {
     expect(buildInterviewPlan(inputs()).length).toBe("full");
+  });
+});
+
+describe("company facts in the plan", () => {
+  it("carries the researched facts the interviewer may share, at most six", () => {
+    expect(buildInterviewPlan(inputs()).companyFacts).toEqual(["Acme opened a Calgary office in 2026.", "Acme's analytics team uses dbt and Snowflake."]);
+    const many = Array.from({ length: 10 }, (_, i) => ({ kind: "news", text: `Fact ${i}.` }));
+    expect(companyFacts({ company: inputs().company, facts: many })).toHaveLength(MAX_COMPANY_FACTS);
+  });
+
+  it("drops duplicates, blanks and long passages, and has none without a company", () => {
+    const facts = [
+      { kind: "news", text: "  Acme  is hiring. " },
+      { kind: "news", text: "Acme is hiring." },
+      { kind: "news", text: "" },
+      { kind: "news", text: "x".repeat(400) },
+    ];
+    expect(companyFacts({ company: inputs().company, facts })).toEqual(["Acme is hiring."]);
+    expect(buildInterviewPlan(inputs({ company: null })).companyFacts).toEqual([]);
+  });
+
+  it("keeps the facts in a quick interview too", () => {
+    expect(buildInterviewPlan(inputs({ length: "quick" })).companyFacts).toHaveLength(2);
   });
 });

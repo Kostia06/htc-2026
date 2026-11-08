@@ -12,6 +12,9 @@ const MAX_FROM_POSTING = 2;
 const MAX_REPORTED = 1;
 const MAX_EXAMPLES = 2;
 const MAX_TECHNICAL = 2;
+// enough to answer "what's it like there?" without the prompt turning into a brochure
+export const MAX_COMPANY_FACTS = 6;
+const MAX_FACT_CHARS = 200;
 
 /** The posting the person is preparing for, when the session was started from one. */
 export type PlanPosting = {
@@ -66,10 +69,27 @@ function quickQuestions(inputs: PlanInputs): PlannedQuestion[] {
   return [opener, { text: QUICK_BEHAVIORAL, source: "behavioral" }];
 }
 
+// what the interviewer may say when the candidate asks about the company: researched facts only, newest first
+export function companyFacts(inputs: Pick<PlanInputs, "company" | "facts">): string[] {
+  if (!inputs.company) return [];
+  const seen = new Set<string>();
+  return inputs.facts
+    .map((fact) => fact.text.replace(/\s+/g, " ").trim())
+    .filter((text) => text.length > 0 && text.length <= MAX_FACT_CHARS && !seen.has(text) && seen.add(text))
+    .slice(0, MAX_COMPANY_FACTS);
+}
+
 // personal first, so it opens like a real conversation; then the posting, what others were asked, then their field
 export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
   const length = inputs.length ?? "full";
-  const base = { mode: "interview", role: inputs.role, difficulty: inputs.difficulty ?? "standard", length, company: inputs.company?.name ?? null } as const;
+  const base = {
+    mode: "interview",
+    role: inputs.role,
+    difficulty: inputs.difficulty ?? "standard",
+    length,
+    company: inputs.company?.name ?? null,
+    companyFacts: companyFacts(inputs),
+  } as const;
   if (length === "quick") return { ...base, questions: quickQuestions(inputs) };
   const sayable = inputs.reportedQuestions.filter((q) => isShortEnough(q.text));
   const reported: PlannedQuestion[] = sayable
