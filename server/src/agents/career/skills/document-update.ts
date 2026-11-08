@@ -30,7 +30,8 @@ export const documentUpdate: Skill<DocumentUpdateInput> = {
   platforms: ["app"],
   personal: false,
   tools: [],
-  maxSteps: 2,
+  // one more try than a typed update: a long document often trips an output limit on the first finish
+  maxSteps: 3,
   instructions: `The person uploaded one of their own documents. Read it and call finish once with the actions that record what it states. The app calls their plan their "road": say road, never roadmap.
 Actions (up to ${MAX_DOCUMENT_ACTIONS}; skip anything already listed under "Already known"):
 - add_education {school, program?, when?}: a school and program, e.g. from a transcript, diploma or resume.

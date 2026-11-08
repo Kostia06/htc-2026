@@ -90,7 +90,10 @@ export async function runFileUpdate(deps: AgentDeps, turn: FileTurn): Promise<Fi
     turn.timeoutMs ?? FILE_TIMEOUT_MS,
     turn.waitUntil,
   );
-  if (run.status === "failed") throw new UpdateFailed(run.error);
+  if (run.status === "failed") {
+    console.warn("[file-update] document-update failed:", run.error);
+    throw new UpdateFailed(run.error);
+  }
   const output = run.output as DocumentUpdateOutput;
 
   const source = normalize(turn.text);
