@@ -9,7 +9,7 @@ import { color, scoreTone, type } from './tokens.js'
 // summary, a list of moments. Positions are the block's top-left corner.
 
 /** The big rounded number counting up, "/100" beside it, the verdict under. */
-export function ScoreHeadline({ score, verdict, maxWidth = 0.5, reducedMotion, ...props }) {
+export function ScoreHeadline({ score, verdict, maxWidth = 0.5, onVerdictSync, reducedMotion, ...props }) {
   const shown = useCountUp(Math.round(score ?? 0), reducedMotion)
   const digits = String(shown).length
   return (
@@ -21,7 +21,7 @@ export function ScoreHeadline({ score, verdict, maxWidth = 0.5, reducedMotion, .
         /100
       </Label>
       {verdict && (
-        <Label variant="title3" weight="semibold" anchorX="left" anchorY="top" maxWidth={maxWidth} position={[0, -type.score * 1.18, 0]}>
+        <Label variant="title3" weight="semibold" anchorX="left" anchorY="top" maxWidth={maxWidth} position={[0, -type.score * 1.18, 0]} onSync={onVerdictSync}>
           {verdict}
         </Label>
       )}
@@ -42,13 +42,13 @@ export function SectionTitle({ children, ...props }) {
  * One plain row: a small coloured mark and wrapped text. `mark` is a palette
  * name — positive for what worked, text2 for what to work on, agent for a tip.
  */
-export function ListRow({ text, detail, mark = 'text2', width = 0.5, ...props }) {
+export function ListRow({ text, detail, mark = 'text2', width = 0.5, onSync, ...props }) {
   return (
     <group {...props}>
       <mesh position={[0.006, -type.body * 0.62, 0]} material={flat(color[mark] ?? mark)}>
         <circleGeometry args={[0.0055, 20]} />
       </mesh>
-      <Label variant="body" anchorX="left" anchorY="top" maxWidth={width - 0.03} position={[0.026, 0, 0]}>
+      <Label variant="body" anchorX="left" anchorY="top" maxWidth={width - 0.03} position={[0.026, 0, 0]} onSync={onSync}>
         {text}
       </Label>
       {detail && (

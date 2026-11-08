@@ -1,22 +1,21 @@
 import { Card, Label, RaisedButton, space, type } from '../../theme/index.js'
+import { guessHeight, stack } from '../../theme/layout.js'
+import { useTextHeights } from '../../theme/useTextHeights.js'
 import { HEADSET_HINTS } from '../../ui/useHints.js'
 
-const WIDTH = 0.5
+const WIDTH = 0.56
 const INNER = WIDTH - space.xl * 2
-const LINE = type.callout * 1.3
+const TITLE_H = 0.05
 
-// Troika lays text out off-thread, so estimate each hint's wrapped lines to
-// stack them without overlap.
-const linesOf = (text) => Math.ceil((text.length * type.callout * 0.53) / INNER)
-
-/** The headset's how-to card: four short lines and a Got it. */
+/** The headset's how-to card: four short lines and a Got it, stacked by their measured heights. */
 export function HintCard({ onClose, reducedMotion, ...props }) {
-  const tops = []
-  let y = 0.05
-  for (const hint of HEADSET_HINTS) {
-    tops.push(y)
-    y += linesOf(hint) * LINE + 0.022
-  }
+  const { measure, heightOf } = useTextHeights()
+  const { tops: stacked, total } = stack(
+    HEADSET_HINTS.map((hint, i) => heightOf(i, guessHeight(hint, type.callout, INNER, 1.3))),
+    0.022,
+  )
+  const tops = stacked.map((t) => TITLE_H + t)
+  const y = TITLE_H + total + 0.022
   const height = space.xl * 2 + y + 0.08
   const left = -WIDTH / 2 + space.xl
   const top = height / 2 - space.xl
@@ -27,7 +26,7 @@ export function HintCard({ onClose, reducedMotion, ...props }) {
           How it works
         </Label>
         {HEADSET_HINTS.map((hint, i) => (
-          <Label key={hint} variant="callout" tone="text2" anchorX="left" anchorY="top" lineHeight={1.3} maxWidth={INNER} position={[left, top - tops[i], 0]}>
+          <Label key={hint} variant="callout" tone="text2" anchorX="left" anchorY="top" lineHeight={1.3} maxWidth={INNER} position={[left, top - tops[i], 0]} onSync={measure(i)}>
             {hint}
           </Label>
         ))}

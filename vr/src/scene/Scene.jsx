@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { XROrigin, useXR } from '@react-three/xr'
 import { Room } from './Room.jsx'
 import { Interviewer } from './Interviewer.jsx'
 import { ActionButton, ReviewPanel } from './Panels.jsx'
+import { SummaryCard } from './ui/SummaryCard.jsx'
+import { reportSteps } from './ui/reportSteps.js'
 import { PairingPanel } from './PairingPanel.jsx'
 import { Veil, useFadeSwap } from './Fade.jsx'
+import { WarmFonts } from '../theme/WarmFonts.jsx'
 import { MenuPanel } from './ui/MenuPanel.jsx'
 import { Caption } from './ui/Caption.jsx'
 import { HintCard } from './ui/HintCard.jsx'
@@ -38,7 +41,10 @@ const PAIRING_PANEL = { position: [0, 1.18, -1.1], rotation: [-0.14, 0, 0] }
 const MENU_PANEL = { position: [0, 1.04, -1.1], rotation: [-0.3, 0, 0] }
 // Upright and level, clear of the menu and summary in the middle and well above the desk (top 0.745).
 const SIDE_PANEL = { position: [-0.68, 1.2, -0.95], rotation: [0, 0.55, 0] }
-const SUMMARY_PANEL = { position: [0, 1.14, -1.12], rotation: [-0.14, 0, 0] }
+// Hangs from its top edge (SummaryCard), which sits just under the line from
+// the candidate's eyes to the interviewer's chin, about a metre out: the report
+// grows down toward the desk and never covers his face.
+const SUMMARY_PANEL = { position: [0, 1.25, -1.0], rotation: [-0.3, 0, 0] }
 const CAPTION = { position: [0, 0.9, -1.15], rotation: [-0.35, 0, 0] }
 const BUTTON = { position: [0, 0.88, -0.58], rotation: [-0.8, 0, 0] }
 // the replay sits opposite the score card, on the right
@@ -93,6 +99,16 @@ export function Scene({ interview, headset, review, captions }) {
 
   const buttonProps = buttonFor(phase, actions, { micDenied, usingAgent })
 
+  // The report one step at a time: score, top tips, then the moments on the right.
+  const endCard = toEndCard(summary)
+  const steps = reportSteps(endCard, { hasMoments: Boolean(review?.sessionId) })
+  const [reportIndex, setReportIndex] = useState(0)
+  useEffect(() => {
+    if (stage !== 'summary') setReportIndex(0)
+  }, [stage])
+  const step = steps[Math.min(reportIndex, steps.length - 1)]
+  const showMoments = Boolean(review?.sessionId) && (stage === 'menu' || (stage === 'summary' && (step.kind === 'moments' || step.kind === 'notice')))
+
   return (
     <>
       {/* local-floor: the candidate's real chair sets eye height; the origin
@@ -101,6 +117,7 @@ export function Scene({ interview, headset, review, captions }) {
       <Veil />
 
       <Room />
+      <WarmFonts />
 
       <Interviewer
         position={INTERVIEWER.position}
@@ -113,6 +130,8 @@ export function Scene({ interview, headset, review, captions }) {
         reducedMotion={reducedMotion}
       />
 
+      {/* a panel that still has to load (a font, a texture) waits on its own, never blanking the room */}
+      <Suspense fallback={null}>
       <group position-y={comfort.lift}>
         {stage === 'pairing' && headset && (
           <PairingPanel
@@ -190,10 +209,14 @@ export function Scene({ interview, headset, review, captions }) {
 
         {/* always a card once it's over, even before or without a report: its key is the way back to the menu */}
         {stage === 'summary' && (
-          <ReviewPanel
-            summary={toEndCard(summary)}
+          <SummaryCard
+            summary={endCard}
             meta={meta}
             sample={isStub}
+            steps={steps}
+            index={Math.min(reportIndex, steps.length - 1)}
+            onNext={() => setReportIndex((i) => Math.min(i + 1, steps.length - 1))}
+            onBack={() => setReportIndex((i) => Math.max(i - 1, 0))}
             onPracticeAgain={actions.restart}
             position={SUMMARY_PANEL.position}
             rotation={SUMMARY_PANEL.rotation}
@@ -202,10 +225,11 @@ export function Scene({ interview, headset, review, captions }) {
         )}
 
         {/* after an interview, or a past one opened from the phone */}
-        {(stage === 'summary' || stage === 'menu') && review?.sessionId && (
+        {showMoments && (
           <ReviewMoments review={review} position={REVIEW_MOMENTS.position} rotation={REVIEW_MOMENTS.rotation} reducedMotion={reducedMotion} />
         )}
       </group>
+      </Suspense>
     </>
   )
 }

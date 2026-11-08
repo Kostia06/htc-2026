@@ -1,22 +1,26 @@
 import { useState } from 'react'
 import { recordingNote, reviewRows } from '../review/moments.js'
 import { Card, Label, RaisedButton, Surface, color, flat, space, type, usePressable } from '../theme/index.js'
+import { guessHeight, stack } from '../theme/layout.js'
+import { useTextHeights } from '../theme/useTextHeights.js'
 
 // The headset's replay: every moment of the interview with its time, and "play
 // from here" on each, as an app card. The open moment's note, rewrite and
 // sources sit at the bottom.
 
 // the score card's footprint (ScoreCard.jsx), so the two read as a pair
-const WIDTH = 0.64
+const WIDTH = 0.7
 const PAD = space.l
+const INNER = WIDTH - PAD * 2
 const LEFT = -WIDTH / 2 + PAD
 const RIGHT = WIDTH / 2 - PAD
-const ROW_H = 0.06
+const ROW_H = 0.078 // room for a title that wraps to two lines
 const PAGE = 4
-const OPEN_H = 0.17
 const HEADER_H = 0.09 // title, then the recording note under it
-const MORE_H = 0.08 // the More key, between the rows and the open moment
-const HEIGHT = PAD * 2 + HEADER_H + PAGE * ROW_H + MORE_H + OPEN_H
+const NAV_H = 0.07 // the Back / Next keys, between the rows and the open moment
+const KEY_H = 0.048
+const GAP = 0.012
+const ROWS_H = HEADER_H + PAGE * ROW_H + NAV_H
 
 // moments.js names its dots in the old palette; in the app's meaning: good is
 // teal, needs work is coral, anything the AI suggests or researched is sand.
@@ -37,7 +41,15 @@ function Row({ row, isOpen, isPlaying, playable, onPick, position, reducedMotion
       <mesh position={[LEFT + 0.012, 0, 0.001]} material={flat(isPlaying ? color.action : TONE[row.tone] ?? color.text2)}>
         <circleGeometry args={[isPlaying ? 0.009 : 0.007, 20]} />
       </mesh>
-      <Label variant="subhead" weight="semibold" anchorX="left" anchorY="middle" position={[LEFT + 0.032, 0, 0.001]} maxWidth={inner - (row.researched ? 0.3 : 0.18)}>
+      <Label
+        variant="subhead"
+        weight="semibold"
+        anchorX="left"
+        anchorY="middle"
+        position={[LEFT + 0.032, 0, 0.001]}
+        maxWidth={inner - 0.032 - (row.researched ? 0.3 : 0.18)}
+        overflowWrap="break-word"
+      >
         {row.title}
       </Label>
       {row.researched && (
@@ -57,25 +69,34 @@ function Row({ row, isOpen, isPlaying, playable, onPick, position, reducedMotion
   )
 }
 
-function OpenMoment({ row, position }) {
-  if (!row) return null
-  const width = WIDTH - PAD * 2
-  const sources = row.sources.length ? `Sources: ${row.sources.join(' · ')}` : null
+// The open moment's note, rewrite and sources, stacked by their measured heights.
+function openBlocks(row) {
+  if (!row) return []
+  return [
+    { key: 'detail', text: row.detail, variant: 'callout', tone: 'text' },
+    row.better && { key: 'better', text: `Try: ${row.better}`, variant: 'footnote', tone: 'agent' },
+    row.sources.length && { key: 'sources', text: `Sources: ${row.sources.join(' · ')}`, variant: 'caption', tone: 'text2' },
+  ].filter((block) => block && block.text)
+}
+
+function OpenMoment({ blocks, tops, measure, position }) {
   return (
     <group position={position}>
-      <Label variant="callout" anchorX="left" anchorY="top" position={[LEFT, 0, 0]} maxWidth={width} lineHeight={1.3}>
-        {row.detail}
-      </Label>
-      {row.better && (
-        <Label variant="footnote" tone="agent" anchorX="left" anchorY="top" position={[LEFT, -type.callout * 2.7, 0]} maxWidth={width} lineHeight={1.3}>
-          {`Try: ${row.better}`}
+      {blocks.map((block, i) => (
+        <Label
+          key={block.key}
+          variant={block.variant}
+          tone={block.tone}
+          anchorX="left"
+          anchorY="top"
+          position={[LEFT, -tops[i], 0]}
+          maxWidth={INNER}
+          lineHeight={1.3}
+          onSync={measure(block.key)}
+        >
+          {block.text}
         </Label>
-      )}
-      {sources && (
-        <Label variant="caption" tone="text2" anchorX="left" anchorY="top" position={[LEFT, -type.callout * 2.7 - type.footnote * 2.8, 0]} maxWidth={width}>
-          {sources}
-        </Label>
-      )}
+      ))}
     </group>
   )
 }
@@ -87,8 +108,17 @@ export function ReviewMoments({ review, position, rotation, reducedMotion }) {
   const rows = reviewRows(review.replay)
   const pages = Math.max(1, Math.ceil(rows.length / PAGE))
   const shown = rows.slice(page * PAGE, page * PAGE + PAGE)
-  const top = HEIGHT / 2 - PAD
   const open = rows.find((r) => r.id === openId) ?? null
+  const { measure, heightOf } = useTextHeights()
+  const blocks = openBlocks(open)
+  const { tops, total } = stack(
+    blocks.map((b) => heightOf(b.key, guessHeight(b.text, type[b.variant], INNER, 1.3))),
+    GAP,
+  )
+  const height = PAD * 2 + ROWS_H + (blocks.length ? total + GAP : 0)
+  const top = height / 2 - PAD
+  const navY = top - HEADER_H - PAGE * ROW_H - NAV_H / 2
+  const keyW = 0.14
 
   const pick = (row) => {
     setOpenId(row.id)
@@ -98,7 +128,7 @@ export function ReviewMoments({ review, position, rotation, reducedMotion }) {
 
   return (
     <group position={position} rotation={rotation}>
-      <Card width={WIDTH} height={HEIGHT}>
+      <Card width={WIDTH} height={height}>
         <Label variant="headline" anchorX="left" anchorY="top" position={[LEFT, top, 0]}>
           Review
         </Label>
@@ -123,19 +153,37 @@ export function ReviewMoments({ review, position, rotation, reducedMotion }) {
           />
         ))}
         {pages > 1 && (
-          <RaisedButton
-            label={`More ${page + 1}/${pages}`}
-            tone="chip"
-            variant="footnote"
-            width={0.14}
-            height={0.044}
-            radius={0.022}
-            onPress={() => setPage((p) => (p + 1) % pages)}
-            reducedMotion={reducedMotion}
-            position={[RIGHT - 0.07, top - HEADER_H - PAGE * ROW_H - MORE_H / 2, 0.003]}
-          />
+          <>
+            <Label variant="footnote" tone="text2" anchorX="left" anchorY="middle" position={[LEFT, navY, 0]}>
+              {`${page + 1} of ${pages}`}
+            </Label>
+            <RaisedButton
+              label="Back"
+              tone="chip"
+              variant="footnote"
+              width={keyW}
+              height={KEY_H}
+              radius={KEY_H / 2}
+              disabled={page === 0}
+              onPress={() => setPage((p) => Math.max(p - 1, 0))}
+              reducedMotion={reducedMotion}
+              position={[RIGHT - keyW * 1.5 - space.s, navY, 0.003]}
+            />
+            <RaisedButton
+              label="Next"
+              tone="chip"
+              variant="footnote"
+              width={keyW}
+              height={KEY_H}
+              radius={KEY_H / 2}
+              disabled={page >= pages - 1}
+              onPress={() => setPage((p) => Math.min(p + 1, pages - 1))}
+              reducedMotion={reducedMotion}
+              position={[RIGHT - keyW / 2, navY, 0.003]}
+            />
+          </>
         )}
-        <OpenMoment row={open} position={[0, -HEIGHT / 2 + PAD + OPEN_H, 0]} />
+        <OpenMoment blocks={blocks} tops={tops} measure={measure} position={[0, top - ROWS_H, 0]} />
       </Card>
     </group>
   )

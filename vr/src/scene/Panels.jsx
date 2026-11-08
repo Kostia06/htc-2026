@@ -1,6 +1,5 @@
 import { Card, Label, RaisedButton, color, font } from '../theme/index.js'
 import { ScoreCard } from './ui/ScoreCard.jsx'
-import { SummaryCard } from './ui/SummaryCard.jsx'
 
 // The interview's panels, drawn in the app's theme (src/theme). Kept as the
 // stable import surface for anything that adds a panel: `Panel` is the app's
@@ -22,19 +21,16 @@ export function Panel({ width, height, radius, children, ...props }) {
 }
 
 /**
- * One answer's score, or the end-of-interview summary. `sample` marks numbers
- * from example data: the hackathon rules require made-up numbers to say so, in
- * the headset as well as on the desktop.
+ * One answer's score, beside the interviewer. `sample` marks numbers from
+ * example data: the hackathon rules require made-up numbers to say so, in the
+ * headset as well as on the desktop. (The end-of-interview report is
+ * SummaryCard, stepped by the Scene.)
  */
-export function ReviewPanel({ result, summary, meta, sample = false, onPracticeAgain, position, rotation, reducedMotion }) {
-  if (!result && !summary) return null
+export function ReviewPanel({ result, sample = false, position, rotation, reducedMotion }) {
+  if (!result) return null
   return (
     <group position={position} rotation={rotation}>
-      {result ? (
-        <ScoreCard result={result} sample={sample} reducedMotion={reducedMotion} />
-      ) : (
-        <SummaryCard summary={summary} meta={meta} sample={sample} onPracticeAgain={onPracticeAgain} reducedMotion={reducedMotion} />
-      )}
+      <ScoreCard result={result} sample={sample} reducedMotion={reducedMotion} />
     </group>
   )
 }
