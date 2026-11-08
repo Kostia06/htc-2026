@@ -51,7 +51,7 @@ targets:
         Debug:
           RAVEN_API_URL: "http://localhost:8799"
         Release:
-          RAVEN_API_URL: "https://htc-mentor.ilnkostia-dev.workers.dev"
+          RAVEN_API_URL: "https://api.skillit.study"
     info:
       path: Skillit/Resources/Info.plist
       properties:

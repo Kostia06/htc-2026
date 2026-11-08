@@ -1,6 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "htc-mentor",
+  "workers_dev": true,
+  "routes": [{ "pattern": "api.skillit.study", "custom_domain": true }],
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -21,7 +23,7 @@
     "GEMINI_MODEL": "gemini-3.5-flash",
     "GEMINI_FALLBACK_MODEL": "gemini-3.5-flash-lite",
     "GEMINI_LIVE_MODEL": "gemini-3.8-live",
-    "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev"
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://raven-vr.ilnkostia-dev.workers.dev,https://vr.skillit.study,https://app.skillit.study,https://skillit.study,https://www.skillit.study"
   },
   "observability": { "enabled": true }
 }
