@@ -162,6 +162,26 @@ export const resumeApi = {
   /** coach rewrites for `resume` as it is on screen (saved or not), optionally one section and tuned to a company */
   improve: ({ resume, section, company } = {}) =>
     post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
+
+  analyze: ({
+              targetRole,
+              location,
+              resumeText,
+              preferredLanguages = [],
+              timeBudgetHours = 25,
+            } = {}) =>
+      post(
+          '/api/resume/analyze',
+          {
+            targetRole,
+            location,
+            resumeText,
+            preferredLanguages,
+            timeBudgetHours,
+          },
+          { timeout: 120000 },
+      ),
+
   /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
   upload: (file) => upload('/api/resume/upload', file),
   /** the resume as a file: format 'pdf' | 'docx', template 'skillit' (default look) | 'plain' (bare, ATS-style) */
