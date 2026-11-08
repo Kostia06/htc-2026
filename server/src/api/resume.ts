@@ -13,7 +13,8 @@ import type { ProfilePatch } from "../memory/profile/types";
 import { maskLinkedinText } from "../resume/linkedin";
 import { parseResume, seedFromProfile } from "../resume/parse";
 import { resumeFile, resumeFileHeaders } from "../resume/download";
-import { loadResume, putResume } from "../resume/store";
+import { contactFromText, fillContact } from "../resume/contact";
+import { loadResume, putResume, rememberContact } from "../resume/store";
 import { asFormat, asTemplate } from "../resume/template";
 import { RESUME_SECTIONS, type ResumeSection } from "../resume/types";
 import { buildResumeIntelligence } from "../agents/tools/resume-builder";
@@ -73,7 +74,10 @@ export function resumeRouter(makeDeps: MakeDeps) {
     if (run.status === "failed") return c.json({ error: "the file was read but Skillit couldn't lay it out, try again or fill it in by hand" }, 502);
     const draft = (run.output.draft ?? {}) as ProfilePatch;
     const resume = seedFromProfile({ ...emptyProfile(), ...draft });
-    return c.json({ resume, saved: false, droppedClaims: run.output.droppedClaims ?? 0 });
+    // the file's own name, email and phone go onto the draft (read by code; the model never sees them) and are kept
+    const contact = fillContact(resume.contact, contactFromText(text)) ?? resume.contact;
+    waitUntil(rememberContact(c.env, userId, text).catch((e) => console.warn("[resume] contact not kept:", (e as Error).message)));
+    return c.json({ resume: { ...resume, contact }, saved: false, droppedClaims: run.output.droppedClaims ?? 0 });
   });
 
   // LinkedIn has no API we may use, so the person brings their own "Save to PDF" export. The file is read and forgotten:

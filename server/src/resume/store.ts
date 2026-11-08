@@ -3,6 +3,7 @@ import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
 import { getProfile } from "../memory/profile/store";
 import type { Account } from "../auth/account";
+import { contactFromText, fillContact } from "./contact";
 import { prefillResume } from "./prefill";
 import { emptyResume, type Resume } from "./types";
 
@@ -32,4 +33,15 @@ export async function putResume(env: Env, userId: string, resume: Resume): Promi
     .bind(userId, sealed.ciphertext, sealed.iv, next.updatedAt)
     .run();
   return next;
+}
+
+/**
+ * Keeps the contact details a document shows (name, email, phone, links) on the person's resume, so every later read,
+ * tailored copy and export has them. Only blanks are filled; the rest of the resume is untouched and still follows the
+ * profile. Nothing is written when nothing new was found.
+ */
+export async function rememberContact(env: Env, userId: string, documentText: string): Promise<void> {
+  const stored = (await getResume(env, userId)) ?? emptyResume();
+  const contact = fillContact(stored.contact, contactFromText(documentText));
+  if (contact) await putResume(env, userId, { ...stored, contact });
 }

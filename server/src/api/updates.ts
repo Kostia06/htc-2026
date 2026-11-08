@@ -1,3 +1,4 @@
+import { rememberContact } from "../resume/store";
 import { db } from "../db";
 import { Hono } from "hono";
 import { RunRejected } from "../agents/core/harness";
@@ -77,6 +78,7 @@ export function updatesRouter(makeDeps: MakeDeps, options: Options = {}, makeFil
     }
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
+    waitUntil(rememberContact(c.env, userId, text).catch((e) => console.warn("[file-update] contact not kept:", (e as Error).message)));
     try {
       const turn = { userId, fileName: file.name, text, timeoutMs: options.fileTimeoutMs ?? FILE_TIMEOUT_MS, waitUntil };
       return c.json(await runFileUpdate(makeFileDeps(c.env, waitUntil), turn));

@@ -1,3 +1,4 @@
+import { rememberContact } from "../resume/store";
 import { Hono } from "hono";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
@@ -34,6 +35,8 @@ export function onboardingRouter(makeDeps: MakeDeps) {
     }
 
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
+    // name, email and phone from the resume go straight onto their Skillit resume, read by code, never by the model
+    await rememberContact(c.env, userId, text).catch((e) => console.warn("[onboarding] contact not kept:", (e as Error).message));
     const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "onboarding-prefill", platform: "app", userId, input: { text } });
     if (run.status === "failed") return c.json({ documentId, error: "the resume was read but the draft could not be made, fill it in by hand" }, 502);
     return c.json({ documentId, ...run.output });
