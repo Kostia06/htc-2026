@@ -1,17 +1,25 @@
-// SignInView.swift: one screen, three steps. Choose how to sign in, type an email, type the six-digit code.
+// SignInView.swift: one screen, three steps. Choose how to sign in, then an email and password (or a six-digit
+// code emailed for anyone without one), then the code.
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { supabase } from '../../lib/supabase'
 import { Spinner, TextButton } from '../../ui/Button'
+import { Segmented } from '../../ui/Controls'
 import { Ambient } from '../../app/Shell'
 import './signin.css'
 
 const APPLE = import.meta.env.VITE_APPLE_SIGNIN === '1'
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+// SignInModel.minimumNewPassword
+const MIN_NEW_PASSWORD = 8
+const MODES = [
+  { id: 'signIn', title: 'Sign in' },
+  { id: 'signUp', title: 'Create account' },
+]
 
 const COPY = {
   choosing: ['Your next role, one step at a time.', "Skillit learns what you've done and plans the shortest path to the job you want."],
-  email: ["What's your email?", "We'll send you a six-digit code. No password to remember."],
+  email: ["What's your email?", 'Sign in with your password, or get a six-digit code by email.'],
   code: ['Check your inbox.', null],
 }
 
@@ -23,11 +31,15 @@ export default function SignIn() {
   const [step, setStep] = useState(params.get('mode') ? 'email' : 'choosing')
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
+  const [password, setPassword] = useState('')
+  const [mode, setMode] = useState('signIn')
+  const [notice, setNotice] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
   const typedEmail = email.trim()
   const validEmail = EMAIL.test(typedEmail)
+  const validPassword = password.length >= (mode === 'signUp' ? MIN_NEW_PASSWORD : 1)
   const digits = code.replace(/\D/g, '')
   const validCode = digits.length === 6
 
@@ -57,6 +69,28 @@ export default function SignIn() {
   }
 
   // on success the auth listener in AppProvider moves the app on
+  const submitPassword = async () => {
+    setNotice(null)
+    if (mode === 'signIn') {
+      await attempt("That email and password didn't match. Try again, or get a code instead.", () =>
+        supabase.auth.signInWithPassword({ email: typedEmail, password }),
+      )
+      return
+    }
+    let session = null
+    const created = await attempt("Skillit couldn't create that account. It may already exist; try signing in.", async () => {
+      const result = await supabase.auth.signUp({ email: typedEmail, password, options: { emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` } })
+      session = result.data?.session ?? null
+      return result
+    })
+    // with email confirmation on, there is no session until the link is followed
+    if (created && !session) {
+      setNotice(`Check ${typedEmail} for a confirmation link, then sign in here.`)
+      setMode('signIn')
+      setPassword('')
+    }
+  }
+
   const verify = () =>
     attempt("That code didn't work. Check it, or ask for a new one.", () =>
       supabase.auth.verifyOtp({ email: typedEmail, token: digits, type: 'email' }),
@@ -114,9 +148,15 @@ export default function SignIn() {
               className="signin__form"
               onSubmit={(e) => {
                 e.preventDefault()
-                if (validEmail && !busy) sendCode()
+                if (validEmail && validPassword && !busy) submitPassword()
               }}
             >
+              <Segmented options={MODES} value={mode} onChange={setMode} label="Sign in or create an account" />
+              {notice && (
+                <p className="t-footnote c-positive" role="status">
+                  {notice}
+                </p>
+              )}
               <input
                 className="field field--capsule"
                 type="email"
@@ -128,9 +168,21 @@ export default function SignIn() {
                 autoFocus
                 aria-label="Email"
               />
-              <button type="submit" className="glass-prominent signin__wide" disabled={!validEmail || busy}>
-                {busy ? <Spinner /> : 'Send code'}
+              <input
+                className="field field--capsule"
+                type="password"
+                autoComplete={mode === 'signUp' ? 'new-password' : 'current-password'}
+                placeholder={mode === 'signUp' ? `Password (${MIN_NEW_PASSWORD}+ characters)` : 'Password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-label="Password"
+              />
+              <button type="submit" className="glass-prominent signin__wide" disabled={!validEmail || !validPassword || busy}>
+                {busy ? <Spinner /> : mode === 'signUp' ? 'Create account' : 'Sign in'}
               </button>
+              <TextButton onClick={() => validEmail && !busy && sendCode()} disabled={!validEmail || busy} className="signin__wide">
+                Email me a code instead
+              </TextButton>
               <TextButton onClick={() => go('choosing')} className="signin__wide">
                 Back
               </TextButton>
