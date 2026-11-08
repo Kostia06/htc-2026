@@ -24,7 +24,8 @@ export default function AuthForm() {
     e.preventDefault()
     setBusy(true)
     setMessage(null)
-    const redirect = { emailRedirectTo: window.location.origin }
+    // back to the app (/app/), not the landing page at the site root
+    const redirect = { emailRedirectTo: window.location.origin + import.meta.env.BASE_URL }
     const { error } =
       mode === 'signIn'
         ? await supabase.auth.signInWithPassword({ email, password })

@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
   const target = env.API_PROXY_TARGET || 'http://localhost:8787'
   return {
     plugins: [react()],
-    server: { proxy: { '/api': { target, changeOrigin: true, secure: true } } },
+    // the app lives under /app/; in dev the landing server (5180) forwards /app and /api here
+    base: '/app/',
+    server: { port: 5173, strictPort: true, proxy: { '/api': { target, changeOrigin: true, secure: true } } },
   }
 })

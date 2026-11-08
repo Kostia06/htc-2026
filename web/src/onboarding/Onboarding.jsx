@@ -81,6 +81,51 @@ function TextFields({ question, value = {}, onChange, onSubmit }) {
   )
 }
 
+// what the AI drafted, shown before any question: the same check the iOS app gives before saving
+function ResumeReview({ resume }) {
+  const { summary, missing = [], droppedClaims = 0, draft = {} } = resume
+  const skills = draft.skills ?? []
+  const work = [...(draft.experience ?? []).map((e) => [e.role, e.org]), ...(draft.education ?? []).map((e) => [e.program || 'Studies', e.school])]
+  return (
+    <section className="ob__review" aria-label="What Raven read from your resume">
+      {summary && <p className="ob__review-summary">{summary}</p>}
+      {skills.length > 0 && (
+        <div>
+          <h2 className="ob__review-h">Skills Raven found</h2>
+          <ul className="ob__review-skills">
+            {skills.map((s) => (
+              <li key={s.name}>
+                <strong>{s.name}</strong>
+                {s.evidence && <span>“{s.evidence}”</span>}
+              </li>
+            ))}
+          </ul>
+          {droppedClaims > 0 && (
+            <p className="ob__review-note">Raven left out {droppedClaims} skill{droppedClaims === 1 ? '' : 's'} it couldn't point to in your resume.</p>
+          )}
+        </div>
+      )}
+      {work.length > 0 && (
+        <div>
+          <h2 className="ob__review-h">Experience and education</h2>
+          <ul className="ob__review-list">
+            {work.map(([a, b], i) => <li key={i}>{a}{b ? <span> · {b}</span> : null}</li>)}
+          </ul>
+        </div>
+      )}
+      {missing.length > 0 && (
+        <div>
+          <h2 className="ob__review-h">Still worth adding</h2>
+          <ul className="ob__review-list ob__review-list--muted">
+            {missing.map((m) => <li key={m}>{m}</li>)}
+          </ul>
+        </div>
+      )}
+      <p className="ob__review-note">You can change anything in the next questions. The file itself is never kept.</p>
+    </section>
+  )
+}
+
 function ResumeStep({ value, onUploaded, onSkip }) {
   const input = useRef(null)
   const [state, setState] = useState(value?.fileName ? 'done' : 'idle') // idle | reading | done | error
@@ -127,9 +172,12 @@ function ResumeStep({ value, onUploaded, onSkip }) {
       {state === 'error' && (
         <p className="ob__error" role="alert">Couldn't use that file: {error}. Try another, or answer the questions instead.</p>
       )}
-      <button type="button" className="ob__chip ob__no-resume" onClick={onSkip}>
-        {state === 'done' ? 'Continue' : "No, I'll answer a few questions"}
-      </button>
+      {state === 'done' && <ResumeReview resume={value} />}
+      {state === 'done' ? (
+        <button type="button" className="ob__next ob__no-resume" onClick={onSkip}>Looks right, continue</button>
+      ) : (
+        <button type="button" className="ob__chip ob__no-resume" onClick={onSkip}>No, I'll answer a few questions</button>
+      )}
     </div>
   )
 }
@@ -157,8 +205,8 @@ export default function Onboarding({ session, onDone }) {
   const onUploaded = (result) => {
     const filled = draftToAnswers(result.draft)
     setPrefilled(Object.keys(filled))
-    setAnswers((a) => ({ ...a, ...filled, resume: { documentId: result.documentId, draft: result.draft, fileName: result.fileName } }))
-    setTimeout(() => setStep(1), 600)
+    const { documentId, draft, fileName, summary, missing, droppedClaims } = result
+    setAnswers((a) => ({ ...a, ...filled, resume: { documentId, draft, fileName, summary, missing, droppedClaims } }))
   }
 
   async function finish(final) {
