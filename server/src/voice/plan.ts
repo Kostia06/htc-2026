@@ -1,7 +1,7 @@
 import type { Profile } from "../memory/profile/types";
 import { isShortEnough, resumeQuestions } from "./resume-questions";
 import { technicalQuestions } from "./technical";
-import type { InterviewPlan, NetworkingPlan, PlannedQuestion } from "./types";
+import type { Difficulty, InterviewPlan, NetworkingPlan, PlannedQuestion } from "./types";
 
 export { MAX_WORDS } from "./resume-questions";
 
@@ -19,6 +19,7 @@ export type PlanInputs = {
   reportedQuestions: { text: string; last_reported_at: string | null }[];
   facts: { kind: string; text: string }[];
   profile: Profile;
+  difficulty?: Difficulty;
 };
 
 const behavioralQuestions = (role: string) => [
@@ -44,7 +45,7 @@ export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
     ...planned(technicalQuestions(inputs.role, inputs.profile), "technical", MAX_TECHNICAL),
     ...planned(behavioralQuestions(inputs.role), "behavioral", MAX_QUESTIONS),
   ].slice(0, MAX_QUESTIONS);
-  return { mode: "interview", role: inputs.role, company: inputs.company?.name ?? null, questions };
+  return { mode: "interview", role: inputs.role, difficulty: inputs.difficulty ?? "standard", company: inputs.company?.name ?? null, questions };
 }
 
 const MEETUP_TALKING_POINTS = [
@@ -67,5 +68,5 @@ export function buildNetworkingPlan(inputs: PlanInputs): NetworkingPlan {
     : { name: "Sam", role: "works in tech in Calgary and comes to most meetups", company: null };
   const fromFacts = inputs.facts.filter((fact) => ["about", "news", "tech", "hiring"].includes(fact.kind)).map((fact) => fact.text);
   const talkingPoints = [...fromFacts, ...MEETUP_TALKING_POINTS].slice(0, MAX_TALKING_POINTS);
-  return { mode: "networking", role: inputs.role, persona, talkingPoints, goals: NETWORKING_GOALS };
+  return { mode: "networking", role: inputs.role, difficulty: inputs.difficulty ?? "standard", persona, talkingPoints, goals: NETWORKING_GOALS };
 }
