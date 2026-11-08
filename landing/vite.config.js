@@ -26,7 +26,7 @@ const ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#
 let APP_URL = '/app';
 
 // the web app's dev server (web/, base /app/); this server forwards /app and /api to it
-const WEB_DEV = 'http://localhost:5173';
+const WEB_DEV = 'http://127.0.0.1:5173';
 
 /** Replace {{ key.path }} (escaped) and {{{ key.path }}} (raw) with values from src/content.json. */
 function fill(html) {
