@@ -5,6 +5,8 @@ import SwiftUI
 struct ForYouView: View {
     @Environment(AppModel.self) private var app
     @State private var opened: FeedCard?
+    @State private var isRadar = false
+    @State private var openedCompany: CompanyLink?
 
     private var model: ForYouModel {
         app.feed
@@ -15,15 +17,26 @@ struct ForYouView: View {
             List {
                 // a plain List pins its section header, so the chips stay put while the large title scrolls away
                 Section {
-                    if model.isBuilding {
-                        BuildingRow().feedRow()
+                    if isRadar {
+                        RadarList { openedCompany = CompanyLink(slug: $0) }
+                    } else {
+                        if model.isBuilding {
+                            BuildingRow().feedRow()
+                        }
+                        content
                     }
-                    content
                 } header: {
-                    SectionChips(selection: model.section) { model.show($0) }
-                        .listRowInsets(EdgeInsets())
+                    SectionChips(selection: model.section, isRadar: isRadar) { section in
+                        isRadar = false
+                        model.show(section)
+                    } onRadar: {
+                        isRadar = true
+                    }
+                    .listRowInsets(EdgeInsets())
                 } footer: {
-                    attributions
+                    if !isRadar {
+                        attributions
+                    }
                 }
             }
             .listStyle(.plain)
@@ -39,6 +52,9 @@ struct ForYouView: View {
                 // read the live card so the bookmark fills as soon as it's saved from the sheet
                 let live = model.cards.first { $0.id == card.id } ?? card
                 FeedDetailSheet(card: live) { save(live) }
+            }
+            .sheet(item: $openedCompany) { link in
+                CompanySheet(slug: link.slug)
             }
         }
     }
@@ -115,7 +131,7 @@ struct ForYouView: View {
     }
 }
 
-private extension View {
+extension View {
     /// A card sitting on the dark ground with no List chrome around it.
     func feedRow() -> some View {
         listRowBackground(Color.clear)

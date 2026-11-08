@@ -22,6 +22,7 @@
 		1C976FB28BB55DD9245E1630 /* SectionChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4256F603E484613DC82706 /* SectionChips.swift */; };
 		1D2C580455510D112B2838D5 /* ProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4959721357A527FBE90F50F /* ProfileHeader.swift */; };
 		1EF00B285F52EA98FB89AC97 /* ProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC24DA77F5F229A1A7F4F38 /* ProfileEditor.swift */; };
+		1F6940238766D39F7F145226 /* RadarList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F83DD4E62357063F428DA8 /* RadarList.swift */; };
 		2094C88A8540C0D1E4A887DC /* StartPracticeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EDE8E3F58131EEF35BCE67 /* StartPracticeButton.swift */; };
 		20B4D248F0E12D3E5D4AB0E0 /* PairHeadsetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBEDAA0497BAAC3DE5494E91 /* PairHeadsetView.swift */; };
 		247AB6E652A8D5440F977991 /* ResumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E228C1C0DA064472840037D /* ResumeView.swift */; };
@@ -130,6 +131,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01F83DD4E62357063F428DA8 /* RadarList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarList.swift; sourceTree = "<group>"; };
 		0310A57220047FFFEA434978 /* RecapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapService.swift; sourceTree = "<group>"; };
 		040CF4BC41775E202928EFFF /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		04348238A713441A230661D7 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 				1D16F7D20DF54E0677DE4985 /* FeedKind+Style.swift */,
 				8317D9C1EE472988C5EFC462 /* ForYouModel.swift */,
 				838BAF12B32A15EC0FE771C3 /* ForYouView.swift */,
+				01F83DD4E62357063F428DA8 /* RadarList.swift */,
 				6B4256F603E484613DC82706 /* SectionChips.swift */,
 			);
 			path = ForYou;
@@ -725,6 +728,7 @@
 				1C5D45D845AAA3D8418ACDCF /* QuickUpdateModel.swift in Sources */,
 				3DBF7E60494C35428A01CF5C /* QuickUpdateService.swift in Sources */,
 				863DCB908B2F4CF75E384A45 /* QuickUpdateView.swift in Sources */,
+				1F6940238766D39F7F145226 /* RadarList.swift in Sources */,
 				657D526B7C598E00855EFC3D /* RaisedButtonStyle.swift in Sources */,
 				993420658B57E577A89FCB56 /* RavenApp.swift in Sources */,
 				4069173282B17CE59D355B70 /* RecapBubbles.swift in Sources */,

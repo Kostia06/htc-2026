@@ -1,18 +1,22 @@
 import RavenKit
 import SwiftUI
 
-/// The feed's sections as a row of chips; the accent highlight slides to whichever is chosen.
+/// The feed's sections as a row of chips, then Radar (the companies Skillit tracks near you).
+/// The accent highlight slides to whichever is chosen.
 struct SectionChips: View {
     let selection: FeedSection
+    let isRadar: Bool
     let onSelect: (FeedSection) -> Void
+    let onRadar: () -> Void
     @Namespace private var highlight
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
                 ForEach(FeedSection.allCases) { section in
-                    chip(section)
+                    chip(section.title, isSelected: !isRadar && section == selection) { onSelect(section) }
                 }
+                chip("Radar", isSelected: isRadar, action: onRadar)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 4)
@@ -20,15 +24,14 @@ struct SectionChips: View {
         .scrollIndicators(.hidden)
         .background(Theme.ground)
         .animation(.snappy(duration: 0.3), value: selection)
+        .animation(.snappy(duration: 0.3), value: isRadar)
         .sensoryFeedback(.selection, trigger: selection)
+        .sensoryFeedback(.selection, trigger: isRadar)
     }
 
-    private func chip(_ section: FeedSection) -> some View {
-        let isSelected = section == selection
-        return Button {
-            onSelect(section)
-        } label: {
-            Text(section.title)
+    private func chip(_ title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(isSelected ? Theme.onAction : .secondary)
                 .padding(.horizontal, 14)
