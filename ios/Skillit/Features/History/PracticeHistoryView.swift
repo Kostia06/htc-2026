@@ -18,7 +18,9 @@ struct PracticeHistoryView: View {
                 .background(Theme.ground)
                 .navigationTitle("Practice history")
                 .navigationDestination(for: PracticeSessionSummary.self) { session in
-                    PracticeSessionDetailView(session: session, service: injectedService ?? app.practiceHistoryService)
+                    PracticeSessionDetailView(
+                        session: session, service: injectedService ?? app.practiceHistoryService, replayService: app.replayService,
+                    )
                 }
         }
         .task {

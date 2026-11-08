@@ -54,6 +54,8 @@ function VoiceSession() {
   const [scored, setScored] = useState(0)
   const [debrief, setDebrief] = useState(null)
   const [hasStarted, setHasStarted] = useState(false)
+  // the report's replay is looked up by it; kept in state because the ref can't be read while rendering
+  const [sessionId, setSessionId] = useState(null)
 
   const started = useRef(false)
   const alive = useRef(true)
@@ -145,6 +147,7 @@ function VoiceSession() {
       if (!alive.current) return
       session.current = started_
       setHasStarted(true)
+      setSessionId(started_.sessionId)
       setCompany(started_.company ?? null)
       setQuestionCount(started_.questions?.length ?? 0)
       try {
@@ -163,6 +166,8 @@ function VoiceSession() {
             const turn = transcript.current.add(speaker, text)
             if (turn) submit(turn)
           },
+          // without this link there is no replay, but the interview itself carries on regardless
+          conversation: (conversationId) => voiceApi.attachConversation(started_.sessionId, conversationId).catch(() => {}),
           ended: () => alive.current && wrapUp(),
           failed: (msg) => {
             if (!alive.current) return
@@ -219,7 +224,7 @@ function VoiceSession() {
     return (
       <div className="cover">
         <Ambient />
-        <SessionSummary debrief={debrief} onAgain={again} onDone={leave} />
+        <SessionSummary debrief={debrief} sessionId={sessionId} onAgain={again} onDone={leave} />
       </div>
     )
 

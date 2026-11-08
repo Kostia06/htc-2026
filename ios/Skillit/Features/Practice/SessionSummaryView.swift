@@ -7,12 +7,17 @@ struct SessionSummaryView: View {
     let debrief: SessionDebrief?
     let onPracticeAgain: () -> Void
     let onDone: () -> Void
+    /// Opens the recording with every moment marked; nil when there's no session to replay.
+    var onReplay: (() -> Void)?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 36) {
                 if let debrief {
                     ScoreHeadline(score: debrief.overall, verdict: debrief.verdict)
+                    if let onReplay {
+                        ReplayEntryRow(action: onReplay)
+                    }
                     if !debrief.strengths.isEmpty {
                         section("What worked") {
                             ForEach(Array(debrief.strengths.prefix(2)), id: \.quote) { strength in

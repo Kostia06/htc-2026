@@ -44,6 +44,7 @@ final class ElevenLabsVoiceEngine: VoiceEngine {
             onError: { error in continuation.yield(.failed(error.localizedDescription)) },
             onAgentResponse: { text, _ in continuation.yield(.transcript(.agent, text)) },
             onUserTranscript: { text, _ in continuation.yield(.transcript(.person, text)) },
+            onConversationMetadata: { metadata in continuation.yield(.conversationStarted(metadata.conversationId)) },
             onVadScore: { score in continuation.yield(.level(Float(score))) },
             // the manager turns speaking/VAD/transcript events into one agent state; without it the callback never fires
             agentStateConfiguration: .default,

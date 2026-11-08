@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { AppContext } from "../env";
 import { claimCooldown } from "../memory/cooldowns";
 import { finalReport, latestDraft, refreshDraft } from "../voice/draft";
+import { saveReport } from "../replay/store";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
@@ -97,6 +98,7 @@ export function voiceRouter() {
     // the same debrief on the phone and in the headset; usually the live draft, so no model call is left to wait on
     const debrief = await finalReport(c.env, userId, session, turns);
     await finishSession(c.env, userId, session.id, debrief.overall);
+    await saveReport(c.env, userId, session.id, debrief);
     return c.json(debrief);
   });
 

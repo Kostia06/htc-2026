@@ -68,7 +68,7 @@ public struct SkillitClient: Sendable {
         }
     }
 
-    private func responseData(for request: URLRequest) async throws(SkillitError) -> Data {
+    func responseData(for request: URLRequest) async throws(SkillitError) -> Data {
         let data: Data
         let response: URLResponse
         do {

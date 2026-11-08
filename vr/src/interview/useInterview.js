@@ -249,7 +249,9 @@ export function useInterview(auth = {}) {
 
       agentRef.current = agent
       setPhase('asking')
-      await agent.connect()
+      const connected = await agent.connect()
+      // a lost link only costs the replay, never the interview
+      if (connected?.conversationId) session.attachConversation?.(connected.conversationId).catch(() => {})
     },
     [session],
   )

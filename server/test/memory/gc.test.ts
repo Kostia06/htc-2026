@@ -41,7 +41,7 @@ describe("collectGarbage", () => {
   });
 
   it("deletes stale memories, facts and cache rows and keeps the rest", async () => {
-    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 1, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, voiceSessionsDeleted: 0 });
+    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 1, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, recordingsDeleted: 0, voiceSessionsDeleted: 0 });
 
     expect(await ids("SELECT id FROM user_memories")).toEqual(["used-memory"]);
     expect(await ids("SELECT id FROM company_facts")).toEqual(["fresh-fact"]);
