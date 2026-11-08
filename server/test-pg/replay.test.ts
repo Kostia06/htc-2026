@@ -1,7 +1,18 @@
 // The replay store on Postgres: the same SQL the Worker ships, through db(env).
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Env } from "../src/env";
-import { attachConversation, conversationOf, conversationsBefore, conversationsOfUser, deleteSession, loadReplayRecord, saveReport } from "../src/replay/store";
+import { queueLaunch, takeLaunch } from "../src/headset/launch";
+import {
+  attachConversation,
+  attachReconnect,
+  conversationOf,
+  conversationsBefore,
+  conversationsOfUser,
+  deleteSession,
+  loadReplayRecord,
+  recordingsOf,
+  saveReport,
+} from "../src/replay/store";
 import { fallbackDebrief } from "../src/voice/debrief";
 import { claimLiveTip, countSessionsWithIssue, saveDeliveryIssues } from "../src/voice/coach/session-store";
 import { addTurn, createSession, findSession, listTurns, saveLiveTip } from "../src/voice/store";
@@ -31,6 +42,10 @@ describe("replay store", () => {
     expect(await conversationsOfUser(env, "alice")).toEqual(["conv_1"]);
     expect(await conversationsOfUser(env, "bob")).toEqual([]);
     expect(await conversationsBefore(env, new Date(NOW.getTime() + 1000).toISOString())).toEqual(["conv_1"]);
+    expect(await attachReconnect(env, "alice", id, "conv_3")).toBe(true);
+    expect(await attachReconnect(env, "bob", id, "conv_4")).toBe(false);
+    expect(await recordingsOf(env, "alice", id)).toEqual(["conv_1", "conv_3"]);
+    expect(await conversationsOfUser(env, "alice")).toEqual(["conv_1", "conv_3"]);
   });
 
   it("seals the report and reads it back for the owner only", async () => {
@@ -43,6 +58,12 @@ describe("replay store", () => {
     expect(await loadReplayRecord(env, "bob", id)).toEqual({ conversationId: null, report: null });
     await deleteSession(env, "alice", id);
     expect(await findSession(env, "alice", id)).toBeNull();
+  });
+
+  it("queues a headset review of a past session", async () => {
+    await queueLaunch(env, "alice", { mode: "interview", reviewSessionId: "s_1" }, NOW);
+    await queueLaunch(env, "alice", { mode: "interview", reviewSessionId: "s_2" }, NOW);
+    expect(await takeLaunch(env, "alice", new Date(NOW.getTime() + 1000))).toEqual({ mode: "interview", reviewSessionId: "s_2" });
   });
 
   it("keeps live timestamps, one sealed tip per session and the delivery habits", async () => {

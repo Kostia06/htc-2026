@@ -33,6 +33,13 @@ describe("sending a practice session to the headset", () => {
     expect(await takeLaunch(env, "alice", later(3000))).toBeNull();
   });
 
+  it("carries a past session to review in the headset", async () => {
+    expect(parseLaunch({ mode: "interview", reviewSessionId: " s_1 " })).toEqual({ mode: "interview", reviewSessionId: "s_1" });
+    expect(parseLaunch({ mode: "interview", reviewSessionId: 7 })).toBeNull();
+    await queueLaunch(env, "alice", { mode: "interview", reviewSessionId: "s_1" }, NOW);
+    expect(await takeLaunch(env, "alice", later(1000))).toEqual({ mode: "interview", reviewSessionId: "s_1" });
+  });
+
   it("never hands out a launch that has expired", async () => {
     await queueLaunch(env, "alice", { mode: "interview" }, NOW);
     expect(await takeLaunch(env, "alice", later(121_000))).toBeNull();
