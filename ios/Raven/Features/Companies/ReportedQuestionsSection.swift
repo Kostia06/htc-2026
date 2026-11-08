@@ -19,7 +19,7 @@ struct ReportedQuestionsSection: View {
                     Text("No questions yet.").font(.body)
                 }
                 ForEach(questions) { question in
-                    QuestionRow(question: question)
+                    ReportedQuestionRow(question: question)
                 }
                 if reportCount < Self.minimumReports {
                     Text(waitingNote)
@@ -38,7 +38,7 @@ struct ReportedQuestionsSection: View {
     }
 }
 
-private struct QuestionRow: View {
+private struct ReportedQuestionRow: View {
     let question: ReportedQuestion
 
     var body: some View {
