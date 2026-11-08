@@ -6,7 +6,9 @@ struct ChipsSection: View {
         let title: String
         var tag: String?
 
-        var id: String { title.lowercased() }
+        var id: String {
+            title.lowercased()
+        }
     }
 
     let chips: [Chip]
@@ -39,10 +41,12 @@ struct ChipsSection: View {
                     Button("Add", action: add)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Theme.action)
+                        .frame(minHeight: 44)
                         .transition(.opacity)
                 }
             }
             .font(.body)
+            .frame(minHeight: 44)
         }
         .padding(.vertical, 4)
         .animation(.spring(duration: 0.3), value: chips)
@@ -76,16 +80,19 @@ private struct ChipView: View {
                 Image(systemName: "xmark")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
-                    .padding(6)
-                    .contentShape(.circle)
+                    .frame(width: 44, height: 44)
+                    .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            // the 44pt target overhangs the chip so the chip itself stays slim
+            .padding(.vertical, -10)
+            .padding(.horizontal, -8)
             .accessibilityLabel("Remove \(chip.title)")
         }
         .padding(.leading, 12)
         .padding(.trailing, 4)
         .padding(.vertical, 6)
-        .background(Color(white: 0.16), in: .capsule)
+        .background(Theme.chip, in: .capsule)
         .overlay(Capsule().strokeBorder(Theme.hairline))
     }
 }

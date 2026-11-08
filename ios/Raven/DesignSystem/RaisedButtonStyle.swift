@@ -29,6 +29,9 @@ struct RaisedButtonStyle: ButtonStyle {
 extension ButtonStyle where Self == RaisedButtonStyle {
     static var raised: RaisedButtonStyle { RaisedButtonStyle() }
 
+    /// The quieter button that sits beside a `.raised` one.
+    static var raisedSecondary: RaisedButtonStyle { RaisedButtonStyle(color: Theme.secondaryButton, foreground: .white) }
+
     static func raised(_ color: Color, foreground: Color = .white) -> RaisedButtonStyle {
         RaisedButtonStyle(color: color, foreground: foreground)
     }

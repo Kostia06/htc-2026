@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// The feed's sections as a row of chips; the orange highlight slides to whichever is chosen.
+/// The feed's sections as a row of chips; the accent highlight slides to whichever is chosen.
 struct SectionChips: View {
     let selection: FeedSection
     let onSelect: (FeedSection) -> Void
@@ -15,7 +15,7 @@ struct SectionChips: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(.vertical, 4)
         }
         .scrollIndicators(.hidden)
         .background(Theme.ground)
@@ -30,7 +30,7 @@ struct SectionChips: View {
         } label: {
             Text(section.title)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .secondary)
+                .foregroundStyle(isSelected ? Theme.onAction : .secondary)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
                 .background {
@@ -40,6 +40,9 @@ struct SectionChips: View {
                         Capsule().fill(Theme.raised)
                     }
                 }
+                // the pill stays slim; the tap target around it is the full 44pt
+                .frame(minHeight: 44)
+                .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])

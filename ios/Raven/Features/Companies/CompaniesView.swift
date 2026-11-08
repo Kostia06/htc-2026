@@ -72,14 +72,14 @@ struct CompaniesView: View {
 
 private struct CompanyRow: View {
     let company: CompanySummary
+    @ScaledMetric(relativeTo: .title3) private var monogramSize: CGFloat = 44
 
     var body: some View {
         HStack(spacing: 14) {
             Text(String(company.name.prefix(1)))
                 .font(.title3.bold())
-                .frame(width: 44, height: 44)
-                .background(Theme.action.opacity(0.18), in: .rect(cornerRadius: 12))
-                .foregroundStyle(Theme.action)
+                .frame(width: monogramSize, height: monogramSize)
+                .background(Theme.chip, in: .rect(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 4) {
                 Text(company.name).font(.headline)
                 Text(detail).font(.subheadline).foregroundStyle(.secondary)

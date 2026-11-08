@@ -1,56 +1,56 @@
 import RavenKit
 import SwiftUI
 
-/// The resume up front on Profile: one glance to see it exists, one tap to read the PDF or open the builder.
+/// The resume as two list rows on Profile: one to open the editor, one to read the PDF.
 struct ResumeCard: View {
     let service: any ResumeService
     @State private var isViewingPDF = false
+    @State private var updatedAt: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 14) {
-                PageThumbnail()
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Your resume")
-                        .font(.title3.bold())
-                    Text("Built from your profile. Raven can make it sharper for the roles you want.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+        Group {
+            NavigationLink { ResumeView() } label: {
+                HStack(spacing: 12) {
+                    PageThumbnail()
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Resume").font(.headline)
+                        Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+                    }
                 }
+                .frame(minHeight: 44)
             }
-            HStack(spacing: 12) {
-                Button("View PDF") { isViewingPDF = true }
-                    .buttonStyle(.raised)
-                NavigationLink { ResumeView() } label: {
-                    Text("Edit")
-                        .frame(maxWidth: .infinity)
+            .task { updatedAt = (try? await service.resume())?.resume.updatedAt }
+            Button { isViewingPDF = true } label: {
+                Label("View PDF", systemImage: "doc.richtext")
+                    .frame(minHeight: 44)
+            }
+            .sheet(isPresented: $isViewingPDF) {
+                ResumePDFViewer { () async throws(RavenError) -> URL in
+                    try await ResumeModel(service: service).pdfFile()
                 }
-                .buttonStyle(.raised(Color(white: 0.22)))
-            }
-        }
-        .ravenCard()
-        .sheet(isPresented: $isViewingPDF) {
-            ResumePDFViewer { () async throws(RavenError) -> URL in
-                try await ResumeModel(service: service).pdfFile()
             }
         }
     }
+
+    private var subtitle: String {
+        RelativeTime.phrase(for: updatedAt).map { "Updated \($0)" } ?? "Built from your profile"
+    }
 }
 
-/// A small drawn page so the card reads as "a document" before anything loads.
+/// A small drawn page so the row reads as "a document" before anything loads.
 private struct PageThumbnail: View {
+    @ScaledMetric(relativeTo: .headline) private var width: CGFloat = 34
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Capsule().fill(Theme.action).frame(width: 26, height: 4)
-            ForEach([30, 22, 28, 18, 26], id: \.self) { width in
-                Capsule().fill(Color.black.opacity(0.18)).frame(width: CGFloat(width), height: 3)
+        VStack(alignment: .leading, spacing: 3) {
+            Capsule().fill(Theme.action).frame(width: width * 0.5, height: 3)
+            ForEach([0.6, 0.45, 0.55, 0.35], id: \.self) { fraction in
+                Capsule().fill(Color.black.opacity(0.18)).frame(width: width * fraction, height: 2)
             }
         }
-        .padding(9)
-        .frame(width: 52, height: 68, alignment: .topLeading)
-        .background(.white, in: .rect(cornerRadius: 6))
-        .shadow(color: .black.opacity(0.3), radius: 6, y: 3)
+        .padding(6)
+        .frame(width: width, height: width * 1.3, alignment: .topLeading)
+        .background(.white, in: .rect(cornerRadius: 4))
         .accessibilityHidden(true)
     }
 }

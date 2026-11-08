@@ -1,7 +1,8 @@
 import RavenKit
 import SwiftUI
 
-/// Questions people say they were asked here. Real ones surface only once three people report them; seeded ones are marked as examples.
+/// Questions people say they were asked here, count first. Real ones surface only once three people report them;
+/// seeded ones are marked as examples.
 struct ReportedQuestionsSection: View {
     static let minimumReports = 3
 
@@ -9,32 +10,36 @@ struct ReportedQuestionsSection: View {
     let reportCount: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Asked recently here", systemImage: "quote.bubble")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.leading, 4)
-            VStack(alignment: .leading, spacing: 14) {
-                if questions.isEmpty {
-                    Text("No questions yet.").font(.body)
-                }
-                ForEach(questions) { question in
-                    ReportedQuestionRow(question: question)
-                }
-                if reportCount < Self.minimumReports {
-                    Text(waitingNote)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            if reportCount < Self.minimumReports {
+                unlockProgress
             }
-            .ravenCard()
+            if questions.isEmpty {
+                Text("No questions yet.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
+                        ReportedQuestionRow(question: question)
+                        if index < questions.count - 1 {
+                            Divider().overlay(Theme.hairline).padding(.vertical, 10)
+                        }
+                    }
+                }
+                .ravenCard()
+            }
         }
     }
 
-    private var waitingNote: String {
-        let remaining = Self.minimumReports - reportCount
-        let soFar = reportCount == 0 ? "" : " \(reportCount) so far."
-        return "Real reports appear once \(Self.minimumReports) people share similar questions.\(soFar) \(remaining) more to go."
+    private var unlockProgress: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("\(reportCount) of \(Self.minimumReports) reports to unlock real questions")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ThinProgressBar(fraction: Double(reportCount) / Double(Self.minimumReports), tint: Theme.positive)
+        }
+        .padding(.horizontal, 4)
     }
 }
 
@@ -42,30 +47,33 @@ private struct ReportedQuestionRow: View {
     let question: ReportedQuestion
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(question.text).font(.body)
-            HStack(spacing: 8) {
-                if question.isExample {
-                    Text("Example")
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color(white: 0.18), in: .capsule)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Reported \(question.count)×")
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Theme.action.opacity(0.14), in: .capsule)
-                        .foregroundStyle(Theme.action)
-                    if let month = monthLabel {
-                        Text(month).font(.caption).foregroundStyle(.secondary)
-                    }
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            count
+                .frame(width: 40, alignment: .leading)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(question.text).font(.subheadline)
+                if let caption {
+                    Text(caption).font(.caption).foregroundStyle(.secondary)
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder private var count: some View {
+        if question.isExample {
+            Image(systemName: "text.quote")
+                .font(.title3)
+                .foregroundStyle(.tertiary)
+        } else {
+            Text("\(question.count)×")
+                .font(.title3.weight(.semibold).monospacedDigit())
+        }
+    }
+
+    private var caption: String? {
+        question.isExample ? "Example" : monthLabel
     }
 
     /// "2026-10" as "Oct 2026": the server gives the month only, on purpose.

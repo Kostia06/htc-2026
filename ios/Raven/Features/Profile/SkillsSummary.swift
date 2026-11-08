@@ -22,7 +22,7 @@ struct SkillsSummary: View {
                             .font(.subheadline)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color(white: 0.16), in: .capsule)
+                            .background(Theme.chip, in: .capsule)
                             .contextMenu {
                                 Button("Remove", systemImage: "minus.circle", role: .destructive) { onRemove(skill) }
                             }
@@ -34,6 +34,7 @@ struct SkillsSummary: View {
                     }
                     .font(.subheadline.weight(.semibold))
                     .tint(Theme.action)
+                    .frame(minHeight: 44)
                 }
             }
             .padding(.vertical, 4)

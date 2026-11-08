@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03CC85444B89CF2F68104A39 /* DetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A44DC21EED53D296769EC7 /* DetailSheet.swift */; };
 		04745663E83154C47694B541 /* StepDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E180EBD52BC04639392E88 /* StepDetailSheet.swift */; };
 		09495E219A2F3CD3F89EC59D /* ResumeSectionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B07F95B86AC37B0C818C1C /* ResumeSectionEditor.swift */; };
 		108AB9037AE375D65E60C110 /* RavenKit in Frameworks */ = {isa = PBXBuildFile; productRef = F0FE6486CF358F79CDE60065 /* RavenKit */; };
@@ -219,6 +220,7 @@
 		DC31D1C6532778357D80BFB7 /* SampleResume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleResume.swift; sourceTree = "<group>"; };
 		E1B927D756FE6F2B4B915335 /* CompanyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyView.swift; sourceTree = "<group>"; };
 		E1BD1764C52AB4741AB3EC98 /* PrivacyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyView.swift; sourceTree = "<group>"; };
+		E3A44DC21EED53D296769EC7 /* DetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSheet.swift; sourceTree = "<group>"; };
 		E3A50B43A168A22631F592A0 /* PracticeHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHistoryService.swift; sourceTree = "<group>"; };
 		E5B07F95B86AC37B0C818C1C /* ResumeSectionEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeSectionEditor.swift; sourceTree = "<group>"; };
 		EAD01354CB3E720485547090 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 		E6BAFA4968507B931F86B28D /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				E3A44DC21EED53D296769EC7 /* DetailSheet.swift */,
 				1FC5371ED018E7B484801389 /* RaisedButtonStyle.swift */,
 				17B637648F387CCF0004BA92 /* Skeleton.swift */,
 				C367F1F41FFEE4F0094C3478 /* Theme.swift */,
@@ -621,6 +624,7 @@
 				B025C41C446F69A388FD0B07 /* DebugScreen.swift in Sources */,
 				69701CB127C56B5D61B18508 /* DemoHeadsetIssuer.swift in Sources */,
 				645B7E80CEDDB8F5F026A980 /* DemoHeadsetLink.swift in Sources */,
+				03CC85444B89CF2F68104A39 /* DetailSheet.swift in Sources */,
 				CB55C9C50E5988082C01B400 /* DifficultyPicker.swift in Sources */,
 				E4EB672F36FABD55EB95DD1E /* EducationForm.swift in Sources */,
 				90A5D6DB369BA56DEF440906 /* ElevenLabsRecapVoice.swift in Sources */,

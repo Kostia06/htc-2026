@@ -7,7 +7,7 @@ struct ThinProgressBar: View {
 
     var body: some View {
         Capsule()
-            .fill(Color(white: 0.16))
+            .fill(Theme.chip)
             .frame(height: 4)
             .overlay {
                 // scaled rather than measured, so the bar needs no geometry reader
