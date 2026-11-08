@@ -17,21 +17,11 @@ struct PreviewVoicePractice: VoicePracticeService {
     var company: String?
 
     func startVoiceSession(_ request: VoiceSessionRequest) async throws(RavenError) -> VoiceSession {
-        switch request.mode {
-        case .interview:
-            VoiceSession(
-                id: "preview", mode: .interview, provider: "preview",
-                opening: "Hi, thanks for coming in. Ready to start?",
-                role: request.role, company: company, questions: questions,
-            )
-        case .networking:
-            VoiceSession(
-                id: "preview", mode: .networking, provider: "preview",
-                opening: "Hi! I'm Jessica. Are you enjoying the event?",
-                persona: Persona(name: "Jessica", role: "leads a data team and comes to most meetups"),
-                goals: ["Introduce yourself in a sentence or two", "Ask one real question", "Ask how to follow up"],
-            )
-        }
+        VoiceSession(
+            id: "preview", mode: .interview, provider: "preview",
+            opening: "Hi, thanks for coming in. Ready to start?",
+            role: request.role, company: company, questions: questions,
+        )
     }
 
     func submitTurn(_: VoiceTurn, in _: String) async throws(RavenError) -> TurnFeedback {

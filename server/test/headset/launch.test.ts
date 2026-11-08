@@ -17,14 +17,14 @@ describe("sending a practice session to the headset", () => {
       role: "Junior data analyst",
       stepId: "step-1",
     });
-    expect(parseLaunch({ mode: "networking" })).toEqual({ mode: "networking" });
+    expect(parseLaunch({ mode: "networking" })).toBeNull();
     expect(parseLaunch({ mode: "karaoke" })).toBeNull();
     expect(parseLaunch({ mode: "interview", role: 42 })).toBeNull();
     expect(parseLaunch(null)).toBeNull();
   });
 
   it("keeps one pending launch per person for two minutes, the newest winning", async () => {
-    await queueLaunch(env, "alice", { mode: "networking" }, NOW);
+    await queueLaunch(env, "alice", { mode: "interview" }, NOW);
     const queued = await queueLaunch(env, "alice", { mode: "interview", companySlug: "atb" }, later(1000));
     expect(queued.expiresAt).toBe(later(1000 + 120_000).toISOString());
     expect(await takeLaunch(env, "bob", later(2000))).toBeNull();

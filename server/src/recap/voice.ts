@@ -20,7 +20,7 @@ export function recapInstructions(companyName?: string) {
 export type RecapVoiceStart = { sessionId: string; opening: string } & StartedVoice;
 
 export async function startRecapVoice(env: Env, userId: string, company?: { slug: string; name: string }): Promise<RecapVoiceStart> {
-  const started = await voiceProvider(env).startSession(env, { mode: "interview", instructions: recapInstructions(company?.name), opening: RECAP_OPENING });
+  const started = await voiceProvider(env).startSession(env, { instructions: recapInstructions(company?.name), opening: RECAP_OPENING });
   const sessionId = crypto.randomUUID();
   await db(env).prepare("INSERT INTO recap_voice_sessions (id, user_id, company_slug, created_at) VALUES (?, ?, ?, ?)")
     .bind(sessionId, userId, company?.slug ?? null, new Date().toISOString())

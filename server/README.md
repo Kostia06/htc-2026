@@ -14,7 +14,7 @@ src/
     shared-tools/ tools more than one agent holds (web_search, fetch_page, recall, profile, company facts...)
     resume/       profile-intake, onboarding-prefill; owns read_document
     research/     research-company; shared public facts only, never private memory
-    interview/    interview-prep, interview-intel, interview-debrief, networking-recap; owns hn/devto search,
+    interview/    interview-prep, interview-intel, interview-debrief, interview-recap; owns hn/devto search,
                   queue_research, remember
     career/       career-snapshot, recommend-jobs/-courses/-research; owns job_postings
     orchestrator/ the only way into an agent: routes a skill id to its agent and performs handoffs

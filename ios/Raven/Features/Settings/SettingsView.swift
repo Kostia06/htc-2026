@@ -19,12 +19,11 @@ struct SettingsView: View {
             }
             .listRowBackground(Theme.raised)
             Section {
-                LabeledContent("Interviews", value: "Eric")
-                LabeledContent("Networking", value: "Jessica")
+                LabeledContent("Interviewer", value: "Eric")
             } header: {
                 Text("Practice voice")
             } footer: {
-                Text("The same voices on your phone and your headset.")
+                Text("The same voice on your phone and your headset.")
             }
             .listRowBackground(Theme.raised)
             Section("Privacy") {

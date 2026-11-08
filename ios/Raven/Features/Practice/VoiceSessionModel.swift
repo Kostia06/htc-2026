@@ -42,7 +42,7 @@ final class VoiceSessionModel: Identifiable {
         session != nil
     }
 
-    /// Planned interview questions; zero for a networking chat.
+    /// How many questions the server planned for this interview.
     var questionCount: Int {
         session?.questions.count ?? 0
     }
@@ -50,7 +50,7 @@ final class VoiceSessionModel: Identifiable {
     func run() async {
         guard let session = await startSession() else { return }
         self.session = session
-        company = session.company ?? session.persona?.company
+        company = session.company
         for await event in engine.start(session) {
             handle(event, in: session)
         }

@@ -45,14 +45,14 @@ describe("GET /api/voice/history", () => {
     await addTurn(env, me.id, older, { question: "Q1", answer: "A1", score: { scores: { structure: 4, relevance: 2 }, delivery, tip: "t" } });
     await addTurn(env, me.id, older, { question: "Q2", answer: "A2", score: { scores: { structure: 3 }, delivery, tip: "t" } });
     await finishSession(env, me.id, older);
-    const newer = await createSession(env, me.id, { mode: "networking", companySlug: null, plan: { ...plan, mode: "interview" } }, at(1));
+    const newer = await createSession(env, me.id, { mode: "interview", companySlug: null, plan }, at(1));
 
     const { status, body } = await get(me);
     expect(status).toBe(200);
     expect(body.nextCursor).toBeNull();
     expect(body.sessions.map((s) => s.id)).toEqual([newer, older]);
     const [fresh, done] = body.sessions;
-    expect(fresh).toMatchObject({ mode: "networking", companySlug: null, companyName: null, status: "active", score: null, turnCount: 0 });
+    expect(fresh).toMatchObject({ mode: "interview", companySlug: null, companyName: null, status: "active", score: null, turnCount: 0 });
     expect(done).toMatchObject({ mode: "interview", companySlug: "atb", companyName: "ATB Financial", status: "finished", score: 3, turnCount: 2 });
     expect(done.finishedAt).not.toBeNull();
   });

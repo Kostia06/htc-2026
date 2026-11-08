@@ -1,9 +1,8 @@
 import type { Env } from "../env";
 import { askJev, type JevQuestion } from "../integrations/jev";
 import { type Delivery, measureDelivery } from "./delivery";
-import type { VoiceMode } from "./types";
 
-export type Turn = { mode: VoiceMode; question: string; answer: string; durationMs: number };
+export type Turn = { question: string; answer: string; durationMs: number };
 export type TurnScore = { scores: Record<string, number>; delivery: Delivery; tip: string };
 
 type Dimension = { question: JevQuestion; tip: string };
@@ -53,50 +52,15 @@ const INTERVIEW: Record<string, Dimension> = {
   },
 };
 
-const NETWORKING: Record<string, Dimension> = {
-  warmth: {
-    question: level("How warm and easy to talk to does `answer` sound in a casual networking chat?", [
-      "Cold or abrupt",
-      "Polite but flat",
-      "Friendly",
-      "Friendly and engaged",
-      "Warm, engaged and easy to keep talking to",
-    ]),
-    tip: "React to what they said before moving on: a quick \"oh nice\" goes a long way.",
-  },
-  curiosity: {
-    question: level("How curious about the other person is `answer`?", [
-      "Asks nothing and talks only about themselves",
-      "Mentions the other person but asks nothing",
-      "Asks a generic question",
-      "Asks a real question about their work",
-      "Asks a thoughtful follow-up that builds on what they said",
-    ]),
-    tip: "Ask them one real question about their work before talking more about yourself.",
-  },
-  clarity: {
-    question: level("How clearly does `answer` say who they are and what they're looking for?", [
-      "Unclear what they do or want",
-      "Vague about what they want",
-      "Says what they do",
-      "Says what they do and what they're aiming for",
-      "Short, clear intro with a natural ask",
-    ]),
-    tip: "Have a two-sentence intro ready: what you do now and what you're aiming for next.",
-  },
-};
-
-const dimensionsFor = (mode: VoiceMode) => (mode === "interview" ? INTERVIEW : NETWORKING);
-
 function deliveryTip(delivery: Delivery) {
   if (delivery.fillerWords >= 2) return "Pause for a breath instead of saying \"um\" or \"like\".";
   if (delivery.wordsPerMinute && delivery.wordsPerMinute > 170) return "Slow down a little so each point lands.";
   return "Keep going: take a breath before each answer and start with the main point.";
 }
 
-function weakestTip(scores: Record<string, number>, dimensions: Record<string, Dimension>) {
+function weakestTip(scores: Record<string, number>) {
   const [weakest] = Object.entries(scores).sort(([, a], [, b]) => a - b);
-  return weakest ? dimensions[weakest[0]].tip : undefined;
+  return weakest ? INTERVIEW[weakest[0]].tip : undefined;
 }
 
 // Jev rates on 0–4; people read 1–5
@@ -106,17 +70,16 @@ const toFivePoint = (score: number) => Math.round((score + 1) * 10) / 10;
 // gets the delivery numbers, because a practice session must never stall on scoring.
 export async function scoreTurn(env: Env, turn: Turn): Promise<TurnScore> {
   const delivery = measureDelivery(turn.answer, turn.durationMs);
-  const dimensions = dimensionsFor(turn.mode);
   try {
-    const questions = Object.fromEntries(Object.entries(dimensions).map(([key, d]) => [key, d.question]));
+    const questions = Object.fromEntries(Object.entries(INTERVIEW).map(([key, d]) => [key, d.question]));
     const answers = await askJev(env, { question: turn.question, answer: turn.answer }, questions);
     const scores = Object.fromEntries(
-      Object.keys(dimensions).flatMap((key) => {
+      Object.keys(INTERVIEW).flatMap((key) => {
         const answer = answers[key];
         return answer?.type === "score" ? [[key, toFivePoint(answer.score)]] : [];
       }),
     );
-    return { scores, delivery, tip: weakestTip(scores, dimensions) ?? deliveryTip(delivery) };
+    return { scores, delivery, tip: weakestTip(scores) ?? deliveryTip(delivery) };
   } catch {
     return { scores: {}, delivery, tip: deliveryTip(delivery) };
   }

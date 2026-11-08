@@ -1,6 +1,7 @@
 export const STEP_KINDS = [
   "project",
   "interview_practice",
+  // a real conversation to go and have, not an in-app chat: it only gets "Mark done"
   "networking_practice",
   "event",
   "course",
@@ -16,7 +17,7 @@ export type StepStatus = (typeof STEP_STATUSES)[number];
 export type StepLabel = "ready_now" | "stretch" | "long_term";
 
 // what the app launches when the person taps the step's button
-export type StepAction = { type: "interview" | "networking"; companySlug?: string; role?: string };
+export type StepAction = { type: "interview"; companySlug?: string; role?: string };
 
 // what gets encrypted and stored for one step: the text, plus the person's own note once they finish it
 export type StepContent = {

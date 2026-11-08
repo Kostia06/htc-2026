@@ -9,9 +9,9 @@ describe("handing a launch to the scene", () => {
     const stopSecond = onLaunch(second);
     expect(emitLaunch({ mode: "interview" })).toBe(2);
     stopFirst();
-    expect(emitLaunch({ mode: "networking" })).toBe(1);
+    expect(emitLaunch({ mode: "interview" })).toBe(1);
     stopSecond();
-    expect(emitLaunch({ mode: "networking" })).toBe(0);
+    expect(emitLaunch({ mode: "interview" })).toBe(0);
     expect(first).toHaveBeenCalledTimes(1);
     expect(second).toHaveBeenCalledTimes(2);
   });
@@ -20,6 +20,6 @@ describe("handing a launch to the scene", () => {
     expect(describeLaunch({ mode: "interview", companySlug: "atb" })).toBe("Starting your interview with ATB…");
     expect(describeLaunch({ mode: "interview", companySlug: "neo-financial" })).toBe("Starting your interview with Neo Financial…");
     expect(describeLaunch({ mode: "interview", companySlug: "acme-corp" })).toBe("Starting your interview with Acme Corp…");
-    expect(describeLaunch({ mode: "networking" })).toBe("Starting your networking chat…");
+    expect(describeLaunch({ mode: "interview" })).toBe("Starting your interview…");
   });
 });

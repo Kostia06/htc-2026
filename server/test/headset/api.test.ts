@@ -87,10 +87,10 @@ describe("headset routes", () => {
 
   it("still serves a headset holding an older token without a device id", async () => {
     const legacy = await issueSessionFor(env.SESSION_SECRET, "alice");
-    await app.request("/api/headset/launch", json("POST", { mode: "networking" }, await phone), env);
+    await app.request("/api/headset/launch", json("POST", { mode: "interview" }, await phone), env);
     const poll = await app.request("/api/headset/launch", asPhone(legacy), env);
     expect(poll.status).toBe(200);
-    expect(await poll.json()).toEqual({ launch: { mode: "networking" } });
+    expect(await poll.json()).toEqual({ launch: { mode: "interview" } });
   });
 
   it("reports whether a headset is connected", async () => {

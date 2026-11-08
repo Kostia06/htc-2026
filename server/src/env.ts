@@ -21,7 +21,6 @@ export type Env = {
   VOICE_PROVIDER?: string;
   ELEVENLABS_API_KEY?: string;
   ELEVENLABS_AGENT_ID?: string;
-  ELEVENLABS_NETWORKING_AGENT_ID?: string;
   KEENABLE_API_KEY: string;
   // optional: without them job_postings reports "not configured"
   ADZUNA_APP_ID?: string;

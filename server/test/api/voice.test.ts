@@ -61,7 +61,7 @@ const send = (app: Hono<AppContext>, token: string, method: string, path: string
     body: body === undefined ? undefined : JSON.stringify(body),
   }, env);
 
-type Started = { sessionId: string; mode: string; provider: string; credentials: { kind: string; token?: string; model?: string }; opening: string; questions?: { text: string; source: string }[]; persona?: unknown; goals?: string[] };
+type Started = { sessionId: string; mode: string; provider: string; credentials: { kind: string; token?: string; model?: string }; opening: string; questions?: { text: string; source: string }[] };
 
 describe("/api/voice", () => {
   it("starts an interview with a locked live token and questions from the resume", async () => {
@@ -74,12 +74,11 @@ describe("/api/voice", () => {
     expect(tokenRequests[0]).toContain("Junior data analyst");
   });
 
-  it("starts a networking chat with a persona and goals, no questions", async () => {
+  it("only knows interviews: the retired networking mode is a bad request", async () => {
     const me = await person();
-    const body = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "networking" })).json<Started>();
-    expect(body.persona).toBeTruthy();
-    expect(body.goals).toHaveLength(3);
-    expect(body.questions).toBeUndefined();
+    const res = await send(voiceApp(), me.token, "POST", "/sessions", { mode: "networking" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "mode must be interview" });
   });
 
   it("scores each answer instantly and replays them only for their owner", async () => {
@@ -119,7 +118,7 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "karaoke" })).status).toBe(400);
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", companySlug: "nobody" })).status).toBe(404);
     const statuses: number[] = [];
-    for (let i = 0; i < 11; i++) statuses.push((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "networking" })).status);
+    for (let i = 0; i < 11; i++) statuses.push((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).status);
     expect(statuses.at(-1)).toBe(429);
   });
 

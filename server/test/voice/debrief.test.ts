@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildDebrief, fallbackDebrief, normalizeDebrief, turnScore } from "../../src/voice/debrief";
-import { buildInterviewPlan, buildNetworkingPlan } from "../../src/voice/plan";
+import { buildInterviewPlan } from "../../src/voice/plan";
 import type { StoredTurn } from "../../src/voice/store";
 import { inputs } from "./fixtures";
 
@@ -50,14 +50,6 @@ describe("buildDebrief", () => {
       ...modelReply,
       perQuestion: [{ question: "Tell me about a project you're proud of.", score: 72, oneLineFeedback: "Good scale, add the outcome." }],
     });
-  });
-
-  it("judges networking on the four moves, not interview structure", async () => {
-    const { prompts } = serveModel(modelReply);
-    await buildDebrief(env, buildNetworkingPlan(inputs()), [turn()]);
-    expect(prompts[0]).toMatch(/introduce themselves/i);
-    expect(prompts[0]).toMatch(/ask to stay in touch/i);
-    expect(prompts[0]).not.toMatch(/mock interview/i);
   });
 
   it("still returns a debrief from the scores when the model is down", async () => {

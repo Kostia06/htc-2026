@@ -96,7 +96,10 @@ export async function setStepStatus(env: Env, userId: string, id: string, status
 }
 
 async function decode(env: Env, userId: string, row: Row): Promise<StepContent> {
-  return JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as StepContent;
+  const content = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as StepContent;
+  // steps written before the networking voice mode was retired still carry its action; they are plain steps now
+  if (content.action && content.action.type !== "interview") delete content.action;
+  return content;
 }
 
 function decodeAll(env: Env, userId: string, rows: Row[]): Promise<Step[]> {

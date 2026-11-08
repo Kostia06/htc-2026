@@ -12,7 +12,7 @@ describe("gemini live provider", () => {
     const fetchMock = vi.fn(async () => Response.json({ name: "auth_tokens/abc" }));
     deps.fetch = fetchMock as unknown as typeof fetch;
     const now = new Date("2026-11-08T10:00:00Z");
-    const started = await geminiLive.startSession(env, { mode: "interview", instructions: "Be the interviewer.", opening: "Hi" }, now);
+    const started = await geminiLive.startSession(env, { instructions: "Be the interviewer.", opening: "Hi" }, now);
 
     expect(started).toEqual({
       provider: "gemini",
@@ -35,6 +35,6 @@ describe("gemini live provider", () => {
 
   it("fails loudly when Google refuses", async () => {
     deps.fetch = (async () => new Response("quota", { status: 429 })) as unknown as typeof fetch;
-    await expect(geminiLive.startSession(env, { mode: "interview", instructions: "x", opening: "Hi" })).rejects.toThrow("live token 429");
+    await expect(geminiLive.startSession(env, { instructions: "x", opening: "Hi" })).rejects.toThrow("live token 429");
   });
 });

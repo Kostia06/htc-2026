@@ -26,6 +26,6 @@ struct VoiceSessionQuestionsTests {
     @Test func `returns nil for small talk and follow-ups`() {
         #expect(session.plannedQuestionIndex(matching: "Thanks for coming in.") == nil)
         #expect(session.plannedQuestionIndex(matching: "[sighs]") == nil)
-        #expect(VoiceSession(id: "n", mode: .networking, provider: "test", opening: "Hey.").plannedQuestionIndex(matching: "Hey.") == nil)
+        #expect(VoiceSession(id: "n", mode: .interview, provider: "test", opening: "Hey.").plannedQuestionIndex(matching: "Hey.") == nil)
     }
 }

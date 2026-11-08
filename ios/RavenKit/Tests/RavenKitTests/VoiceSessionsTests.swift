@@ -29,7 +29,6 @@ extension StubbedNetworkTests {
 
             #expect(session.id == "vs_1")
             #expect(session.questions.map(\.isReported) == [true, false])
-            #expect(session.goals.isEmpty)
             #expect(session.credentials == .object(["kind": .string("gemini-live"), "token": .string("abc"), "model": .string("live-2")]))
             let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/voice/sessions"] })
             let sent = try JSONSerialization.jsonObject(with: body) as? [String: String]
@@ -47,16 +46,16 @@ extension StubbedNetworkTests {
             #expect(sent == ["mode": "interview", "difficulty": "hard"])
         }
 
-        @Test func `starts a networking chat with a persona and no expiry`() async throws {
+        @Test func `reads a session saved under the retired networking mode as an interview`() async throws {
             StubProtocol.routes.withLock {
                 $0["POST /api/voice/sessions"] = (201, """
                 {"sessionId":"vs_2","mode":"networking","provider":"elevenlabs","credentials":{"kind":"elevenlabs"},"expiresAt":null,
-                 "opening":"Hey, I'm Sam.","persona":{"name":"Sam","role":"works in tech","company":null},"goals":["Ask a real question"]}
+                 "opening":"Hey, I'm Sam."}
                 """)
             }
-            let session = try await client.startVoiceSession(.init(mode: .networking))
+            let session = try await client.startVoiceSession(.init(mode: .interview))
 
-            #expect(session.persona == Persona(name: "Sam", role: "works in tech"))
+            #expect(session.mode == .interview)
             #expect(session.expiresAt == nil)
             #expect(session.questions.isEmpty)
         }

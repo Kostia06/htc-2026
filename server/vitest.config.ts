@@ -15,7 +15,6 @@ export default defineConfig({
           KEENABLE_API_KEY: "test-keenable-key",
           ELEVENLABS_API_KEY: "",
           ELEVENLABS_AGENT_ID: "",
-          ELEVENLABS_NETWORKING_AGENT_ID: "",
           VOICE_PROVIDER: "gemini",
           // production runs on Supabase; this suite runs on D1, and test-pg/ covers Postgres
           DB_BACKEND: "d1",

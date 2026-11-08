@@ -16,12 +16,13 @@ type SessionRow = {
 type ScoreRow = { session_id: string; scores_json: string };
 
 // Reads only the unencrypted columns: the plan and the answers stay sealed, this is the list, not the replay.
+// Sessions from the retired networking mode are left out rather than shown as something they weren't.
 async function loadPage(env: Env, userId: string, cursor: string | null) {
   const before = cursor ? " AND s.created_at < ?" : "";
   const stmt = db(env).prepare(
     `SELECT s.id, s.mode, s.company_slug, c.name AS company_name, s.status, s.created_at, s.finished_at
      FROM voice_sessions s LEFT JOIN companies c ON c.slug = s.company_slug
-     WHERE s.user_id = ?${before}
+     WHERE s.user_id = ? AND s.mode = 'interview'${before}
      ORDER BY s.created_at DESC LIMIT ?`,
   );
   const bound = cursor ? stmt.bind(userId, cursor, PAGE_SIZE + 1) : stmt.bind(userId, PAGE_SIZE + 1);

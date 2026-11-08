@@ -41,7 +41,7 @@ headset.get("/status", async (c) => {
 // phone: ask the headset to start a session
 headset.post("/launch", async (c) => {
   const launch = parseLaunch(await c.req.json().catch(() => null));
-  if (!launch) return c.json({ error: "mode must be interview or networking" }, 400);
+  if (!launch) return c.json({ error: "mode must be interview" }, 400);
   const now = new Date();
   const { expiresAt } = await queueLaunch(c.env, c.var.sessionId, launch, now);
   return c.json({ expiresAt, connected: await isHeadsetConnected(c.env, c.var.sessionId, now) }, 201);

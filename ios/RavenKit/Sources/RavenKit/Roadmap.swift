@@ -45,10 +45,10 @@ public struct CompletedDay: Decodable, Equatable, Sendable, Identifiable {
     }
 }
 
-/// What the app launches when the person taps a step's button: a spoken interview or networking session.
+/// What the app launches when the person taps a step's button: a spoken interview.
 public struct RoadmapAction: Decodable, Equatable, Sendable {
     public enum Kind: String, Decodable, Sendable {
-        case interview, networking
+        case interview
     }
 
     public let type: Kind

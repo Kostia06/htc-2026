@@ -38,9 +38,9 @@ extension StubbedNetworkTests {
             StubProtocol.routes.withLock {
                 $0["POST /api/headset/launch"] = (201, #"{"expiresAt":"2026-11-07T12:02:00.000Z","connected":true}"#)
             }
-            _ = try await client.sendToHeadset(HeadsetLaunch(mode: .networking))
+            _ = try await client.sendToHeadset(HeadsetLaunch(mode: .interview))
             let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/headset/launch"] })
-            #expect(try JSONSerialization.jsonObject(with: body) as? [String: String] == ["mode": "networking"])
+            #expect(try JSONSerialization.jsonObject(with: body) as? [String: String] == ["mode": "interview"])
         }
 
         @Test func `forgets a headset`() async throws {
