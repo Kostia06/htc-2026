@@ -25,5 +25,12 @@ export function toPanelScore(score) {
 export function toPanelSummary(debrief) {
   if (!debrief) return null
   const words = debrief.summary ?? [debrief.verdict, debrief.nextSteps?.[0]].filter(Boolean).join(' ')
-  return { overall: debrief.overall ?? 0, summary: words || 'Interview complete.' }
+  // verdict and next steps kept apart too: the summary card lays them out like
+  // the phone's report (headline, then "Work on next" rows).
+  return {
+    overall: debrief.overall ?? 0,
+    summary: words || 'Interview complete.',
+    verdict: debrief.verdict ?? null,
+    nextSteps: (debrief.nextSteps ?? []).filter(Boolean).slice(0, 3),
+  }
 }
