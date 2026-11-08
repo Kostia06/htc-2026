@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { resume as resumeApi, toSlug } from '../lib/agent'
 import { RESUME_ACCEPT } from '../onboarding/store'
-import { Problem, Thinking } from './ui'
+import { PageHead, Problem, Thinking } from './ui'
+import './resume.css'
 
 const ADD_NUMBER = '[add number]'
 const SECTIONS = [
@@ -107,7 +108,7 @@ function Lines({ label, lines, onChange, hint }) {
   )
 }
 
-function FilePicker({ busy, onFile, children }) {
+function FilePicker({ busy, onFile, children, className = 'db__link' }) {
   const input = useRef(null)
   const [over, setOver] = useState(false)
   const pick = (file) => file && onFile(file)
@@ -115,7 +116,7 @@ function FilePicker({ busy, onFile, children }) {
     <>
       <input ref={input} type="file" accept={RESUME_ACCEPT} hidden onChange={(e) => (pick(e.target.files?.[0]), (e.target.value = ''))} />
       {children ? (
-        <button type="button" className="db__link" disabled={busy} onClick={() => input.current?.click()}>{children}</button>
+        <button type="button" className={className} disabled={busy} onClick={() => input.current?.click()}>{children}</button>
       ) : (
         <button
           type="button"
@@ -134,28 +135,29 @@ function FilePicker({ busy, onFile, children }) {
   )
 }
 
-function Suggestions({ items, doc, onAccept, onSkip }) {
+function Suggestions({ items, total, doc, onAccept, onSkip }) {
   const current = items[0]
   if (!current) return null
   const stale = !same(readPath(doc, current.path), current.before)
+  const n = total - items.length + 1
   return (
-    <section className="rs__deck" aria-live="polite" aria-label="Raven's suggestions">
-      <div className="db__item-head">
-        <h3 className="db__h3">Raven suggests</h3>
-        <span className="db__muted">{items.length} left</span>
-      </div>
-      <article className="db__item rs__suggestion" key={current.path}>
-        <p className="rs__where">{labelFor(doc, current.path)}</p>
+    <article className="rs__card" key={current.path} aria-live="polite">
+      <span className="rs__n">Suggestion {n} · {labelFor(doc, current.path)}</span>
+      <div className="rs__line">
+        <span className="pg__label">Now</span>
         <p className="rs__before">{current.before}</p>
+      </div>
+      <div className="rs__line">
+        <span className="pg__label">Suggested</span>
         <p className="rs__after"><WithBlanks text={current.after} /></p>
-        {current.why && <p className="rs__why">{current.why}</p>}
-        {stale && <p className="db__muted">This line has changed since Raven read it, so it can only be skipped.</p>}
-        <div className="db__row">
-          <button type="button" className="db__ghost" onClick={() => onSkip(current)}>Skip</button>
-          <button type="button" className="ob__next" disabled={stale} onClick={() => onAccept(current)}>Accept</button>
-        </div>
-      </article>
-    </section>
+      </div>
+      {current.why && <p className="rs__why">{current.why}</p>}
+      {stale && <p className="pg__label">This line has changed since Raven read it, so it can only be skipped.</p>}
+      <div className="db__row">
+        <button type="button" className="ob__next" disabled={stale} onClick={() => onAccept(current)}>Use this</button>
+        <button type="button" className="db__ghost" onClick={() => onSkip(current)}>Keep mine</button>
+      </div>
+    </article>
   )
 }
 
@@ -266,6 +268,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
   const [busy, setBusy] = useState(null) // reading | improving | saving | pdf
   const [error, setError] = useState(null)
   const [suggestions, setSuggestions] = useState([])
+  const [found, setFound] = useState(0)
   const [coachNote, setCoachNote] = useState(null)
   const [section, setSection] = useState('')
   const [company, setCompany] = useState('')
@@ -356,6 +359,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
     const slug = toSlug(company)
     const { suggestions: found } = await resumeApi.improve({ resume: doc, ...(section ? { section } : {}), ...(slug ? { company: slug } : {}) })
     setSuggestions(found)
+    setFound(found.length)
     if (!found.length) setCoachNote("Raven didn't find lines worth rewriting. Add more detail to your points, or try another section.")
   })
 
@@ -370,28 +374,56 @@ export default function ResumeBuilder({ answers, defaultRole }) {
   }
   const skip = (s) => setSuggestions((all) => all.filter((x) => x.path !== s.path))
 
-  if (phase === 'loading') return <div className="db__panel"><p className="db__muted">Loading your resume…</p></div>
-  if (phase === 'failed') return <div className="db__panel"><Problem error={loadError} onRetry={reload} /></div>
+  const head = (aside) => (
+    <PageHead
+      title="Sharper wording, nothing made up."
+      lead={`Raven only rewrites what your resume already says${defaultRole ? `, tuned for ${defaultRole} roles` : ''}. It never adds numbers or experience you didn't give it.`}
+    >
+      {aside}
+    </PageHead>
+  )
+
+  if (phase === 'loading' || phase === 'failed') {
+    return (
+      <div className="pg">
+        {head()}
+        {phase === 'loading' ? <p className="pg__muted">Loading your resume…</p> : <Problem error={loadError} onRetry={reload} />}
+      </div>
+    )
+  }
 
   if (phase === 'start') {
     return (
-      <div className="db__panel">
-        <p className="db__intro">
-          Upload your resume and Raven will lay it out here, then suggest sharper wording for {defaultRole ? `${defaultRole} roles` : 'the roles you want'}. It only
-          rewrites what your resume already says and never makes up numbers.
-        </p>
-        {busy === 'reading' ? <Thinking>Raven is reading your resume…</Thinking> : <FilePicker busy={!!busy} onFile={read} />}
-        <Problem error={error} />
-        <button type="button" className="db__link db__start" onClick={() => (setOrigin({ kind: 'profile' }), setPhase('ready'))}>No resume yet? Start from your profile</button>
+      <div className="pg">
+        {head()}
+        <div className="pg__card pg__card--dashed rs__start">
+          <h2>Start with the resume you have</h2>
+          <p className="pg__muted">Upload it and Raven lays it out here, then suggests sharper wording line by line.</p>
+          {busy === 'reading' ? <Thinking>Raven is reading your resume…</Thinking> : <FilePicker busy={!!busy} onFile={read} />}
+          <Problem error={error} />
+          <button type="button" className="db__link db__start" onClick={() => (setOrigin({ kind: 'profile' }), setPhase('ready'))}>No resume yet? Start from your profile</button>
+        </div>
       </div>
     )
   }
 
   const blanks = coachLines(doc).filter((line) => line.includes(ADD_NUMBER)).length
   const working = !!busy
+  const unsaved = dirty || !saved
+  const fileName = origin?.fileName ?? (saved ? 'Your saved resume' : 'From your profile')
 
   return (
-    <div className="db__panel">
+    <div className="pg">
+      {head(
+        <div className="rs__file">
+          <span>
+            <span className="rs__file-name">{fileName}</span>
+            <span className="pg__label">{unsaved ? 'Unsaved changes' : 'Saved'}</span>
+          </span>
+          <FilePicker busy={working} onFile={read} className="db__ghost">Replace</FilePicker>
+        </div>,
+      )}
+
       {origin?.kind === 'upload' && (
         <div className="rs__note">
           <p>
@@ -410,56 +442,61 @@ export default function ResumeBuilder({ answers, defaultRole }) {
         <div className="rs__note"><p>Built from your profile. Fill in what's missing and save it.</p></div>
       )}
 
-      <section className="rs__coach" aria-label="Improve with Raven">
-        <div>
-          <h3 className="db__h3">Improve with Raven</h3>
-          <p className="db__muted">
-            Rewrites your summary and points to be specific and results-focused{defaultRole ? ` for ${defaultRole} roles` : ''}. It works on what's on screen, saved or not.
-          </p>
-        </div>
-        <div className="db__pair">
-          <label className="ob__field">
-            <span>What to review</span>
-            <select value={section} onChange={(e) => setSection(e.target.value)}>
-              {SECTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </label>
-          <Field label="Applying to (optional)" value={company} onChange={setCompany} placeholder="e.g. ATB Financial" maxLength={100} />
-        </div>
-        <button type="button" className="ob__next db__start" onClick={improve} disabled={working}>
-          {busy === 'improving' ? 'Raven is reading your resume…' : 'Improve with Raven'}
-        </button>
-      </section>
+      <div className="pg__grid">
+        <section className="pg__main pg__card rs__doc" aria-label="Your resume">
+          {busy === 'reading' ? (
+            <Thinking>Raven is reading your resume…</Thinking>
+          ) : (
+            <fieldset className="rs__editor" disabled={busy === 'saving' || busy === 'pdf'}>
+              <Editor doc={doc} set={set} />
+            </fieldset>
+          )}
 
-      {busy === 'improving' && <Thinking>Raven is rewriting your lines…</Thinking>}
-      <Suggestions items={suggestions} doc={doc} onAccept={accept} onSkip={skip} />
-      {coachNote && <p className="db__muted">{coachNote}</p>}
-      {blanks > 0 && (
-        <p className="rs__warn">
-          {blanks} line{blanks === 1 ? ' has' : 's have'} <mark className="rs__blank">{ADD_NUMBER}</mark>. Put in the real figure, or reword it, before you send this resume.
-        </p>
-      )}
-      <Problem error={error} />
+          <div className="rs__bar">
+            <button type="button" className="ob__next" onClick={act('saving', save)} disabled={working || !unsaved}>
+              {busy === 'saving' ? 'Saving…' : 'Save'}
+            </button>
+            <button type="button" className="db__ghost" onClick={pdf} disabled={working}>
+              {busy === 'pdf' ? 'Preparing PDF…' : unsaved ? 'Save and download PDF' : 'Download PDF'}
+            </button>
+            <span className="pg__label">
+              {unsaved ? 'Unsaved changes' : doc.updatedAt ? `Saved ${new Date(doc.updatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}` : 'Saved'}
+            </span>
+          </div>
+        </section>
 
-      {busy === 'reading' ? (
-        <Thinking>Raven is reading your resume…</Thinking>
-      ) : (
-        <fieldset className="rs__editor" disabled={busy === 'saving' || busy === 'pdf'}>
-          <Editor doc={doc} set={set} />
-        </fieldset>
-      )}
+        <aside className="pg__side rs__side" aria-label="Suggestions">
+          <div className="pg__row-head">
+            <h2 className="pg__h2">Suggestions</h2>
+            {suggestions.length > 0 && <span className="pg__label">{suggestions.length} to review</span>}
+          </div>
 
-      <div className="rs__bar">
-        <button type="button" className="ob__next" onClick={act('saving', save)} disabled={working || (saved && !dirty)}>
-          {busy === 'saving' ? 'Saving…' : 'Save'}
-        </button>
-        <button type="button" className="db__ghost" onClick={pdf} disabled={working}>
-          {busy === 'pdf' ? 'Preparing PDF…' : dirty || !saved ? 'Save and download PDF' : 'Download PDF'}
-        </button>
-        <span className="db__muted">
-          {dirty || !saved ? 'Unsaved changes' : doc.updatedAt ? `Saved ${new Date(doc.updatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}` : 'Saved'}
-        </span>
-        <FilePicker busy={working} onFile={read}>Upload a different resume</FilePicker>
+          <Suggestions items={suggestions} total={found} doc={doc} onAccept={accept} onSkip={skip} />
+          {busy === 'improving' && <Thinking>Raven is rewriting your lines…</Thinking>}
+          {coachNote && <p className="pg__muted rs__aside-note">{coachNote}</p>}
+          {blanks > 0 && (
+            <p className="rs__warn">
+              {blanks} line{blanks === 1 ? ' has' : 's have'} <mark className="rs__blank">{ADD_NUMBER}</mark>. Put in the real figure, or reword it, before you send this resume.
+            </p>
+          )}
+          <Problem error={error} />
+
+          <section className="pg__card" aria-label="Improve with Raven">
+            <span className="pg__label">
+              Rewrites your summary and points to be specific and results-focused. It works on what's on screen, saved or not.
+            </span>
+            <label className="ob__field">
+              <span>What to review</span>
+              <select value={section} onChange={(e) => setSection(e.target.value)}>
+                {SECTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+            <Field label="Applying to (optional)" value={company} onChange={setCompany} placeholder="e.g. ATB Financial" maxLength={100} />
+            <button type="button" className={suggestions.length ? 'db__ghost' : 'ob__next'} onClick={improve} disabled={working}>
+              {busy === 'improving' ? 'Raven is reading your resume…' : suggestions.length ? 'Ask for new suggestions' : 'Improve with Raven'}
+            </button>
+          </section>
+        </aside>
       </div>
     </div>
   )

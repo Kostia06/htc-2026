@@ -113,7 +113,7 @@ export default function Dashboard({ session, answers, syncProblem, onRedo }) {
 
   const tabs = [
     { id: 'plan', label: 'Plan', title: 'Your plan', bare: true, render: () => <Plan userId={userId} stamp={stamp} first={first} role={role} onGo={go} /> },
-    { id: 'resume', label: 'Resume', title: 'Your resume', render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
+    { id: 'resume', label: 'Resume', title: 'Your resume', bare: true, render: () => <ResumeBuilder answers={answers} defaultRole={role} /> },
     {
       id: 'jobs',
       label: 'Jobs',

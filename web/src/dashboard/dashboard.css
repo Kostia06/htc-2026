@@ -400,95 +400,6 @@
 
 .db__start { align-self: flex-start; }
 
-/* resume builder */
-.rs__note,
-.rs__coach,
-.rs__deck { display: flex; flex-direction: column; gap: 12px; }
-
-.rs__note {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px 16px;
-  padding: 12px 14px;
-  border: 1px solid #262626;
-  border-radius: 12px;
-  background: #0b0b0b;
-  font-size: 14px;
-}
-
-.rs__note p { margin: 0; color: #b3b3b3; line-height: 1.5; }
-.rs__note strong { color: #fff; font-weight: 500; }
-
-.rs__coach {
-  padding: 18px;
-  border: 1px solid rgba(138, 92, 255, 0.35);
-  border-radius: 14px;
-  background: rgba(138, 92, 255, 0.06);
-}
-
-.rs__coach .db__h3 { margin-top: 0; }
-
-.ob__field select {
-  padding: 11px 14px;
-  border: 1px solid #333;
-  border-radius: 10px;
-  background: #0b0b0b;
-  color: #fff;
-  font: inherit;
-  font-size: 16px;
-}
-
-.rs__suggestion { border-color: rgba(138, 92, 255, 0.45); }
-.rs__suggestion p { margin: 0; line-height: 1.5; }
-.rs__where { color: #8f8f8f; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-.rs__before { color: #8f8f8f; font-size: 14px; text-decoration: line-through; text-decoration-color: #555; }
-.rs__after { color: #fff; font-size: 16px; }
-.rs__why { color: #cbb8ff; font-size: 14px; }
-
-.rs__blank {
-  padding: 0 4px;
-  border-radius: 4px;
-  background: rgba(254, 74, 35, 0.18);
-  color: #ffa58f;
-}
-
-.rs__warn { margin: 0; color: #ffa58f; font-size: 14px; }
-
-.rs__editor {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.rs__editor:disabled { opacity: 0.6; }
-.rs__group { display: flex; flex-direction: column; gap: 12px; }
-.rs__group .db__h3 { margin: 0; }
-.rs__entry { gap: 12px; }
-.rs__remove,
-.rs__add { align-self: flex-start; }
-.rs__hint { margin: 0; color: #6f6f6f; font-size: 13px; }
-
-.rs__bar {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin: 0 -28px -28px;
-  padding: 16px 28px;
-  border-top: 1px solid #262626;
-  border-radius: 0 0 22px 22px;
-  background: rgba(14, 14, 14, 0.94);
-  backdrop-filter: blur(8px);
-}
-
 /* page layout shared by every redesigned tab: big heading, then a main column and a side rail */
 .pg {
   display: flex;
@@ -682,7 +593,6 @@
   .db__pair { grid-template-columns: 1fr; }
   .db__search { flex-direction: column; }
   .db__item-head { flex-direction: column; }
-  .rs__bar { margin: 0 -16px -20px; padding: 14px 16px; border-radius: 0 0 16px 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
