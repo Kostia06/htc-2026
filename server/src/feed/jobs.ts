@@ -51,7 +51,7 @@ export async function jobCandidates(search: SearchJobs, queries: JobQuery[], now
   const settled = await Promise.allSettled(queries.map(search));
   if (queries.length > 0 && settled.every((s) => s.status === "rejected")) throw new Error("every job search failed");
   const perQuery = settled.map((s) => (s.status === "fulfilled" ? s.value : []));
-  return interleave(perQuery).filter((p) => !isOld(p, now)).map(jobCandidate);
+  return interleave(perQuery).filter((p) => !isOld(p, now) && !isSenior(p.title)).map(jobCandidate);
 }
 
 // a cached search can outlive a posting's freshness; one without a date is kept, since the date is all we'd judge by
@@ -64,4 +64,10 @@ function isOld(posting: JobPosting, now: Date) {
 function interleave<T>(lists: T[][]): T[] {
   const longest = Math.max(0, ...lists.map((l) => l.length));
   return Array.from({ length: longest }, (_, i) => lists.flatMap((l) => (i < l.length ? [l[i]] : []))).flat();
+}
+
+// Skillit is for landing a first job: titles that ask for years of experience never reach the feed
+const SENIOR_TITLE = /\b(senior|sr\.?|lead|staff|principal|manager|director|head of|vp|vice president|chief|architect|ii|iii|iv)\b/i;
+export function isSenior(title: string) {
+  return SENIOR_TITLE.test(title);
 }

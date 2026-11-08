@@ -1,3 +1,4 @@
+import { isSenior } from "./jobs";
 import { db } from "../db";
 import type { Env } from "../env";
 import type { FeedCard, FeedSection, RankedSection } from "./types";
@@ -37,7 +38,10 @@ export async function readFeed(env: Env, userId: string, section: FeedSection, o
   ]);
   const row = (state.results[0] ?? {}) as Partial<StateRow>;
   const savedIds = new Set((saved.results as { item_id: string }[]).map((r) => r.item_id));
-  const cards = parseCards(page.results).map((card) => (savedIds.has(card.id) ? { ...card, saved: true } : card));
+  // feeds built before senior postings were filtered out still hold some; they're hidden here until the next rebuild
+  const cards = parseCards(page.results)
+    .filter((card) => section === "saved" || card.kind !== "job" || !isSenior(card.title))
+    .map((card) => (savedIds.has(card.id) ? { ...card, saved: true } : card));
   return {
     cards: cards.slice(0, limit),
     hasMore: cards.length > limit,

@@ -32,4 +32,24 @@ describe("job cards", () => {
     const ids = (await jobCandidates(search, [{ what: "data analyst" }], now)).map((c) => c.card.id);
     expect(ids).toEqual(["job:fresh", "job:undated"]);
   });
+
+  it("drop senior, lead and manager postings: Skillit is for landing a first job", async () => {
+    const at = (id: string, title: string) => ({ ...posting, url: `https://www.adzuna.ca/details/${id}`, title }) as JobPosting;
+    const search = async () => [
+      at("sr", "Sr. Software Engineer"),
+      at("senior", "Senior Data Analyst"),
+      at("lead", "Lead Developer"),
+      at("staff", "Staff Engineer"),
+      at("mgr", "Engineering Manager"),
+      at("dir", "Director of Data"),
+      at("principal", "Principal Architect"),
+      at("iii", "Software Developer III"),
+      at("junior", "Junior Developer"),
+      at("intern", "Data Analyst Intern"),
+      at("plain", "Software Developer"),
+      at("leader", "Team Leader in Training"),
+    ];
+    const ids = (await jobCandidates(search, [{ what: "developer" }])).map((c) => c.card.id);
+    expect(ids).toEqual(["job:junior", "job:intern", "job:plain", "job:leader"]);
+  });
 });
