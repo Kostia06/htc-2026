@@ -42,7 +42,7 @@ struct RoadmapView: View {
             RoadmapSkeleton()
         case let .failed(message):
             ContentUnavailableView {
-                Label("Couldn't load your roadmap", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                Label("Couldn't load your road", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
             } description: {
                 Text(message)
             } actions: {

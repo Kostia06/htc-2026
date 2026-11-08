@@ -23,7 +23,7 @@ struct PrivacyView: View {
                 StoredRow(icon: "waveform", title: "Practice sessions", detail: "Transcripts and scores, encrypted the same way.")
                 StoredRow(
                     icon: "point.topleft.down.to.point.bottomright.curvepath",
-                    title: "Roadmap and feed",
+                    title: "Road and feed",
                     detail: "Built from your profile; rebuilt when it changes.",
                 )
             }
@@ -46,7 +46,7 @@ struct PrivacyView: View {
                 }
                 .disabled(isDeleting)
             } footer: {
-                Text("Removes your profile, memories, roadmap, feed and practice sessions from Skillit's servers, "
+                Text("Removes your profile, memories, road, feed and practice sessions from Skillit's servers, "
                     + "then signs you out. This can't be undone.")
             }
             .listRowBackground(Theme.raised)
@@ -60,7 +60,7 @@ struct PrivacyView: View {
         .confirmationDialog("Delete everything Skillit knows about you?", isPresented: $isConfirming, titleVisibility: .visible) {
             Button("Delete my data", role: .destructive) { Task { await deleteEverything() } }
         } message: {
-            Text("Your profile, memories, roadmap, feed and practice sessions are removed for good, and you're signed out.")
+            Text("Your profile, memories, road, feed and practice sessions are removed for good, and you're signed out.")
         }
         .alert("Couldn't delete your data", isPresented: hasFailure) {
             Button("OK") { failure = nil }

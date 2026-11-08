@@ -37,7 +37,7 @@ struct SettingsView: View {
             } header: {
                 Text("About")
             } footer: {
-                Text("Skillit uses AI to read your resume, build your roadmap and run practice conversations. "
+                Text("Skillit uses AI to read your resume, build your road and run practice conversations. "
                     + "It can get things wrong; check anything before you rely on it.")
             }
             .listRowBackground(Theme.raised)

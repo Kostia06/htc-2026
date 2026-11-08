@@ -140,7 +140,7 @@ private struct PrivacyExplainer: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Private to you").font(.headline)
                 Text(
-                    "Encrypted with a key only your account holds. Skillit uses these to shape your roadmap and practice. "
+                    "Encrypted with a key only your account holds. Skillit uses these to shape your road and practice. "
                         + "Delete any of them, any time; nothing leaves unless you share a note.",
                 )
                 .font(.subheadline)
