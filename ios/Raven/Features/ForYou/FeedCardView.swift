@@ -4,38 +4,46 @@ import SwiftUI
 /// One feed item: what it is, who runs it, and the one reason it's here. Tapping opens the listing.
 struct FeedCardView: View {
     let card: FeedCard
+    var onSave: () -> Void = {}
+    var onDismiss: () -> Void = {}
     @Environment(\.openURL) private var openURL
 
     var body: some View {
-        Button {
-            openURL(card.url)
-        } label: {
-            HStack(alignment: .top, spacing: 14) {
-                KindBadge(kind: card.kind)
-                details
-            }
-            .ravenCard()
-            .contentShape(.rect(cornerRadius: 20))
+        HStack(alignment: .top, spacing: 14) {
+            KindBadge(kind: card.kind)
+            details
         }
-        .buttonStyle(.plain)
-        .accessibilityHint("Opens the listing")
+        .ravenCard()
+        .contentShape(.rect(cornerRadius: 20))
+        .onTapGesture { openURL(card.url) }
+        .accessibilityElement(children: .contain)
+        .accessibilityAction(named: "Open") { openURL(card.url) }
     }
 
     private var details: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(card.title)
-                .font(.headline)
-                .lineLimit(2)
-            Text(card.org)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(card.title)
+                        .font(.headline)
+                        .lineLimit(2)
+                    Text(card.org)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 4)
+                actions
+            }
             Label(card.why, systemImage: "sparkle")
                 .font(.footnote)
                 .foregroundStyle(Theme.agent)
                 .lineLimit(1)
                 .padding(.top, 2)
-            chips
+            HStack(spacing: 6) {
+                chips
+            }
+            .padding(.top, 4)
             if let attribution = card.attribution {
                 AttributionLink(attribution: attribution)
             }
@@ -44,24 +52,58 @@ struct FeedCardView: View {
     }
 
     @ViewBuilder private var chips: some View {
-        let date = dateText
-        if date != nil || card.where != nil {
-            HStack(spacing: 6) {
-                if let date {
-                    FeedChip(text: date, systemImage: "calendar")
-                }
-                if let place = card.where {
-                    FeedChip(text: place, systemImage: "mappin")
-                }
-            }
-            .padding(.top, 4)
+        if let when = whenText {
+            FeedChip(text: when, systemImage: card.date == nil ? "clock" : "calendar")
+        }
+        if let place = card.where {
+            FeedChip(text: place, systemImage: place == "Online" ? "wifi" : "mappin")
         }
     }
 
-    private var dateText: String? {
-        guard let date = card.date else { return nil }
-        let day = date.formatted(.dateTime.month(.abbreviated).day())
-        return card.kind == .job ? "Posted \(day)" : day
+    private var actions: some View {
+        HStack(spacing: 2) {
+            CardActionButton(
+                symbol: card.isSaved ? "bookmark.fill" : "bookmark",
+                label: card.isSaved ? "Saved" : "Save",
+                tint: card.isSaved ? Theme.action : .secondary,
+                action: onSave,
+            )
+            .symbolEffect(.bounce, value: card.isSaved)
+            .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
+            CardActionButton(symbol: "xmark", label: "Dismiss", tint: .secondary, action: onDismiss)
+        }
+    }
+
+    /// A real date reads as a day; a label such as "ongoing" is shown as the source gave it.
+    private var whenText: String? {
+        if let date = card.date {
+            // a day-only date ("2027-01-26") is parsed as UTC midnight; showing it in local time would say the day before
+            let isDayOnly = card.when?.count == 10
+            let day = date.formatted(Date.FormatStyle(timeZone: isDayOnly ? .gmt : .current).month(.abbreviated).day())
+            return card.kind == .job ? "Posted \(day)" : day
+        }
+        return card.when?.capitalized
+    }
+}
+
+private struct CardActionButton: View {
+    let symbol: String
+    let label: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 30, height: 30)
+                .background(Color(white: 0.14), in: .circle)
+                .contentTransition(.symbolEffect(.replace))
+        }
+        // borderless keeps each button its own tap target inside a List row
+        .buttonStyle(.borderless)
+        .accessibilityLabel(label)
     }
 }
 

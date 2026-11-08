@@ -23,6 +23,22 @@ public struct FeedTimeline: Codable, Sendable, Equatable {
         cards += page.items.filter { !shown.contains($0.id) }
         nextCursor = page.nextCursor
     }
+
+    /// Takes a card out, handing back where it was so a failed request can put it back.
+    @discardableResult
+    public mutating func remove(id: String) -> (card: FeedCard, index: Int)? {
+        guard let index = cards.firstIndex(where: { $0.id == id }) else { return nil }
+        return (cards.remove(at: index), index)
+    }
+
+    public mutating func insert(_ card: FeedCard, at index: Int) {
+        cards.insert(card, at: min(index, cards.count))
+    }
+
+    public mutating func mark(id: String, saved: Bool) {
+        guard let index = cards.firstIndex(where: { $0.id == id }) else { return }
+        cards[index].saved = saved
+    }
 }
 
 /// The last feed on disk, so the tab opens on real cards instead of skeletons.
