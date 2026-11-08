@@ -6,6 +6,7 @@ import { resumeRouter } from "../../src/api/resume";
 import type { AppContext } from "../../src/env";
 import { updateProfile } from "../../src/memory/profile/store";
 import { call, fakeDeps } from "../agents/fakes";
+import { samples } from "../documents/samples";
 import { sampleResume } from "../resume/fixtures";
 
 function testApp(deps: AgentDeps = fakeDeps().deps) {
@@ -26,6 +27,19 @@ function testApp(deps: AgentDeps = fakeDeps().deps) {
 }
 
 const user = () => `resume-${crypto.randomUUID()}`;
+
+function upload(deps: AgentDeps, me: string, file: File) {
+  const executionCtx = { waitUntil: () => {}, passThroughOnException: () => {}, props: {} } as unknown as ExecutionContext;
+  const app = new Hono<AppContext>()
+    .use(async (c, next) => {
+      c.set("sessionId", me);
+      await next();
+    })
+    .route("/", resumeRouter(() => deps));
+  const form = new FormData();
+  form.set("file", file);
+  return app.request("/upload", { method: "POST", body: form }, env, executionCtx);
+}
 
 describe("/api/resume", () => {
   it("seeds an unsaved resume from the profile", async () => {
@@ -84,5 +98,39 @@ describe("/api/resume", () => {
     const text = new TextDecoder("latin1").decode(await res.arrayBuffer());
     expect(text.startsWith("%PDF-1.4")).toBe(true);
     expect(text).toContain("(Jordan Lee) Tj");
+  });
+
+  it("lays an uploaded resume out for the builder without saving it", async () => {
+    const me = user();
+    const { deps } = fakeDeps({
+      replies: [
+        call("finish", {
+          headline: "Computer science student",
+          experience: [{ role: "Intern", org: "Acme", highlights: ["Built a Python Flask API for 2,000 users"] }],
+          skills: [
+            { name: "Python", source: "resume", evidence: "Built a Python Flask API" },
+            { name: "Rust", source: "resume", evidence: "Wrote a Rust compiler" },
+          ],
+        }),
+      ],
+    });
+    const res = await upload(deps, me, new File([samples.text], "resume.txt"));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      saved: false,
+      droppedClaims: 1,
+      resume: {
+        summary: "Computer science student",
+        experience: [{ role: "Intern", org: "Acme", bullets: ["Built a Python Flask API for 2,000 users"] }],
+        skills: ["Python"],
+      },
+    });
+    expect(await (await testApp()(me, "GET")).json()).toMatchObject({ saved: false, resume: { experience: [] } });
+  });
+
+  it("refuses uploads it cannot read", async () => {
+    const { deps } = fakeDeps();
+    expect((await upload(deps, user(), new File([samples.legacyDoc], "old.doc"))).status).toBe(415);
+    expect((await upload(deps, user(), new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.txt"))).status).toBe(413);
   });
 });
