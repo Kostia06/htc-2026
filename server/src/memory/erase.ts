@@ -4,7 +4,6 @@ import type { Env } from "../env";
 export const USER_TABLES = [
   "user_profiles",
   "user_memories",
-  "roadmap_units",
   "roadmap_steps",
   "feed_items",
   "feed_state",
@@ -13,6 +12,10 @@ export const USER_TABLES = [
   "user_documents",
   "agent_runs",
   "pairing_offers",
+  "feed_actions",
+  "user_resumes",
+  "headset_devices",
+  "headset_launches",
 ] as const;
 
 export type UserTable = (typeof USER_TABLES)[number];
