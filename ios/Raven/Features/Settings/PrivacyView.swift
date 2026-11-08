@@ -29,6 +29,14 @@ struct PrivacyView: View {
             }
             .listRowBackground(Theme.raised)
             Section {
+                NavigationLink { MemoryView() } label: {
+                    Label("What Raven remembers about you", systemImage: "brain")
+                }
+            } footer: {
+                Text("See, delete or anonymously share the notes Raven keeps to personalise your practice.")
+            }
+            .listRowBackground(Theme.raised)
+            Section {
                 Button(role: .destructive) { isConfirming = true } label: {
                     HStack {
                         Text("Delete my data")

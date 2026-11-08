@@ -27,8 +27,18 @@ struct StepCard: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Button(step.actionTitle, action: onAction)
-                .buttonStyle(step.isPractice ? .raised : .raised(Color(white: 0.22)))
+            if let action = step.action {
+                StartPracticeButton(
+                    mode: action.type == .interview ? .interview : .networking,
+                    companySlug: action.companySlug,
+                    role: action.role,
+                    stepID: step.id,
+                    onPhone: onAction,
+                )
+            } else {
+                Button(step.actionTitle, action: onAction)
+                    .buttonStyle(.raised(Color(white: 0.22)))
+            }
         }
         .ravenCard()
     }
