@@ -46,6 +46,24 @@ extension StubbedNetworkTests {
             #expect(sent == ["mode": "interview", "difficulty": "hard"])
         }
 
+        @Test func `asks for a quick interview by length`() async throws {
+            StubProtocol.routes.withLock {
+                $0["POST /api/voice/sessions"] = (201, #"{"sessionId":"vs_4","mode":"interview","opening":"Hi."}"#)
+            }
+            _ = try await client.startVoiceSession(.quick(target: .role("Barista"), difficulty: .easy))
+
+            let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/voice/sessions"] })
+            let sent = try JSONSerialization.jsonObject(with: body) as? [String: String]
+            #expect(sent == ["mode": "interview", "role": "Barista", "difficulty": "easy", "length": "quick"])
+        }
+
+        @Test func `a quick interview with nothing picked lets the server choose the role`() {
+            let request = VoiceSessionRequest.quick(target: nil, difficulty: .standard)
+            #expect(request == VoiceSessionRequest(mode: .interview, difficulty: .standard, length: .quick))
+            let posting = InterviewTarget.posting(id: "p1", title: "Analyst", company: "Acme")
+            #expect(VoiceSessionRequest.quick(target: posting, difficulty: .hard).postingId == "p1")
+        }
+
         @Test func `reads a session saved under the retired networking mode as an interview`() async throws {
             StubProtocol.routes.withLock {
                 $0["POST /api/voice/sessions"] = (201, """

@@ -120,6 +120,7 @@
 		A4CFE1ED98F73DCA4E23B986 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FD08B2655FB2CD86B0ACD8 /* NotificationCenterView.swift */; };
 		A570EF72CD717663A4E1BB3A /* Crossroads+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D57D90852554726280794 /* Crossroads+Display.swift */; };
 		A819580519B2DA7164CD32BB /* GotTheJobSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CB55EA27286DDE58B3D036 /* GotTheJobSheet.swift */; };
+		A981FE8C57F05D4E112444DB /* InterviewLengthPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E30C7D6C3967E21F9B40648 /* InterviewLengthPicker.swift */; };
 		A9C38BF2E9F4AD4687278C84 /* RoadmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFFDE6785F6335A66931C51B /* RoadmapView.swift */; };
 		A9C3CC73C4CC27C0ADD27021 /* RoadProgressLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AB3A58F3679CF461303E38 /* RoadProgressLine.swift */; };
 		ABA45D8203D518094E51CDCC /* RaisedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF80942B66F672FB20FA5D0A /* RaisedButtonStyle.swift */; };
@@ -262,6 +263,7 @@
 		66CDC4007B33C3177C5CF184 /* ProfileDoors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDoors.swift; sourceTree = "<group>"; };
 		68E0508FC0FAC0CE7A9ECEF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6CEA9151B31D43CE284F5F76 /* ResumeEntryEditors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeEntryEditors.swift; sourceTree = "<group>"; };
+		6E30C7D6C3967E21F9B40648 /* InterviewLengthPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewLengthPicker.swift; sourceTree = "<group>"; };
 		6F3F64A733E05AC0D6BF92AB /* Authenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
 		7011C11EF0CD2188D3C06275 /* ProfileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeader.swift; sourceTree = "<group>"; };
 		73A9D0AFB591B9E2E3381C73 /* PostingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingsModel.swift; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 				CFF932E7DAA88A9E9FE89F46 /* DebriefRows.swift */,
 				D73EF5C5C4713C513A414ECE /* DifficultyPicker.swift */,
 				3617B7D2FC68DA52D4D1D645 /* ElevenLabsVoiceEngine.swift */,
+				6E30C7D6C3967E21F9B40648 /* InterviewLengthPicker.swift */,
 				E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */,
 				59815D96F6C995E7B6EFA23F /* InterviewTargetPicker.swift */,
 				3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */,
@@ -891,6 +894,7 @@
 				3CFE2F6D6A6124D529D84351 /* HeadsetDevicesList.swift in Sources */,
 				601100FB91A45E5B43BF66C9 /* HeadsetLinkModel.swift in Sources */,
 				F0579AF46F7421DF76C4F9BB /* HeadsetPairingModel.swift in Sources */,
+				A981FE8C57F05D4E112444DB /* InterviewLengthPicker.swift in Sources */,
 				CAAA2B5529AE851EBF4AA407 /* InterviewProgress.swift in Sources */,
 				0C87D9A36A74FA2005CA073C /* InterviewTargetPicker.swift in Sources */,
 				11942991E887179EAAE9E708 /* JunctionRow.swift in Sources */,
