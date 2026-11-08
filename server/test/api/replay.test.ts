@@ -173,6 +173,24 @@ describe("deleting", () => {
     expect(await listTurns(env, who.id, id)).toEqual([]);
   });
 
+  it("deletes a headset reconnect's extra conversation with the session, and still plays only the first", async () => {
+    const who = await person();
+    const id = await sessionWithTurns(who);
+    await attach(who, id, "conv_first");
+    const reconnect = (conversationId: string) => call(who, `/${id}/conversation`, { method: "POST", body: JSON.stringify({ conversationId, reconnect: true }) });
+    expect((await reconnect("conv_second")).status).toBe(200);
+    expect((await reconnect("conv_second")).status).toBe(200);
+    fetchMock.mockClear();
+    await call(who, `/${id}/replay/audio`);
+    expect(elevenLabsCalls()).toEqual(["GET https://api.elevenlabs.io/v1/convai/conversations/conv_first/audio"]);
+    fetchMock.mockClear();
+    expect((await call(who, `/${id}`, { method: "DELETE" })).status).toBe(200);
+    expect(elevenLabsCalls().sort()).toEqual([
+      "DELETE https://api.elevenlabs.io/v1/convai/conversations/conv_first",
+      "DELETE https://api.elevenlabs.io/v1/convai/conversations/conv_second",
+    ]);
+  });
+
   it("keeps the session when ElevenLabs can't delete the recording, so it can be retried", async () => {
     const who = await person();
     const id = await sessionWithTurns(who);

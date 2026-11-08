@@ -1,16 +1,28 @@
 import { db } from "../db";
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
+import type { LiveTip } from "./coach/types";
 import type { TurnScore } from "./score";
 import type { VoiceMode, VoicePlan } from "./types";
 
 export const KEEP_DAYS = 30;
 
 export type VoiceSession = { id: string; mode: VoiceMode; companySlug: string | null; plan: VoicePlan; status: "active" | "finished"; createdAt: string };
-export type StoredTurn = { idx: number; question: string; answer: string } & TurnScore;
+/** Seconds since the call connected, by the client's clock: when the answer began and when it was sent for scoring. */
+export type TurnTiming = { answerStartSec?: number; atSec?: number };
+export type StoredTurn = { idx: number; question: string; answer: string } & TurnScore & TurnTiming & { liveTip?: LiveTip };
 
 type SessionRow = { id: string; mode: VoiceMode; company_slug: string | null; ciphertext: string; iv: string; status: "active" | "finished"; created_at: string };
-type TurnRow = { idx: number; ciphertext: string; iv: string; scores_json: string };
+type TurnRow = {
+  idx: number;
+  ciphertext: string;
+  iv: string;
+  scores_json: string;
+  at_sec: number | null;
+  answer_start_sec: number | null;
+  tip_ciphertext: string | null;
+  tip_iv: string | null;
+};
 
 // every query carries user_id, so a session id alone never reaches someone else's conversation
 export async function createSession(
@@ -44,28 +56,61 @@ export async function countSessionsSince(env: Env, userId: string, since: Date) 
   return row?.n ?? 0;
 }
 
-export async function addTurn(env: Env, userId: string, sessionId: string, turn: { question: string; answer: string; score: TurnScore }) {
+/** Stores one scored answer and returns its index in the session. */
+export async function addTurn(
+  env: Env,
+  userId: string,
+  sessionId: string,
+  turn: { question: string; answer: string; score: TurnScore; timing?: TurnTiming },
+): Promise<number> {
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify({ question: turn.question, answer: turn.answer }));
   // the next index is computed inside the insert so two quick turns can't claim the same slot
-  await db(env).prepare(
-    `INSERT INTO voice_turns (session_id, user_id, idx, ciphertext, iv, scores_json, created_at)
-     SELECT ?, ?, COALESCE(MAX(idx) + 1, 0), ?, ?, ?, ? FROM voice_turns WHERE session_id = ?`,
+  const row = await db(env).prepare(
+    `INSERT INTO voice_turns (session_id, user_id, idx, ciphertext, iv, scores_json, created_at, at_sec, answer_start_sec)
+     SELECT ?, ?, COALESCE(MAX(idx) + 1, 0), ?, ?, ?, ?, ?, ? FROM voice_turns WHERE session_id = ?
+     RETURNING idx`,
   )
-    .bind(sessionId, userId, sealed.ciphertext, sealed.iv, JSON.stringify(turn.score), new Date().toISOString(), sessionId)
+    .bind(
+      sessionId,
+      userId,
+      sealed.ciphertext,
+      sealed.iv,
+      JSON.stringify(turn.score),
+      new Date().toISOString(),
+      turn.timing?.atSec ?? null,
+      turn.timing?.answerStartSec ?? null,
+      sessionId,
+    )
+    .first<{ idx: number }>();
+  return row?.idx ?? 0;
+}
+
+// a tip is attached after the turn is stored, so it never holds up the score the person is waiting for
+export async function saveLiveTip(env: Env, userId: string, sessionId: string, idx: number, tip: LiveTip) {
+  const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(tip));
+  await db(env).prepare("UPDATE voice_turns SET tip_ciphertext = ?, tip_iv = ? WHERE session_id = ? AND user_id = ? AND idx = ?")
+    .bind(sealed.ciphertext, sealed.iv, sessionId, userId, idx)
     .run();
 }
 
+async function readTurn(env: Env, userId: string, row: TurnRow): Promise<StoredTurn> {
+  const text = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as { question: string; answer: string };
+  const turn: StoredTurn = { idx: row.idx, ...text, ...(JSON.parse(row.scores_json) as TurnScore) };
+  if (row.answer_start_sec !== null) turn.answerStartSec = row.answer_start_sec;
+  if (row.at_sec !== null) turn.atSec = row.at_sec;
+  if (row.tip_ciphertext && row.tip_iv) {
+    turn.liveTip = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, { ciphertext: row.tip_ciphertext, iv: row.tip_iv })) as LiveTip;
+  }
+  return turn;
+}
+
 export async function listTurns(env: Env, userId: string, sessionId: string): Promise<StoredTurn[]> {
-  const { results } = await db(env).prepare("SELECT idx, ciphertext, iv, scores_json FROM voice_turns WHERE session_id = ? AND user_id = ? ORDER BY idx")
+  const { results } = await db(env).prepare(
+    "SELECT idx, ciphertext, iv, scores_json, at_sec, answer_start_sec, tip_ciphertext, tip_iv FROM voice_turns WHERE session_id = ? AND user_id = ? ORDER BY idx",
+  )
     .bind(sessionId, userId)
     .all<TurnRow>();
-  return Promise.all(
-    results.map(async (row) => ({
-      idx: row.idx,
-      ...(JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as { question: string; answer: string }),
-      ...(JSON.parse(row.scores_json) as TurnScore),
-    })),
-  );
+  return Promise.all(results.map((row) => readTurn(env, userId, row)));
 }
 
 // overall is the report's 0-100 score, kept so history shows the number the person already saw

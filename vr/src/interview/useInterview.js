@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createCallClock } from './callClock.js'
 import { createSession } from './session.js'
 import { createListener, createSpeaker } from './speech.js'
 import { createVoiceDetector } from './vad.js'
@@ -65,6 +66,8 @@ export function useInterview(auth = {}) {
   const listenRef = useRef(() => {})
   const agentRef = useRef(null) // the provider's realtime voice agent, when offered
   const scoringRef = useRef([]) // the agent path's turns still being scored; finish waits for them
+  const callClock = useMemo(() => createCallClock(), [])
+  const [recording, setRecording] = useState(false)
 
   useEffect(() => {
     alive.current = true
@@ -192,7 +195,16 @@ export function useInterview(auth = {}) {
         onState: (next) => {
           if (!alive.current) return
           if (next === 'reconnecting') setError('Reconnecting…')
-          else if (next === 'open') setError(null)
+          else if (next === 'open') {
+            setError(null)
+            callClock.started()
+          }
+        },
+        // each conversation is linked to the session, the first for the replay and any reconnect so it is deleted with it
+        onConversation: (conversationId, { reconnect }) => {
+          if (alive.current) setRecording(true)
+          // a lost link only costs the replay, never the interview
+          session.attachConversation?.(conversationId, { reconnect }).catch(() => {})
         },
         onAgentText: (text) => {
           if (!alive.current || !text) return
@@ -206,12 +218,13 @@ export function useInterview(auth = {}) {
           setSpeaking(isSpeaking)
           setPhase(isSpeaking ? 'asking' : 'listening')
           if (isSpeaking) setHeard(false)
+          else callClock.floorOpened()
         },
         onTurn: ({ question, answer }) => {
           if (!alive.current || !answer) return
           setHeard(true)
           const scoring = session
-            .scoreTurn({ question, answer, durationMs: 0 })
+            .scoreTurn({ question, answer, durationMs: 0, ...callClock.stamp() })
             .then((score) => {
               if (!alive.current || !score) return
               setResult(score)
@@ -249,11 +262,9 @@ export function useInterview(auth = {}) {
 
       agentRef.current = agent
       setPhase('asking')
-      const connected = await agent.connect()
-      // a lost link only costs the replay, never the interview
-      if (connected?.conversationId) session.attachConversation?.(connected.conversationId).catch(() => {})
+      await agent.connect()
     },
-    [session],
+    [callClock, session],
   )
 
   // `launch` is what the phone sent ({ companySlug, role }); the Begin button
@@ -302,7 +313,9 @@ export function useInterview(auth = {}) {
     setTranscript('')
     setError(null)
     setMicDenied(false)
-  }, [speaker, vad])
+    setRecording(false)
+    callClock.reset()
+  }, [callClock, speaker, vad])
 
   const toggleMute = useCallback(() => {
     setMuted((m) => {
@@ -351,6 +364,9 @@ export function useInterview(auth = {}) {
     micDenied,
     error,
     muted,
+    // the call is being recorded for the replay; the review is looked up by sessionId afterwards
+    recording,
+    sessionId: session.sessionId ?? null,
     isStub: session.isStub === true,
     sttSupported: listener.supported,
     getAmplitude: () => agentRef.current?.getAmplitude() ?? speaker.getAmplitude(),

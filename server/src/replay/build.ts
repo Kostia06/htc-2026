@@ -5,6 +5,7 @@ import { alignTurns, type Span, type TimedLine } from "./align";
 import { type Conversation, fetchConversation, type RecordingStatus } from "./elevenlabs";
 import { buildMoments, type Moment, separate } from "./moments";
 import { loadReplayRecord } from "./store";
+import { hasLiveTimestamps, lastTimestamp, liveSpans, withLeadIn } from "./timing";
 
 export type Replay = {
   /** Where to fetch the recording, with the same sign-in; null when there is none to play. */
@@ -27,19 +28,31 @@ function fromTurnsOnly(turns: StoredTurn[], report: Debrief | null): Replay {
   return { audioUrl: null, recording: "none", timing: "order", durationSec: null, moments: buildMoments(turns, report, spans, []), transcript };
 }
 
+// until ElevenLabs finishes its transcript, the answers we scored stand in, at the times the client stamped them
+function liveTranscript(turns: StoredTurn[]): TimedLine[] {
+  return turns.flatMap((turn): TimedLine[] => [
+    { t: withLeadIn(turn.answerStartSec ?? 0), speaker: "agent", text: turn.question },
+    { t: turn.answerStartSec ?? 0, speaker: "person", text: turn.answer },
+  ]);
+}
+
 export function replayFrom(sessionId: string, turns: StoredTurn[], report: Debrief | null, conversation: Conversation | null): Replay {
-  if (!conversation || conversation.lines.length === 0) {
+  const live = hasLiveTimestamps(turns);
+  if (!conversation || (conversation.lines.length === 0 && !live)) {
     // ElevenLabs takes a moment after the call to finish the transcript; say so instead of "no recording"
     return { ...fromTurnsOnly(turns, report), recording: conversation?.status === "processing" ? "processing" : "none" };
   }
-  const spans = alignTurns(turns, conversation.lines, conversation.durationSec);
+  const lines = conversation.lines.length > 0 ? conversation.lines : liveTranscript(turns);
+  const durationSec = Math.max(conversation.durationSec, live ? lastTimestamp(turns) : 0);
+  // live timestamps say exactly when each answer began; matching words against the transcript is the fallback for older sessions
+  const spans = live ? liveSpans(turns, durationSec) : alignTurns(turns, conversation.lines, conversation.durationSec);
   return {
     audioUrl: conversation.status === "ready" ? `/api/voice/sessions/${sessionId}/replay/audio` : null,
     recording: conversation.status,
     timing: "seconds",
-    durationSec: conversation.durationSec,
-    moments: separate(buildMoments(turns, report, spans, conversation.lines)),
-    transcript: conversation.lines,
+    durationSec,
+    moments: separate(buildMoments(turns, report, spans, lines)),
+    transcript: lines,
   };
 }
 

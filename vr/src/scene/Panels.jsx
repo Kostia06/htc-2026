@@ -13,7 +13,7 @@ import * as THREE from 'three'
 export const FONT = '/fonts/Inter-Regular.woff'
 export const FONT_BOLD = '/fonts/Inter-SemiBold.woff'
 
-const C = {
+export const C = {
   tint: '#14171c', // the smoke in the glass
   sheen: '#ffffff', // the frost on top of it
   edge: '#ffffff',
@@ -26,7 +26,7 @@ const C = {
   red: '#ff453a',
   grey: '#ffffff',
 }
-const SECONDARY = 0.62
+export const SECONDARY = 0.62
 
 // The sign-in keypad (PairingPanel.jsx) is drawn in these.
 export const INK = '#f4f6fa'
@@ -64,7 +64,7 @@ function roundedOutline(width, height, radius, line) {
 }
 
 // everything here is see-through, so nothing writes depth and renderOrder layers it
-function Shape({ width, height, radius, color, opacity = 1, z = 0, outline = 0, order = 1, ...props }) {
+export function Shape({ width, height, radius, color, opacity = 1, z = 0, outline = 0, order = 1, ...props }) {
   const geometry = useMemo(
     () => (outline ? roundedOutline(width, height, radius, outline) : roundedRect(width, height, radius)),
     [width, height, radius, outline],
@@ -76,7 +76,7 @@ function Shape({ width, height, radius, color, opacity = 1, z = 0, outline = 0, 
   )
 }
 
-function Label({ children, size = 0.02, color = C.label, opacity = 1, bold = false, ...props }) {
+export function Label({ children, size = 0.02, color = C.label, opacity = 1, bold = false, ...props }) {
   return (
     <Text font={bold ? FONT_BOLD : FONT} fontSize={size} color={color} fillOpacity={opacity} renderOrder={10} material-toneMapped={false} {...props}>
       {children}
@@ -151,7 +151,7 @@ function SoundBars({ color, position, reducedMotion }) {
 }
 
 /** A dot that breathes, for "recording". */
-function PulseDot({ color, position, reducedMotion }) {
+export function PulseDot({ color, position, reducedMotion }) {
   const halo = useRef()
   useFrame(({ clock }) => {
     if (!halo.current) return

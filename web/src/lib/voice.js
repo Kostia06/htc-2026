@@ -100,12 +100,25 @@ export class TranscriptTurns {
   answer = []
   startedAt = null
   lastAt = null
+  // when the agent last stopped with no answer yet: a line only arrives once spoken, so this is closer to the start
+  floorAt = null
+  callStartedAt = null
+
+  /** Starts the call's clock; only the first call counts, so a late duplicate can't shift every timestamp. */
+  callStarted(at = Date.now()) {
+    this.callStartedAt ??= at
+  }
+
+  floorOpened(at = Date.now()) {
+    if (this.question && !this.answer.length) this.floorAt = at
+  }
 
   add(speaker, text, at = Date.now()) {
     const trimmed = text.trim()
     if (!trimmed) return null
     if (speaker === 'agent') {
-      const finished = this.flush()
+      const finished = this.flush(at)
+      this.floorAt = null
       const spoken = trimmed.replace(/\[[^\]]*\]/g, '').replace(/\s+/g, ' ').trim()
       if (spoken) this.question = spoken
       return finished
@@ -117,12 +130,17 @@ export class TranscriptTurns {
     return null
   }
 
-  flush() {
-    const { question, answer, startedAt, lastAt } = this
+  flush(at = Date.now()) {
+    const { question, answer, startedAt, lastAt, floorAt } = this
     this.answer = []
     this.startedAt = null
     this.lastAt = null
+    this.floorAt = null
     if (!question || !answer.length) return null
-    return { question, answer: answer.join(' '), durationMs: Math.max((lastAt ?? 0) - (startedAt ?? 0), 2000) }
+    const turn = { question, answer: answer.join(' '), durationMs: Math.max((lastAt ?? 0) - (startedAt ?? 0), 2000) }
+    if (this.callStartedAt === null) return turn
+    // seconds into the call by this clock; the server seeks the replay a moment before answerStartSec
+    const seconds = (time) => Math.max(0, (time - this.callStartedAt) / 1000)
+    return { ...turn, answerStartSec: seconds(floorAt ?? startedAt), atSec: seconds(at) }
   }
 }

@@ -61,14 +61,22 @@ public struct SessionReplay: Decodable, Equatable, Sendable {
 
 public struct ReplayMoment: Decodable, Equatable, Sendable, Identifiable {
     public enum Kind: String, Decodable, Sendable {
-        case mistake, better, strength, filler
+        case mistake, better, researched, strength, filler, delivery
+
+        /// A kind added on the server later reads as a delivery note, so one new dot never hides the whole replay.
+        public init(from decoder: any Decoder) throws {
+            let raw = try decoder.singleValueContainer().decode(String.self)
+            self = Kind(rawValue: raw) ?? .delivery
+        }
 
         public var spokenName: String {
             switch self {
             case .mistake: "Mistake"
             case .better: "Better phrasing"
+            case .researched: "Researched tip"
             case .strength: "Strength"
             case .filler: "Filler words"
+            case .delivery: "Delivery"
             }
         }
     }
@@ -84,6 +92,8 @@ public struct ReplayMoment: Decodable, Equatable, Sendable, Identifiable {
     public let said: String?
     public let question: String
     public let turn: Int
+    /// Pages a researched tip rests on, all ones the server actually read. Empty for every other kind.
+    public let sources: [ReplaySource]
 
     public var id: String {
         "\(kind.rawValue)-\(turn)-\(seconds)"
@@ -91,7 +101,7 @@ public struct ReplayMoment: Decodable, Equatable, Sendable, Identifiable {
 
     public init(
         seconds: Double, kind: Kind, title: String, detail: String, better: String? = nil, said: String? = nil,
-        question: String, turn: Int,
+        question: String, turn: Int, sources: [ReplaySource] = [],
     ) {
         self.seconds = seconds
         self.kind = kind
@@ -101,11 +111,45 @@ public struct ReplayMoment: Decodable, Equatable, Sendable, Identifiable {
         self.said = said
         self.question = question
         self.turn = turn
+        self.sources = sources
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        seconds = try container.decode(Double.self, forKey: .seconds)
+        kind = try container.decode(Kind.self, forKey: .kind)
+        title = try container.decode(String.self, forKey: .title)
+        detail = try container.decode(String.self, forKey: .detail)
+        better = try container.decodeIfPresent(String.self, forKey: .better)
+        said = try container.decodeIfPresent(String.self, forKey: .said)
+        question = try container.decode(String.self, forKey: .question)
+        turn = try container.decode(Int.self, forKey: .turn)
+        sources = try container.decodeIfPresent([ReplaySource].self, forKey: .sources) ?? []
     }
 
     private enum CodingKeys: String, CodingKey {
         case seconds = "t"
-        case kind, title, detail, better, said, question, turn
+        case kind, title, detail, better, said, question, turn, sources
+    }
+}
+
+/// A public page behind a researched tip.
+public struct ReplaySource: Decodable, Equatable, Sendable, Identifiable {
+    public let title: String
+    public let url: URL
+
+    public var id: URL {
+        url
+    }
+
+    /// "acme.com", short enough for a chip.
+    public var host: String {
+        url.host()?.replacingOccurrences(of: "www.", with: "") ?? url.absoluteString
+    }
+
+    public init(title: String, url: URL) {
+        self.title = title
+        self.url = url
     }
 }
 

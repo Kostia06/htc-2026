@@ -110,6 +110,21 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), stranger.token, "GET", `/sessions/${sessionId}`)).status).toBe(404);
   });
 
+  it("keeps the client's live timestamps per turn and drops ones that can't be right", async () => {
+    const me = await person();
+    const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    const answer = { question: "Q1", answer: "Um, I built an API.", durationMs: 3000 };
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { ...answer, answerStartSec: 12.5, atSec: 20 });
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { ...answer, answerStartSec: 30, atSec: 25 });
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { ...answer, answerStartSec: -1, atSec: "soon" });
+    const { turns } = await (await send(voiceApp(), me.token, "GET", `/sessions/${sessionId}`)).json<{ turns: Record<string, unknown>[] }>();
+    expect(turns[0]).toMatchObject({ answerStartSec: 12.5, atSec: 20 });
+    expect(turns[1]).toMatchObject({ atSec: 25 });
+    expect(turns[1].answerStartSec).toBeUndefined();
+    expect(turns[2].answerStartSec).toBeUndefined();
+    expect(turns[2].atSec).toBeUndefined();
+  });
+
   it("hands back the report built during the interview, with no model call left at finish", async () => {
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();

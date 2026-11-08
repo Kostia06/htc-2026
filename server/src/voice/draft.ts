@@ -1,4 +1,5 @@
 import type { Env } from "../env";
+import { withLiveTips } from "./coach/report";
 import { askForDebrief, buildDebrief, type Debrief, normalizeDebrief } from "./debrief";
 import { claimDraftBuild, clearDraftWanted, dropDraftBuild, markDraftWanted, readDraft, releaseDraftBuild, saveDraft } from "./draft-store";
 import { listTurns, type StoredTurn, type VoiceSession } from "./store";
@@ -53,7 +54,8 @@ async function waitForFullDraft(env: Env, userId: string, sessionId: string, tur
 /** The report for /finish: the live draft when it covers every turn, otherwise built now exactly as before. */
 export async function finalReport(env: Env, userId: string, session: VoiceSession, turns: StoredTurn[]): Promise<Debrief> {
   const draft = await waitForFullDraft(env, userId, session.id, turns.length);
-  return draft ? normalizeDebrief(draft, turns) : buildDebrief(env, session.plan, turns);
+  const report = draft ? normalizeDebrief(draft, turns) : await buildDebrief(env, session.plan, turns);
+  return withLiveTips(report, turns);
 }
 
 /** The latest draft, normalized over the turns it was built from, for a preview while the interview runs. */
@@ -61,5 +63,7 @@ export async function latestDraft(env: Env, userId: string, sessionId: string) {
   const draft = await readDraft(env, userId, sessionId);
   if (!draft.raw) return null;
   const turns = await listTurns(env, userId, sessionId);
-  return { coversTurns: draft.coversTurns, totalTurns: turns.length, report: normalizeDebrief(draft.raw, turns.slice(0, draft.coversTurns)) };
+  // tips land on their own schedule, so the preview shows every one so far, even past the turns the draft covers
+  const report = withLiveTips(normalizeDebrief(draft.raw, turns.slice(0, draft.coversTurns)), turns);
+  return { coversTurns: draft.coversTurns, totalTurns: turns.length, report };
 }

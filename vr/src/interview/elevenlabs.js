@@ -82,6 +82,8 @@ export function createElevenLabsSession({
   onTurn = null,
   onError = null,
   onEnded = null, // the agent ended the conversation; not called when we disconnect
+  // (id, { reconnect }) each time ElevenLabs names a conversation; a reconnect is a new, separately billed one
+  onConversation = null,
   socketFactory = null, // lets a test stand a mock in for WebSocket
   refreshSignedUrl = null, // optional async () => url, for reconnects after expiry
 } = {}) {
@@ -188,6 +190,9 @@ export function createElevenLabsSession({
     switch (message.type) {
       case 'conversation_initiation_metadata': {
         const meta = message.conversation_initiation_metadata_event ?? {}
+        if (meta.conversation_id && meta.conversation_id !== conversationId) {
+          onConversation?.(meta.conversation_id, { reconnect: conversationId !== null })
+        }
         conversationId = meta.conversation_id ?? conversationId
         inputRate = pcmRate(meta.user_input_audio_format) ?? MIC_SAMPLE_RATE
         outputRate = pcmRate(meta.agent_output_audio_format) ?? PLAYBACK_SAMPLE_RATE

@@ -221,6 +221,32 @@
   background: var(--inset);
   color: var(--text);
 }
+.researched-badge {
+  align-self: flex-start;
+  padding: 1px 8px;
+  border-radius: 999px;
+  color: var(--agent);
+  background: color-mix(in srgb, var(--agent) 14%, transparent);
+  white-space: nowrap;
+}
+.source-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--text);
+  text-decoration: none;
+}
+.source-chip:hover {
+  background: var(--secondary-button);
+}
 @media (prefers-reduced-motion: reduce) {
   .moment-card,
   .scrub__dot::after {

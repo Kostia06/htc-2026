@@ -171,6 +171,22 @@
   gap: 5px;
   transition: opacity 0.3s;
 }
+.recording-dot {
+  gap: 6px;
+}
+.recording-dot__light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--negative);
+  animation: recording-pulse 2s ease-in-out infinite;
+}
+@keyframes recording-pulse {
+  50% { opacity: 0.35; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recording-dot__light { animation: none; }
+}
 .voice__progress {
   width: 100%;
   display: flex;

@@ -54,6 +54,7 @@ function VoiceSession() {
   const [scored, setScored] = useState(0)
   const [debrief, setDebrief] = useState(null)
   const [hasStarted, setHasStarted] = useState(false)
+  const [recording, setRecording] = useState(false)
   // the report's replay is looked up by it; kept in state because the ref can't be read while rendering
   const [sessionId, setSessionId] = useState(null)
 
@@ -155,6 +156,7 @@ function VoiceSession() {
           state: (s) => {
             if (!alive.current) return
             setVoiceState(s)
+            if (s === 'listening') transcript.current.floorOpened()
             if (signingOff.current && s === 'listening') voice.current?.stop()
           },
           line: (speaker, text) => {
@@ -167,7 +169,12 @@ function VoiceSession() {
             if (turn) submit(turn)
           },
           // without this link there is no replay, but the interview itself carries on regardless
-          conversation: (conversationId) => voiceApi.attachConversation(started_.sessionId, conversationId).catch(() => {}),
+          conversation: (conversationId) => {
+            // the recording's clock starts here, so each answer is stamped against it as it happens
+            transcript.current.callStarted()
+            if (alive.current) setRecording(true)
+            voiceApi.attachConversation(started_.sessionId, conversationId).catch(() => {})
+          },
           ended: () => alive.current && wrapUp(),
           failed: (msg) => {
             if (!alive.current) return
@@ -236,6 +243,11 @@ function VoiceSession() {
           <span className="t-caption medium c-agent row voice__scored" style={{ opacity: scored ? 1 : 0 }}>
             <CircleCheck size={14} strokeWidth={2.4} aria-hidden /> {scored} scored
           </span>
+          {recording && phase === 'live' && (
+            <span className="t-caption medium c-2 row recording-dot" role="status">
+              <span className="recording-dot__light" aria-hidden /> Recording
+            </span>
+          )}
           <button type="button" className="glass-button" onClick={end}>
             End
           </button>
