@@ -72,7 +72,8 @@ describe("/api/connections", () => {
     expect(notes).toEqual([expect.stringContaining("Add a README to dotfiles")]);
 
     const view = (await (await request(me, "GET")).json()) as { github: Record<string, unknown> };
-    expect(view.github).toMatchObject({ status: "connected", projects: [{ name: "budget-bot", language: "Python" }, { name: "dotfiles", language: "Shell" }] });
+    // the apps stop waiting once importedAt is set, whether or not anything was found
+    expect(view.github).toMatchObject({ status: "connected", importing: false, importedAt: expect.any(String), projects: [{ name: "budget-bot", language: "Python" }, { name: "dotfiles", language: "Shell" }] });
     expect(JSON.stringify(view)).not.toMatch(/ca_1|gho_|jordan@|owner|token/);
   });
 

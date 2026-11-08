@@ -71,8 +71,7 @@ final class WorkConnectionsModel {
             guard let latest = try? await client.workConnections() else { return }
             connections = latest
             guard let current = latest.first(where: { $0.id == id }) else { return }
-            let isDone = current.status == .notConnected || (current.isConnected && !current.importing && !current.projects.isEmpty)
-            if isDone {
+            if current.status == .notConnected || current.hasFinishedImport {
                 return
             }
             try? await Task.sleep(for: .seconds(2))

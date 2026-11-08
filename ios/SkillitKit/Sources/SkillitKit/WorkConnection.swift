@@ -64,9 +64,16 @@ public struct WorkConnection: Decodable, Equatable, Sendable, Identifiable {
     public let suggestions: [String]
     /// true right after the sign-in finished, while the server reads the work
     public let importing: Bool
+    /// when the server last finished reading this service; nil until the first import lands
+    public let importedAt: String?
 
     public var isConnected: Bool {
         status == .connected
+    }
+
+    /// Connected and read, whether or not anything public turned up: the signal to stop waiting.
+    public var hasFinishedImport: Bool {
+        isConnected && !importing && importedAt != nil
     }
 
     public init(from decoder: Decoder) throws {
@@ -80,11 +87,13 @@ public struct WorkConnection: Decodable, Equatable, Sendable, Identifiable {
         projects = try container.decodeIfPresent([Project].self, forKey: .projects) ?? []
         suggestions = try container.decodeIfPresent([String].self, forKey: .suggestions) ?? []
         importing = try container.decodeIfPresent(Bool.self, forKey: .importing) ?? false
+        importedAt = try container.decodeIfPresent(String.self, forKey: .importedAt)
     }
 
     public init(
         id: String, name: String, category: Category, reads: String = "", configured: Bool = true,
         status: Status = .notConnected, projects: [Project] = [], suggestions: [String] = [], importing: Bool = false,
+        importedAt: String? = nil,
     ) {
         self.id = id
         self.name = name
@@ -95,6 +104,7 @@ public struct WorkConnection: Decodable, Equatable, Sendable, Identifiable {
         self.projects = projects
         self.suggestions = suggestions
         self.importing = importing
+        self.importedAt = importedAt
     }
 
     /// Whether a search box query finds this service: by its name, or by the kind of work ("design", "video").
@@ -107,7 +117,7 @@ public struct WorkConnection: Decodable, Equatable, Sendable, Identifiable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, category, reads, configured, status, projects, suggestions, importing
+        case id, name, category, reads, configured, status, projects, suggestions, importing, importedAt
     }
 }
 

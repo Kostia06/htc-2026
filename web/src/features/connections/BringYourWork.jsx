@@ -10,7 +10,8 @@ import './connections.css'
 const POLL_MS = 2000
 const POLL_LIMIT = 90
 
-const isDone = (c) => !c || c.status === 'not_connected' || (c.status === 'connected' && !c.importing && c.projects.length > 0)
+// importedAt, not a non-empty project list: someone with no public work is done too, and shouldn't wait out the poll
+const isDone = (c) => !c || c.status === 'not_connected' || (c.status === 'connected' && !c.importing && Boolean(c.importedAt))
 const isWaiting = (c) => c.importing || c.status === 'pending'
 
 export default function BringYourWork({ onChange, onAnyConnected }) {

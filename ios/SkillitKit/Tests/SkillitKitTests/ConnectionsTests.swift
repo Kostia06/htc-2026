@@ -37,6 +37,14 @@ extension StubbedNetworkTests {
             #expect(unknown.category == .other)
         }
 
+        @Test func `an import is finished once the server stamps it, even with nothing found`() throws {
+            let decode = { (json: String) in try JSONDecoder().decode(WorkConnection.self, from: Data(json.utf8)) }
+            let base = #""id":"github","status":"connected","importing":false,"projects":[]"#
+            #expect(try decode("{\(base),\"importedAt\":\"2026-11-08T10:00:00Z\"}").hasFinishedImport)
+            #expect(try !decode("{\(base)}").hasFinishedImport)
+            #expect(try !decode(#"{"id":"github","status":"connected","importing":true}"#).hasFinishedImport)
+        }
+
         @Test func `filters by name or by the kind of work`() {
             let all = [
                 WorkConnection.preview(id: "github", name: "GitHub", category: .code),
