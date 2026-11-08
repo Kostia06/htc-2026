@@ -7,16 +7,17 @@ let database: Database;
 
 beforeAll(async () => ({ pg, database } = await openTestDatabase()));
 afterAll(() => pg.close());
-beforeEach(() => pg.exec("DELETE FROM cache; DELETE FROM company_facts; DELETE FROM companies; DELETE FROM cooldowns; DELETE FROM roadmap_units; DELETE FROM roadmap_steps"));
+beforeEach(() => pg.exec("DELETE FROM cache; DELETE FROM company_facts; DELETE FROM companies; DELETE FROM cooldowns; DELETE FROM user_resumes; DELETE FROM roadmap_steps"));
 
 describe("schema", () => {
   it("creates every D1 table plus memory_vectors, all with row level security and no policies", async () => {
     const tables = await tableNames(pg);
     expect(tables).toEqual(
       [
-        "agent_runs", "cache", "companies", "company_facts", "cooldowns", "courses", "experiences", "feed_items", "feed_state", "host_fetches",
-        "interview_sessions", "memory_vectors", "occupations", "pairing_offers", "postings", "roadmap_steps", "roadmap_units", "session_mints",
-        "submission_log", "user_documents", "user_memories", "user_profiles", "voice_sessions", "voice_turns",
+        "agent_runs", "cache", "companies", "company_facts", "cooldowns", "courses", "experiences", "feed_actions", "feed_items", "feed_state",
+        "headset_devices", "headset_launches", "host_fetches", "interview_sessions", "memory_vectors", "occupations", "pairing_offers", "postings",
+        "recap_voice_sessions", "roadmap_steps", "session_mints", "submission_log", "user_documents", "user_memories", "user_profiles",
+        "user_resumes", "voice_sessions", "voice_turns",
       ].sort(),
     );
     const { rows } = await pg.query<{ tablename: string; rowsecurity: boolean }>("SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public'");
@@ -93,15 +94,17 @@ describe("batch", () => {
   });
 
   it("is one transaction: a failing statement rolls the earlier ones back, with a message the code recognises", async () => {
-    await database.prepare("INSERT INTO roadmap_units (user_id, idx, ciphertext, iv, created_at) VALUES ('u', 0, 'c', 'i', 'now')").run();
+    await database.prepare("INSERT INTO user_resumes (user_id, ciphertext, iv, updated_at) VALUES ('u', 'c', 'i', 'now')").run();
     const error = await database
       .batch([
-        database.prepare("INSERT INTO roadmap_steps (id, user_id, unit_idx, status, updated_at) VALUES ('s1', 'u', 0, 'todo', 'now')"),
-        database.prepare("INSERT INTO roadmap_units (user_id, idx, ciphertext, iv, created_at) VALUES ('u', 0, 'c', 'i', 'now')"),
+        database.prepare(
+          "INSERT INTO roadmap_steps (id, user_id, position, source, ciphertext, iv, status, created_at, updated_at) VALUES ('s1', 'u', 0, 'template', 'c', 'i', 'todo', 'now', 'now')",
+        ),
+        database.prepare("INSERT INTO user_resumes (user_id, ciphertext, iv, updated_at) VALUES ('u', 'c', 'i', 'now')"),
       ])
       .catch((e: Error) => e);
     expect(error).toBeInstanceOf(Error);
-    // roadmap/store.ts treats this as "someone else saved that unit first"
+    // stores treat a duplicate key as "someone else saved it first"
     expect(/UNIQUE|PRIMARY KEY/i.test((error as Error).message)).toBe(true);
     expect(await database.prepare("SELECT COUNT(*) AS n FROM roadmap_steps").first("n")).toBe(0);
   });

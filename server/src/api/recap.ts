@@ -1,3 +1,4 @@
+import { db } from "../db";
 import { Hono, type Context } from "hono";
 import { RunRejected } from "../agents/core/harness";
 import type { AgentDeps } from "../agents/core/types";
@@ -21,7 +22,7 @@ function liteDeps(env: Env, waitUntil: (work: Promise<unknown>) => void): AgentD
 
 async function findCompany(env: Env, slug: string | undefined) {
   if (!slug) return undefined;
-  return (await env.DB.prepare("SELECT slug, name FROM companies WHERE slug = ?").bind(slug).first<{ slug: string; name: string }>()) ?? undefined;
+  return (await db(env).prepare("SELECT slug, name FROM companies WHERE slug = ?").bind(slug).first<{ slug: string; name: string }>()) ?? undefined;
 }
 
 export function recapRouter(makeDeps: MakeDeps) {

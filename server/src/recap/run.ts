@@ -1,3 +1,4 @@
+import { db } from "../db";
 import type { AgentDeps } from "../agents/core/types";
 import { summaryReply, type RecapExtracted, type RecapMessage, type RecapOutput } from "../agents/interview/skills/interview-recap";
 import { orchestrate } from "../agents/orchestrator";
@@ -26,11 +27,11 @@ const slugify = (name: string) =>
 // the app may already know the company; otherwise the one the person named has to match a company we track
 async function resolveCompany(env: Env, companySlug: string | undefined, named: string | undefined) {
   if (companySlug) {
-    return env.DB.prepare("SELECT slug, name FROM companies WHERE slug = ?").bind(companySlug).first<{ slug: string; name: string }>();
+    return db(env).prepare("SELECT slug, name FROM companies WHERE slug = ?").bind(companySlug).first<{ slug: string; name: string }>();
   }
   const name = named?.trim();
   if (!name) return null;
-  return env.DB.prepare("SELECT slug, name FROM companies WHERE slug = ? OR lower(name) = lower(?) OR lower(name) LIKE lower(?) LIMIT 1")
+  return db(env).prepare("SELECT slug, name FROM companies WHERE slug = ? OR lower(name) = lower(?) OR lower(name) LIKE lower(?) LIMIT 1")
     .bind(slugify(name), name, `${name}%`)
     .first<{ slug: string; name: string }>();
 }

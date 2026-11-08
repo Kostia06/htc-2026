@@ -1,3 +1,4 @@
+import { db } from "../db";
 import { Hono } from "hono";
 import type { AppContext, Env } from "../env";
 
@@ -17,7 +18,7 @@ type ScoreRow = { session_id: string; scores_json: string };
 // Reads only the unencrypted columns: the plan and the answers stay sealed, this is the list, not the replay.
 async function loadPage(env: Env, userId: string, cursor: string | null) {
   const before = cursor ? " AND s.created_at < ?" : "";
-  const stmt = env.DB.prepare(
+  const stmt = db(env).prepare(
     `SELECT s.id, s.mode, s.company_slug, c.name AS company_name, s.status, s.created_at, s.finished_at
      FROM voice_sessions s LEFT JOIN companies c ON c.slug = s.company_slug
      WHERE s.user_id = ?${before}
@@ -34,7 +35,7 @@ async function scoresBySession(env: Env, userId: string, sessionIds: string[]) {
   const totals = new Map<string, { sum: number; n: number; turns: number }>();
   if (sessionIds.length === 0) return totals;
   const marks = sessionIds.map(() => "?").join(", ");
-  const { results } = await env.DB.prepare(`SELECT session_id, scores_json FROM voice_turns WHERE user_id = ? AND session_id IN (${marks})`)
+  const { results } = await db(env).prepare(`SELECT session_id, scores_json FROM voice_turns WHERE user_id = ? AND session_id IN (${marks})`)
     .bind(userId, ...sessionIds)
     .all<ScoreRow>();
   for (const row of results) {
