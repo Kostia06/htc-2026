@@ -1,11 +1,20 @@
 import { db } from "../db";
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
-import type { Step, StepContent, StepSource, StepStatus } from "./types";
+import type { CompletedVia, Step, StepContent, StepSource, StepStatus } from "./types";
 
-type Row = { id: string; position: number; source: StepSource; ciphertext: string; iv: string; status: StepStatus; completed_at: string | null };
+type Row = {
+  id: string;
+  position: number;
+  source: StepSource;
+  ciphertext: string;
+  iv: string;
+  status: StepStatus;
+  completed_at: string | null;
+  completed_via: CompletedVia | null;
+};
 
-const COLUMNS = "id, position, source, ciphertext, iv, status, completed_at";
+const COLUMNS = "id, position, source, ciphertext, iv, status, completed_at, completed_via";
 
 export type Counts = { total: number; done: number; open: number };
 
@@ -88,11 +97,14 @@ export async function setStepStatus(env: Env, userId: string, id: string, status
   if (note !== undefined) content.note = note || undefined;
   const now = new Date().toISOString();
   const completedAt = status === "done" ? (row.completed_at ?? now) : null;
+  const completedVia = status === "done" ? row.completed_via : null;
   const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(content));
-  await db(env).prepare("UPDATE roadmap_steps SET status = ?, completed_at = ?, ciphertext = ?, iv = ?, updated_at = ? WHERE id = ? AND user_id = ?")
-    .bind(status, completedAt, sealed.ciphertext, sealed.iv, now, id, userId)
+  await db(env).prepare(
+    "UPDATE roadmap_steps SET status = ?, completed_at = ?, completed_via = ?, ciphertext = ?, iv = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+  )
+    .bind(status, completedAt, completedVia, sealed.ciphertext, sealed.iv, now, id, userId)
     .run();
-  return toStep({ ...row, status, completed_at: completedAt }, content);
+  return toStep({ ...row, status, completed_at: completedAt, completed_via: completedVia }, content);
 }
 
 async function decode(env: Env, userId: string, row: Row): Promise<StepContent> {
@@ -108,5 +120,5 @@ function decodeAll(env: Env, userId: string, rows: Row[]): Promise<Step[]> {
 
 function toStep(row: Row, content: StepContent): Step {
   const { note, ...rest } = content;
-  return { ...rest, id: row.id, status: row.status, completedAt: row.completed_at, note: note ?? null, source: row.source };
+  return { ...rest, id: row.id, status: row.status, completedAt: row.completed_at, completedVia: row.completed_via, note: note ?? null, source: row.source };
 }

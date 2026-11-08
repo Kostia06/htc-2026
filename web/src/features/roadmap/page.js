@@ -23,8 +23,25 @@ export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-/** Oldest finished step first, so the trail reads top to bottom as the journey so far. */
-export const doneSteps = (page) => [...page.completed].reverse().flatMap((d) => [...d.steps].reverse())
+/** Steps the server copied from the resume as already done; older ones only carry the `why` line. */
+export const isFromResume = (step) => step.completedVia === 'resume' || step.why === 'From your resume'
+
+const finished = (page) => [...page.completed].reverse().flatMap((d) => [...d.steps].reverse())
+
+/** Oldest finished step first, so the trail reads top to bottom as the journey so far. Resume steps get their own card. */
+export const doneSteps = (page) => finished(page).filter((s) => !isFromResume(s))
+
+export const resumeSteps = (page) => finished(page).filter(isFromResume)
+
+/** The big count covers the trail only, like RoadmapPath.swift; resume steps sit in their own card. */
+export function trailProgress(page) {
+  const fromResume = resumeSteps(page).length
+  const done = Math.max(0, page.progress.done - fromResume)
+  return { ...page.progress, done, total: Math.max(done, page.progress.total - fromResume) }
+}
+
+// a day the person actually did something on; resume steps land on the day they were copied but are no streak
+const isActiveDay = (day) => day?.steps.some((s) => !isFromResume(s))
 
 export const allSteps = (page) => [...page.next, ...page.completed.flatMap((d) => d.steps)]
 
@@ -48,11 +65,9 @@ export function completeStep(page, stepId, note, now = new Date()) {
   const day = dayKey(now)
   const completed = [...page.completed]
   const progress = { ...page.progress, done: page.progress.done + 1 }
+  if (!(completed[0]?.day === day && isActiveDay(completed[0]))) progress.streakDays += 1
   if (completed[0]?.day === day) completed[0] = { ...completed[0], steps: [finished, ...completed[0].steps] }
-  else {
-    completed.unshift({ day, steps: [finished] })
-    progress.streakDays += 1
-  }
+  else completed.unshift({ day, steps: [finished] })
   return [{ ...page, next: page.next.filter((s) => s.id !== stepId), completed, progress }, previous]
 }
 
@@ -62,15 +77,9 @@ export function restoreStep(page, step) {
   const progress = { ...page.progress }
   const dayIndex = completed.findIndex((d) => d.steps.some((s) => s.id === step.id))
   if (dayIndex >= 0) {
-    completed = completed
-      .map((d, i) => (i === dayIndex ? { ...d, steps: d.steps.filter((s) => s.id !== step.id) } : d))
-      .filter((d, i) => {
-        if (i === dayIndex && d.steps.length === 0) {
-          progress.streakDays = Math.max(0, progress.streakDays - 1)
-          return false
-        }
-        return true
-      })
+    completed = completed.map((d, i) => (i === dayIndex ? { ...d, steps: d.steps.filter((s) => s.id !== step.id) } : d))
+    if (!isActiveDay(completed[dayIndex])) progress.streakDays = Math.max(0, progress.streakDays - 1)
+    completed = completed.filter((d) => d.steps.length > 0)
     progress.done = Math.max(0, progress.done - 1)
   }
   return { ...page, completed, progress, next: [step, ...page.next] }

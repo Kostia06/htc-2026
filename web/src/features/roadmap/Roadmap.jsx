@@ -2,13 +2,14 @@
 // Finished steps come first (the last three, unless expanded), then where you are, then what's next, then the goal.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
-import { Check, Flag, Flame, MessageSquarePlus, Route } from 'lucide-react'
+import { Check, FileText, Flag, Flame, MessageSquarePlus, Route } from 'lucide-react'
 import { roadmapApi } from '../../lib/client'
 import { weekday } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonCard, SkeletonLines, ThinProgressBar } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
-import { appendPage, completeStep, doneSteps, kindOf, replaceStep, restoreStep } from './page'
+import { appendPage, completeStep, doneSteps, kindOf, replaceStep, restoreStep, resumeSteps, trailProgress } from './page'
+import { ResumeStepsCard } from './ResumeSteps'
 import './roadmap.css'
 
 const RECENT_DONE = 3
@@ -99,6 +100,7 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
   const end = useRef(null)
 
   const done = doneSteps(page)
+  const fromResume = resumeSteps(page)
   const stops = [...(showAll ? done : done.slice(-RECENT_DONE)), ...page.next]
   const currentId = page.next[0]?.id
   const stateOf = (step) => (step.status === 'done' ? 'done' : step.id === currentId ? 'current' : 'upcoming')
@@ -130,7 +132,8 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
 
   return (
     <div className="roadmap__body">
-      <ProgressCard goal={page.goal} progress={page.progress} />
+      <ProgressCard goal={page.goal} progress={trailProgress(page)} fromResume={fromResume.length} />
+      {fromResume.length > 0 && <ResumeStepsCard steps={fromResume} onOpen={onOpen} />}
       {done.length > RECENT_DONE && (
         <button type="button" className="roadmap__earlier t-subhead semibold" onClick={() => setShowAll(!showAll)}>
           {showAll ? 'Hide earlier steps' : `Show ${done.length - RECENT_DONE} earlier steps`}
@@ -183,7 +186,7 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
   )
 }
 
-function ProgressCard({ goal, progress }) {
+function ProgressCard({ goal, progress, fromResume }) {
   const fraction = progress.total ? progress.done / progress.total : 0
   return (
     <section className="card progress-card">
@@ -193,10 +196,19 @@ function ProgressCard({ goal, progress }) {
         <span className="t-title3 medium c-2">/ {progress.total} steps</span>
       </p>
       <ThinProgressBar value={fraction} label="Steps done" />
-      {progress.streakDays > 0 && (
-        <p className="t-footnote semibold c-action row progress-card__streak">
-          <Flame size={14} strokeWidth={2.4} fill="currentColor" aria-hidden /> {progress.streakDays}-day streak
-        </p>
+      {(progress.streakDays > 0 || fromResume > 0) && (
+        <div className="row progress-card__extras">
+          {progress.streakDays > 0 && (
+            <p className="t-footnote semibold c-action row progress-card__streak">
+              <Flame size={14} strokeWidth={2.4} fill="currentColor" aria-hidden /> {progress.streakDays}-day streak
+            </p>
+          )}
+          {fromResume > 0 && (
+            <p className="t-footnote semibold c-2 row progress-card__streak">
+              <FileText size={14} strokeWidth={2.4} aria-hidden /> +{fromResume} from your resume
+            </p>
+          )}
+        </div>
       )}
     </section>
   )

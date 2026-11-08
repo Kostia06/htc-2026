@@ -42,7 +42,7 @@ export async function ensureResumeSteps(env: Env, userId: string, profile: Profi
   if (!(await insertSteps(env, userId, RESUME_POSITION, steps, "template"))) return false;
   const now = new Date().toISOString();
   await db(env).prepare(
-    "UPDATE roadmap_steps SET status = 'done', completed_at = ?, updated_at = ? WHERE user_id = ? AND position >= ? AND position < ? AND status = 'todo'",
+    "UPDATE roadmap_steps SET status = 'done', completed_at = ?, completed_via = 'resume', updated_at = ? WHERE user_id = ? AND position >= ? AND position < ? AND status = 'todo'",
   )
     .bind(now, now, userId, RESUME_POSITION, RESUME_POSITION + steps.length)
     .run();

@@ -34,11 +34,15 @@ export type StepContent = {
 };
 
 export type StepSource = "template" | "agent";
+// how a done step got done when the person didn't tick it themselves; "resume" steps never count toward a streak
+export type CompletedVia = "resume";
 
 export type Step = Omit<StepContent, "note"> & {
   id: string;
   status: StepStatus;
   completedAt: string | null;
+  // always set by the store; optional so hand-built steps in tests needn't spell it out
+  completedVia?: CompletedVia | null;
   note: string | null;
   source: StepSource;
   // set on a page when at least three people who reached a job took a step of this kind

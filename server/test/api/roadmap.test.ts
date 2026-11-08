@@ -162,6 +162,22 @@ describe("POST /api/roadmap/steps/:id", () => {
     expect(page.completed[0].steps[0]).toMatchObject({ id: step.id, note: "Shipped it: github.com/me/dashboard" });
   });
 
+  it("shows the resume's finished steps without counting them as today's streak", async () => {
+    const user = await newUser();
+    await updateProfile(env, user, { projects: [{ name: "Transit delay predictor" }] });
+    const { get, post } = testApp(fakeDeps().deps);
+
+    const first = await get(user);
+    const resume = first.page.completed.flatMap((d) => d.steps);
+    expect(resume.map((s) => [s.title, s.completedVia])).toEqual([["Transit delay predictor", "resume"]]);
+    expect(first.page.progress.streakDays).toBe(0);
+
+    await post(user, first.page.next[0].id, { status: "done" });
+    const { page } = await get(user);
+    expect(page.progress.streakDays).toBe(1);
+    expect(page.completed.flatMap((d) => d.steps).find((s) => s.id === first.page.next[0].id)?.completedVia).toBeNull();
+  });
+
   it("takes a step back to todo and clears its completion", async () => {
     const user = await newUser();
     const { get, post } = testApp(fakeDeps().deps);

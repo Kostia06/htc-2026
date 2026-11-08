@@ -61,7 +61,7 @@ export async function roadmapPage(deps: AgentDeps, userId: string, cursor: numbe
     progress: {
       done: counts.done,
       total: counts.total,
-      streakDays: streakDays(completed.map((s) => s.completedAt ?? ""), options.timeZone),
+      streakDays: streakDays(completed.filter((s) => s.completedVia !== "resume").map((s) => s.completedAt ?? ""), options.timeZone),
     },
     next,
     nextCursor: hasMore && next.length > 0 ? String(end) : null,
