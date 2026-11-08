@@ -44,6 +44,7 @@
 		49F1D20500C009AE22C575C7 /* MarkDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFB0A3EA74ED59054A53ABF /* MarkDoneSheet.swift */; };
 		4B5FE8B109E4D7B6620E4F10 /* PracticeHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A50B43A168A22631F592A0 /* PracticeHistoryService.swift */; };
 		4D1F72B6B9C120A7332B5157 /* FinishingUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295BB1B089442E062740E342 /* FinishingUpView.swift */; };
+		50C9B89B8F52AF24BD0CCD39 /* SkillsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18809402D3CB3276254A9579 /* SkillsSummary.swift */; };
 		53FC654DE120776F10315F07 /* VoiceBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C0E783C2F58157DE7F73E7 /* VoiceBar.swift */; };
 		57CF0CB2F5422D2FB0D23DD4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCA18DBE7BAF347450D8210 /* SettingsView.swift */; };
 		5ADA2B21704DE0195A78BF95 /* RoadmapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EBCEACDD0183AC545013605 /* RoadmapModel.swift */; };
@@ -133,6 +134,7 @@
 		11527DF7976BB3AB34B60C69 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		14BE0BC3126F84D5E1BEA1F4 /* ResumePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumePreview.swift; sourceTree = "<group>"; };
 		17B637648F387CCF0004BA92 /* Skeleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton.swift; sourceTree = "<group>"; };
+		18809402D3CB3276254A9579 /* SkillsSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsSummary.swift; sourceTree = "<group>"; };
 		1971BBE5A965E5A525ACFAE6 /* HeadsetDevicesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsetDevicesList.swift; sourceTree = "<group>"; };
 		1D16F7D20DF54E0677DE4985 /* FeedKind+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedKind+Style.swift"; sourceTree = "<group>"; };
 		1E228C1C0DA064472840037D /* ResumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeView.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				B4959721357A527FBE90F50F /* ProfileHeader.swift */,
 				D4B26AB3C137FFAB03D83D91 /* ProfileRows.swift */,
 				11527DF7976BB3AB34B60C69 /* ProfileView.swift */,
+				18809402D3CB3276254A9579 /* SkillsSummary.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -698,6 +701,7 @@
 				3D02DBD3FED6DEC1A1D1464C /* SignInModel.swift in Sources */,
 				8791C194D103DCCD7E951C4C /* SignInView.swift in Sources */,
 				8FDA110F1B8BB6D06A097DE5 /* Skeleton.swift in Sources */,
+				50C9B89B8F52AF24BD0CCD39 /* SkillsSummary.swift in Sources */,
 				2094C88A8540C0D1E4A887DC /* StartPracticeButton.swift in Sources */,
 				FD1D33D06785E0BBA6ACE45F /* StepBadges.swift in Sources */,
 				04745663E83154C47694B541 /* StepDetailSheet.swift in Sources */,
