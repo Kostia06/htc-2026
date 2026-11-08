@@ -49,15 +49,10 @@ struct QuickUpdateView: View {
         }
     }
 
-    /// Profile changes are refreshed here, where the app model is at hand; the roadmap is the parent's to reload.
+    /// The app model refreshes what it holds; the parent reloads what it shows.
     private func applied(_ changes: [AppliedChange]) {
+        app.noteApplied(changes)
         onApplied(changes)
-        guard changes.contains(where: \.touchesProfile), let client = app.client else { return }
-        Task {
-            if let profile = try? await client.profile() {
-                app.profile = profile
-            }
-        }
     }
 }
 

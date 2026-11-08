@@ -6,6 +6,8 @@ struct FeedDetailSheet: View {
     let card: FeedCard
     let onSave: () -> Void
     @Environment(\.openURL) private var openURL
+    @Environment(AppModel.self) private var app
+    @State private var company: CompanyLink?
 
     var body: some View {
         DetailSheet {
@@ -34,6 +36,9 @@ struct FeedDetailSheet: View {
         } footer: {
             buttons
         }
+        .sheet(item: $company) { link in
+            CompanySheet(slug: link.slug)
+        }
     }
 
     private var header: some View {
@@ -43,10 +48,25 @@ struct FeedDetailSheet: View {
                 Text(card.title)
                     .font(.title2.bold())
                     .fixedSize(horizontal: false, vertical: true)
-                Text(card.org)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                organisation
             }
+        }
+    }
+
+    /// The employer opens its company page when Skillit has researched it; otherwise it's just a name.
+    @ViewBuilder private var organisation: some View {
+        if card.kind == .job, let slug = app.companies.slug(matching: card.org) {
+            Button {
+                company = CompanyLink(slug: slug)
+            } label: {
+                Label(card.org, systemImage: "building.2")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .tint(Theme.action)
+        } else {
+            Text(card.org)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 
