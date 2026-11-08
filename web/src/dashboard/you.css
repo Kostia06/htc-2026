@@ -1,0 +1,98 @@
+/* You: profile answers, what Raven remembers, and the student extras. */
+.yu__out {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid #262626;
+  border-radius: 9px;
+  background: transparent;
+  color: #f5f5f5;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.yu__out:hover { border-color: #3e3e3e; }
+
+.yu__answers { gap: 20px; padding: 32px; }
+
+.yu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.yu__answers dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 32px;
+  margin: 0;
+}
+
+.yu__answers dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 0;
+  border-top: 1px solid #1c1c1c;
+}
+
+.yu__answers dt { color: #8c8c8c; font-size: 13px; }
+.yu__answers dd { margin: 0; color: #f5f5f5; font-size: 17px; line-height: 1.4; }
+
+.yu__knows { flex-basis: 340px; padding: 32px; }
+
+.yu__empty { align-items: flex-start; gap: 12px; padding: 24px; border-radius: 20px; }
+.yu__empty > span { color: #f5f5f5; font-size: 16px; }
+
+.yu__group { display: flex; flex-direction: column; gap: 8px; }
+
+.yu__memories {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yu__memories li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #1c1c1c;
+  color: #f5f5f5;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.yu__more { display: flex; flex-direction: column; }
+.yu__more h2 { margin-bottom: 16px; padding: 0 4px; }
+
+.yu__more button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 4px;
+  border: 0;
+  border-top: 1px solid #1c1c1c;
+  background: none;
+  color: #f5f5f5;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.yu__more button:last-child { border-bottom: 1px solid #1c1c1c; }
+.yu__more button > span:first-child { display: flex; flex-direction: column; gap: 6px; }
+.yu__more button > span:first-child span:first-child { font-size: 18px; }
+.yu__more button > span:first-child span:last-child { color: #a3a3a3; font-size: 14px; line-height: 1.45; }
+.yu__more button > span:last-child { color: #8c8c8c; font-size: 20px; transition: transform 0.15s ease, color 0.15s ease; }
+.yu__more button:hover > span:last-child { color: #fe4a23; transform: translateX(3px); }
+
+@media (max-width: 600px) {
+  .yu__answers,
+  .yu__knows { padding: 20px; }
+}
