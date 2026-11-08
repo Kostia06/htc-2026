@@ -4,6 +4,8 @@ import Foundation
 public struct OnboardingQuestion: Identifiable, Sendable {
     public enum Kind: Sendable {
         case resume
+        /// optional: connect GitHub (read-only) or review a LinkedIn PDF
+        case accounts
         case single(options: [String])
         case multi(options: [String], max: Int)
         case text(fields: [Field])
@@ -46,7 +48,7 @@ public struct OnboardingQuestion: Identifiable, Sendable {
     public var options: [String] {
         switch kind {
         case let .single(options), let .multi(options, _): options
-        case .resume, .text: []
+        case .resume, .accounts, .text: []
         }
     }
 
@@ -66,6 +68,12 @@ public extension OnboardingQuestion {
             title: "Do you have a resume?",
             hint: "Upload it and we'll fill in the next questions for you. You can change anything before you finish.",
             kind: .resume,
+        ),
+        .init(
+            id: "accounts",
+            title: "Bring in your work?",
+            hint: "Connect GitHub to add your projects, or get edits for your LinkedIn. Both are optional.",
+            kind: .accounts,
         ),
         .init(
             id: "stage",

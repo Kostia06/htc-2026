@@ -28,8 +28,19 @@ final class Authenticator: Sendable {
         return user.appMetadata["provider"]?.stringValue == "apple" ? "Apple ID" : "Signed in"
     }
 
+    /// A refresh that fails because Supabase is busy (429) or unreachable must not sign the person out.
     var accessToken: AccessTokenProvider {
-        { [auth] in try await auth.session.accessToken }
+        { [auth] in
+            do {
+                return try await auth.session.accessToken
+            } catch AuthError.sessionMissing {
+                throw SkillitError.unauthorized
+            } catch is URLError {
+                throw SkillitError.offline
+            } catch {
+                throw SkillitError.rejected(status: 503, message: "Sign-in is busy right now. Try again in a moment.")
+            }
+        }
     }
 
     func signInWithApple(idToken: String, nonce: SignInNonce) async throws {

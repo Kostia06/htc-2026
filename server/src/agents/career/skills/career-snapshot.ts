@@ -7,11 +7,12 @@ export const careerSnapshot: Skill<{ companies?: string[] }> = {
   personal: true,
   // labour market data (the occupations and postings tables) isn't loaded yet; once it is, add a
   // labour_outlook tool here and a step below telling the model to weigh roles by local outlook
-  tools: ["recall", "company_insights"],
-  maxSteps: 8,
+  tools: ["recall", "company_insights", "github_profile"],
+  maxSteps: 9,
   instructions: `Give this person a short career snapshot: which roles to aim for and what to do next.
 1. Call recall for kinds goal and skill, then weakness.
 2. For each company listed in the goal, call company_insights with its slug to see what they hire for and ask about.
+   Call github_profile once: their own projects show what they can already build. Name a repo only for what its summary says.
 3. "targetRoles" is one to three role titles that fit their goals and skills.
 4. "nextSteps" is up to five concrete steps, each with why, tied to what you know about this person.
 If you know too little about them, make the first step to tell you their career goal.`,

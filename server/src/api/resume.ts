@@ -3,10 +3,12 @@ import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
 import { orchestrate } from "../agents/orchestrator";
 import { extractText, MAX_UPLOAD_BYTES, UnreadableDocument } from "../documents/extract";
+import { detectFormat } from "../documents/formats";
 import type { AppContext, Env } from "../env";
 import { emptyProfile } from "../memory/profile/patch";
 import { getProfile } from "../memory/profile/store";
 import type { ProfilePatch } from "../memory/profile/types";
+import { maskLinkedinText } from "../resume/linkedin";
 import { parseResume, seedFromProfile } from "../resume/parse";
 import { renderResumePDF } from "../resume/pdf";
 import { loadResume, putResume } from "../resume/store";
@@ -69,6 +71,32 @@ export function resumeRouter(makeDeps: MakeDeps) {
     const draft = (run.output.draft ?? {}) as ProfilePatch;
     const resume = seedFromProfile({ ...emptyProfile(), ...draft });
     return c.json({ resume, saved: false, droppedClaims: run.output.droppedClaims ?? 0 });
+  });
+
+  // LinkedIn has no API we may use, so the person brings their own "Save to PDF" export. The file is read and forgotten:
+  // nothing is stored, and only the text with emails, phones and links masked reaches the reviewing model
+  router.post("/linkedin", async (c) => {
+    const form = await c.req.formData().catch(() => null);
+    const file = form?.get("file");
+    if (!(file instanceof File)) return c.json({ error: "send the LinkedIn PDF as a multipart field named file" }, 400);
+    if (file.size > MAX_UPLOAD_BYTES) return c.json({ error: "the file is over 5 MB" }, 413);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (detectFormat(bytes, file.name) !== "pdf") return c.json({ error: "send the PDF from LinkedIn's More → Save to PDF" }, 415);
+
+    let text: string;
+    try {
+      text = maskLinkedinText((await extractText(c.env, { bytes, name: file.name })).text);
+    } catch (e) {
+      if (e instanceof UnreadableDocument) return c.json({ error: e.message }, 415);
+      throw e;
+    }
+
+    const userId = c.var.sessionId;
+    const targetRole = (await getProfile(c.env, userId)).targetRoles[0];
+    const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
+    const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "linkedin-review", platform: "app", userId, input: { text, targetRole } });
+    if (run.status === "failed") return c.json({ error: "the PDF was read but Skillit couldn't review it just now, try again" }, 502);
+    return c.json({ targetRole: targetRole ?? null, suggestions: run.output.suggestions ?? [], droppedClaims: run.output.droppedClaims ?? 0 });
   });
 
   router.get("/pdf", async (c) => {

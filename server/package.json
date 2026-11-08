@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler d1 migrations apply htc_mentor --local && wrangler dev --var DB_BACKEND:d1",
     "deploy": "wrangler deploy",
     "test": "vitest run",
     "test:pg": "vitest run --config vitest.pg.config.ts",

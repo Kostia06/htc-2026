@@ -16,6 +16,9 @@ const UNREADABLE = 'Something went wrong on our side. Try again in a moment.'
 
 const sentence = (text) => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text)
 
+// dev goes through Vite's /api proxy; the deployed app at app.skillit.study has no /api of its own
+const API_BASE = (import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? 'https://api.skillit.study' : '')).replace(/\/$/, '')
+
 let unauthorized = () => {}
 /** The app registers what a 401 does (sign out) once it starts. */
 export function onUnauthorized(fn) {
@@ -29,7 +32,7 @@ async function send(path, { method = 'GET', body, form, query, timeout } = {}) {
   if (token) headers.set('Authorization', `Bearer ${token}`)
   if (body !== undefined) headers.set('Content-Type', 'application/json')
   const params = query ? new URLSearchParams(Object.entries(query).filter(([, v]) => v !== undefined && v !== null && v !== '')) : null
-  const url = params && [...params].length ? `${path}?${params}` : path
+  const url = API_BASE + (params && [...params].length ? `${path}?${params}` : path)
   const controller = timeout ? new AbortController() : null
   const timer = controller ? setTimeout(() => controller.abort(), timeout) : null
   try {
@@ -60,6 +63,17 @@ async function request(path, options) {
 }
 
 const post = (path, body, options) => request(path, { method: 'POST', body: body ?? {}, ...options })
+
+/** For bytes rather than JSON, like a recording: same sign-in, same 401 handling. */
+async function blob(path) {
+  const res = await send(path)
+  if (res.status === 401) {
+    unauthorized()
+    throw new ApiError(401, SIGNED_OUT)
+  }
+  if (!res.ok) throw new ApiError(res.status, "The recording isn't available.")
+  return res.blob()
+}
 
 function upload(path, file) {
   const form = new FormData()
@@ -94,6 +108,8 @@ export const roadmapApi = {
 export const feedApi = {
   /** { items, nextCursor, building, section } */
   page: (section = 'all', cursor) => request('/api/feed', { query: { section, cursor }, timeout: 15000 }),
+  /** The first page, asking the server to search for new postings now; it rebuilds behind the answer */
+  fresh: (section = 'all') => request('/api/feed', { query: { section, refresh: 1 }, timeout: 15000 }),
   act: (cardId, action) => post(`/api/feed/items/${cardId}`, { action }, { timeout: 15000 }),
 }
 
@@ -106,6 +122,11 @@ export const voiceApi = {
   finish: (id) => post(`/api/voice/sessions/${id}/finish`, { platform: 'app' }),
   history: (cursor) => request('/api/voice/history', { query: { cursor } }),
   session: (id) => request(`/api/voice/sessions/${id}`),
+  /** links the ElevenLabs recording, so the session can be replayed and deleted with it */
+  attachConversation: (id, conversationId) => post(`/api/voice/sessions/${id}/conversation`, { conversationId }),
+  /** { audioUrl, recording, timing, durationSec, moments, transcript } */
+  replay: (id) => request(`/api/voice/sessions/${id}/replay`),
+  replayAudio: (id) => blob(`/api/voice/sessions/${id}/replay/audio`),
 }
 
 export const companiesApi = {
@@ -121,73 +142,80 @@ export const memoriesApi = {
   share: (id, companySlug, role) => post(`/api/me/memories/${id}/share`, { companySlug, role }),
 }
 
+/** Crossroads: the person's own notes next to everyone on their road (counts only from 3+ people, examples flagged) */
+export const crossroadsApi = {
+  load: () => request('/api/crossroads'),
+  /** { reply, needsAnswer, cites: [{ type, id }] }; conversation is [{ speaker: 'user' | 'raven', text }] */
+  ask: (message, conversation) => post('/api/crossroads/ask', { message, conversation }, { timeout: 30000 }),
+  /** { meToo, line }; line stays null while fewer than three people stand behind a real one */
+  meToo: (id, on) => request(`/api/crossroads/lines/${id}/me-too`, { method: on ? 'POST' : 'DELETE' }),
+}
+
 export const resumeApi = {
   /** { resume, saved } */
   load: () => request('/api/resume'),
-
-  save: (resume) =>
-      request('/api/resume', { method: 'PUT', body: resume }).then((r) => r.resume),
-
+  save: (resume) => request('/api/resume', { method: 'PUT', body: resume }).then((r) => r.resume),
+  /** coach rewrites for `resume` as it is on screen (saved or not), optionally one section and tuned to a company */
   improve: ({ resume, section, company } = {}) =>
-      post('/api/resume/improve', {
-        resume,
-        section: section || undefined,
-        company: company || undefined,
-      }).then((r) => r.suggestions ?? []),
-
-  /** Full AI career and resume analysis */
-  analyze: ({
-              targetRole,
-              location,
-              resumeText,
-              preferredLanguages = [],
-              timeBudgetHours = 25,
-            } = {}) =>
-      post(
-          '/api/resume/analyze',
-          {
-            targetRole,
-            location,
-            resumeText,
-            preferredLanguages,
-            timeBudgetHours,
-          },
-          { timeout: 120000 },
-      ),
-
+    post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
+  /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
   upload: (file) => upload('/api/resume/upload', file),
-
-  pdf: async () => {
-    const res = await send('/api/resume/pdf')
-    if (res.status === 401) {
-      unauthorized()
-      throw new ApiError(401, SIGNED_OUT)
-    }
-    if (!res.ok) throw new ApiError(res.status, "The PDF couldn't be made. Try again.")
-    return res.blob()
-  },
+  pdf: () => pdfBlob('/api/resume/pdf'),
+  /** LinkedIn's "Save to PDF" export, read once and kept nowhere: { targetRole, suggestions: [{ area, quote, suggestion, why }] } */
+  reviewLinkedin: (file) => request('/api/resume/linkedin', { method: 'POST', form: formWith(file), timeout: 120000 }),
 }
 
-export const notificationsApi = {
-  // Load notifications and unread count
-  page: (cursor) =>
-      request('/api/notifications', {
-        query: {
-          cursor,
-          tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      }),
+function formWith(file) {
+  const form = new FormData()
+  form.append('file', file)
+  return form
+}
 
-  // Mark selected notifications as read
-  read: (ids) =>
-      post('/api/notifications/read', { ids }),
+/** GitHub, read-only through the server: { configured, status, projects, suggestions, importing }. Never a token. */
+export const connectionsApi = {
+  github: () => request('/api/connections').then((r) => r.github),
+  /** the hosted sign-in to open; returnTo must be one of our own origins */
+  connectGithub: (returnTo) => post('/api/connections/github', { returnTo }).then((r) => r.url),
+  importGithub: () => post('/api/connections/github/import').then((r) => r.github),
+  disconnectGithub: () => request('/api/connections/github', { method: 'DELETE' }).then((r) => r.github),
+}
 
-  // Mark all notifications as read
-  readAll: () =>
-      post('/api/notifications/read', { all: true }),
+async function pdfBlob(path) {
+  const res = await send(path)
+  if (res.status === 401) {
+    unauthorized()
+    throw new ApiError(401, SIGNED_OUT)
+  }
+  if (!res.ok) throw new ApiError(res.status, "The PDF couldn't be made. Try again.")
+  return res.blob()
+}
+
+export const postingsApi = {
+  list: () => request('/api/postings').then((r) => r.postings ?? []),
+}
+
+/** copies of the resume adapted to one job each; the base resume is never changed by them */
+export const tailoredApi = {
+  /** [{ id, postingId, title, company, covered, total, updatedAt }] */
+  list: () => request('/api/resume/tailored').then((r) => r.tailored ?? []),
+  /** from a saved posting ({ postingId }) or pasted text ({ text }); one model call, two for pasted text */
+  create: ({ postingId, text }) => post('/api/resume/tailored', postingId ? { postingId } : { text }),
+  get: (id) => request(`/api/resume/tailored/${id}`),
+  /** the server rebuilds the copy from the base resume, so a revert is exact; 409 once it was edited by hand */
+  setChange: (id, changeId, accepted) => request(`/api/resume/tailored/${id}`, { method: 'PUT', body: { changes: [{ id: changeId, accepted }] } }),
+  remove: (id) => request(`/api/resume/tailored/${id}`, { method: 'DELETE' }),
+  pdf: (id) => pdfBlob(`/api/resume/tailored/${id}/pdf`),
 }
 
 /** { reply, needsAnswer, applied: [{ type, summary }] } */
+export const notificationsApi = {
+  /** { items, nextCursor, unread, quiet }; the first page also has the server look for anything new */
+  page: (cursor) => request('/api/notifications', { query: { cursor, tz: Intl.DateTimeFormat().resolvedOptions().timeZone } }),
+  /** { marked, unread } */
+  read: (ids) => post('/api/notifications/read', { ids }),
+  readAll: () => post('/api/notifications/read', { all: true }),
+}
+
 export const sendUpdate = (message, conversation) => post('/api/updates', { message, conversation })
 
 export const recapApi = {

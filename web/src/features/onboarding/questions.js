@@ -1,5 +1,5 @@
 // The onboarding questions, the same list as ios/SkillitKit/.../OnboardingQuestion.swift. Each one is a single screen; most answers are a tap.
-//   type: 'resume' (optional upload that pre-fills the rest), 'single' (pick one), 'multi' (pick up to `max`),
+//   type: 'resume' (optional upload that pre-fills the rest), 'accounts' (optional GitHub / LinkedIn), 'single' (pick one), 'multi' (pick up to `max`),
 //         'text' (optional short answer)
 //   other: lets people type their own option
 //   when: only asked if it returns true for the answers so far
@@ -11,6 +11,12 @@ export const QUESTIONS = [
     title: 'Do you have a resume?',
     hint: "Upload it and we'll fill in the next questions for you. You can change anything before you finish.",
     type: 'resume',
+  },
+  {
+    id: 'accounts',
+    title: 'Bring in your work?',
+    hint: 'Connect GitHub to add your projects, or get edits for your LinkedIn. Both are optional.',
+    type: 'accounts',
   },
   {
     id: 'stage',

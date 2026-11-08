@@ -12,6 +12,7 @@ export const PLATFORMS: readonly Platform[] = ["app", "vr", "background"];
 
 import type { MemoryKind, PrivateMemory } from "../../memory/private/store";
 import type { Profile, ProfilePatch } from "../../memory/profile/types";
+import type { RepoSummary } from "../../connections/store";
 
 export type { MemoryKind, PrivateMemory };
 export type PrivateMemoryPort = {
@@ -19,6 +20,8 @@ export type PrivateMemoryPort = {
   remember(item: { kind: MemoryKind; text: string }): Promise<PrivateMemory>;
   profile(): Promise<Profile>;
   updateProfile(patch: ProfilePatch): Promise<Profile>;
+  // the person's imported GitHub repos as Skillit keeps them (allowlisted facts, grounded summaries); [] when not connected
+  githubProjects(): Promise<RepoSummary[]>;
 };
 export const MEMORY_KINDS: readonly MemoryKind[] = ["goal", "skill", "weakness", "preference", "note"];
 
