@@ -17,7 +17,7 @@ struct RadarList: View {
                 Button { onOpen(company.slug) } label: {
                     RadarRow(company: company)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.raisedCard())
                 .feedRow()
             }
         } else if let message = model.errorMessage {
