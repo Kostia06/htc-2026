@@ -80,6 +80,17 @@ export function createApiSession({ baseUrl = API_URL, companySlug, role = 'Softw
       }
     },
 
+    // Scoring only. The realtime voice agent drives the conversation itself, so
+    // there is no /next call on that path — just score what was said.
+    async scoreTurn({ question, answer = '', durationMs = 0 }) {
+      const score = await call(`/api/voice/sessions/${sessionId}/turns`, {
+        method: 'POST',
+        body: { question, answer: answer || '(no answer given)', durationMs: Math.round(durationMs) },
+      })
+      scored++
+      return score
+    },
+
     async submitAnswer({ question, answer = '', durationMs = 0 }) {
       transcript.push({ speaker: 'candidate', text: answer })
 
@@ -140,6 +151,11 @@ export function createStubSession({ company = 'Example Co.', role = 'Software De
         questions: EXAMPLE_QUESTIONS.map((q) => q.text),
         isSeeded: true,
       }
+    },
+
+    async scoreTurn(turn) {
+      const { score } = await this.submitAnswer(turn)
+      return score
     },
 
     async submitAnswer({ question, answer = '', durationMs = 0 }) {

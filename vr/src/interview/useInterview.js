@@ -45,6 +45,7 @@ export function useInterview() {
   const phaseRef = useRef(phase)
   phaseRef.current = phase
   const listenRef = useRef(() => {})
+  const agentRef = useRef(null) // the provider's realtime voice agent, when offered
 
   useEffect(() => {
     alive.current = true
@@ -53,6 +54,7 @@ export function useInterview() {
       running.current = false
       speaker.cancel()
       vad.release()
+      agentRef.current?.disconnect()
     }
   }, [speaker, vad])
 
@@ -150,6 +152,69 @@ export function useInterview() {
     }
   }, [listener, say, sayThenListen, session, transcript, vad])
 
+  // The provider's own agent does speech-to-text, the model and speech-out over
+  // one socket, so none of our speech stack runs on this path. It is the same
+  // agent the phone app uses, so both sound and behave identically.
+  const beginWithAgent = useCallback(
+    async (started) => {
+      const { createElevenLabsSession } = await import('./elevenlabs.js')
+
+      const agent = createElevenLabsSession({
+        signedUrl: started.voice.signedUrl,
+        // Passed through exactly as the server composed them. Do not inject a
+        // firstMessage: this agent's config forbids overriding it and the
+        // socket is closed with 1008 the moment you try.
+        overrides: started.voice.overrides,
+        // The agent's own first message is a template with an {{opening}} slot;
+        // without this it refuses the session with 1008. The server composes the
+        // line (role, company), so the greeting matches the planned interview.
+        dynamicVariables: { opening: started.opening ?? '' },
+        onState: (next) => {
+          if (!alive.current) return
+          if (next === 'reconnecting') setError('Reconnecting…')
+          else if (next === 'open') setError(null)
+        },
+        onAgentText: (text) => {
+          if (!alive.current || !text) return
+          setCaption(text)
+          setQuestion(text)
+          askedRef.current = text
+        },
+        onUserText: (text) => alive.current && setTranscript(text),
+        onSpeakingChange: (isSpeaking) => {
+          if (!alive.current) return
+          setSpeaking(isSpeaking)
+          setPhase(isSpeaking ? 'asking' : 'listening')
+          if (isSpeaking) setHeard(false)
+        },
+        onTurn: async ({ question, answer }) => {
+          if (!alive.current || !answer) return
+          setHeard(true)
+          try {
+            const score = await session.scoreTurn({ question, answer, durationMs: 0 })
+            if (!alive.current || !score) return
+            setResult(score)
+            setResultAt(Date.now())
+          } catch {
+            // A missed score costs a panel, not the conversation.
+          }
+        },
+        onError: (err) => {
+          if (!alive.current) return
+          if (err?.reason === 'denied') {
+            setMicDenied(true)
+            setError('Microphone blocked. Allow it and start again.')
+          }
+        },
+      })
+
+      agentRef.current = agent
+      setPhase('asking')
+      await agent.connect()
+    },
+    [session],
+  )
+
   const begin = useCallback(async () => {
     setError(null)
     setSummary(null)
@@ -160,6 +225,12 @@ export function useInterview() {
       const started = await session.start()
       if (!alive.current) return
       setMeta(started)
+
+      if (started.voice?.signedUrl) {
+        await beginWithAgent(started)
+        return
+      }
+
       setPhase('asking')
       await say(started.opening)
       if (!alive.current || !running.current) return
@@ -171,10 +242,12 @@ export function useInterview() {
         running.current = false
       }
     }
-  }, [say, sayThenListen, session, speaker])
+  }, [beginWithAgent, say, sayThenListen, session, speaker])
 
   const restart = useCallback(() => {
     running.current = false
+    agentRef.current?.disconnect()
+    agentRef.current = null
     speaker.cancel()
     vad.stop()
     setPhase('idle')
@@ -189,11 +262,15 @@ export function useInterview() {
 
   const toggleMute = useCallback(() => {
     setMuted((m) => {
-      if (!m) {
+      const next = !m
+      // Mute the microphone too: a full-duplex agent left listening to a muted
+      // room keeps replying to itself and keeps burning quota.
+      agentRef.current?.setMuted(next)
+      if (next) {
         speaker.cancel()
         setSpeaking(false)
       }
-      return !m
+      return next
     })
   }, [speaker])
 
@@ -232,7 +309,7 @@ export function useInterview() {
     muted,
     isStub: session.isStub === true,
     sttSupported: listener.supported,
-    getAmplitude: speaker.getAmplitude,
+    getAmplitude: () => agentRef.current?.getAmplitude() ?? speaker.getAmplitude(),
     micLevel: () => vad.level,
     actions,
   }
