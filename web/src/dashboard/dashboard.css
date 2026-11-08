@@ -333,7 +333,7 @@
   padding: 0 4px;
 }
 
-.pg__label { color: #8c8c8c; font-size: 13px; }
+.pg__label { color: #8c8c8c; font-size: 13px; line-height: 1.5; }
 .pg__muted { margin: 0; color: #a3a3a3; font-size: 15px; line-height: 1.55; }
 
 .pg__pill {
@@ -351,6 +351,7 @@
 /* the design's controls, applied to the shared button and field classes inside the dashboard */
 .db .ob__next,
 .db .db__ghost {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -360,6 +361,7 @@
   border-radius: 9px;
   font: inherit;
   font-size: 15px;
+  text-decoration: none;
   cursor: pointer;
 }
 
