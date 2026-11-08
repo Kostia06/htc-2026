@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { Building2, CircleUserRound, FileText, GalleryVerticalEnd, Glasses, Route } from 'lucide-react'
 import { Spinner } from '../ui/Button'
+import { Bell } from '../features/notifications/Bell'
 
 const TABS = [
   { to: '/roadmap', label: 'Road', icon: Route },
@@ -67,6 +68,8 @@ export function Shell() {
           ))}
         </nav>
       </aside>
+
+      <Bell />
 
       <div className="shell__content">
         {/* a tab's first visit loads its code; the sidebar and tab bar stay put meanwhile */}

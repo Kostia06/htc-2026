@@ -30,6 +30,9 @@ const TABLES = [
   "headset_launches",
   "user_postings",
   "user_tailored_resumes",
+  "user_notifications",
+  "notification_settings",
+  "notification_devices",
 ];
 
 async function seed(userId: string) {
@@ -51,6 +54,9 @@ async function seed(userId: string) {
     env.DB.prepare("INSERT INTO headset_launches (user_id, mode, created_at, expires_at) VALUES (?, 'interview', ?, ?)").bind(userId, NOW, NOW),
     env.DB.prepare("INSERT INTO user_postings (id, user_id, company_slug, ciphertext, iv, created_at) VALUES (?, ?, 'acme', 'c', 'i', ?)").bind(`p-${tag}`, userId, NOW),
     env.DB.prepare("INSERT INTO user_tailored_resumes (id, user_id, posting_id, ciphertext, iv, created_at, updated_at) VALUES (?, ?, 'po', 'c', 'i', ?, ?)").bind(`t-${tag}`, userId, NOW, NOW),
+    env.DB.prepare("INSERT INTO user_notifications (id, user_id, kind, dedupe_key, ciphertext, iv, created_at) VALUES (?, ?, 'road_nudge', 'k', 'c', 'i', ?)").bind(`n-${tag}`, userId, NOW),
+    env.DB.prepare("INSERT INTO notification_settings (user_id, updated_at) VALUES (?, ?)").bind(userId, NOW),
+    env.DB.prepare("INSERT INTO notification_devices (token, user_id, platform, created_at, updated_at) VALUES (?, ?, 'ios', ?, ?)").bind(`tok-${tag}`, userId, NOW, NOW),
   ]);
 }
 

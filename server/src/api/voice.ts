@@ -7,6 +7,7 @@ import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
 import { startVoiceSession, UnknownCompany, UnknownPosting } from "../voice/session";
+import { notifyAfterWrite } from "../notifications/generate";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns } from "../voice/store";
 import { DIFFICULTIES, type Difficulty, VOICE_MODES, type VoiceMode } from "../voice/types";
 
@@ -99,6 +100,7 @@ export function voiceRouter() {
     const debrief = await finalReport(c.env, userId, session, turns);
     await finishSession(c.env, userId, session.id, debrief.overall);
     await saveReport(c.env, userId, session.id, debrief);
+    notifyAfterWrite(c.env, userId, (work) => c.executionCtx.waitUntil(work));
     return c.json(debrief);
   });
 

@@ -8,7 +8,7 @@ import { type Executor, postgresDatabase } from "../src/db/postgres";
 import type { Row } from "../src/db/types";
 
 // applied in order, exactly like Supabase applies its migrations folder
-const SCHEMA = ["2026110801_raven_schema.sql", "2026110802_raven_features.sql", "2026110803_user_postings.sql", "2026110804_voice_overall.sql", "2026110805_tailored_resumes.sql", "2026110807_voice_replay.sql", "2026110810_voice_draft.sql"].map((name) =>
+const SCHEMA = ["2026110801_raven_schema.sql", "2026110802_raven_features.sql", "2026110803_user_postings.sql", "2026110804_voice_overall.sql", "2026110805_tailored_resumes.sql", "2026110807_voice_replay.sql", "2026110810_voice_draft.sql", "2026110833_notifications.sql"].map((name) =>
   fileURLToPath(new URL(`../../supabase/migrations/${name}`, import.meta.url)),
 );
 

@@ -40,6 +40,12 @@ export function feedRouter(makeSources: (env: Env) => FeedSources) {
     return c.json(page);
   });
 
+  // one card by id, for a notification that points at it after the feed moved on
+  router.get("/items/:id", async (c) => {
+    const card = await findCard(c.env, c.var.sessionId, c.req.param("id"));
+    return card ? c.json(card) : c.json({ error: "that card isn't in your feed" }, 404);
+  });
+
   router.post("/items/:id", async (c) => {
     const action = actionFrom(await c.req.json().catch(() => null));
     if (action === null) return c.json({ error: `action must be one of ${FEED_ACTIONS.join(", ")}` }, 400);

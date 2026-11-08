@@ -103,6 +103,19 @@ describe("GET /api/feed?section=", () => {
   });
 });
 
+describe("GET /api/feed/items/:id", () => {
+  it("returns one of the caller's cards and nobody else's", async () => {
+    const { token } = await person(["Junior developer"]);
+    const { body } = await builtFeed(token);
+    const read = (t: string) => app.request(`/items/${encodeURIComponent(body.items[0].id)}`, { headers: { Authorization: `Bearer ${t}` } }, env, backgroundWork().ctx);
+    const res = await read(token);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as Item).id).toBe(body.items[0].id);
+    const stranger = await person(["Nurse"]);
+    expect((await read(stranger.token)).status).toBe(404);
+  });
+});
+
 describe("POST /api/feed/items/:id", () => {
   it("keeps saved cards in Saved, newest first, and marks them in the feed", async () => {
     const { token } = await person(["Junior developer"]);

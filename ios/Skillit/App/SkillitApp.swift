@@ -2,7 +2,11 @@ import SwiftUI
 
 @main
 struct SkillitApp: App {
-    @State private var model = AppModel(baseURL: AppConfiguration.apiBaseURL, authenticator: .fromInfoPlist())
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var delegate
+
+    private var model: AppModel {
+        delegate.model
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -15,6 +19,9 @@ struct SkillitApp: App {
             #else
                 app
             #endif
+        }
+        .backgroundTask(.appRefresh(NotificationRefresh.taskIdentifier)) { [model] in
+            await NotificationRefresh.run(for: model)
         }
     }
 

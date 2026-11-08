@@ -181,6 +181,14 @@ export const tailoredApi = {
 }
 
 /** { reply, needsAnswer, applied: [{ type, summary }] } */
+export const notificationsApi = {
+  /** { items, nextCursor, unread, quiet }; the first page also has the server look for anything new */
+  page: (cursor) => request('/api/notifications', { query: { cursor, tz: Intl.DateTimeFormat().resolvedOptions().timeZone } }),
+  /** { marked, unread } */
+  read: (ids) => post('/api/notifications/read', { ids }),
+  readAll: () => post('/api/notifications/read', { all: true }),
+}
+
 export const sendUpdate = (message, conversation) => post('/api/updates', { message, conversation })
 
 export const recapApi = {

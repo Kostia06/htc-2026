@@ -10,6 +10,7 @@ struct SettingsView: View {
         List {
             Section("Account") {
                 LabeledContent("Signed in as", value: app.authenticator.accountLabel)
+                NavigationLink { NotificationSettingsView() } label: { Label("Notifications", systemImage: "bell") }
             }
             .listRowBackground(Theme.raised)
             Section {
