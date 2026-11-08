@@ -21,7 +21,7 @@ struct RoadmapPath: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 20) {
-                    ProgressCard(goal: page.goal, progress: page.progress)
+                    ProgressCard(goal: page.goal, progress: trailProgress, fromResume: fromResume.count)
                         .padding(.horizontal, 20)
                     if !fromResume.isEmpty {
                         ResumeStepsCard(steps: fromResume) { selected = $0 }
@@ -68,7 +68,12 @@ struct RoadmapPath: View {
     private var trail: some View {
         LazyVStack(spacing: 0) {
             ForEach(stops.enumerated(), id: \.element.id) { index, step in
-                PathRow(width: width, sway: sway(index), previousSway: index == 0 ? nil : sway(index - 1)) {
+                PathRow(
+                    width: width,
+                    sway: sway(index),
+                    previousSway: index == 0 ? nil : sway(index - 1),
+                    nextSway: hasStop(after: index) ? sway(index + 1) : nil,
+                ) {
                     PathNode(step: step, state: state(of: step), meta: StopLabel.meta(for: step, state: state(of: step))) {
                         selected = step
                     }
@@ -115,6 +120,19 @@ struct RoadmapPath: View {
 
     private var stops: [RoadmapStep] {
         (showsAllDone ? done : Array(done.suffix(Self.recentDoneCount))) + page.next
+    }
+
+    /// The goal tile follows the last step once the whole road is loaded; a loading skeleton gets no trail.
+    private func hasStop(after index: Int) -> Bool {
+        index < stops.count - 1 || page.nextCursor == nil
+    }
+
+    /// The big count covers the trail only; resume steps sit in their own card and line.
+    private var trailProgress: RoadmapProgress {
+        var progress = page.progress
+        progress.done = max(0, progress.done - fromResume.count)
+        progress.total = max(progress.done, progress.total - fromResume.count)
+        return progress
     }
 
     private func state(of step: RoadmapStep) -> PathNode.State {
