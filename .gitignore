@@ -40,3 +40,4 @@ update-check/
 # Local planning notes, not part of the project
 docs/superpowers/
 .superpowers/
+.tts-cache/
