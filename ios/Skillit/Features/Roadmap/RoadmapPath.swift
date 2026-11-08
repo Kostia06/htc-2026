@@ -21,12 +21,8 @@ struct RoadmapPath: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 20) {
-                    ProgressCard(goal: page.goal, progress: trailProgress, fromResume: fromResume.count)
+                    ProgressCard(goal: page.goal, progress: page.progress)
                         .padding(.horizontal, 20)
-                    if !fromResume.isEmpty {
-                        ResumeStepsCard(steps: fromResume) { selected = $0 }
-                            .padding(.horizontal, 20)
-                    }
                     if done.count > Self.recentDoneCount {
                         Button(showsAllDone ? "Hide earlier steps" : "Show \(done.count - Self.recentDoneCount) earlier steps") {
                             withAnimation(.snappy) { showsAllDone.toggle() }
@@ -108,14 +104,9 @@ struct RoadmapPath: View {
         }
     }
 
-    /// Oldest finished step first, so the trail reads top to bottom as the journey so far.
+    /// Oldest finished step first, resume steps included, so the trail reads top to bottom as the journey so far.
     private var done: [RoadmapStep] {
-        page.completed.reversed().flatMap { $0.steps.reversed() }.filter { !$0.isFromResume }
-    }
-
-    /// What the resume already showed: one summary card instead of a long run of done tiles.
-    private var fromResume: [RoadmapStep] {
-        page.resumeSteps
+        page.doneSteps
     }
 
     private var stops: [RoadmapStep] {
@@ -125,11 +116,6 @@ struct RoadmapPath: View {
     /// The goal tile follows the last step once the whole road is loaded; a loading skeleton gets no trail.
     private func hasStop(after index: Int) -> Bool {
         index < stops.count - 1 || page.nextCursor == nil
-    }
-
-    /// The big count covers the trail only; resume steps sit in their own card and line. Profile shows the same.
-    private var trailProgress: RoadmapProgress {
-        page.trailProgress
     }
 
     private func state(of step: RoadmapStep) -> PathNode.State {

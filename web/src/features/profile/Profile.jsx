@@ -63,10 +63,9 @@ export default function Profile() {
 }
 
 function RoadProgress({ road }) {
-  // the Road's numbers and wording: the trail count, resume steps apart
+  // the Road's numbers and wording
   const parts = [
     `${road.done} of ${road.total} steps on your road`,
-    road.fromResume > 0 && `+${road.fromResume} from your resume`,
     road.streakDays > 1 && `${road.streakDays}-day streak`,
   ]
   return (

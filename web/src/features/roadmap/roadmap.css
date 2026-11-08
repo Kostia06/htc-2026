@@ -23,33 +23,6 @@
 .progress-card__streak {
   gap: 5px;
 }
-.progress-card__extras {
-  flex-wrap: wrap;
-  gap: 14px;
-}
-.resume-steps {
-  gap: 12px;
-  padding: 16px;
-}
-.resume-steps__head,
-.resume-steps__step {
-  gap: 12px;
-  width: 100%;
-  text-align: left;
-}
-.resume-steps__step {
-  gap: 10px;
-}
-.resume-steps__title {
-  flex: 1;
-  gap: 2px;
-}
-.resume-steps__chevron {
-  transition: transform 0.25s var(--spring);
-}
-.resume-steps__chevron.is-open {
-  transform: rotate(180deg);
-}
 .roadmap__earlier {
   align-self: center;
   color: var(--text-2);

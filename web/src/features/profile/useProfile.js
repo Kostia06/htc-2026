@@ -6,7 +6,6 @@ import { headsetApi, postingsApi, profileApi, roadmapApi, tailoredApi } from '..
 import { applyEdit } from './edits'
 import { weakestTailored } from './nextMove'
 import { useOnUpdatesApplied } from '../../lib/hooks'
-import { resumeSteps, trailProgress } from '../roadmap/page'
 
 /** Every edit shows at once and saves in the background; a refused save puts the server's copy back. */
 export function useProfileEdit() {
@@ -67,7 +66,7 @@ export function useProfileOverview() {
     roadmapApi
       .page()
       // the Road's own count, so both pages always agree
-      .then((page) => set({ road: { ...trailProgress(page), fromResume: resumeSteps(page).length } }))
+      .then((page) => set({ road: page.progress }))
       .catch(() => {})
     headsetApi
       .status()

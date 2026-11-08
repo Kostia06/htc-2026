@@ -19,7 +19,7 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         ProfileHeader(profile: app.profile) { headlineEditor.apply(.setHeadline($0), to: app) }
                         if let road = overview.road, road.total > 0 {
-                            RoadProgressLine(progress: road, fromResume: overview.roadFromResume)
+                            RoadProgressLine(progress: road)
                         }
                     }
                     if let move = overview.nextMove(for: app.profile) {

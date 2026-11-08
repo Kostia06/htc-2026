@@ -5,7 +5,6 @@ import SwiftUI
 struct ProgressCard: View {
     let goal: String
     let progress: RoadmapProgress
-    var fromResume = 0
     /// Bigger than largeTitle, like a balance on a finance app, but still scales with Dynamic Type.
     @ScaledMetric(relativeTo: .largeTitle) private var numberSize: CGFloat = 44
 
@@ -17,16 +16,8 @@ struct ProgressCard: View {
                 .lineLimit(2)
             count
             ThinProgressBar(fraction: fraction)
-            if progress.streakDays > 0 || fromResume > 0 {
-                HStack(spacing: 14) {
-                    if progress.streakDays > 0 { streak }
-                    if fromResume > 0 {
-                        Label("+\(fromResume) from your resume", systemImage: "doc.text")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                }
+            if progress.streakDays > 0 {
+                streak
             }
         }
         .skillitCard()

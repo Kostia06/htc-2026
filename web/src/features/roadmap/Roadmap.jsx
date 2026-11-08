@@ -8,8 +8,8 @@ import { weekday } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
-import { appendPage, completeStep, doneSteps, kindOf, replaceStep, restoreStep, resumeSteps, trailProgress } from './page'
-import { ProgressCard, ResumeStepsCard, RoadmapSkeleton } from './RoadmapCards'
+import { appendPage, completeStep, doneSteps, kindOf, replaceStep, restoreStep } from './page'
+import { ProgressCard, RoadmapSkeleton } from './RoadmapCards'
 import './roadmap.css'
 
 const RECENT_DONE = 3
@@ -100,7 +100,6 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
   const end = useRef(null)
 
   const done = doneSteps(page)
-  const fromResume = resumeSteps(page)
   const stops = [...(showAll ? done : done.slice(-RECENT_DONE)), ...page.next]
   const currentId = page.next[0]?.id
   const stateOf = (step) => (step.status === 'done' ? 'done' : step.id === currentId ? 'current' : 'upcoming')
@@ -132,8 +131,7 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
 
   return (
     <div className="roadmap__body">
-      <ProgressCard goal={page.goal} progress={trailProgress(page)} fromResume={fromResume.length} />
-      {fromResume.length > 0 && <ResumeStepsCard steps={fromResume} onOpen={onOpen} />}
+      <ProgressCard goal={page.goal} progress={page.progress} />
       {done.length > RECENT_DONE && (
         <button type="button" className="roadmap__earlier t-subhead semibold" onClick={() => setShowAll(!showAll)}>
           {showAll ? 'Hide earlier steps' : `Show ${done.length - RECENT_DONE} earlier steps`}

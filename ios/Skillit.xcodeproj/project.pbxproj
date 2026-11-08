@@ -74,7 +74,6 @@
 		5F4AA7F1BFE1769116103D5F /* ResumeEntryEditors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CEA9151B31D43CE284F5F76 /* ResumeEntryEditors.swift */; };
 		601100FB91A45E5B43BF66C9 /* HeadsetLinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06601A0C6D03EF5E851BCD8 /* HeadsetLinkModel.swift */; };
 		6030CC4132439AFC79620AD2 /* CompanyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD8BD6874744D23416D3ED /* CompanyModel.swift */; };
-		62D42D9E61A13005671638B0 /* ResumeStepsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF921EE04B21E09ED562FA3 /* ResumeStepsCard.swift */; };
 		6390C1B9A2DDEDC85019641F /* AskSkillitReplyCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7FE5FDA5FF4D7F00054DF2 /* AskSkillitReplyCard.swift */; };
 		644F0E1B4CDDEEEEBDF91FC4 /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D6210DE1BCBF0371A3B7F1 /* OnboardingFlow.swift */; };
 		64CB5DDFC6D6EAD6047599C2 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334CFB0374673E3BB22CBD4 /* SignInView.swift */; };
@@ -268,7 +267,6 @@
 		4A2236EA6E75F283F853E521 /* ProfileOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileOverviewModel.swift; sourceTree = "<group>"; };
 		4C1E4DFB75F5BF13385A9019 /* ReplayEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayEntryRow.swift; sourceTree = "<group>"; };
 		4E44C7ED4FB9596046C710A2 /* CrossroadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossroadsModel.swift; sourceTree = "<group>"; };
-		4EF921EE04B21E09ED562FA3 /* ResumeStepsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeStepsCard.swift; sourceTree = "<group>"; };
 		5014DD15876791163E67649A /* TailorMatchCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailorMatchCard.swift; sourceTree = "<group>"; };
 		55EFA915D10C331240F5AF79 /* ServiceLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLogo.swift; sourceTree = "<group>"; };
 		59298463A4E72F1509B09CD3 /* ExperienceForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceForm.swift; sourceTree = "<group>"; };
@@ -792,7 +790,6 @@
 				B087004AD788E345840EF333 /* PathNode.swift */,
 				2D529ED6BF3D2779B2247CC6 /* PathRow.swift */,
 				1E3472FD27F546BADD337787 /* ProgressCard.swift */,
-				4EF921EE04B21E09ED562FA3 /* ResumeStepsCard.swift */,
 				28489ACEB37CC128D77CEDEA /* RoadmapModel.swift */,
 				91BB0208DCF306E7696237F1 /* RoadmapPath.swift */,
 				32D64B43DC50023B60D98700 /* RoadmapService.swift */,
@@ -1012,7 +1009,6 @@
 				E8D0207E60E7923BDCC4847D /* ResumePreview.swift in Sources */,
 				CEA1DC44320C0F2E3C0F12A8 /* ResumeSectionEditor.swift in Sources */,
 				45617B901BE31E4E2193477A /* ResumeService.swift in Sources */,
-				62D42D9E61A13005671638B0 /* ResumeStepsCard.swift in Sources */,
 				719A21AB2851DE871467D752 /* ResumeView.swift in Sources */,
 				00DC6E7D80E48B5B7BEB734B /* ReviewInHeadsetButton.swift in Sources */,
 				B6D88E31619351BD8CC7D851 /* RoadItemCards.swift in Sources */,

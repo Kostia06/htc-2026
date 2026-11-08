@@ -23,22 +23,11 @@ export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-/** Steps the server copied from the resume as already done; older ones only carry the `why` line. */
-export const isFromResume = (step) => step.completedVia === 'resume' || step.why === 'From your resume'
+/** Steps the server copied from the resume as already done; older ones only carry the `why` line. They sit on the trail like any other done step but never count toward the streak. */
+const isFromResume = (step) => step.completedVia === 'resume' || step.why === 'From your resume'
 
-const finished = (page) => [...page.completed].reverse().flatMap((d) => [...d.steps].reverse())
-
-/** Oldest finished step first, so the trail reads top to bottom as the journey so far. Resume steps get their own card. */
-export const doneSteps = (page) => finished(page).filter((s) => !isFromResume(s))
-
-export const resumeSteps = (page) => finished(page).filter(isFromResume)
-
-/** The big count covers the trail only, like RoadmapPath.swift; resume steps sit in their own card. */
-export function trailProgress(page) {
-  const fromResume = resumeSteps(page).length
-  const done = Math.max(0, page.progress.done - fromResume)
-  return { ...page.progress, done, total: Math.max(done, page.progress.total - fromResume) }
-}
+/** Oldest finished step first, so the trail reads top to bottom as the journey so far, resume steps included. */
+export const doneSteps = (page) => [...page.completed].reverse().flatMap((d) => [...d.steps].reverse())
 
 // a day the person actually did something on; resume steps land on the day they were copied but are no streak
 const isActiveDay = (day) => day?.steps.some((s) => !isFromResume(s))
