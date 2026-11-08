@@ -1,0 +1,69 @@
+/* Raven's palette, ported from ios/Raven/DesignSystem/Theme.swift:
+   green-charcoal ground, muted sage for actions, warm sand for anything the agent is doing. */
+:root {
+  --action: #a8c7a3;
+  --on-action: #140d29;
+  --agent: #e3d1ad;
+  --ground: #0f1311;
+  --raised: #1c211d;
+  --hairline: rgb(217 235 217 / 0.09);
+
+  /* outcomes get their own colours so the accent only ever means "tap me" or "selected" */
+  --positive: #94dbe6;
+  --negative: #ff9e94;
+
+  /* neutral surfaces in the same family, darkest to lightest */
+  --inset: #242925;
+  --chip: #2b322d;
+  --secondary-button: #3b423c;
+
+  /* text, as iOS's primary / secondary / tertiary labels on a dark ground */
+  --text: #f4f6f4;
+  --text-2: rgb(235 240 235 / 0.6);
+  --text-3: rgb(235 240 235 / 0.3);
+
+  /* the grey fills iOS draws with Color(white:) */
+  --grey-18: #2e2e2e;
+  --grey-20: #333;
+  --grey-22: #383838;
+  --grey-24: #3d3d3d;
+  --grey-30: #4d4d4d;
+  --grey-55: #8c8c8c;
+
+  /* feed kind glyph tints */
+  --kind-job: #a8ccff;
+  --kind-event: #ffccad;
+  --kind-hackathon: #ffbadb;
+  --kind-course: #ffeba3;
+
+  /* glass: translucent versions of the surfaces */
+  --glass: rgb(28 33 29 / 0.55);
+  --glass-strong: rgb(24 29 26 / 0.78);
+  --glass-edge: rgb(230 245 230 / 0.12);
+  --glass-shine: rgb(255 255 255 / 0.07);
+  --glass-blur: blur(24px) saturate(160%);
+
+  /* iOS text styles at the default Dynamic Type size */
+  --large-title: 700 34px/41px var(--font);
+  --title: 700 28px/34px var(--font);
+  --title2: 700 22px/28px var(--font);
+  --title3: 600 20px/25px var(--font);
+  --headline: 600 17px/22px var(--font);
+  --body: 400 17px/22px var(--font);
+  --callout: 400 16px/21px var(--font);
+  --subhead: 400 15px/20px var(--font);
+  --footnote: 400 13px/18px var(--font);
+  --caption: 400 12px/16px var(--font);
+  --caption2: 400 11px/13px var(--font);
+
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-rounded: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --radius-card: 20px;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --sidebar: 248px;
+  --tabbar-space: 96px;
+}
