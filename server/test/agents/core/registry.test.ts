@@ -17,7 +17,7 @@ describe("agent registry", () => {
     expect(agents.map((a) => a.card.name)).toEqual(["resume", "research", "interview", "career"]);
     expect(allSkills().map((s) => s.name).sort()).toEqual([
       "career-snapshot", "interview-debrief", "interview-intel", "interview-prep", "networking-recap", "onboarding-prefill",
-      "profile-intake", "recommend-courses", "recommend-jobs", "recommend-research", "research-company",
+      "profile-intake", "recommend-courses", "recommend-jobs", "recommend-research", "research-company", "roadmap-unit",
     ]);
   });
 
