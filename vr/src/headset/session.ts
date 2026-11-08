@@ -5,7 +5,7 @@ export type HeadsetState =
   | { phase: "restoring"; session: HeadsetSession }
   | { phase: "signedOut" }
   | { phase: "signedIn"; session: HeadsetSession }
-  // the token ran out and Raven can't be reached to refresh it; the credential is kept for the retry
+  // the token ran out and Skillit can't be reached to refresh it; the credential is kept for the retry
   | { phase: "reconnecting"; session: HeadsetSession };
 
 export type RefreshOutcome = { kind: "refreshed"; session: HeadsetSession } | { kind: "rejected" } | { kind: "unreachable" };

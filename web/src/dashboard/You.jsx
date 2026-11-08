@@ -32,14 +32,14 @@ function Memory({ onGo }) {
 
   return (
     <section className="pg__side pg__card yu__knows" aria-labelledby="yu-knows">
-      <h2 id="yu-knows">What Raven knows</h2>
-      <p className="pg__muted">What Raven's agents learn from your profile and practice sessions, used to tailor your plan and questions. Stored encrypted, and you can delete anything.</p>
+      <h2 id="yu-knows">What Skillit knows</h2>
+      <p className="pg__muted">What Skillit's agents learn from your profile and practice sessions, used to tailor your plan and questions. Stored encrypted, and you can delete anything.</p>
       <Problem error={error} onRetry={load} />
       {items === null && !error && <p className="pg__label">Loading…</p>}
       {items?.length === 0 && (
         <div className="pg__card pg__card--dashed yu__empty">
           <span>Nothing yet.</span>
-          <p className="pg__muted">Practise an interview and Raven will note what to work on.</p>
+          <p className="pg__muted">Practise an interview and Skillit will note what to work on.</p>
           <button type="button" className="db__ghost" onClick={() => onGo('practice')}>Start a practice</button>
         </div>
       )}

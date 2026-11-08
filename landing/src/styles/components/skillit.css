@@ -1,4 +1,4 @@
-/* Raven: wordmark, product mock-ups and copy-length tweaks.
+/* Skillit: wordmark, product mock-ups and copy-length tweaks.
    Everything here is drawn with HTML/CSS so the page ships no third-party artwork. */
 
 /* --- wordmark ----------------------------------------------------------- */
@@ -1070,7 +1070,7 @@ h3.faq-question-label {
   cursor: default;
 }
 
-/* --- fit fixes for the longer Raven copy -------------------------------- */
+/* --- fit fixes for the longer Skillit copy -------------------------------- */
 .tag-text {
   white-space: nowrap;
 }

@@ -18,7 +18,7 @@ const LINKS = [
 const linkFor = (text = '') => LINKS.find(([re]) => re.test(text))
 
 function subline(total, left) {
-  if (!total) return 'Raven is reading your answers and lining up your first moves.'
+  if (!total) return 'Skillit is reading your answers and lining up your first moves.'
   if (left === 0) return `All ${count(total).toLowerCase()} done. Nice work. Refresh the plan when you're ready for more.`
   if (left === 1) return 'One move left. Small steps, each one built on the last.'
   return `${count(left)} moves left. Start at the top: each one builds on the last.`
@@ -91,7 +91,7 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
             {steps.length > 0 && <span>{steps.length - left} of {steps.length} done</span>}
           </div>
 
-          {busy && !output && <Thinking>Raven is reading your profile and building your plan…</Thinking>}
+          {busy && !output && <Thinking>Skillit is reading your profile and building your plan…</Thinking>}
           <Problem error={state.status === 'error' && state.error} onRetry={() => run()} />
 
           {steps.map((s, i) => {
@@ -145,7 +145,7 @@ export default function Plan({ userId, stamp, first, role, onGo }) {
             <section className="pl__panel">
               <span className="pl__label">All done</span>
               <h2>Every move is ticked off.</h2>
-              <p>Ask Raven for a fresh plan built on where you are now.</p>
+              <p>Ask Skillit for a fresh plan built on where you are now.</p>
               <button type="button" className="pl__btn pl__btn--primary" onClick={() => run()} disabled={busy}>{busy ? 'Building…' : 'Refresh my plan'}</button>
             </section>
           )}

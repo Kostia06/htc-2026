@@ -1,11 +1,11 @@
-# How Raven's practice conversations should sound
+# How Skillit's practice conversations should sound
 
 Used by the voice planner (`server/src/voice/`), the iOS voice engine and the VR scenes. Goal: feel like a real
 person across the table, not a quiz read aloud.
 
 ## Interview room
 
-Real interviews follow a predictable arc. Raven copies it, kept short (about 8–10 minutes):
+Real interviews follow a predictable arc. Skillit copies it, kept short (about 8–10 minutes):
 
 | Stage | What the interviewer does | Example line |
 |---|---|---|
@@ -18,7 +18,7 @@ Real interviews follow a predictable arc. Raven copies it, kept short (about 8�
 | Close | Next steps, thanks | "Great talking with you. We'll be in touch this week." |
 
 **Follow-ups are where it feels real.** Interviewers usually need 2–3 probes to get a full answer
-(Situation, Task, Action, Result). Raven asks at most one or two per question, and only when something is missing:
+(Situation, Task, Action, Result). Skillit asks at most one or two per question, and only when something is missing:
 
 - missing the *action* → "What did you do, specifically?"
 - missing the *result* → "How did it turn out?"

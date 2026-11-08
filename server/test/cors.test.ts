@@ -24,7 +24,7 @@ describe("cors", () => {
   });
 
   it("reads the allowed origins from ALLOWED_ORIGINS", async () => {
-    const bindings = { ...env, ALLOWED_ORIGINS: "https://raven.example, https://quest.example" };
+    const bindings = { ...env, ALLOWED_ORIGINS: "https://skillit.example, https://quest.example" };
     expect((await preflight("https://quest.example", bindings)).headers.get("Access-Control-Allow-Origin")).toBe("https://quest.example");
     expect((await preflight("http://localhost:5173", bindings)).headers.get("Access-Control-Allow-Origin")).toBeNull();
   });

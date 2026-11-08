@@ -87,11 +87,11 @@ function ResumeReview({ resume }) {
   const skills = draft.skills ?? []
   const work = [...(draft.experience ?? []).map((e) => [e.role, e.org]), ...(draft.education ?? []).map((e) => [e.program || 'Studies', e.school])]
   return (
-    <section className="ob__review" aria-label="What Raven read from your resume">
+    <section className="ob__review" aria-label="What Skillit read from your resume">
       {summary && <p className="ob__review-summary">{summary}</p>}
       {skills.length > 0 && (
         <div>
-          <h2 className="ob__review-h">Skills Raven found</h2>
+          <h2 className="ob__review-h">Skills Skillit found</h2>
           <ul className="ob__review-skills">
             {skills.map((s) => (
               <li key={s.name}>
@@ -101,7 +101,7 @@ function ResumeReview({ resume }) {
             ))}
           </ul>
           {droppedClaims > 0 && (
-            <p className="ob__review-note">Raven left out {droppedClaims} skill{droppedClaims === 1 ? '' : 's'} it couldn't point to in your resume.</p>
+            <p className="ob__review-note">Skillit left out {droppedClaims} skill{droppedClaims === 1 ? '' : 's'} it couldn't point to in your resume.</p>
           )}
         </div>
       )}

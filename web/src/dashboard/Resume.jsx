@@ -1,5 +1,5 @@
-// The resume builder: the resume Raven already has (saved, or laid out from the one uploaded at onboarding), an editor,
-// and the resume-coach skill's rewrites to accept or skip. It only asks for a file when Raven has nothing to start from.
+// The resume builder: the resume Skillit already has (saved, or laid out from the one uploaded at onboarding), an editor,
+// and the resume-coach skill's rewrites to accept or skip. It only asks for a file when Skillit has nothing to start from.
 import { useEffect, useRef, useState } from 'react'
 import { resume as resumeApi, toSlug } from '../lib/agent'
 import { RESUME_ACCEPT } from '../onboarding/store'
@@ -152,7 +152,7 @@ function Suggestions({ items, total, doc, onAccept, onSkip }) {
         <p className="rs__after"><WithBlanks text={current.after} /></p>
       </div>
       {current.why && <p className="rs__why">{current.why}</p>}
-      {stale && <p className="pg__label">This line has changed since Raven read it, so it can only be skipped.</p>}
+      {stale && <p className="pg__label">This line has changed since Skillit read it, so it can only be skipped.</p>}
       <div className="db__row">
         <button type="button" className="ob__next" disabled={stale} onClick={() => onAccept(current)}>Use this</button>
         <button type="button" className="db__ghost" onClick={() => onSkip(current)}>Keep mine</button>
@@ -190,7 +190,7 @@ function Editor({ doc, set }) {
           <Field label="Phone" value={doc.contact.phone} onChange={(v) => set('contact.phone', v)} type="tel" autoComplete="tel" />
           <Field label="Links (comma separated)" value={doc.contact.links.join(', ')} onChange={(v) => set('contact.links', splitList(v))} placeholder="linkedin.com/in/you, github.com/you" />
         </div>
-        <p className="rs__hint">Raven never sends your contact details to the AI.</p>
+        <p className="rs__hint">Skillit never sends your contact details to the AI.</p>
       </section>
 
       <section className="rs__group">
@@ -281,7 +281,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
     setCoachNote(null)
     setError(null)
     // anything already uploaded (at onboarding it went into the profile, which the server lays out as a resume) is used
-    // as is; a file is only asked for when Raven has nothing to start from
+    // as is; a file is only asked for when Skillit has nothing to start from
     const fromProfile = resume.experience.length > 0 || resume.projects.length > 0
     if (isSaved) setOrigin({ kind: 'saved' })
     else if (onboardingFile) setOrigin({ kind: 'onboarding', fileName: onboardingFile })
@@ -353,14 +353,14 @@ export default function ResumeBuilder({ answers, defaultRole }) {
     setCoachNote(null)
     if (!coachLines(doc, section).length) {
       setSuggestions([])
-      setCoachNote('Add a summary or a few points under experience or projects first. Those are the lines Raven rewrites.')
+      setCoachNote('Add a summary or a few points under experience or projects first. Those are the lines Skillit rewrites.')
       return
     }
     const slug = toSlug(company)
     const { suggestions: found } = await resumeApi.improve({ resume: doc, ...(section ? { section } : {}), ...(slug ? { company: slug } : {}) })
     setSuggestions(found)
     setFound(found.length)
-    if (!found.length) setCoachNote("Raven didn't find lines worth rewriting. Add more detail to your points, or try another section.")
+    if (!found.length) setCoachNote("Skillit didn't find lines worth rewriting. Add more detail to your points, or try another section.")
   })
 
   const pdf = act('pdf', async () => {
@@ -377,7 +377,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
   const head = (aside) => (
     <PageHead
       title="Sharper wording, nothing made up."
-      lead={`Raven only rewrites what your resume already says${defaultRole ? `, tuned for ${defaultRole} roles` : ''}. It never adds numbers or experience you didn't give it.`}
+      lead={`Skillit only rewrites what your resume already says${defaultRole ? `, tuned for ${defaultRole} roles` : ''}. It never adds numbers or experience you didn't give it.`}
     >
       {aside}
     </PageHead>
@@ -398,8 +398,8 @@ export default function ResumeBuilder({ answers, defaultRole }) {
         {head()}
         <div className="pg__card pg__card--dashed rs__start">
           <h2>Start with the resume you have</h2>
-          <p className="pg__muted">Upload it and Raven lays it out here, then suggests sharper wording line by line.</p>
-          {busy === 'reading' ? <Thinking>Raven is reading your resume…</Thinking> : <FilePicker busy={!!busy} onFile={read} />}
+          <p className="pg__muted">Upload it and Skillit lays it out here, then suggests sharper wording line by line.</p>
+          {busy === 'reading' ? <Thinking>Skillit is reading your resume…</Thinking> : <FilePicker busy={!!busy} onFile={read} />}
           <Problem error={error} />
           <button type="button" className="db__link db__start" onClick={() => (setOrigin({ kind: 'profile' }), setPhase('ready'))}>No resume yet? Start from your profile</button>
         </div>
@@ -428,7 +428,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
         <div className="rs__note">
           <p>
             Read from <strong>{origin.fileName}</strong>. Check it, then save. Nothing is kept until you do.
-            {origin.droppedClaims > 0 && ` Raven left out ${origin.droppedClaims} skill${origin.droppedClaims === 1 ? '' : 's'} it couldn't point to in the file.`}
+            {origin.droppedClaims > 0 && ` Skillit left out ${origin.droppedClaims} skill${origin.droppedClaims === 1 ? '' : 's'} it couldn't point to in the file.`}
           </p>
           {origin.replaced && <button type="button" className="db__link" onClick={reload}>Go back to my saved resume</button>}
         </div>
@@ -445,7 +445,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
       <div className="pg__grid">
         <section className="pg__main pg__card rs__doc" aria-label="Your resume">
           {busy === 'reading' ? (
-            <Thinking>Raven is reading your resume…</Thinking>
+            <Thinking>Skillit is reading your resume…</Thinking>
           ) : (
             <fieldset className="rs__editor" disabled={busy === 'saving' || busy === 'pdf'}>
               <Editor doc={doc} set={set} />
@@ -472,7 +472,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
           </div>
 
           <Suggestions items={suggestions} total={found} doc={doc} onAccept={accept} onSkip={skip} />
-          {busy === 'improving' && <Thinking>Raven is rewriting your lines…</Thinking>}
+          {busy === 'improving' && <Thinking>Skillit is rewriting your lines…</Thinking>}
           {coachNote && <p className="pg__muted rs__aside-note">{coachNote}</p>}
           {blanks > 0 && (
             <p className="rs__warn">
@@ -481,7 +481,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
           )}
           <Problem error={error} />
 
-          <section className="pg__card" aria-label="Improve with Raven">
+          <section className="pg__card" aria-label="Improve with Skillit">
             <span className="pg__label">
               Rewrites your summary and points to be specific and results-focused. It works on what's on screen, saved or not.
             </span>
@@ -493,7 +493,7 @@ export default function ResumeBuilder({ answers, defaultRole }) {
             </label>
             <Field label="Applying to (optional)" value={company} onChange={setCompany} placeholder="e.g. ATB Financial" maxLength={100} />
             <button type="button" className={suggestions.length ? 'db__ghost' : 'ob__next'} onClick={improve} disabled={working}>
-              {busy === 'improving' ? 'Raven is reading your resume…' : suggestions.length ? 'Ask for new suggestions' : 'Improve with Raven'}
+              {busy === 'improving' ? 'Skillit is reading your resume…' : suggestions.length ? 'Ask for new suggestions' : 'Improve with Skillit'}
             </button>
           </section>
         </aside>

@@ -1,4 +1,4 @@
-// What the A2A layer needs from Raven's agents; the orchestrator implements it at mount time.
+// What the A2A layer needs from Skillit's agents; the orchestrator implements it at mount time.
 export type AgentSkillCard = {
   id: string;
   name: string;

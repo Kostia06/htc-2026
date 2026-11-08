@@ -31,13 +31,13 @@ export function HeadsetShell({ session, onSignOut }: { session: HeadsetSession; 
   );
 }
 
-/** Shown while a stored session is being refreshed, or while Raven can't be reached to refresh an expired one. */
+/** Shown while a stored session is being refreshed, or while Skillit can't be reached to refresh an expired one. */
 export function RestoringScreen({ state }: { state: Extract<HeadsetState, { phase: "restoring" | "reconnecting" }> }) {
   return (
     <main className="screen centered">
-      <p className="wordmark">Raven</p>
+      <p className="wordmark">Skillit</p>
       <h1>{state.phase === "restoring" ? "Signing you in" : "Reconnecting"}</h1>
-      <p className="lead">{state.phase === "restoring" ? "One moment" : "Raven isn't answering. Trying again shortly."}</p>
+      <p className="lead">{state.phase === "restoring" ? "One moment" : "Skillit isn't answering. Trying again shortly."}</p>
     </main>
   );
 }

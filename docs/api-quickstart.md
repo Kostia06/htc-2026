@@ -1,4 +1,4 @@
-# Raven API — quick start for teammates
+# Skillit API — quick start for teammates
 
 Live server: `https://htc-mentor.ilnkostia-dev.workers.dev` (deployed from `main`).
 Browsers may call it from `http://localhost:5173` and `https://raven-vr.ilnkostia-dev.workers.dev`; ask in chat to add another origin.

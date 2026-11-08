@@ -19,7 +19,7 @@ export function slugify(name: string) {
     .replace(/-+/g, "-");
 }
 
-// the company becomes one Raven researches, shared by everyone; a name that slugs to nothing stays a plain string
+// the company becomes one Skillit researches, shared by everyone; a name that slugs to nothing stays a plain string
 export async function ensureCompany(env: Env, name: string): Promise<{ slug: string; name: string } | null> {
   const slug = slugify(name).slice(0, 100);
   if (!slug) return null;

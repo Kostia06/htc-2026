@@ -51,7 +51,7 @@ describe("markRequirements", () => {
 });
 
 describe("slugify", () => {
-  it("makes the same slug Raven's companies use", () => {
+  it("makes the same slug Skillit's companies use", () => {
     expect(slugify("Acme Analytics")).toBe("acme-analytics");
     expect(slugify("  ATB Financial, Inc. ")).toBe("atb-financial-inc");
     expect(slugify("Société Générale")).toBe("societe-generale");

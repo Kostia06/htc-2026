@@ -85,7 +85,7 @@ export function recapRouter(makeDeps: MakeDeps) {
 
 function recapError(c: Context<AppContext>, e: unknown) {
   if (e instanceof RunRejected) return c.json({ error: e.message }, e.status);
-  if (e instanceof RecapFailed) return c.json({ error: "Raven couldn't follow that one. Try saying it another way." }, 502);
+  if (e instanceof RecapFailed) return c.json({ error: "Skillit couldn't follow that one. Try saying it another way." }, 502);
   throw e;
 }
 

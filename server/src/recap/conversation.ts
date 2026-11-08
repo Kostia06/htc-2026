@@ -5,9 +5,9 @@ const MAX_TEXT = 4000;
 const MAX_TRANSCRIPT_LINES = 120;
 
 const ROLES = new Set(["user", "raven"]);
-// the voice transcript names speakers the way the practice sessions do; the app's chat uses user/raven
+// the voice transcript names speakers the way the practice sessions do; the app's chat uses user/raven (the wire role for Skillit's lines)
 const USER_SPEAKERS = new Set(["user", "candidate", "person"]);
-const RAVEN_SPEAKERS = new Set(["raven", "interviewer", "agent"]);
+const SKILLIT_SPEAKERS = new Set(["raven", "interviewer", "agent"]);
 
 const isText = (value: unknown, max: number): value is string => typeof value === "string" && value.length <= max;
 
@@ -27,13 +27,13 @@ export function parseTranscript(value: unknown): RecapMessage[] | null {
     const speaker = typeof line?.speaker === "string" ? line.speaker.toLowerCase() : "";
     if (!isText(line?.text, MAX_TEXT)) return null;
     if (USER_SPEAKERS.has(speaker)) messages.push({ role: "user", text: line.text });
-    else if (RAVEN_SPEAKERS.has(speaker)) messages.push({ role: "raven", text: line.text });
+    else if (SKILLIT_SPEAKERS.has(speaker)) messages.push({ role: "raven", text: line.text });
     else return null;
   }
   return messages;
 }
 
-/** Raven's lines after the person first spoke are the clarifying questions already asked; the opening line is free. */
+/** Skillit's lines after the person first spoke are the clarifying questions already asked; the opening line is free. */
 export function clarifyingQuestionsLeft(messages: RecapMessage[]) {
   const firstUser = messages.findIndex((m) => m.role === "user");
   if (firstUser < 0) return MAX_CLARIFYING_TURNS;
