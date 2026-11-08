@@ -49,6 +49,7 @@ const Privacy = named(settings, 'Privacy')
 const memory = () => import('../features/settings/Memory')
 const Memory = named(memory, 'Memory')
 const ShareMemory = named(memory, 'ShareMemory')
+const Crossroads = lazy(() => import('../features/crossroads/Crossroads'))
 
 const HOME = '/roadmap'
 
@@ -153,6 +154,8 @@ export default function App() {
             <Route path="practice/history" element={<History />} />
             <Route path="practice/history/:id" element={<SessionDetail />} />
             <Route path="practice/vr" element={<PairHeadset />} />
+
+            <Route path="crossroads" element={<Crossroads />} />
 
             <Route path="companies" element={<CompaniesList />} />
             <Route path="companies/:slug" element={<CompanyView />}>

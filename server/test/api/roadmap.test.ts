@@ -67,20 +67,23 @@ describe("GET /api/roadmap", () => {
     expect(Date.now() - started).toBeLessThan(300);
     expect(status).toBe(200);
     expect(page.goal).toBe("Junior data analyst");
-    expect(page.progress).toEqual({ done: 0, total: FIRST_BATCH, streakDays: 0 });
+    // the template batch plus the one Crossroads step every road gets, at the top
+    expect(page.progress).toEqual({ done: 0, total: FIRST_BATCH + 1, streakDays: 0 });
     expect(page.completed).toEqual([]);
     expect(page.next).toHaveLength(PAGE_STEPS);
     expect(page.nextCursor).toBe(String(PAGE_STEPS));
     expect(page.next.every((s) => s.source === "template" && s.status === "todo")).toBe(true);
-    expect(page.next[0].title).toContain("SQL");
+    expect(page.next[0]).toMatchObject({ kind: "explore_memory", action: { type: "crossroads" } });
+    expect(page.next[1].title).toContain("SQL");
 
     await settle();
     const refined = await get(user);
     expect(refined.page.next.map((s) => s.id)).toEqual(page.next.map((s) => s.id));
-    expect(refined.page.next[0]).toMatchObject({ source: "agent", title: "Personal step 0", kind: "interview_practice", label: "ready_now" });
-    expect(refined.page.next[0].action).toEqual({ type: "interview", role: "Junior data analyst" });
-    expect(refined.page.next[1]).toMatchObject({ source: "agent", label: "stretch" });
-    expect(refined.page.next[1].action).toBeUndefined();
+    expect(refined.page.next[0]).toEqual(page.next[0]);
+    expect(refined.page.next[1]).toMatchObject({ source: "agent", title: "Personal step 0", kind: "interview_practice", label: "ready_now" });
+    expect(refined.page.next[1].action).toEqual({ type: "interview", role: "Junior data analyst" });
+    expect(refined.page.next[2]).toMatchObject({ source: "agent", label: "stretch" });
+    expect(refined.page.next[2].action).toBeUndefined();
   });
 
   it("stays instant and keeps the templates when the model hangs", async () => {

@@ -141,6 +141,15 @@ export const memoriesApi = {
   share: (id, companySlug, role) => post(`/api/me/memories/${id}/share`, { companySlug, role }),
 }
 
+/** Crossroads: the person's own notes next to everyone on their road (counts only from 3+ people, examples flagged) */
+export const crossroadsApi = {
+  load: () => request('/api/crossroads'),
+  /** { reply, needsAnswer, cites: [{ type, id }] }; conversation is [{ speaker: 'user' | 'raven', text }] */
+  ask: (message, conversation) => post('/api/crossroads/ask', { message, conversation }, { timeout: 30000 }),
+  /** { meToo, line }; line stays null while fewer than three people stand behind a real one */
+  meToo: (id, on) => request(`/api/crossroads/lines/${id}/me-too`, { method: on ? 'POST' : 'DELETE' }),
+}
+
 export const resumeApi = {
   /** { resume, saved } */
   load: () => request('/api/resume'),

@@ -66,6 +66,9 @@ struct StepDetailSheet: View {
         if !step.estimate.isEmpty {
             facts.append(.init(label: "Time", value: step.estimate))
         }
+        if let travelled = step.travelled {
+            facts.append(.init(label: "Taken by", value: "\(travelled.people) who reached \(travelled.reached)", tint: Theme.positive))
+        }
         return facts
     }
 
@@ -79,7 +82,10 @@ struct StepDetailSheet: View {
     }
 
     @ViewBuilder private var actions: some View {
-        if let action = step.action {
+        if step.action?.type == .crossroads {
+            Button("Open Crossroads", action: onPractice)
+                .buttonStyle(.raised)
+        } else if let action = step.action {
             StartPracticeButton(companySlug: action.companySlug, role: action.role, stepID: step.id, onPhone: onPractice)
         } else {
             Button("Mark done", action: onMarkDone)

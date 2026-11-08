@@ -61,7 +61,9 @@ export function StepSheet() {
       onClose={close}
       label={step.title}
       footer={
-        isDone ? null : step.action ? (
+        isDone ? null : step.action?.type === 'crossroads' ? (
+          <RaisedButton onClick={() => navigate('/crossroads')}>Open Crossroads</RaisedButton>
+        ) : step.action ? (
           <StartPracticeButton companySlug={step.action.companySlug} role={step.action.role} stepId={step.id} onLive={live} />
         ) : (
           <RaisedButton onClick={() => navigate(`/roadmap/step/${step.id}/done`, { replace: true })}>Mark done</RaisedButton>

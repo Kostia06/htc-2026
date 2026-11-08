@@ -1,5 +1,5 @@
 // RoadmapPage+Progress.swift: the page edits the screen makes before the server answers.
-import { Award, Book, Calendar, Hammer, Heart, Mic, Send, Users } from 'lucide-react'
+import { Award, Book, Calendar, Hammer, Heart, Mic, Send, Signpost, Users } from 'lucide-react'
 
 export const KINDS = {
   project: { icon: Hammer, name: 'Project' },
@@ -10,6 +10,7 @@ export const KINDS = {
   application: { icon: Send, name: 'Application' },
   interview_practice: { icon: Mic, name: 'Interview practice' },
   networking_practice: { icon: Users, name: 'Networking' },
+  explore_memory: { icon: Signpost, name: 'Crossroads' },
 }
 // a kind added on the server later still shows, as a generic project step
 export const kindOf = (step) => KINDS[step.kind] ?? KINDS.project
