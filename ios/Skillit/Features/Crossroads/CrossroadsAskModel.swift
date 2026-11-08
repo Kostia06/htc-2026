@@ -6,7 +6,7 @@ import SkillitKit
 /// their road. Each answer hands its cites to `onCites` so the screen can light up what it leaned on.
 @Observable
 final class CrossroadsAskModel: ChatDraftModel {
-    static let placeholder = "Ask anything about your road"
+    static let placeholder = "Ask about your road"
 
     private(set) var reply: String?
     private(set) var isThinking = false
