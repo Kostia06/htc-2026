@@ -2,7 +2,7 @@ import SkillitKit
 import SwiftUI
 
 /// "Tell Skillit how it went": a chat sheet where the person talks about a real interview, typed or spoken, and Skillit
-/// pulls out the company, role, round and questions, asking at most two short questions. Present it as a sheet.
+/// pulls out the company, role, round and questions, asking back only when something essential is missing. Present it as a sheet.
 ///
 /// Entry points are the parent's: the company page, the roadmap step after a real interview, and the Practice tab.
 public struct RecapView: View {
@@ -41,13 +41,12 @@ public struct RecapView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark") {
-                        model?.stopVoice()
-                        dismiss()
-                    }
+                    Button("Close", systemImage: "xmark") { dismiss() }
                 }
             }
         }
+        // a swipe down closes the sheet too, so the voice call is ended here rather than in the Close button
+        .onDisappear { model?.stopVoice() }
         .task {
             guard model == nil else { return }
             // screenshots and previews run without a signed-in client; they get the offline recap instead of the server
@@ -66,36 +65,46 @@ private struct RecapConversation: View {
     var isTyping: FocusState<Bool>.Binding
     let onDone: () -> Void
 
+    private var hasStarted: Bool {
+        model.messages.count > 1 || model.isThinking || model.isListening
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(model.messages) { message in
-                    RecapBubble(message: message)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-                if model.isThinking {
-                    TypingIndicator()
-                        .transition(.opacity)
-                }
-                if let result = model.result {
-                    RecapSharedCard(reply: result)
-                        .padding(.top, 12)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
+        ChatScrollView(hasStarted: hasStarted) {
+            ChatIntro(
+                symbol: "text.bubble",
+                title: "How did it go?",
+                message: "Tell me like you'd tell a friend: where it was, which round, what they asked. "
+                    + "Type it, or tap the mic and just talk.",
+                starters: ["It was the technical round at", "They asked me about", "I think it went well because"],
+                onStarter: { starter in
+                    model.draft = starter + " "
+                    isTyping.wrappedValue = true
+                },
+            )
+        } lines: {
+            ForEach(model.messages) { message in
+                RecapBubble(message: message)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .animation(.spring(duration: 0.4), value: model.messages)
-            .animation(.spring(duration: 0.4), value: model.isThinking)
-            .animation(.spring(duration: 0.4), value: model.result)
+            if model.isThinking {
+                TypingIndicator()
+                    .transition(.opacity)
+            }
+            if let result = model.result {
+                RecapSharedCard(reply: result)
+                    .padding(.top, 12)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
-        .defaultScrollAnchor(.bottom)
-        .scrollDismissesKeyboard(.interactively)
+        .animation(.spring(duration: 0.4), value: model.messages)
+        .animation(.spring(duration: 0.4), value: model.isThinking)
+        .animation(.spring(duration: 0.4), value: model.result)
         .safeAreaInset(edge: .bottom) {
             if model.isFinished {
                 doneButton
             } else {
-                composer
+                ChatComposerBar(model: model, placeholder: "Tell me how it went", error: model.error, isFocused: isTyping)
             }
         }
     }
@@ -103,72 +112,13 @@ private struct RecapConversation: View {
     private var doneButton: some View {
         Button(action: onDone) {
             Text("Done")
+                .foregroundStyle(Theme.onAction)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
         }
         .buttonStyle(.glassProminent)
         .controlSize(.large)
+        .tint(Theme.action)
         .padding(20)
-    }
-
-    private var composer: some View {
-        VStack(spacing: 10) {
-            if let error = model.error {
-                Text(error)
-                    .font(.footnote)
-                    .foregroundStyle(Theme.action)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            HStack(alignment: .bottom, spacing: 10) {
-                micButton
-                TextField(model.isListening ? "Listening…" : "Type it, or tap the mic", text: $model.draft, axis: .vertical)
-                    .lineLimit(1 ... 4)
-                    .focused(isTyping)
-                    .disabled(model.isListening)
-                    .submitLabel(.send)
-                    .onSubmit { Task { await model.sendDraft() } }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .background(Theme.raised, in: .rect(cornerRadius: 24))
-                    .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(Theme.hairline))
-                Button {
-                    Task { await model.sendDraft() }
-                } label: {
-                    Image(systemName: "arrow.up")
-                        .font(.body.weight(.bold))
-                        .frame(width: 48, height: 48)
-                }
-                .buttonStyle(.glassProminent)
-                .buttonBorderShape(.circle)
-                .tint(Theme.action)
-                .disabled(!model.canSend)
-                .accessibilityLabel("Send")
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.bar)
-    }
-
-    private var micButton: some View {
-        Button {
-            if model.isListening {
-                model.stopVoice()
-            } else {
-                isTyping.wrappedValue = false
-                model.startVoice()
-            }
-        } label: {
-            Image(systemName: model.isListening ? "stop.fill" : "mic.fill")
-                .font(.title3.weight(.semibold))
-                .frame(width: 56, height: 56)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .buttonStyle(.glassProminent)
-        .buttonBorderShape(.circle)
-        .tint(Theme.agent)
-        .disabled(model.isThinking)
-        .symbolEffect(.pulse, isActive: model.isListening)
-        .accessibilityLabel(model.isListening ? "Stop listening" : "Tell Skillit by voice")
     }
 }

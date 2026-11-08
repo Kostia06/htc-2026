@@ -1,7 +1,7 @@
 import SkillitKit
 import SwiftUI
 
-/// One chat line: Skillit on the left in a raised card, the person on the right in orange.
+/// One chat line: Skillit on the left in a raised card, the person on the right in sage.
 struct RecapBubble: View {
     let message: RecapModel.Message
 
@@ -35,7 +35,7 @@ struct RecapBubble: View {
     }
 }
 
-/// Three purple dots that breathe while Skillit reads what was said. Holds still with Reduce Motion.
+/// Three sand dots that breathe while Skillit reads what was said. Holds still with Reduce Motion.
 struct TypingIndicator: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
