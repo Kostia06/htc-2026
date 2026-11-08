@@ -1,0 +1,93 @@
+.career {
+  gap: 16px;
+  margin: 22px 0 4px;
+}
+
+.career__intro { display: grid; gap: 5px; }
+.career__intro h2 { align-items: center; gap: 7px; }
+.career__form { display: grid; gap: 13px; }
+.career__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.career__field { display: grid; gap: 6px; min-width: 0; color: var(--text-2); font: var(--caption); }
+.career__field input:not([type="checkbox"]),
+.career__field select {
+  width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 11px;
+  border: 1px solid var(--hairline); border-radius: 10px; background: var(--inset);
+  color: var(--text); font: var(--body); outline: none;
+}
+.career__field input:focus-visible,
+.career__field select:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.career__language-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.career__language { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid var(--hairline); border-radius: 999px; color: var(--text-2); background: var(--inset); cursor: pointer; font: var(--caption); }
+.career__language.is-selected { border-color: var(--agent); color: var(--text); }
+.career__language input { margin: 0; accent-color: var(--agent); }
+.career__submit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.career__resume-status { display: inline-flex; align-items: center; gap: 6px; color: var(--text-3); font: var(--caption); }
+.career__results { display: grid; gap: 15px; padding-top: 4px; }
+.career__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.career__stat { display: grid; gap: 3px; padding: 10px; border-radius: 12px; background: var(--inset); min-width: 0; }
+.career__stat strong { font: var(--title3); color: var(--text); }
+.career__stat span { font: var(--caption); color: var(--text-3); }
+.career__section { display: grid; gap: 12px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.career__section-title { display: flex; align-items: flex-start; gap: 9px; color: var(--agent); }
+.career__section-title > div { display: grid; gap: 2px; min-width: 0; }
+.career__section-title h3 { margin: 0; color: var(--text); font: var(--subhead); }
+.career__section-title p { margin: 0; color: var(--text-3); font: var(--caption); }
+.career__skills { display: grid; gap: 11px; }
+.career__skill { display: grid; gap: 4px; }
+.career__skill-head { display: flex; justify-content: space-between; gap: 10px; font: var(--footnote); }
+.career__skill-head span { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.career__track { height: 6px; overflow: hidden; border-radius: 99px; background: var(--inset); }
+.career__track span { display: block; height: 100%; border-radius: inherit; background: var(--agent); }
+.career__skill small, .career__source small, .career__repo small { color: var(--text-3); font: var(--caption); }
+.career__details summary { color: var(--text-2); cursor: pointer; font: var(--footnote); }
+.career__source-list, .career__evidence-list, .career__project-list { display: grid; gap: 9px; }
+.career__source, .career__repo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hairline); }
+.career__source > div, .career__repo > div { display: grid; gap: 3px; min-width: 0; }
+.career__source strong, .career__repo strong { font: var(--footnote); color: var(--text); overflow-wrap: anywhere; }
+.career__source a, .career__repo a { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; color: var(--action); font: var(--caption); text-decoration: none; }
+.career__evidence, .career__project { display: grid; gap: 7px; padding: 11px; border-radius: 12px; background: var(--inset); }
+.career__evidence-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.career__evidence-head strong { font: var(--footnote); }
+.career__evidence p, .career__project p, .career__draft p { margin: 0; color: var(--text-2); font: var(--footnote); }
+.career__status { padding: 4px 7px; border-radius: 999px; background: var(--raised); color: var(--text-2); font: var(--caption); white-space: nowrap; }
+.career__status--demonstrated { color: var(--positive, var(--text)); }
+.career__status--partially_demonstrated { color: var(--action); }
+.career__status--not_evidenced { color: var(--text-3); }
+.career__quotes, .career__callout ul, .career__warning ul, .career__draft ul { margin: 0; padding-left: 18px; color: var(--text-2); font: var(--caption); }
+.career__action { color: var(--text-2); font: var(--caption); }
+.career__callout, .career__warning { display: grid; gap: 5px; padding: 10px 11px; border-radius: 10px; background: var(--inset); color: var(--text-2); font: var(--caption); }
+.career__warning { border: 1px solid rgb(200 150 70 / 0.45); }
+.career__error, .career__error-inline { margin: 0; color: var(--negative, #b45353); font: var(--footnote); }
+.career__loading { margin: 0; color: var(--text-2); font: var(--footnote); }
+.career__empty, .career__footnote { margin: 0; color: var(--text-3); font: var(--caption); }
+.career__project-kicker { color: var(--text-3); font: var(--caption); letter-spacing: .05em; }
+.career__project h4, .career__repositories h4 { margin: 0; color: var(--text); font: var(--subhead); }
+.career__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.career__tags span { padding: 4px 7px; border-radius: 999px; background: var(--raised); color: var(--text-2); font: var(--caption); }
+.career__list-block { display: grid; gap: 4px; color: var(--text-2); font: var(--caption); }
+.career__list-block ul, .career__list-block ol { margin: 0; padding-left: 18px; }
+.career__repositories { display: grid; gap: 6px; }
+.career__repositories > p { margin: 0; color: var(--text-3); font: var(--caption); }
+.career__draft { display: grid; gap: 12px; padding: 13px; border-radius: 12px; background: var(--inset); }
+.career__draft > div { display: grid; gap: 5px; }
+.career__draft h4 { margin: 0; color: var(--text); font: var(--footnote); }
+.career__draft article { display: grid; gap: 4px; margin-top: 7px; }
+.career__draft article > strong { color: var(--text); font: var(--footnote); }
+.career__draft article > small { color: var(--text-3); font: var(--caption); }
+.career__proof { display: block; margin-top: 3px; color: var(--text-3); font: var(--caption); }
+.career__apply-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.career__apply-row > span { color: var(--text-3); font: var(--caption); }
+@media (max-width: 620px) {
+  .career__fields { grid-template-columns: minmax(0, 1fr); }
+  .career__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .career__submit-row { align-items: stretch; }
+}
+.career__headline { margin: 0; color: var(--text-2); font: var(--footnote); }
+.career__profile-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.career__profile-grid > div { display: grid; gap: 5px; min-width: 0; }
+.career__profile-grid strong { color: var(--text); font: var(--caption); }
+.career__profile-grid ul { margin: 0; padding-left: 16px; color: var(--text-2); font: var(--caption); overflow-wrap: anywhere; }
+@media (max-width: 620px) {
+  .career__profile-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.career__footnote a { color: var(--action); text-decoration: none; }

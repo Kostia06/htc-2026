@@ -123,12 +123,39 @@ export const memoriesApi = {
 export const resumeApi = {
   /** { resume, saved } */
   load: () => request('/api/resume'),
-  save: (resume) => request('/api/resume', { method: 'PUT', body: resume }).then((r) => r.resume),
-  /** coach rewrites for `resume` as it is on screen (saved or not), optionally one section and tuned to a company */
+
+  save: (resume) =>
+      request('/api/resume', { method: 'PUT', body: resume }).then((r) => r.resume),
+
   improve: ({ resume, section, company } = {}) =>
-    post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
-  /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
+      post('/api/resume/improve', {
+        resume,
+        section: section || undefined,
+        company: company || undefined,
+      }).then((r) => r.suggestions ?? []),
+
+  /** Full AI career and resume analysis */
+  analyze: ({
+              targetRole,
+              location,
+              resumeText,
+              preferredLanguages = [],
+              timeBudgetHours = 25,
+            } = {}) =>
+      post(
+          '/api/resume/analyze',
+          {
+            targetRole,
+            location,
+            resumeText,
+            preferredLanguages,
+            timeBudgetHours,
+          },
+          { timeout: 120000 },
+      ),
+
   upload: (file) => upload('/api/resume/upload', file),
+
   pdf: async () => {
     const res = await send('/api/resume/pdf')
     if (res.status === 401) {

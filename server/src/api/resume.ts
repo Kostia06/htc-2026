@@ -11,6 +11,7 @@ import { parseResume, seedFromProfile } from "../resume/parse";
 import { renderResumePDF } from "../resume/pdf";
 import { loadResume, putResume } from "../resume/store";
 import { RESUME_SECTIONS, type ResumeSection } from "../resume/types";
+import { buildResumeIntelligence } from "../agents/tools/resume-builder";
 
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 
@@ -78,6 +79,79 @@ export function resumeRouter(makeDeps: MakeDeps) {
       "Content-Disposition": 'attachment; filename="Resume.pdf"',
       "X-Resume-Truncated": truncated ? "1" : "0",
     });
+  });
+
+  // AI-powered career and resume analysis
+  router.post("/analyze", async (c) => {
+    const body = await c.req.json<{
+      targetRole?: unknown;
+      location?: unknown;
+      resumeText?: unknown;
+      preferredLanguages?: unknown;
+      timeBudgetHours?: unknown;
+    }>().catch(() => null);
+
+    const targetRole =
+        typeof body?.targetRole === "string"
+            ? body.targetRole.trim().slice(0, 120)
+            : "";
+
+    const location =
+        typeof body?.location === "string"
+            ? body.location.trim().slice(0, 100)
+            : "";
+
+    const resumeText =
+        typeof body?.resumeText === "string"
+            ? body.resumeText.trim().slice(0, 30000)
+            : "";
+
+    const preferredLanguages = Array.isArray(body?.preferredLanguages)
+        ? body.preferredLanguages
+            .filter((v): v is string => typeof v === "string")
+            .map((v) => v.trim())
+            .filter(Boolean)
+            .slice(0, 10)
+        : [];
+
+    const allowedHours = [10, 25, 50, 100];
+
+    const timeBudgetHours =
+        typeof body?.timeBudgetHours === "number" &&
+        allowedHours.includes(body.timeBudgetHours)
+            ? body.timeBudgetHours
+            : 25;
+
+    if (!targetRole || !location || !resumeText) {
+      return c.json(
+          { error: "targetRole, location and resumeText are required" },
+          400
+      );
+    }
+
+    try {
+      const data = await buildResumeIntelligence(c.env, {
+        targetRole,
+        location,
+        resumeText,
+        preferredLanguages,
+        timeBudgetHours,
+      });
+
+      return c.json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      console.error("Resume intelligence analysis failed", error);
+
+      return c.json(
+          {
+            error: "Resume analysis failed. Please try again.",
+          },
+          502
+      );
+    }
   });
 
   return router;

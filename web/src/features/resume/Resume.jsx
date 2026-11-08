@@ -10,6 +10,7 @@ import { RaisedButton, Spinner, TextButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonLines } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import Coach from './Coach'
+import ResumeIntelligence from './ResumeIntelligence'
 import ResumePaper from './ResumePaper'
 import { useResume } from './useResume'
 import './resume.css'
@@ -72,6 +73,8 @@ export default function Resume() {
           </div>
         </div>
       )}
+
+      {resume && <ResumeIntelligence key={doc.generation} resume={resume} onApply={doc.update} />}
 
       <Outlet context={{ resume, update: doc.update }} />
     </Page>
