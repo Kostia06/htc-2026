@@ -21,7 +21,7 @@
             case .forYouBuilding: forYou(.preview(cards: [], isBuilding: true))
             case .practice: tabs(.practice)
             case .voice: DebugVoiceSession()
-            case .summary: SessionSummaryView(summary: .offline, onDone: {})
+            case .summary: SessionSummaryView(debrief: .sample, onPracticeAgain: {}, onDone: {})
             case .profile: tabs(.profile)
             case .pairHeadset:
                 NavigationStack { PairHeadsetView(issuer: DemoHeadsetIssuer(), link: DemoHeadsetLink()) }
@@ -85,15 +85,15 @@
     private struct DebugVoiceSession: View {
         @State private var model = VoiceSessionModel(
             request: VoiceSessionRequest(mode: .interview),
-            service: OfflineVoicePractice(
+            service: PreviewVoicePractice(
                 questions: [PracticeQuestion(text: "Why do you want to work on our lending team?", source: .reported)],
                 company: "ATB Financial",
             ),
-            engine: LocalVoiceEngine(),
+            engine: PreviewVoiceEngine(),
         )
 
         var body: some View {
-            VoiceSessionView(model: model)
+            VoiceSessionView(model: model, onPracticeAgain: {})
         }
     }
 

@@ -10,6 +10,9 @@ packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.55.6
+  ElevenLabs:
+    url: https://github.com/elevenlabs/elevenlabs-swift-sdk
+    from: 3.4.0
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -27,6 +30,8 @@ targets:
       # Auth alone: the app never talks to Postgres, Storage or Realtime directly
       - package: Supabase
         product: Auth
+      # the same ElevenLabs agents the headset talks to; voice runs over WebRTC with a server-issued token
+      - package: ElevenLabs
     entitlements:
       path: Raven/Resources/Raven.entitlements
       properties:
@@ -58,8 +63,7 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so it can tell when you've finished and respond.
-        NSSpeechRecognitionUsageDescription: Raven turns your spoken answers into text on your iPhone so the interviewer can follow up on what you said.
+        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so the interviewer can respond to what you said.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false
