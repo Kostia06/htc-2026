@@ -12,7 +12,8 @@
     "speech": "node scripts/render-speech.mjs",
     "tts": "node scripts/tts-server.mjs",
     "headset": "node scripts/headset.mjs",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "quest": "node scripts/quest.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
