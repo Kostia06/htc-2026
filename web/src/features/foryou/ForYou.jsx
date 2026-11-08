@@ -2,13 +2,13 @@
 // then refreshes each section quietly as it's shown; while the server builds a fresher feed it asks again every 2s.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate, useSearchParams } from 'react-router'
-import { Bookmark, Inbox, Search } from 'lucide-react'
+import { Bookmark, Inbox, RotateCw, Search } from 'lucide-react'
 import { readCache, writeCache } from '../../lib/cache'
 import { feedApi } from '../../lib/client'
 import { ChipBar } from '../../ui/Controls'
 import { Spinner } from '../../ui/Button'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
-import { Page, PageHeader } from '../../ui/Layout'
+import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import FeedCard from './FeedCard'
 import Radar from './Radar'
 import { SECTIONS } from './kinds'
@@ -42,14 +42,15 @@ export default function ForYou() {
     if (timelines.all) writeCache(CACHE, { cards: timelines.all.cards.slice(0, 40), nextCursor: timelines.all.nextCursor })
   }, [timelines])
 
-  const refresh = useCallback(async (which) => {
+  // newPostings is the web's pull to refresh: only its first request asks the server to search again
+  const refresh = useCallback(async (which, { newPostings = false } = {}) => {
     if (refreshing.current[which]) return
     refreshing.current[which] = true
     try {
       for (let i = 0; i < MAX_POLLS; i++) {
         let page
         try {
-          page = await feedApi.page(which)
+          page = await (newPostings && i === 0 ? feedApi.fresh(which) : feedApi.page(which))
         } catch (e) {
           // with cards on screen a failed refresh stays silent; the cached feed is still useful
           if (!timelinesRef.current[which]?.cards.length) setErrors((x) => ({ ...x, [which]: e.message }))
@@ -108,6 +109,20 @@ export default function ForYou() {
     }
   }
 
+  /** Empties the bookmark everywhere and takes the card out of Saved at once; it stays in the feed, since unsaving isn't "not for me". */
+  const unsave = async (card) => {
+    if (!card.saved) return
+    const before = timelinesRef.current
+    editAll((cards, key) => (key === 'saved' ? cards.filter((c) => c.id !== card.id) : cards.map((c) => (c.id === card.id ? { ...c, saved: false } : c))))
+    try {
+      await feedApi.act(card.id, 'unsave')
+    } catch {
+      setTimelines(before)
+    }
+  }
+
+  const toggleSaved = (card) => (card.saved ? unsave(card) : save(card))
+
   /** The card leaves every section right away; if the server refuses, it slides back where it was. */
   const dismiss = async (card) => {
     const before = timelinesRef.current
@@ -122,7 +137,8 @@ export default function ForYou() {
   const timeline = timelines[section]
   const cards = timeline?.cards ?? []
   const error = errors[section]
-  const findCard = (id) => Object.values(timelines).flatMap((t) => t.cards).find((c) => c.id === id)
+  // the open section first: a card just unsaved in Saved is gone from there, and other sections hold it unsaved
+  const findCard = (id) => [timelines[section], ...Object.values(timelines)].flatMap((t) => t?.cards ?? []).find((c) => c.id === id)
 
   // the end of the list coming into view loads the next page
   const end = useRef(null)
@@ -138,7 +154,11 @@ export default function ForYou() {
 
   return (
     <Page wide className="foryou">
-      <PageHeader title="For you" large />
+      <PageHeader
+        title="For you"
+        large
+        actions={!isRadar && <BarButton icon={RotateCw} label="Refresh" onClick={() => refresh(section, { newPostings: true })} />}
+      />
       <div className="foryou__chips">
         <ChipBar
           label="Sections"
@@ -186,7 +206,8 @@ export default function ForYou() {
               inSaved={section === 'saved'}
               onOpen={() => navigate({ pathname: `/for-you/${encodeURIComponent(card.id)}`, search: params.toString() })}
               onSave={() => save(card)}
-              onDismiss={() => dismiss(card)}
+              onToggleSaved={() => toggleSaved(card)}
+              onDismiss={() => (section === 'saved' ? unsave(card) : dismiss(card))}
             />
           ))}
         </div>
@@ -206,7 +227,7 @@ export default function ForYou() {
         </footer>
       )}
 
-      <Outlet context={{ findCard, save, dismiss, loaded: Boolean(timeline) }} />
+      <Outlet context={{ findCard, toggleSaved, loaded: Boolean(timeline) }} />
     </Page>
   )
 }

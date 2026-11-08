@@ -1,7 +1,7 @@
 // FeedDetailSheet.swift at /for-you/:cardId: why it fits, the facts, the listing's own description, and one way out.
 import { useEffect } from 'react'
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router'
-import { Bookmark, Check, CircleCheck } from 'lucide-react'
+import { Bookmark, Check } from 'lucide-react'
 import { safeUrl } from '../../lib/client'
 import { capitalized } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
@@ -15,7 +15,7 @@ export default function FeedDetailSheet() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const { cardId } = useParams()
-  const { findCard, save, loaded } = useOutletContext()
+  const { findCard, toggleSaved, loaded } = useOutletContext()
   const card = findCard(decodeURIComponent(cardId))
   const close = () => navigate({ pathname: '/for-you', search: params.toString() })
 
@@ -48,7 +48,7 @@ export default function FeedDetailSheet() {
       label={card.title}
       footer={
         <div className="row feed-sheet__footer">
-          <RaisedButton variant="secondary" className="feed-sheet__save" onClick={() => save(card)} aria-label={card.saved ? 'Saved' : 'Save'}>
+          <RaisedButton variant="secondary" className="feed-sheet__save" onClick={() => toggleSaved(card)} aria-label={card.saved ? 'Remove from Saved' : 'Save'}>
             <Bookmark size={20} strokeWidth={2.2} fill={card.saved ? 'currentColor' : 'none'} className={card.saved ? 'c-action' : ''} aria-hidden />
           </RaisedButton>
           <RaisedButton disabled={!url} onClick={() => url && window.open(url, '_blank', 'noopener')}>
@@ -70,7 +70,7 @@ export default function FeedDetailSheet() {
           <h3 className="t-headline">Why it fits you</h3>
           {reasons.map((r) => (
             <p key={r} className="t-subhead fit-reasons__row">
-              <CircleCheck size={17} strokeWidth={2.4} className="c-agent" aria-hidden />
+              <Check size={17} strokeWidth={2.6} className="c-agent" aria-hidden />
               {r}
             </p>
           ))}

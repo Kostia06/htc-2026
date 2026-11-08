@@ -111,12 +111,11 @@
   background: rgb(34 40 35 / 0.9);
   border-color: rgb(217 235 217 / 0.14);
 }
+/* the glyph alone, nothing filled behind it, matching KindBadge on iOS */
 .kind-badge {
   flex: none;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: var(--chip);
 }
 .feed-card__details {
   flex: 1;

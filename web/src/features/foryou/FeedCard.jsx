@@ -1,10 +1,10 @@
 // FeedCardView.swift: kind badge, title, where, the sand "why" line and a few chips. Swipe right to save and left to
 // dismiss on touch screens; on a desktop the dismiss button shows on hover.
 import { useRef } from 'react'
-import { Bookmark, Calendar, Clock, DollarSign, Leaf, X } from 'lucide-react'
+import { Bookmark, X } from 'lucide-react'
 import { safeUrl } from '../../lib/client'
 import { Chip } from '../../ui/Controls'
-import { cardDate, feedKind, whenText } from './kinds'
+import { feedKind, whenText } from './kinds'
 
 const SWIPE = 0.32
 
@@ -26,7 +26,7 @@ export function BookmarkButton({ saved, onClick, className = '' }) {
         e.stopPropagation()
         onClick()
       }}
-      aria-label={saved ? 'Saved' : 'Save'}
+      aria-label={saved ? 'Remove from Saved' : 'Save'}
       aria-pressed={saved}
     >
       <Bookmark size={20} strokeWidth={2.2} fill={saved ? 'currentColor' : 'none'} aria-hidden />
@@ -34,7 +34,8 @@ export function BookmarkButton({ saved, onClick, className = '' }) {
   )
 }
 
-export default function FeedCard({ card, inSaved, onOpen, onSave, onDismiss }) {
+// swiping right only ever saves; the bookmark toggles, so a saved card can be taken back out of Saved
+export default function FeedCard({ card, inSaved, onOpen, onSave, onToggleSaved, onDismiss }) {
   const node = useRef(null)
   const drag = useRef(null)
   const when = whenText(card)
@@ -119,13 +120,14 @@ export default function FeedCard({ card, inSaved, onOpen, onSave, onDismiss }) {
               <h3 className="t-headline clamp-2">{card.title}</h3>
               <p className="t-subhead c-2 clamp-1">{[card.org, card.where].filter(Boolean).join(' · ')}</p>
             </div>
-            <BookmarkButton saved={Boolean(card.saved)} onClick={onSave} className="feed-card__bookmark" />
+            <BookmarkButton saved={Boolean(card.saved)} onClick={onToggleSaved} className="feed-card__bookmark" />
           </div>
           {card.why && <p className="t-footnote c-agent clamp-1">{card.why}</p>}
+          {/* text only, as on iOS: the words already say what each fact is */}
           <div className="feed-card__chips">
-            {card.level === 'beginner' && <Chip icon={Leaf}>Beginner friendly</Chip>}
-            {when && <Chip icon={cardDate(card) ? Calendar : Clock}>{when}</Chip>}
-            {card.salary && <Chip icon={DollarSign}>{card.salary.replace(/^\$/, '')}</Chip>}
+            {card.level === 'beginner' && <Chip>Beginner friendly</Chip>}
+            {when && <Chip>{when}</Chip>}
+            {card.salary && <Chip>{card.salary}</Chip>}
           </div>
           {/* Adzuna's terms ask for the credit wherever its listings are shown, not only at the end of the list */}
           {card.attribution && safeUrl(card.attribution.url) && (
