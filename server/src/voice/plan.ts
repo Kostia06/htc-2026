@@ -10,6 +10,7 @@ export const MAX_QUESTIONS = 5;
 const MAX_FROM_RESUME = 2;
 const MAX_FROM_POSTING = 2;
 const MAX_REPORTED = 1;
+const MAX_EXAMPLES = 2;
 const MAX_TECHNICAL = 2;
 
 /** The posting the person is preparing for, when the session was started from one. */
@@ -21,8 +22,8 @@ export type PlanPosting = {
 export type PlanInputs = {
   role: string;
   company: { id: string; slug: string; name: string } | null;
-  // already filtered by the k=3 rule in getCompanyInsights, newest first
-  reportedQuestions: { text: string; last_reported_at: string | null }[];
+  // real reports already passed the k=3 rule in getCompanyInsights, newest first; example: true marks Skillit's own examples
+  reportedQuestions: { text: string; last_reported_at: string | null; example?: boolean; round?: string }[];
   facts: { kind: string; text: string }[];
   profile: Profile;
   difficulty?: Difficulty;
@@ -70,14 +71,21 @@ export function buildInterviewPlan(inputs: PlanInputs): InterviewPlan {
   const length = inputs.length ?? "full";
   const base = { mode: "interview", role: inputs.role, difficulty: inputs.difficulty ?? "standard", length, company: inputs.company?.name ?? null } as const;
   if (length === "quick") return { ...base, questions: quickQuestions(inputs) };
-  const reported: PlannedQuestion[] = inputs.reportedQuestions
-    .filter((q) => isShortEnough(q.text))
+  const sayable = inputs.reportedQuestions.filter((q) => isShortEnough(q.text));
+  const reported: PlannedQuestion[] = sayable
+    .filter((q) => !q.example)
     .slice(0, MAX_REPORTED)
     .map((q) => ({ text: q.text, source: "reported", reportedIn: q.last_reported_at }));
+  // nobody reported an example, so it is practised under the kind of question it is
+  const examples: PlannedQuestion[] = sayable
+    .filter((q) => q.example)
+    .slice(0, MAX_EXAMPLES)
+    .map((q) => ({ text: q.text, source: q.round === "technical" ? "technical" : "behavioral" }));
   const questions = [
     ...planned(resumeQuestions(inputs.profile), "resume", MAX_FROM_RESUME),
     ...(inputs.posting ? planned(postingQuestions(inputs.posting), "posting", MAX_FROM_POSTING) : []),
     ...reported,
+    ...examples,
     ...planned(technicalQuestions(inputs.role, inputs.profile), "technical", MAX_TECHNICAL),
     ...planned(behavioralQuestions(inputs.role), "behavioral", MAX_QUESTIONS),
   ].slice(0, MAX_QUESTIONS);

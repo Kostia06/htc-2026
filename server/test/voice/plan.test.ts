@@ -58,6 +58,15 @@ describe("interview plan", () => {
     expect(plan.questions.some((q) => q.source === "reported")).toBe(false);
   });
 
+  it("never labels a seeded example question as reported by candidates", () => {
+    const example = { text: "Why aviation, and why this airline?", last_reported_at: null, example: true };
+    const technical = { text: "How would you design a seat map API?", last_reported_at: null, example: true, round: "technical" };
+    const plan = buildInterviewPlan(inputs({ reportedQuestions: [example, technical], profile: emptyProfile() }));
+    expect(plan.questions.filter((q) => q.source === "reported")).toEqual([]);
+    expect(plan.questions).toContainEqual({ text: example.text, source: "behavioral" });
+    expect(plan.questions).toContainEqual({ text: technical.text, source: "technical" });
+  });
+
   it("falls back to short behavioural questions with no company, resume or known field", () => {
     const plan = buildInterviewPlan(inputs({ role: "entry-level", company: null, reportedQuestions: [], facts: [], profile: emptyProfile() }));
     expect(plan.questions.length).toBe(MAX_QUESTIONS);
