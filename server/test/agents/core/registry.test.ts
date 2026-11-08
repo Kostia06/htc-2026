@@ -18,7 +18,7 @@ describe("agent registry", () => {
     expect(agents.map((a) => a.card.name)).toEqual(["resume", "research", "interview", "career"]);
     expect(allSkills().map((s) => s.name).sort()).toEqual([
       "career-snapshot", "crossroads-ask", "github-projects", "import-posting", "interview-debrief", "interview-intel", "interview-prep", "interview-recap",
-      "onboarding-prefill", "profile-intake", "quick-update", "recommend-courses", "recommend-jobs", "recommend-research", "research-company", "resume-coach", "resume-tailor", "roadmap-steps",
+      "linkedin-review", "onboarding-prefill", "profile-intake", "quick-update", "recommend-courses", "recommend-jobs", "recommend-research", "research-company", "resume-coach", "resume-tailor", "roadmap-steps",
     ]);
   });
 

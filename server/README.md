@@ -57,6 +57,9 @@ secrets, links and contact details before the `github-projects` skill writes gro
 derived summaries are kept (sealed in `user_connections`). Agents read them through the `github_profile` tool, which needs
 private access. Secrets: `COMPOSIO_API_KEY` (missing: "not configured"), optionally `COMPOSIO_GITHUB_AUTH_CONFIG_ID`.
 
+`POST /api/resume/linkedin` takes LinkedIn's "Save to PDF" export, keeps nothing, masks emails, phones and links, and
+returns `linkedin-review` suggestions that each quote the PDF.
+
 Routes in `api/agent.ts`: `POST /:skill` with `{ platform, input }`, `GET /runs/:id` for the run's owner, and
 `GET /cards` listing every agent's card.
 
