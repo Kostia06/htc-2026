@@ -32,6 +32,8 @@ export function jobCandidate(posting: JobPosting): Candidate {
       url: posting.url,
       source: "Adzuna",
       attribution: { label: ADZUNA_ATTRIBUTION.attribution, url: ADZUNA_ATTRIBUTION.attribution_url },
+      // dismissing one of a company's postings steers the ranking away from the rest of them
+      tags: [posting.company.toLowerCase()],
     },
     text: `${posting.title}\n${posting.description}`,
     postedAt: posting.posted_at || undefined,
