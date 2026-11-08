@@ -15,6 +15,7 @@ import { pairing } from "./api/pairing";
 import { voice } from "./api/voice";
 import { profile } from "./api/profile";
 import { research } from "./api/research";
+import { resume } from "./api/resume";
 import { roadmap } from "./api/roadmap";
 import { session } from "./api/session";
 import { requireSession } from "./auth/session";
@@ -47,6 +48,7 @@ app.route("/api/voice", voice);
 app.route("/api/agent", agent);
 app.route("/api/feed", feed);
 app.route("/api/roadmap", roadmap);
+app.route("/api/resume", resume);
 // outside the /api CORS and session middleware: the card is public and /a2a checks its own session
 app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));
 
