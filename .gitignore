@@ -64,3 +64,11 @@ swift-generated-sources/
 # landing uses npm; a pnpm lockfile there is a local install artefact
 landing/pnpm-lock.yaml
 .env
+
+# swift and xcode build output, anywhere
+**/.build/
+ios/build/
+# leftovers swift and xcode tools drop in the repo root
+TemporaryDirectory.*/
+_*.lock
+swift-generated-sources/
