@@ -89,6 +89,24 @@ describe("runAgent with a terminal tool", () => {
     expect(result.output).toEqual({ ok: true });
   });
 
+  it("offers only the terminal tool on the last step, with a nudge, so a long run still finishes", async () => {
+    const declarationsSeen: string[][] = [];
+    const contentsSeen: GeminiContent[][] = [];
+    const replies: GeminiContent[] = [
+      { role: "model", parts: [{ functionCall: { name: "echo", args: { v: "a" } } }] },
+      { role: "model", parts: [{ functionCall: { name: "finish", args: { ok: true } } }] },
+    ];
+    const model = vi.fn(async (contents: GeminiContent[], declarations: { name: string }[]) => {
+      declarationsSeen.push(declarations.map((d) => d.name));
+      contentsSeen.push(structuredClone(contents));
+      return replies.shift()!;
+    });
+    const result = await runAgent({ model, tools: { echo, finish }, goal: "x", maxSteps: 2 });
+    expect(declarationsSeen).toEqual([["echo", "finish"], ["finish"]]);
+    expect(JSON.stringify(contentsSeen[1].at(-1))).toContain("last step");
+    expect(result.output).toEqual({ ok: true });
+  });
+
   it("has no output when the model answers in text instead", async () => {
     const { model } = scripted([{ role: "model", parts: [{ text: "hi" }] }]);
     const result = await runAgent({ model, tools: { finish }, goal: "x", maxSteps: 5 });
