@@ -17,6 +17,7 @@ import { countSteps, insertSteps, loadCompleted, loadOpen, setStepStatus } from 
 import { findPosting, listPostings, newPostingId, savePosting } from "../src/postings/store";
 import { deleteTailored, findTailored, listTailored, saveTailored, updateTailored } from "../src/resume/tailor/store";
 import { addTurn, countSessionsSince, createSession, deleteOldSessions, findSession, finishSession, listTurns } from "../src/voice/store";
+import { claimDraftBuild, clearDraftWanted, markDraftWanted, readDraft, releaseDraftBuild, saveDraft } from "../src/voice/draft-store";
 import { openTestDatabase } from "./pglite";
 
 let db: Awaited<ReturnType<typeof openTestDatabase>>;
@@ -138,6 +139,25 @@ describe("voice sessions", () => {
     expect((await findSession(env, "alice", id))?.status).toBe("finished");
     expect(await deleteOldSessions(env, new Date(NOW.getTime() + 31 * 86_400_000))).toBe(1);
     expect(await listTurns(env, "alice", id)).toEqual([]);
+  });
+
+  it("lets one draft rebuild run at a time and keeps it from going backwards", async () => {
+    const id = await createSession(env, "alice", { mode: "interview", companySlug: null, plan: { questions: [] } as never }, NOW);
+    expect(await claimDraftBuild(env, "alice", id, NOW)).toBe(true);
+    expect(await claimDraftBuild(env, "alice", id, NOW)).toBe(false);
+    expect(await claimDraftBuild(env, "bob", id, NOW)).toBe(false);
+    // a claim left by a crashed rebuild expires
+    expect(await claimDraftBuild(env, "alice", id, new Date(NOW.getTime() + 10 * 60_000))).toBe(true);
+
+    await markDraftWanted(env, "alice", id);
+    expect(await releaseDraftBuild(env, "alice", id)).toBe(false);
+    await clearDraftWanted(env, "alice", id);
+    await saveDraft(env, "alice", id, { overall: 70 }, 2);
+    await saveDraft(env, "alice", id, { overall: 10 }, 1);
+    expect(await releaseDraftBuild(env, "alice", id)).toBe(true);
+
+    expect(await readDraft(env, "alice", id, NOW)).toEqual({ coversTurns: 2, raw: { overall: 70 }, pending: false });
+    expect(await readDraft(env, "bob", id, NOW)).toEqual({ coversTurns: 0, raw: null, pending: false });
   });
 });
 

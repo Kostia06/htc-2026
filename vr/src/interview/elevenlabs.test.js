@@ -622,6 +622,31 @@ describe('interrupt and teardown', () => {
 // ── reconnect ───────────────────────────────────────────────────────────────
 
 describe('reconnect', () => {
+  it('treats a clean close from the agent as the end of the interview, never dialing a new conversation', async () => {
+    const onTurn = vi.fn()
+    const onEnded = vi.fn()
+    const factory = socketTracker()
+    const { ws, voice } = await connected({ onTurn, onEnded, socketFactory: factory })
+
+    ws.emit(agentSays('Q1'))
+    ws.emit(userSays('A1'))
+    vi.useFakeTimers()
+    ws.drop(1000)
+    await vi.advanceTimersByTimeAsync(5000)
+
+    expect(factory.sockets).toHaveLength(1)
+    expect(voice.state).toBe('closed')
+    expect(onTurn).toHaveBeenCalledWith({ question: 'Q1', answer: 'A1' })
+    expect(onEnded).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not report an ending when we hung up ourselves', async () => {
+    const onEnded = vi.fn()
+    const { voice } = await connected({ onEnded })
+    await voice.disconnect()
+    expect(onEnded).not.toHaveBeenCalled()
+  })
+
   it('reconnects with backoff and keeps the turns it already emitted', async () => {
     const onTurn = vi.fn()
     const factory = socketTracker()

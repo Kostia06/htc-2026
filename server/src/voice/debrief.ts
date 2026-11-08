@@ -129,11 +129,15 @@ export function fallbackDebrief(turns: StoredTurn[]): Debrief {
   };
 }
 
+/** The model's unchecked reply over these turns; throws when the model fails. Run it through normalizeDebrief before showing it. */
+export function askForDebrief(env: Env, plan: VoicePlan, turns: StoredTurn[]) {
+  return generateJson<Record<string, unknown>>(env, prompt(plan, turns), SCHEMA);
+}
+
 /** One model call over the stored turns. Falls back to a scores-only debrief rather than failing the session. */
 export async function buildDebrief(env: Env, plan: VoicePlan, turns: StoredTurn[]): Promise<Debrief> {
   try {
-    const raw = await generateJson<Record<string, unknown>>(env, prompt(plan, turns), SCHEMA);
-    return normalizeDebrief(raw, turns);
+    return normalizeDebrief(await askForDebrief(env, plan, turns), turns);
   } catch (error) {
     console.warn("voice debrief model failed:", error instanceof Error ? error.message : error);
     return fallbackDebrief(turns);

@@ -64,6 +64,7 @@ export function useInterview(auth = {}) {
   phaseRef.current = phase
   const listenRef = useRef(() => {})
   const agentRef = useRef(null) // the provider's realtime voice agent, when offered
+  const scoringRef = useRef([]) // the agent path's turns still being scored; finish waits for them
 
   useEffect(() => {
     alive.current = true
@@ -176,6 +177,7 @@ export function useInterview(auth = {}) {
   const beginWithAgent = useCallback(
     async (started) => {
       const { createElevenLabsSession } = await import('./elevenlabs.js')
+      scoringRef.current = []
 
       const agent = createElevenLabsSession({
         signedUrl: started.voice.signedUrl,
@@ -205,16 +207,35 @@ export function useInterview(auth = {}) {
           setPhase(isSpeaking ? 'asking' : 'listening')
           if (isSpeaking) setHeard(false)
         },
-        onTurn: async ({ question, answer }) => {
+        onTurn: ({ question, answer }) => {
           if (!alive.current || !answer) return
           setHeard(true)
-          try {
-            const score = await session.scoreTurn({ question, answer, durationMs: 0 })
-            if (!alive.current || !score) return
-            setResult(score)
-            setResultAt(Date.now())
-          } catch {
+          const scoring = session
+            .scoreTurn({ question, answer, durationMs: 0 })
+            .then((score) => {
+              if (!alive.current || !score) return
+              setResult(score)
+              setResultAt(Date.now())
+            })
             // A missed score costs a panel, not the conversation.
+            .catch(() => {})
+          scoringRef.current.push(scoring)
+        },
+        // The agent hung up: release the mic and show the report, which the server built during the interview.
+        onEnded: async () => {
+          if (!alive.current || !running.current) return
+          running.current = false
+          agentRef.current?.disconnect()
+          agentRef.current = null
+          setSpeaking(false)
+          setPhase('done')
+          await Promise.all(scoringRef.current)
+          if (!scoringRef.current.length) return
+          try {
+            const final = await session.finish()
+            if (alive.current) setSummary(final)
+          } catch (err) {
+            if (alive.current) setError(err.message ?? 'Could not get the report.')
           }
         },
         onError: (err) => {
