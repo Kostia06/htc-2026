@@ -6,7 +6,6 @@ import { crossroadsApi, memoriesApi } from '../../lib/client'
 import { useOnUpdatesApplied } from '../../lib/hooks'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { Page, PageHeader } from '../../ui/Layout'
-import { AskBar } from './AskBar'
 import { CrossroadsDetail } from './Detail'
 import { FactCard, LineCard, TeachingEmpty, YourCard } from './Cards'
 import { Explainer, PathInsight } from './Insight'
@@ -67,7 +66,7 @@ function Section({ id, title, detail, children }) {
 export default function Crossroads() {
   const { data, error, load, update } = useCrossroads()
   const [seen, dismiss] = useExplainerSeen()
-  const [cited, setCited] = useState(new Set())
+  const cited = new Set()
   const [actionError, setActionError] = useState(null)
   const [detail, setDetail] = useState(null)
   const matches = useMemo(() => (data ? matchesOf(data) : []), [data])
@@ -210,7 +209,6 @@ export default function Crossroads() {
           onClose={() => setDetail(null)}
         />
       )}
-      <AskBar onCited={(cites) => setCited(new Set(cites.map((c) => c.id)))} />
     </Page>
   )
 }

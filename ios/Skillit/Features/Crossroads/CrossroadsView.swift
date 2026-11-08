@@ -8,7 +8,6 @@ struct CrossroadsView: View {
     @Environment(AppModel.self) private var app
     @AppStorage("crossroadsExplainerSeen") private var explainerSeen = false
     @State private var model: CrossroadsModel?
-    @State private var ask: CrossroadsAskModel?
     @State private var sharing: PrivateMemory?
     @State private var detail: CrossroadsDetail?
     @State private var deletions = 0
@@ -19,11 +18,6 @@ struct CrossroadsView: View {
             .background(Theme.ground)
             .navigationTitle("Crossroads")
             .navigationBarTitleDisplayMode(.large)
-            .safeAreaInset(edge: .bottom) {
-                if let ask, model?.view != nil {
-                    CrossroadsAskBar(model: ask)
-                }
-            }
             .task { await start() }
             // a quick update may have saved a note or a step; it shows here without leaving
             .onChange(of: app.updatesApplied) { Task { await model?.load() } }
@@ -61,19 +55,12 @@ struct CrossroadsView: View {
         ScrollViewReader { proxy in
             sections(model, view)
                 .task { await Self.scrollForScreenshot(proxy) }
-                // the answer is the list's first row; asking from far down brings it into view
-                .onChange(of: ask?.isThinking) { _, thinking in
-                    if thinking == true { withAnimation(.spring(duration: 0.35)) { proxy.scrollTo("answer", anchor: .top) } }
-                }
         }
     }
 
     private func sections(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         List {
             row { RoadHeader(goal: view.road.goal, minPeople: view.minPeople) }
-            if let ask {
-                row { CrossroadsAnswerCard(model: ask) }.id("answer")
-            }
             if !explainerSeen {
                 row {
                     CrossroadsExplainer(goal: view.road.goal) { withAnimation(.spring(duration: 0.35)) { explainerSeen = true } }
@@ -233,12 +220,8 @@ struct CrossroadsView: View {
 
     private func start() async {
         guard model == nil else { return }
-        let service = app.crossroadsService
-        let model = CrossroadsModel(service: service)
+        let model = CrossroadsModel(service: app.crossroadsService)
         self.model = model
-        // screenshots and previews have no signed-in client; they get a scripted mic
-        let dictation: any Dictation = app.client == nil ? ScriptedDictation() : SpeechDictation()
-        ask = CrossroadsAskModel(service: service, dictation: dictation) { [weak model] cites in model?.highlight(cites) }
         await model.load()
     }
 }
