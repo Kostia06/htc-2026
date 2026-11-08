@@ -74,6 +74,7 @@ public struct PracticeQuestion: Decodable, Equatable, Sendable {
         /// Someone recently reported being asked this at the company.
         case reported
         case resume
+        case technical
         case behavioral
     }
 

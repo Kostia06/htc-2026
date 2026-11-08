@@ -42,6 +42,8 @@
 	<string>Raven uses the camera to scan the code on your headset so it can join your account.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Raven listens while you answer practice questions so it can tell when you've finished and respond.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Raven turns your spoken answers into text on your iPhone so the interviewer can follow up on what you said.</string>
 	<key>RavenAPIURL</key>
 	<string>$(RAVEN_API_URL)</string>
 	<key>SupabasePublishableKey</key>

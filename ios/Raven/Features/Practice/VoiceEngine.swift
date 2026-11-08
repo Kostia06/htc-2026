@@ -3,7 +3,9 @@ import RavenKit
 /// Runs the spoken side of a session: plays the agent, listens to the person, and reports what happens.
 /// The stream finishes when the conversation is over, either on its own or after `stop()`.
 protocol VoiceEngine: AnyObject {
-    func start(_ session: VoiceSession) -> AsyncStream<VoiceEvent>
+    /// One line for the screen about the voice itself, such as how to get a more natural one.
+    var voiceHint: String? { get }
+    func start(_ session: VoiceSession, director: any ConversationDirector) -> AsyncStream<VoiceEvent>
     func stop()
 }
 

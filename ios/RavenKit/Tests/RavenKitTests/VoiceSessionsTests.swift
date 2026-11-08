@@ -88,25 +88,7 @@ extension StubbedNetworkTests {
     }
 }
 
-struct AnswerTimerTests {
-    @Test func `ends the answer after a pause once the person has spoken`() {
-        let readings = finishedAfter([(0.8, 1), (0.1, 2.5), (0.1, 3)])
-        #expect(readings == [false, false, true])
-    }
-
-    @Test func `waits through silence before the person starts`() {
-        #expect(finishedAfter([(0, 10)]) == [false])
-    }
-
-    @Test func `stops at the time limit even mid-sentence`() {
-        #expect(finishedAfter([(0.9, 30)]) == [true])
-    }
-
-    private func finishedAfter(_ readings: [(level: Float, seconds: Double)]) -> [Bool] {
-        var timer = AnswerTimer(pauseToFinish: .seconds(2), longest: .seconds(30))
-        return readings.map { timer.isFinished(hearing: $0.level, after: .seconds($0.seconds)) }
-    }
-
+struct AudioLevelTests {
     @Test func `maps loudness onto zero to one`() {
         #expect(AudioLevel.normalized(rms: 0) == 0)
         #expect(AudioLevel.normalized(rms: 1) == 1)

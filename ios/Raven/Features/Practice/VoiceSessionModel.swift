@@ -3,7 +3,7 @@ import Observation
 import RavenKit
 
 /// One spoken practice session: gets a session from the server, runs it through a voice engine,
-/// scores each answer as it lands, and fetches the summary at the end.
+/// scores each answer in the background as it lands, and fetches the summary at the end.
 @Observable
 final class VoiceSessionModel: Identifiable {
     enum Phase: Equatable {
@@ -21,7 +21,7 @@ final class VoiceSessionModel: Identifiable {
     private(set) var question: PracticeQuestion?
     private(set) var company: String?
     private(set) var tip: String?
-    /// Why this session isn't the real thing, when it falls back to running offline.
+    /// Why this session isn't the real thing when it runs offline, or how to get a more natural voice.
     private(set) var notice: String?
 
     private let request: VoiceSessionRequest
@@ -44,7 +44,9 @@ final class VoiceSessionModel: Identifiable {
         guard let session = await startSession() else { return }
         self.session = session
         company = session.company ?? session.persona?.company
-        for await event in engine.start(session) {
+        notice = notice ?? engine.voiceHint
+        let director = SessionDirector(service: service, session: session)
+        for await event in engine.start(session, director: director) {
             handle(event, in: session)
         }
         guard phase == .live, !Task.isCancelled else { return }

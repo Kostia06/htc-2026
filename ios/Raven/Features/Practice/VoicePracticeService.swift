@@ -1,10 +1,11 @@
 import Foundation
 import RavenKit
 
-/// The three server calls a voice session makes, so a session can also run offline.
+/// The server calls a voice session makes, so a session can also run offline.
 protocol VoicePracticeService {
     func startVoiceSession(_ request: VoiceSessionRequest) async throws(RavenError) -> VoiceSession
     func submitTurn(_ turn: VoiceTurn, in sessionId: String) async throws(RavenError) -> TurnFeedback
+    func nextLine(after answer: String, transcript: [TranscriptLine], in sessionId: String) async throws(RavenError) -> NextLine
     func finishVoiceSession(_ sessionId: String) async throws(RavenError) -> SessionSummary
 }
 
@@ -37,6 +38,11 @@ struct OfflineVoicePractice: VoicePracticeService {
     func submitTurn(_: VoiceTurn, in _: String) async throws(RavenError) -> TurnFeedback {
         try? await Task.sleep(for: .milliseconds(600))
         return TurnFeedback(scores: [:], tip: Self.tips.randomElement())
+    }
+
+    /// no server to follow up, so the session's own script carries on
+    func nextLine(after _: String, transcript _: [TranscriptLine], in _: String) async throws(RavenError) -> NextLine {
+        throw .offline
     }
 
     func finishVoiceSession(_: String) async throws(RavenError) -> SessionSummary {
