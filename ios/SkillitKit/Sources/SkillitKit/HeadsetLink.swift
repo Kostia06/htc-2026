@@ -34,6 +34,9 @@ public struct HeadsetLaunch: Encodable, Equatable, Sendable {
     public var companySlug: String?
     public var role: String?
     public var stepID: String?
+    public var postingID: String?
+    public var difficulty: PracticeDifficulty?
+    public var length: InterviewLength?
     /// Opens this past session's review in the headset instead of starting an interview.
     public var reviewSessionID: String?
 
@@ -47,9 +50,18 @@ public struct HeadsetLaunch: Encodable, Equatable, Sendable {
         self.reviewSessionID = reviewSessionID
     }
 
+    /// The interview the phone would have started, sent to the headset instead.
+    public init(_ request: VoiceSessionRequest, stepID: String? = nil) {
+        self.init(mode: request.mode, companySlug: request.companySlug, role: request.role, stepID: stepID)
+        postingID = request.postingId
+        difficulty = request.difficulty
+        length = request.length
+    }
+
     private enum CodingKeys: String, CodingKey {
-        case mode, companySlug, role
+        case mode, companySlug, role, difficulty, length
         case stepID = "stepId"
+        case postingID = "postingId"
         case reviewSessionID = "reviewSessionId"
     }
 }

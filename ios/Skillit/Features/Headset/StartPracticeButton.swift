@@ -154,7 +154,8 @@ struct StartPracticeButton: View {
         }
         Task {
             do throws(SkillitError) {
-                let launch = HeadsetLaunch(mode: .interview, companySlug: companySlug, role: role, stepID: stepID)
+                var launch = HeadsetLaunch(mode: .interview, companySlug: companySlug, role: role, stepID: stepID)
+                launch.difficulty = .preferred
                 _ = try await model.send(launch, using: service)
                 sendFailure = nil
                 phase = .sent

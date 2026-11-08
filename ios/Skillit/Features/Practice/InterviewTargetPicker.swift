@@ -18,6 +18,8 @@ struct InterviewTargetPicker: View {
     let postings: [JobPosting]
     /// Preselected by the caller, like the roadmap step that opened the picker; otherwise the last choice.
     var initial: InterviewTarget?
+    /// The pick goes to the paired headset instead of starting here, so the button says so.
+    var sendsToHeadset = false
     let onStart: (VoiceSessionRequest) -> Void
 
     var body: some View {
@@ -148,6 +150,7 @@ struct InterviewTargetPicker: View {
 
     private var startTitle: String {
         guard selected != nil else { return "Pick one to start" }
+        if sendsToHeadset { return "Send to headset" }
         return length == .quick ? "Start quick interview" : "Start interview"
     }
 

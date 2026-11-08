@@ -33,9 +33,9 @@ describe("sending a practice session to the headset", () => {
     expect(await takeLaunch(env, "alice", later(3000))).toBeNull();
   });
 
-  it("carries the interview's difficulty and length to the headset", async () => {
-    const launch = parseLaunch({ mode: "interview", stepId: "st_1", difficulty: "hard", length: "quick" });
-    expect(launch).toEqual({ mode: "interview", stepId: "st_1", difficulty: "hard", length: "quick" });
+  it("carries the interview's posting, difficulty and length to the headset", async () => {
+    const launch = parseLaunch({ mode: "interview", stepId: "st_1", postingId: "p_1", difficulty: "hard", length: "quick" });
+    expect(launch).toEqual({ mode: "interview", stepId: "st_1", postingId: "p_1", difficulty: "hard", length: "quick" });
     expect(parseLaunch({ mode: "interview", difficulty: "brutal" })).toBeNull();
     expect(parseLaunch({ mode: "interview", length: "forever" })).toBeNull();
     await queueLaunch(env, "alice", launch!, NOW);

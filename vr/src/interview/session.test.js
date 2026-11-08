@@ -369,11 +369,11 @@ describe('createApiSession', () => {
     expect(api.of('/api/voice/sessions')[0].body).toEqual({ mode: 'interview', companySlug: 'atb', role: 'Data Analyst' })
   })
 
-  it('carries the road step, difficulty and length from a phone launch', async () => {
-    await session().start({ mode: 'interview', role: 'Data Analyst', stepId: 'st_1', difficulty: 'hard', length: 'quick' })
+  it('carries the road step, posting, difficulty and length from a phone launch', async () => {
+    await session().start({ mode: 'interview', role: 'Data Analyst', stepId: 'st_1', postingId: 'p_1', difficulty: 'hard', length: 'quick' })
 
     expect(api.of('/api/voice/sessions')[0].body).toEqual({
-      mode: 'interview', companySlug: 'acme', role: 'Data Analyst', stepId: 'st_1', difficulty: 'hard', length: 'quick',
+      mode: 'interview', companySlug: 'acme', role: 'Data Analyst', stepId: 'st_1', postingId: 'p_1', difficulty: 'hard', length: 'quick',
     })
   })
 

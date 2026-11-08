@@ -12,6 +12,9 @@ struct PracticeView: View {
     @State private var activeSession: VoiceSessionModel?
     @State private var openedPosting: JobPosting?
     @State private var isPairing = false
+    @State private var isPickingForHeadset = false
+    @State private var headsetPending: VoiceSessionRequest?
+    @State private var headsetNotice: String?
     @State private var isRecapping = false
     @State private var replaying: PracticeSessionSummary?
     @AppStorage(InterviewTargetPicker.lastChoiceKey) private var lastChoice: Data?
@@ -27,6 +30,13 @@ struct PracticeView: View {
                         quickInterview
                         interviewChoice
                         vrLink
+                        if let headsetNotice {
+                            Text(headsetNotice)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 4)
+                        }
                     }
                     // said before the call starts, so nobody is surprised that ElevenLabs keeps the audio
                     Label("Recorded so you can replay it", systemImage: "waveform")
@@ -55,6 +65,9 @@ struct PracticeView: View {
             // the session starts once the picker is fully gone; iOS drops a cover presented while a sheet is closing
             .sheet(isPresented: $isPicking, onDismiss: startPending) {
                 InterviewTargetPicker(postings: postings.postings) { pending = $0 }
+            }
+            .sheet(isPresented: $isPickingForHeadset, onDismiss: sendPendingToHeadset) {
+                InterviewTargetPicker(postings: postings.postings, sendsToHeadset: true) { headsetPending = $0 }
             }
             .sheet(item: $openedPosting) { PostingView(posting: $0) }
             .sheet(item: $replaying) { session in
@@ -150,7 +163,7 @@ struct PracticeView: View {
     }
 
     private var vrLink: some View {
-        row("Or practise in VR", systemImage: "visionpro") { isPairing = true }
+        row("Or practise in VR", systemImage: "visionpro") { isPickingForHeadset = true }
     }
 
     private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
@@ -174,6 +187,24 @@ struct PracticeView: View {
         guard let request = pending else { return }
         pending = nil
         start(request)
+    }
+
+    /// Sends the picked interview to the paired headset; with none listening, pairing opens instead.
+    private func sendPendingToHeadset() {
+        guard let request = headsetPending, let client = app.client else { return }
+        headsetPending = nil
+        Task {
+            do throws(SkillitError) {
+                guard try await client.headsetStatus().isConnected else {
+                    isPairing = true
+                    return
+                }
+                _ = try await client.sendToHeadset(HeadsetLaunch(request))
+                headsetNotice = "Sent to your headset. Put it on to begin."
+            } catch {
+                headsetNotice = error.message
+            }
+        }
     }
 
     /// Also how "Practice again" works: a fresh model replaces the one on screen, so the cover stays up.
