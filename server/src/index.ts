@@ -14,6 +14,7 @@ import { memories } from "./api/memories";
 import { memory } from "./api/memory";
 import { onboarding } from "./api/onboarding";
 import { pairing } from "./api/pairing";
+import { postings } from "./api/postings";
 import { voice } from "./api/voice";
 import { voiceHistory } from "./api/voice-history";
 import { profile } from "./api/profile";
@@ -65,6 +66,7 @@ app.route("/api/roadmap", roadmap);
 app.route("/api/resume", resume);
 app.route("/api/recap", recap);
 app.route("/api/updates", updates);
+app.route("/api/postings", postings);
 // outside the /api CORS and session middleware: the card is public, /a2a checks its own session, /admin its secret
 app.route("/admin", admin);
 app.route("/", a2aRouter((env, waitUntil) => agentDirectory(liveDeps(env, waitUntil))));

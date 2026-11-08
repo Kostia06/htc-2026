@@ -17,7 +17,7 @@ export type StepStatus = (typeof STEP_STATUSES)[number];
 export type StepLabel = "ready_now" | "stretch" | "long_term";
 
 // what the app launches when the person taps the step's button
-export type StepAction = { type: "interview"; companySlug?: string; role?: string };
+export type StepAction = { type: "interview"; companySlug?: string; role?: string; postingId?: string };
 
 // what gets encrypted and stored for one step: the text, plus the person's own note once they finish it
 export type StepContent = {

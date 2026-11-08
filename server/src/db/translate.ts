@@ -33,6 +33,7 @@ export const PRIMARY_KEYS: Record<string, string[]> = {
   feed_items: ["user_id", "position"],
   feed_state: ["user_id"],
   pairing_offers: ["user_id"],
+  user_postings: ["id"],
   memory_vectors: ["id"],
 };
 

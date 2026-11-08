@@ -6,6 +6,7 @@ import { issueSession, requireSession, verifySession } from "../../src/auth/sess
 import type { AppContext } from "../../src/env";
 import { deps as jev } from "../../src/integrations/jev";
 import { updateProfile } from "../../src/memory/profile/store";
+import { newPostingId, savePosting } from "../../src/postings/store";
 import { deps as followUpModel } from "../../src/voice/follow-up";
 import { deps as liveToken } from "../../src/voice/providers/gemini";
 import { profile } from "../voice/fixtures";
@@ -111,6 +112,35 @@ describe("/api/voice", () => {
     expect(hard.status).toBe(201);
     expect(tokenRequests.at(-1)).toMatch(/push back/i);
     expect((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", difficulty: "brutal" })).status).toBe(400);
+  });
+
+  it("takes the role, company and questions from a saved posting", async () => {
+    await env.DB.prepare("INSERT INTO companies (id, slug, name) VALUES ('c1', 'acme', 'Acme')").run();
+    const me = await person();
+    const posting = await savePosting(env, me.id, newPostingId(), {
+      title: "Junior Data Analyst",
+      company: "Acme",
+      companySlug: "acme",
+      location: null,
+      seniority: null,
+      requirements: [{ text: "Kubernetes", topic: "Kubernetes", required: true, have: false }],
+      responsibilities: ["Build dashboards for the lending team"],
+      skills: [],
+      sourceUrl: null,
+      prefilled: { targetRole: null, company: null, steps: [] },
+    });
+    const res = await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview", postingId: posting.id, role: "ignored" });
+    expect(res.status).toBe(201);
+    const body = await res.json<Started & { role: string; company: string | null }>();
+    expect(body).toMatchObject({ role: "Junior Data Analyst", company: "Acme" });
+    expect(body.questions?.filter((q) => q.source === "posting").map((q) => q.text)).toEqual([
+      "Here you'd build dashboards for the lending team. When have you done something like that?",
+      "Kubernetes is on the posting. How would you get up to speed?",
+    ]);
+    expect(tokenRequests.at(-1)).toContain("Junior Data Analyst role at Acme");
+
+    const stranger = await person();
+    expect((await send(voiceApp(), stranger.token, "POST", "/sessions", { mode: "interview", postingId: posting.id })).status).toBe(404);
   });
 
   it("rejects bad input and too many sessions", async () => {
