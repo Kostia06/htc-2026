@@ -5,9 +5,9 @@
 // A HeadsetSession is exactly what POST /api/pairing/claim answers with:
 //   { token, expiresAt, refreshToken, refreshExpiresAt, deviceId, deviceName }
 
-export const API_URL = (
-  import.meta.env?.VITE_RAVEN_API_URL ?? 'https://htc-mentor.ilnkostia-dev.workers.dev'
-).replace(/\/+$/, '')
+// VITE_RAVEN_API_URL points a dev build at a local or tunnelled Worker; the
+// deployed site talks to production.
+export const API_URL = (import.meta.env?.VITE_RAVEN_API_URL || 'https://api.skillit.study').replace(/\/+$/, '')
 
 export const LONG_POLL_SECONDS = 20
 
