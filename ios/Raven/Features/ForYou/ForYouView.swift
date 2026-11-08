@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// Jobs and other openings picked for this person. Opens on the last feed instantly and refreshes behind it.
+/// Jobs, events, hackathons and courses picked for this person. Opens on the last feed instantly and refreshes behind it.
 struct ForYouView: View {
     @Environment(AppModel.self) private var app
 
@@ -11,39 +11,57 @@ struct ForYouView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 12) {
+            List {
+                // a plain List pins its section header, so the chips stay put while the large title scrolls away
+                Section {
                     if model.isBuilding {
-                        BuildingRow()
+                        BuildingRow().feedRow()
                     }
                     content
+                } header: {
+                    SectionChips(selection: model.section) { model.show($0) }
+                        .listRowInsets(EdgeInsets())
                 }
-                .padding(16)
-                .animation(.smooth, value: model.cards)
-                .animation(.smooth, value: model.isBuilding)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .background(Theme.ground)
+            .animation(.snappy, value: model.cards)
+            .animation(.smooth, value: model.isBuilding)
             .navigationTitle("For you")
             .refreshable { await refresh() }
-            .task { await refresh() }
+            .task(id: model.section) { await refresh() }
+            .sensoryFeedback(.impact(weight: .light), trigger: model.dismissals)
         }
     }
 
     @ViewBuilder private var content: some View {
         if !model.cards.isEmpty {
             ForEach(model.cards) { card in
-                FeedCardView(card: card)
+                FeedCardView(card: card, onSave: { save(card) }, onDismiss: { dismiss(card) })
+                    .feedRow()
                     .onAppear { loadMoreIfLast(card) }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        if !card.isSaved {
+                            Button { save(card) } label: { Label("Save", systemImage: "bookmark.fill") }
+                                .tint(Theme.action)
+                        }
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) { dismiss(card) } label: {
+                            Label(model.section == .saved ? "Remove" : "Dismiss", systemImage: "xmark")
+                        }
+                    }
             }
             if model.isLoadingMore {
-                ProgressView().padding()
+                ProgressView().frame(maxWidth: .infinity).feedRow()
             }
         } else if !model.hasLoaded, model.errorMessage == nil {
             ForEach(0 ..< 4, id: \.self) { _ in
-                SkeletonLines(widths: [0.5, 0.9, 0.7], highlighted: 2).ravenCard()
+                SkeletonLines(widths: [0.5, 0.9, 0.7], highlighted: 2).ravenCard().feedRow()
             }
         } else if !model.isBuilding {
-            EmptyFeed(message: model.errorMessage)
+            EmptyFeed(section: model.section, message: model.errorMessage).feedRow()
         }
     }
 
@@ -52,9 +70,28 @@ struct ForYouView: View {
         await model.refresh(using: client)
     }
 
+    private func save(_ card: FeedCard) {
+        guard let client = app.client else { return }
+        withAnimation(.snappy) { model.save(card, using: client) }
+    }
+
+    private func dismiss(_ card: FeedCard) {
+        guard let client = app.client else { return }
+        withAnimation(.snappy) { model.dismiss(card, using: client) }
+    }
+
     private func loadMoreIfLast(_ card: FeedCard) {
         guard card.id == model.cards.last?.id, let client = app.client else { return }
         Task { await model.loadMore(using: client) }
+    }
+}
+
+private extension View {
+    /// A card sitting on the dark ground with no List chrome around it.
+    func feedRow() -> some View {
+        listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
     }
 }
 
@@ -78,14 +115,29 @@ private struct BuildingRow: View {
 }
 
 private struct EmptyFeed: View {
+    let section: FeedSection
     let message: String?
 
     var body: some View {
         ContentUnavailableView {
-            Label(message == nil ? "Nothing here yet" : "Can't load your feed", systemImage: "sparkles")
+            Label(title, systemImage: section == .saved ? "bookmark" : "sparkles")
         } description: {
-            Text(message ?? "Add the roles you're aiming for in Profile and Raven will find openings that fit.")
+            Text(message ?? description)
         }
         .padding(.top, 40)
+    }
+
+    private var title: String {
+        if message != nil {
+            return "Can't load your feed"
+        }
+        return section == .saved ? "Nothing saved yet" : "Nothing here yet"
+    }
+
+    private var description: String {
+        switch section {
+        case .saved: "Swipe a card right, or tap the bookmark, to keep it here."
+        default: "Add the roles you're aiming for in Profile and Raven will find things that fit."
+        }
     }
 }
