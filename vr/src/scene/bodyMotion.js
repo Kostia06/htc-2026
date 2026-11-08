@@ -216,6 +216,9 @@ export function updateBodyMotion(m, dt, { speaking = false, listening = false, a
     m.nodStart = m.t
     m.nextNod = m.t + 2.8 + m.random() * 3.5
   }
+  // and one as the candidate finishes, the "got it" a real interviewer gives
+  if (m.wasListening && !listening) m.nodStart = m.t
+  m.wasListening = listening
   const since = m.t - m.nodStart
   m.nod = since < 0.9 ? Math.sin((since / 0.9) * Math.PI) * 0.09 * scale : 0
   return m
