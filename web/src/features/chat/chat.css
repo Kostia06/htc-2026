@@ -1,0 +1,21 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+  justify-content: flex-end;
+}
+.chat__item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sheet__footer:has(.composer) {
+  padding: 0;
+}
+.sheet__footer .composer {
+  background: rgb(15 19 17 / 0.5);
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}

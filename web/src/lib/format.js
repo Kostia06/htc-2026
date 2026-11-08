@@ -46,3 +46,23 @@ export const withoutAudioTags = (text) =>
     .trim()
 
 export const sameText = (a = '', b = '') => a.localeCompare(b, undefined, { sensitivity: 'base' }) === 0
+
+/** "yesterday", "2 days ago", "3 hours ago": the named relative phrase iOS uses for finished steps. */
+export function namedRelative(iso, now = Date.now()) {
+  const date = parseDate(iso)
+  if (!date) return null
+  const seconds = (date.getTime() - now) / 1000
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+  const units = [
+    ['year', 31536000],
+    ['month', 2592000],
+    ['week', 604800],
+    ['day', 86400],
+    ['hour', 3600],
+    ['minute', 60],
+  ]
+  for (const [unit, size] of units) {
+    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit)
+  }
+  return rtf.format(0, 'second')
+}
