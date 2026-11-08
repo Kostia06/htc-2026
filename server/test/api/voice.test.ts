@@ -6,12 +6,14 @@ import { issueSession, requireSession, verifySession } from "../../src/auth/sess
 import type { AppContext } from "../../src/env";
 import { deps as jev } from "../../src/integrations/jev";
 import { updateProfile } from "../../src/memory/profile/store";
+import { deps as followUpModel } from "../../src/voice/follow-up";
 import { deps as liveToken } from "../../src/voice/providers/gemini";
 import { call, fakeDeps } from "../agents/fakes";
 import { profile } from "../voice/fixtures";
 
 const realLive = liveToken.fetch;
 const realJev = jev.fetch;
+const realFollowUp = followUpModel.fetch;
 let tokenRequests: string[] = [];
 
 beforeEach(() => {
@@ -26,6 +28,7 @@ beforeEach(() => {
 afterEach(() => {
   liveToken.fetch = realLive;
   jev.fetch = realJev;
+  followUpModel.fetch = realFollowUp;
 });
 
 const debriefReplies = [call("finish", { summary: "Solid start.", prepList: [{ step: "Practise STAR", why: "answers lacked results" }] })];
@@ -102,5 +105,30 @@ describe("/api/voice", () => {
     const statuses: number[] = [];
     for (let i = 0; i < 11; i++) statuses.push((await send(voiceApp(), me.token, "POST", "/sessions", { mode: "networking" })).status);
     expect(statuses.at(-1)).toBe(429);
+  });
+
+  it("says the next line for the owner only, at most once a second", async () => {
+    followUpModel.fetch = (async () => Response.json({ candidates: [{ content: { parts: [{ text: "What was your part?" }] } }] })) as typeof fetch;
+    jev.fetch = (async () => Response.json({ answers: { next: { type: "choice", choice: "follow_up", confidence: 0.9 } } })) as typeof fetch;
+    const me = await person();
+    const started = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    const first = started.questions?.[0]?.text ?? "";
+    const answer = "I helped build it with the team.";
+    const body = { answer, transcript: [{ speaker: "interviewer", text: first }, { speaker: "candidate", text: answer }] };
+
+    const res = await send(voiceApp(), me.token, "POST", `/sessions/${started.sessionId}/next`, body);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ say: "What was your part?", kind: "follow_up" });
+    expect((await send(voiceApp(), me.token, "POST", `/sessions/${started.sessionId}/next`, body)).status).toBe(429);
+
+    const stranger = await person();
+    expect((await send(voiceApp(), stranger.token, "POST", `/sessions/${started.sessionId}/next`, body)).status).toBe(404);
+  });
+
+  it("rejects a malformed next-line request", async () => {
+    const me = await person();
+    const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    const bad = [{}, { answer: "hi", transcript: "nope" }, { answer: "hi", transcript: [{ speaker: "robot", text: "x" }] }];
+    for (const body of bad) expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/next`, body)).status).toBe(400);
   });
 });
