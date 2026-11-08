@@ -19,7 +19,8 @@ const clip = (text: string, max: number) => (text ?? "").trim().slice(0, max);
 export async function refineTemplates(deps: AgentDeps, request: RefineRequest, deadlineMs: number): Promise<void> {
   if (!(await deps.services.claimCooldown("roadmap-refine", request.userId, CLAIM_MS))) return;
   const all = await loadAll(deps.env, request.userId);
-  const targets = all.filter((s) => s.source === "template" && s.status === "todo");
+  // the Crossroads step reads the same for everyone and must stay what it is
+  const targets = all.filter((s) => s.source === "template" && s.status === "todo" && s.kind !== "explore_memory");
   if (targets.length === 0) return;
   const previous = all.filter((s) => !targets.includes(s)).map((s) => s.title);
 

@@ -1,4 +1,8 @@
 import type { AgentDeps } from "../agents/core/types";
+import { preferTravelled } from "../crossroads/boost";
+import { ensureExploreStep } from "../crossroads/explore-step";
+import { laneOf } from "../crossroads/lanes";
+import { pathsFor } from "../crossroads/paths";
 import { getProfile } from "../memory/profile/store";
 import { backgroundOf, goalOf, skillsOf } from "./background";
 import { groupByDay, streakDays } from "./progress";
@@ -30,6 +34,8 @@ export async function roadmapPage(deps: AgentDeps, userId: string, cursor: numbe
   let counts = await countSteps(env, userId);
   if (cursor > counts.open) return null;
 
+  // it sits before the first step, so only the first page can show it appearing; added before any refinement starts
+  const added = cursor === 0 && (await ensureExploreStep(env, userId, person.goal));
   let next = await loadOpen(env, userId, cursor, PAGE_STEPS);
   if (next.length < PAGE_STEPS && counts.total < MAX_STEPS) {
     const wanted = counts.total === 0 ? FIRST_BATCH : PAGE_STEPS - next.length;
@@ -37,7 +43,12 @@ export async function roadmapPage(deps: AgentDeps, userId: string, cursor: numbe
     options.waitUntil(refineTemplates(deps, { userId, person, background: backgroundOf(profile) }, options.refineDeadlineMs));
     counts = await countSteps(env, userId);
     next = await loadOpen(env, userId, cursor, PAGE_STEPS);
+  } else if (added) {
+    counts = await countSteps(env, userId);
   }
+  // reordered within the page only, so cursors keep pointing where they did
+  const { badges } = await pathsFor(env, laneOf(person.goal), person.goal);
+  next = preferTravelled(next, badges);
 
   const completed = await loadCompleted(env, userId);
   const end = cursor + next.length;

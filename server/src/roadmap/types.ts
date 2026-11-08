@@ -8,6 +8,8 @@ export const STEP_KINDS = [
   "application",
   "certification",
   "volunteering",
+  // opens Crossroads: what everyone on the same road learned; every road gets it once
+  "explore_memory",
 ] as const;
 export type StepKind = (typeof STEP_KINDS)[number];
 
@@ -17,7 +19,7 @@ export type StepStatus = (typeof STEP_STATUSES)[number];
 export type StepLabel = "ready_now" | "stretch" | "long_term";
 
 // what the app launches when the person taps the step's button
-export type StepAction = { type: "interview"; companySlug?: string; role?: string; postingId?: string };
+export type StepAction = { type: "interview"; companySlug?: string; role?: string; postingId?: string } | { type: "crossroads" };
 
 // what gets encrypted and stored for one step: the text, plus the person's own note once they finish it
 export type StepContent = {
@@ -39,6 +41,8 @@ export type Step = Omit<StepContent, "note"> & {
   completedAt: string | null;
   note: string | null;
   source: StepSource;
+  // set on a page when at least three people who reached a job took a step of this kind
+  travelled?: { people: number; reached: string };
 };
 
 export type Progress = { done: number; total: number; streakDays: number };

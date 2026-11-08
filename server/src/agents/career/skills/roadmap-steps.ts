@@ -44,7 +44,7 @@ Write plainly. Never promise an outcome.`,
         items: {
           type: "object",
           properties: {
-            kind: { type: "string", enum: [...STEP_KINDS] },
+            kind: { type: "string", enum: STEP_KINDS.filter((kind) => kind !== "explore_memory") },
             title: { type: "string" },
             why: { type: "string" },
             detail: { type: "string" },
