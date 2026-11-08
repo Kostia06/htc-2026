@@ -10,23 +10,12 @@ struct RoadmapView: View {
     @State private var pending: PracticeLaunch?
     @State private var practice: PracticeLaunch?
     @State private var lastPractice: PracticeLaunch?
-    @State private var isUpdating = false
 
     var body: some View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.ground)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Update", systemImage: "plus.bubble") { isUpdating = true }
-                            .labelStyle(.titleAndIcon)
-                    }
-                }
-        }
-        .sheet(isPresented: $isUpdating) {
-            // the app model notes what was applied; the onChange below reads the roadmap again
-            QuickUpdateView(onApplied: { _ in })
         }
         // the cover goes up once the picker is fully gone; iOS drops one presented while a sheet is closing
         .sheet(item: $picking, onDismiss: launchPending) { pick in

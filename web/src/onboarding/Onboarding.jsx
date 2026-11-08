@@ -91,7 +91,7 @@ function ResumeReview({ resume }) {
       {summary && <p className="ob__review-summary">{summary}</p>}
       {skills.length > 0 && (
         <div>
-          <h2 className="ob__review-h">Skills Skillit found</h2>
+          <h2 className="ob__review-h">Skills from your resume</h2>
           <ul className="ob__review-skills">
             {skills.map((s) => (
               <li key={s.name}>

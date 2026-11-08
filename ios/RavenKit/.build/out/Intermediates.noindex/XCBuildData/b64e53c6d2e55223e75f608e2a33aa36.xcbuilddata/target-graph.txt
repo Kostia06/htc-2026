@@ -1,0 +1,11 @@
+Target dependency graph (4 targets)
+Target 'AllIncludingTests' in project 'Aggregate'
+➜ Explicit dependency on target 'RavenKitTests-product' in project 'RavenKit'
+➜ Dependency on target 'RavenKitTests-product' in project 'RavenKit' via transitive dependency through 'RavenKitTests-test-runner'
+➜ Explicit dependency on target 'RavenKit-product' in project 'RavenKit'
+➜ Explicit dependency on target 'RavenKit' in project 'RavenKit'
+Target 'RavenKit-product' in project 'RavenKit'
+➜ Explicit dependency on target 'RavenKit' in project 'RavenKit'
+Target 'RavenKitTests-product' in project 'RavenKit'
+➜ Explicit dependency on target 'RavenKit' in project 'RavenKit'
+Target 'RavenKit' in project 'RavenKit' (no dependencies)
