@@ -41,6 +41,15 @@ export const ledgeColor = {
 
 export const ledgeOf = (face) => ledgeColor[face] ?? '#000000'
 
+// Under the ray, a face lightens a touch instead of glowing.
+const hoverColor = {
+  [color.action]: '#b4cfaf',
+  [color.secondaryButton]: '#4a504b',
+  [color.chip]: '#3b413c',
+  [color.negative]: '#ffa89f',
+}
+export const hoverOf = (face) => hoverColor[face] ?? face
+
 // The phone is designed in points; one point here is 1.8 mm. At the ~1.3 m the
 // panels float, that keeps the phone's type ramp readable through Quest 3 lenses
 // (17 pt body is ~1.35 degrees tall, comfortably above the ~1 degree floor).
@@ -76,10 +85,23 @@ export const radius = {
   key: pt(14),
 }
 
-// RaisedButtonStyle depth is 5 pt, RaisedSurfaceStyle 4 pt.
-export const ledge = {
-  button: pt(5),
-  card: pt(4),
+// Real thickness, in metres, so the UI belongs in the office instead of
+// looking pasted on: panels are slabs with softened edges, keys stand proud
+// of them (their sides in the phone's ledge colour), chips are low pills.
+export const depth = {
+  panel: 0.018,
+  panelBevel: 0.004,
+  key: 0.007,
+  keyBevel: 0.002,
+  chip: 0.003,
+}
+
+// Pointer feedback in metres: the key comes toward the ray on hover and
+// travels most of the way into the panel on press. Movement only, never a
+// scale wobble or a glow.
+export const travel = {
+  hover: 0.0025,
+  press: -0.005,
 }
 
 export const space = {
@@ -91,21 +113,14 @@ export const space = {
 }
 
 export const size = {
+  // 52 pt is ~9 cm here: well over the ~5 cm a ray needs to hit without aiming
   buttonHeight: pt(52),
-  minTarget: pt(44),
-  thickness: 0.012, // how deep a card's slab is, so it reads as an object from the side
-}
-
-// Where things float, in metres from the candidate's eyes.
-export const distance = {
-  panel: 1.3,
-  keypad: 1.2,
 }
 
 export const motion = {
   fadeOut: 0.22,
   fadeIn: 0.35,
-  press: { stiffness: 520, damping: 26 },
+  press: { stiffness: 520, damping: 46 }, // damping = 2√stiffness: critically damped
 }
 
 // Score bands. Teal is good, coral needs work; between, plain text so the

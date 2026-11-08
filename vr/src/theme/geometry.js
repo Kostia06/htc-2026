@@ -44,15 +44,42 @@ export function roundedOutline(width, height, radius, line) {
   })
 }
 
-/** A rounded slab `depth` thick whose front face sits at z = 0. */
-export function roundedSlab(width, height, radius, depth) {
-  return memo(key('slab', width, height, radius, depth), () => {
-    const geometry = new THREE.ExtrudeGeometry(roundedPath(new THREE.Shape(), width, height, radius), {
-      depth,
-      bevelEnabled: false,
+/**
+ * A rounded slab `depth` thick whose front face sits at z = 0, its edges
+ * softened by a `bevel` that stays inside width × height. Material slot 0 is
+ * the front and back, slot 1 the sides, so a key can show the phone's darker
+ * ledge colour on its sides.
+ */
+export function roundedSlab(width, height, radius, depth, bevel = 0) {
+  return memo(key('slab', width, height, radius, depth, bevel), () => {
+    const b = Math.min(bevel, depth / 2, width / 4, height / 4)
+    const shape = roundedPath(new THREE.Shape(), width - b * 2, height - b * 2, Math.max(0.001, radius - b))
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      depth: depth - b * 2,
+      bevelEnabled: b > 0,
+      bevelThickness: b,
+      bevelSize: b,
+      bevelSegments: 3,
       curveSegments: 10,
     })
-    geometry.translate(0, 0, -depth)
+    // bevel extends from -b to depth - b; put the front face at z = 0
+    geometry.translate(0, 0, -(depth - b))
     return geometry
   })
+}
+
+/** A soft, blurred rounded rectangle: the shadow a floating panel drops. */
+let shadowTexture = null
+export function softShadowTexture() {
+  if (shadowTexture) return shadowTexture
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 128
+  const ctx = canvas.getContext('2d')
+  ctx.filter = 'blur(12px)'
+  ctx.fillStyle = 'rgba(0,0,0,0.85)'
+  ctx.beginPath()
+  ctx.roundRect(24, 24, 80, 80, 18)
+  ctx.fill()
+  shadowTexture = new THREE.CanvasTexture(canvas)
+  return shadowTexture
 }

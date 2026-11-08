@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { Surface } from './Card.jsx'
 import { Label } from './Label.jsx'
 import { logoTexture } from './logo.js'
-import { color, type } from './tokens.js'
+import { color, depth, type } from './tokens.js'
 
 // Troika measures text asynchronously; a chip has to size itself now, so this
 // is Inter's average advance at the given size. Close enough for padding.
@@ -17,14 +17,14 @@ export function Chip({ text, face = color.chip, tone = 'text', variant = 'footno
   const width = estimateWidth(text, fontSize) + height * 0.9 + dotSpace
   return (
     <group {...props}>
-      <Surface width={width} height={height} radius={height / 2} face={face} />
+      <Surface width={width} height={height} radius={height / 2} face={face} raised />
       {dot && (
-        <mesh position={[-width / 2 + height * 0.45 + fontSize * 0.3, 0, 0.001]}>
+        <mesh position={[-width / 2 + height * 0.45 + fontSize * 0.3, 0, depth.chip + 0.001]}>
           <circleGeometry args={[fontSize * 0.3, 16]} />
           <meshBasicMaterial color={dot} toneMapped={false} />
         </mesh>
       )}
-      <Label variant={variant} weight="semibold" tone={tone} anchorX="center" anchorY="middle" position={[dotSpace / 2, 0, 0.001]}>
+      <Label variant={variant} weight="semibold" tone={tone} anchorX="center" anchorY="middle" position={[dotSpace / 2, 0, depth.chip + 0.001]}>
         {text}
       </Label>
     </group>

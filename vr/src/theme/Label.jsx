@@ -12,6 +12,16 @@ export function flat(hex) {
   return materials.get(hex)
 }
 
+// Panels and keys are objects in the office, so they take its light: matte,
+// one roughness everywhere, no metal. Text and small marks stay `flat`.
+const litMaterials = new Map()
+export function lit(hex) {
+  if (!litMaterials.has(hex)) {
+    litMaterials.set(hex, new THREE.MeshStandardMaterial({ color: hex, roughness: 0.82, metalness: 0 }))
+  }
+  return litMaterials.get(hex)
+}
+
 // Weight follows the phone's text styles: headings semibold/bold, body regular.
 const WEIGHT = {
   score: 'rounded',
