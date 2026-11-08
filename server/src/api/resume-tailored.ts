@@ -9,6 +9,7 @@ import { ImportFailed } from "../postings/import";
 import { parseResume } from "../resume/parse";
 import { renderResumePDF } from "../resume/pdf";
 import { applyChanges, matchSummary } from "../resume/tailor/apply";
+import { notifyAfterWrite } from "../notifications/generate";
 import { NothingToTailor, PostingNotFound, TailorFailed, tailorResume } from "../resume/tailor/create";
 import { deleteTailored, findTailored, listTailored, updateTailored } from "../resume/tailor/store";
 import type { TailoredContent, TailoredResume } from "../resume/tailor/types";
@@ -72,7 +73,9 @@ export function tailoredRouter(makeDeps: MakeDeps, options: Options = {}) {
 
     const deps = makeDeps(c.env, (work) => c.executionCtx.waitUntil(work));
     try {
-      return c.json(await tailorResume(deps, { userId, postingId, text }), 201);
+      const tailored = await tailorResume(deps, { userId, postingId, text });
+      notifyAfterWrite(c.env, userId, (work) => c.executionCtx.waitUntil(work));
+      return c.json(tailored, 201);
     } catch (e) {
       if (e instanceof PostingNotFound) return c.json({ error: "unknown posting" }, 404);
       if (e instanceof NothingToTailor) return c.json({ error: "add a summary, a bullet or a skill to your resume first" }, 422);
