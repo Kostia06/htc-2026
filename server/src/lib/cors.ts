@@ -15,6 +15,6 @@ export const corsForApi: MiddlewareHandler<AppContext> = (c, next) =>
   cors({
     origin: (origin) => (allowedOrigins(c.env.ALLOWED_ORIGINS).includes(origin) ? origin : null),
     allowMethods: ["GET", "POST", "PATCH", "DELETE"],
-    allowHeaders: ["Authorization", "Content-Type", "X-Pairing-Token"],
+    allowHeaders: ["Authorization", "Content-Type"],
     maxAge: 600,
   })(c, next);

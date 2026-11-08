@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
 import app from "../../src/index";
-import { issueSession, verifySession } from "../../src/auth/session";
+import { issueExpiringSessionFor, issueSession, verifySession } from "../../src/auth/session";
 
 describe("sessions", () => {
   it("verifies a token it issued back to the same id", async () => {
@@ -19,6 +19,20 @@ describe("sessions", () => {
   it("rejects a token signed with another secret", async () => {
     const token = await issueSession("other");
     expect(await verifySession(token, "s3cret")).toBeNull();
+  });
+
+  it("verifies an expiring token until it expires", async () => {
+    const expiresAt = new Date("2026-11-07T12:00:00Z");
+    const token = await issueExpiringSessionFor("s3cret", "user-1", expiresAt);
+    expect(await verifySession(token, "s3cret", new Date("2026-11-07T11:59:59Z"))).toBe("user-1");
+    expect(await verifySession(token, "s3cret", expiresAt)).toBeNull();
+  });
+
+  it("rejects an expiring token whose expiry was pushed back", async () => {
+    const token = await issueExpiringSessionFor("s3cret", "user-1", new Date("2026-11-07T12:00:00Z"));
+    const [id, , sig] = token.split(".");
+    const later = Math.floor(Date.parse("2030-01-01T00:00:00Z") / 1000);
+    expect(await verifySession(`${id}.${later}.${sig}`, "s3cret", new Date("2026-11-07T11:00:00Z"))).toBeNull();
   });
 
   it("returns 401 on a protected route without a token", async () => {

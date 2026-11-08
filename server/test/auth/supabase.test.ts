@@ -84,15 +84,12 @@ describe("Supabase sign-in", () => {
 
   it("signs a headset into the account of a Supabase-signed-in phone", async () => {
     const request = (path: string, init: RequestInit = {}) => worker.request(path, init, supabaseEnv);
-    const created = await request("/api/pairing", { method: "POST", headers: { "CF-Connecting-IP": crypto.randomUUID() } });
-    const headset = await created.json<{ code: string; pollToken: string }>();
+    const offered = await request("/api/pairing/offer", { method: "POST", headers: { Authorization: `Bearer ${await token()}` } });
+    expect(offered.status).toBe(201);
+    const { code } = await offered.json<{ code: string }>();
 
-    const approved = await request(`/api/pairing/${headset.code}/approve`, { method: "POST", headers: { Authorization: `Bearer ${await token()}` } });
-    expect(approved.status).toBe(200);
-
-    const polled = await request(`/api/pairing/${headset.code}`, { headers: { "X-Pairing-Token": headset.pollToken } });
-    const result = await polled.json<{ status: string; token: string }>();
-    expect(result.status).toBe("approved");
+    const claimed = await request("/api/pairing/claim", { method: "POST", headers: { "CF-Connecting-IP": crypto.randomUUID() }, body: JSON.stringify({ code }) });
+    const result = await claimed.json<{ token: string }>();
     expect(await verifySession(result.token, env.SESSION_SECRET)).toBe(USER_ID);
     expect((await me(result.token)).status).toBe(200);
   });

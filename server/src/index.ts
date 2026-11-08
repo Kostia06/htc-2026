@@ -26,7 +26,7 @@ const app = new Hono<AppContext>();
 // before the session check, so preflights are answered without a token
 app.use("/api/*", corsForApi);
 app.use("/api/*", async (c, next) => {
-  // pairing checks its own session: the headset asking for a code has none yet
+  // pairing checks its own session: the headset claiming a code has none yet
   if (c.req.path === "/api/session" || c.req.path.startsWith("/api/pairing")) return next();
   return requireSession(c, next);
 });

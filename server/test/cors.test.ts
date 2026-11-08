@@ -4,8 +4,8 @@ import app from "../src/index";
 
 const preflight = (origin: string, bindings = env) =>
   app.request(
-    "/api/pairing/ABCD2345",
-    { method: "OPTIONS", headers: { Origin: origin, "Access-Control-Request-Method": "GET", "Access-Control-Request-Headers": "X-Pairing-Token" } },
+    "/api/pairing/claim",
+    { method: "OPTIONS", headers: { Origin: origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type" } },
     bindings,
   );
 
@@ -14,7 +14,7 @@ describe("cors", () => {
     const res = await preflight("http://localhost:5173");
     expect(res.status).toBe(204);
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe("http://localhost:5173");
-    expect(res.headers.get("Access-Control-Allow-Headers")).toContain("X-Pairing-Token");
+    expect(res.headers.get("Access-Control-Allow-Headers")).toContain("Authorization");
     expect(res.headers.get("Access-Control-Allow-Methods")).toBe("GET,POST,PATCH,DELETE");
   });
 
@@ -30,8 +30,8 @@ describe("cors", () => {
   });
 
   it("adds the header to real responses too", async () => {
-    const res = await app.request("/api/pairing", { method: "POST", headers: { Origin: "http://localhost:5173", "CF-Connecting-IP": crypto.randomUUID() } }, env);
-    expect(res.status).toBe(201);
+    const res = await app.request("/api/pairing/claim", { method: "POST", headers: { Origin: "http://localhost:5173" }, body: "{}" }, env);
+    expect(res.status).toBe(400);
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe("http://localhost:5173");
   });
 });
