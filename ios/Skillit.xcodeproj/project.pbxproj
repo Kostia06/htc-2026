@@ -113,6 +113,7 @@
 		DA73E12A89253542899C5C76 /* PrivacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275CDA1828280F53CE3C41D0 /* PrivacyView.swift */; };
 		DB373C045B24373BE38A3254 /* ExperienceForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59298463A4E72F1509B09CD3 /* ExperienceForm.swift */; };
 		DCBD6A9D9D89CEDC96E9ACE1 /* RoadmapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D64B43DC50023B60D98700 /* RoadmapService.swift */; };
+		DF4DA231AFFB26DB3173EEF4 /* PracticeProgressCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */; };
 		DFFF6D9AF9577DFA01119904 /* ResumeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D81B551EFDDB77B6259E3C /* ResumeCard.swift */; };
 		E58293C189C27DCCBF5A77EC /* SkillsSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7FDB2141745DC18AEE22B9 /* SkillsSummary.swift */; };
 		E58F8E91D899A4E833057A4F /* SpeechDictation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCD7BD109E7C0E83E973891 /* SpeechDictation.swift */; };
@@ -167,6 +168,7 @@
 		368191DE38313BBACF250CE5 /* SectionChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionChips.swift; sourceTree = "<group>"; };
 		37049C8188EB035058A8222E /* CompanySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySheet.swift; sourceTree = "<group>"; };
 		37F7F562D9E92E1F9C2CD295 /* QuickUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickUpdateService.swift; sourceTree = "<group>"; };
+		3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeProgressCard.swift; sourceTree = "<group>"; };
 		3D3F78DF59E60EA5171E3D16 /* FeedKind+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedKind+Style.swift"; sourceTree = "<group>"; };
 		3DF9CFCA724FC5CD36BEFD6A /* ShareMemorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMemorySheet.swift; sourceTree = "<group>"; };
 		3ECD8BD6874744D23416D3ED /* CompanyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyModel.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				3617B7D2FC68DA52D4D1D645 /* ElevenLabsVoiceEngine.swift */,
 				E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */,
 				59815D96F6C995E7B6EFA23F /* InterviewTargetPicker.swift */,
+				3B32376FDAFB6A100BBAB4FB /* PracticeProgressCard.swift */,
 				FC6E2301E658B586D135965B /* PracticeView.swift */,
 				966D3989EF154F072250543B /* PreviewVoiceEngine.swift */,
 				16B1176230A3A7B62060707C /* SessionSummaryView.swift */,
@@ -712,6 +715,7 @@
 				3BB6F86260A4A1DF9C759C63 /* PracticeHistoryModel.swift in Sources */,
 				C6E361503FE5FA60759C509D /* PracticeHistoryService.swift in Sources */,
 				2CB057E13178C091EF3977D5 /* PracticeHistoryView.swift in Sources */,
+				DF4DA231AFFB26DB3173EEF4 /* PracticeProgressCard.swift in Sources */,
 				0F5ADFA6108229E31C4DF4B7 /* PracticeSessionDetailView.swift in Sources */,
 				B15A1EF969EC5EB2522C6828 /* PracticeView.swift in Sources */,
 				FF6F953CE287CE2087FF494D /* PreviewVoiceEngine.swift in Sources */,

@@ -1,10 +1,12 @@
 import SkillitKit
 import SwiftUI
 
-/// The Practice tab: pick what you're interviewing for and start talking, or move to the headset.
+/// The Practice tab: how your last interview went, then pick what you're interviewing for and start talking.
 struct PracticeView: View {
     @Environment(AppModel.self) private var app
     @State private var postings = PostingsModel()
+    @State private var history: PracticeHistoryModel?
+    @State private var isShowingHistory = false
     @State private var isPicking = false
     @State private var pending: VoiceSessionRequest?
     @State private var activeSession: VoiceSessionModel?
@@ -16,17 +18,22 @@ struct PracticeView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    if let history {
+                        PracticeProgressCard(model: history) { isShowingHistory = true }
+                    }
                     interviewChoice
                     yourPostings
                     vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }
-                    NavigationLink { PracticeHistoryView() } label: { rowLabel("Past sessions", systemImage: "chart.line.uptrend.xyaxis") }
-                        .buttonStyle(.plain)
                 }
                 .padding(24)
             }
             .navigationTitle("Practice")
             .navigationDestination(isPresented: $isPairing) { PairHeadsetView() }
+            // a sheet, not a push: the history screen brings its own NavigationStack, and nesting it broke its links
+            .sheet(isPresented: $isShowingHistory) {
+                PracticeHistoryView().presentationDragIndicator(.visible)
+            }
             .sheet(isPresented: $isRecapping) { RecapView(companySlug: nil, voice: ElevenLabsRecapVoice()) }
             // the session starts once the picker is fully gone; iOS drops a cover presented while a sheet is closing
             .sheet(isPresented: $isPicking, onDismiss: startPending) {
@@ -37,6 +44,13 @@ struct PracticeView: View {
                 VoiceSessionView(model: session, onPracticeAgain: { start(session.request) })
             }
             .task(id: app.updatesApplied) { await postings.load(using: app.client) }
+            .task(id: activeSession == nil) {
+                // reloads when a session closes, so the card shows the score just earned
+                guard activeSession == nil else { return }
+                let model = history ?? PracticeHistoryModel(service: app.practiceHistoryService)
+                history = model
+                await model.refresh()
+            }
         }
     }
 

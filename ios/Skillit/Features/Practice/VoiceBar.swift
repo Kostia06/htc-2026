@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Seven rounded bars that show who is talking: orange while the person answers, purple while the agent speaks,
+/// Seven rounded bars that show who is talking: sage while the person answers, sand while the agent speaks,
 /// a slow breath while it thinks. With Reduce Motion the bars hold still and loudness shows as brightness.
 struct VoiceBar: View {
     let state: VoiceState

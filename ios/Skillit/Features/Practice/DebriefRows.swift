@@ -8,12 +8,13 @@ struct ScoreHeadline: View {
 
     @State private var shown = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ScaledMetric(relativeTo: .largeTitle) private var size: CGFloat = 72
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(shown, format: .number)
-                    .font(.system(size: 76, weight: .bold, design: .rounded))
+                    .font(.system(size: min(size, 120), weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText())
                 Text("/100")
@@ -34,44 +35,31 @@ struct ScoreHeadline: View {
     }
 }
 
-/// One fix, said plainly. A short example sits right under it; a long one waits behind a tap.
-struct ImprovementRow: View {
-    let number: Int
-    let improvement: SessionDebrief.Improvement
-
-    @State private var isExpanded = false
-
-    /// Past this the example becomes a paragraph, and the page stops feeling calm.
-    private static let shortExample = 90
+/// One line of the debrief: a small glyph, the point in plain words, and an optional example to say instead.
+struct DebriefRow: View {
+    let systemImage: String
+    let tint: Color
+    let text: String
+    var example: String = ""
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(number, format: .number)
-                .font(.subheadline.weight(.bold).monospacedDigit())
-                .foregroundStyle(Theme.action)
+            Image(systemName: systemImage)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(tint)
+                .frame(width: 18)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
-                Text(improvement.better)
+                Text(text)
                     .font(.body)
-                if !improvement.example.isEmpty {
-                    example
+                if !example.isEmpty {
+                    Text("Try: “\(example)”")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
-    }
-
-    @ViewBuilder private var example: some View {
-        if improvement.example.count <= Self.shortExample || isExpanded {
-            Text("Try: “\(improvement.example)”")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .transition(.opacity.combined(with: .move(edge: .top)))
-        } else {
-            Button("Show an example") {
-                withAnimation(.spring(duration: 0.35, bounce: 0.2)) { isExpanded = true }
-            }
-            .font(.subheadline.weight(.medium))
-            .foregroundStyle(.secondary)
-        }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -80,11 +68,11 @@ struct QuestionRow: View {
     let result: SessionDebrief.QuestionResult
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(alignment: .firstTextBaseline, spacing: 14) {
             Text(result.score, format: .number)
                 .font(.title3.weight(.bold).monospacedDigit())
-                .foregroundStyle(result.score < 55 ? Theme.action : .primary)
-                .frame(width: 40, alignment: .leading)
+                .foregroundStyle(result.score < 55 ? Theme.negative : Color.primary)
+                .frame(minWidth: 40, alignment: .leading)
             VStack(alignment: .leading, spacing: 4) {
                 Text(result.question)
                     .font(.subheadline.weight(.medium))
@@ -94,5 +82,6 @@ struct QuestionRow: View {
             }
         }
         .padding(.vertical, 10)
+        .accessibilityElement(children: .combine)
     }
 }

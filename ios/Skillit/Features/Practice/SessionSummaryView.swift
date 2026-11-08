@@ -1,8 +1,8 @@
 import SkillitKit
 import SwiftUI
 
-/// The debrief as one calm page: the score, two things that worked, up to three things to fix, two buttons.
-/// Question-by-question detail waits behind one disclosure at the bottom. `debrief` is nil while it's being written.
+/// The debrief as one calm page: the score, what worked, what to fix next, and every answer behind a disclosure.
+/// Both lists use the same plain row so the page reads as one list, not three widgets. `debrief` is nil while it's being written.
 struct SessionSummaryView: View {
     let debrief: SessionDebrief?
     let onPracticeAgain: () -> Void
@@ -10,14 +10,25 @@ struct SessionSummaryView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 40) {
+            VStack(alignment: .leading, spacing: 36) {
                 if let debrief {
                     ScoreHeadline(score: debrief.overall, verdict: debrief.verdict)
                     if !debrief.strengths.isEmpty {
-                        wentWell(debrief.strengths.prefix(2))
+                        section("What worked") {
+                            ForEach(Array(debrief.strengths.prefix(2)), id: \.quote) { strength in
+                                DebriefRow(systemImage: "checkmark", tint: Theme.positive, text: strength.why)
+                            }
+                        }
                     }
                     if !debrief.improvements.isEmpty {
-                        workOnNext(debrief.improvements.prefix(3))
+                        section("Work on next") {
+                            ForEach(Array(debrief.improvements.prefix(3).enumerated()), id: \.offset) { _, improvement in
+                                DebriefRow(
+                                    systemImage: "arrow.right", tint: .secondary,
+                                    text: improvement.better, example: improvement.example,
+                                )
+                            }
+                        }
                     }
                     if !debrief.perQuestion.isEmpty {
                         everyAnswer(debrief.perQuestion)
@@ -27,34 +38,11 @@ struct SessionSummaryView: View {
                 }
             }
             .padding(24)
-            .padding(.bottom, 120)
         }
         .scrollIndicators(.hidden)
         .safeAreaInset(edge: .bottom) { actions }
         .background(Theme.ground)
         .animation(.smooth, value: debrief == nil)
-    }
-
-    private func wentWell(_ strengths: ArraySlice<SessionDebrief.Strength>) -> some View {
-        section("What went well") {
-            ForEach(Array(strengths), id: \.quote) { strength in
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Image(systemName: "checkmark")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(Theme.action)
-                    Text(strength.why)
-                        .font(.body)
-                }
-            }
-        }
-    }
-
-    private func workOnNext(_ improvements: ArraySlice<SessionDebrief.Improvement>) -> some View {
-        section("Work on next") {
-            ForEach(Array(improvements.enumerated()), id: \.offset) { index, improvement in
-                ImprovementRow(number: index + 1, improvement: improvement)
-            }
-        }
     }
 
     private func everyAnswer(_ results: [SessionDebrief.QuestionResult]) -> some View {
@@ -69,15 +57,15 @@ struct SessionSummaryView: View {
             }
             .padding(.top, 8)
         } label: {
-            Text("See every answer")
-                .font(.subheadline.weight(.medium))
+            Text("Every answer")
+                .font(.headline)
                 .foregroundStyle(.secondary)
         }
         .tint(.secondary)
     }
 
     private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 18) {
             Text(title)
                 .font(.headline)
                 .foregroundStyle(.secondary)
@@ -99,10 +87,13 @@ struct SessionSummaryView: View {
         }
     }
 
+    /// Done always works: the debrief waits on every answer being scored, and one slow request mustn't trap the person here.
     private var actions: some View {
         VStack(spacing: 12) {
             Button("Practice again", action: onPracticeAgain)
                 .buttonStyle(.raised)
+                .disabled(debrief == nil)
+                .opacity(debrief == nil ? 0.4 : 1)
             Button("Done", action: onDone)
                 .font(.headline)
                 .foregroundStyle(.secondary)
@@ -111,7 +102,11 @@ struct SessionSummaryView: View {
         .padding(.horizontal, 24)
         .padding(.top, 12)
         .background(Theme.ground)
-        .disabled(debrief == nil)
-        .opacity(debrief == nil ? 0.4 : 1)
     }
 }
+
+#if DEBUG
+#Preview {
+    SessionSummaryView(debrief: .sample, onPracticeAgain: {}, onDone: {})
+}
+#endif
