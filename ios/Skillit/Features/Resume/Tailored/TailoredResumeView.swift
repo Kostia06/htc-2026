@@ -23,20 +23,14 @@ struct TailoredResumeView: View {
         .background(Theme.ground)
         .navigationTitle("Tailored resume")
         .navigationBarTitleDisplayMode(.inline)
+        // Export lives in the toolbar, like the base resume's: a pinned bottom button sat against the floating tab bar
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Menu("More", systemImage: "ellipsis") {
-                    Button("Delete this version", systemImage: "trash", role: .destructive) { isConfirmingDelete = true }
-                }
+                Button("Export", systemImage: "square.and.arrow.up") { isExporting = true }
             }
-        }
-        .safeAreaInset(edge: .bottom) {
-            Button("Export", systemImage: "square.and.arrow.up") { isExporting = true }
-                .buttonStyle(.raised)
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .background(Theme.ground.opacity(0.92))
-                .clearsFloatingBar()
+            ToolbarItem(placement: .secondaryAction) {
+                Button("Delete this version", systemImage: "trash", role: .destructive) { isConfirmingDelete = true }
+            }
         }
         // the layout is remembered per job: some postings want the plain page
         .sheet(isPresented: $isExporting) {

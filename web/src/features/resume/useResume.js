@@ -4,6 +4,7 @@
 //   source 'upload':  read from a file just now; edits stay on screen until the person saves or discards it.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { RESUME_MAX_BYTES, resumeApi } from '../../lib/client'
+import { useOnUpdatesApplied } from '../../lib/hooks'
 import { normalizeResume } from './resumeDoc'
 
 export function useResume() {
@@ -32,6 +33,10 @@ export function useResume() {
   useEffect(() => {
     fetchResume()
   }, [fetchResume])
+  // the profile fills the resume's blanks, so a quick update can change it; a file still being checked is left alone
+  useOnUpdatesApplied(() => {
+    if (current.current.source !== 'upload') fetchResume()
+  })
 
   /** Starts over from the server: after a failed load, or to drop a file that wasn't saved. */
   const load = useCallback(() => {

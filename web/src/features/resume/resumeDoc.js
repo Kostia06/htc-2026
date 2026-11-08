@@ -19,7 +19,7 @@ export const BLANK = {
 
 export function normalizeResume(r = {}) {
   return {
-    contact: { name: '', email: '', phone: '', links: [], ...r.contact },
+    contact: { name: '', email: '', phone: '', location: '', links: [], ...r.contact },
     summary: r.summary ?? '',
     experience: (r.experience ?? []).map((e) => ({ ...BLANK.experience, ...e, bullets: e.bullets ?? [] })),
     education: (r.education ?? []).map((e) => ({ ...BLANK.education, ...e })),

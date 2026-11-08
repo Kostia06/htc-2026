@@ -23,6 +23,14 @@ struct ResumeTests {
         #expect(saved.saved == false)
         #expect(saved.resume.contact.name == "Jo")
         #expect(saved.resume.skills == ["SQL"])
+        #expect(saved.resume.contact.location == "")
+    }
+
+    @Test func `reads the location the server prefilled and sends it back`() throws {
+        let json = #"{"name":"Jo","email":"","phone":"","location":"Calgary","links":[]}"#
+        let contact = try JSONDecoder().decode(Resume.Contact.self, from: Data(json.utf8))
+        #expect(contact.location == "Calgary")
+        #expect(try JSONDecoder().decode(Resume.Contact.self, from: JSONEncoder().encode(contact)) == contact)
     }
 
     @Test func `reads the text a path points at`() {

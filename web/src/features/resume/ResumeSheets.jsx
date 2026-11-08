@@ -74,6 +74,7 @@ export function SectionEditor() {
               <input className="form-sheet__field t-body" placeholder="Name" aria-label="Name" value={draft.contact.name} onChange={setContact('name')} autoFocus />
               <input className="form-sheet__field t-body" placeholder="Email" aria-label="Email" type="email" value={draft.contact.email} onChange={setContact('email')} />
               <input className="form-sheet__field t-body" placeholder="Phone" aria-label="Phone" value={draft.contact.phone} onChange={setContact('phone')} />
+              <input className="form-sheet__field t-body" placeholder="Location (city, province)" aria-label="Location" value={draft.contact.location ?? ''} onChange={setContact('location')} />
             </div>
             <p className="form-sheet__header t-footnote">Links</p>
             <div className="form-sheet__group">

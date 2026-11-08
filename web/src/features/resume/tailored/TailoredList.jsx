@@ -8,9 +8,9 @@ import { matchLine } from './match'
 export default function TailoredList({ list }) {
   const navigate = useNavigate()
   return (
-    <section className="card stack tailored" aria-label="Tailored resumes">
+    <section className="card stack tailored" aria-label="Your resumes">
       <div className="stack tailored__intro">
-        <h2 className="t-headline">Tailored resumes</h2>
+        <h2 className="t-headline">Your resumes</h2>
         <p className="t-footnote c-2">A copy of your resume adapted to one job. Your base resume stays as it is.</p>
       </div>
       {list.failed && <p className="t-footnote c-negative">Couldn&rsquo;t load your tailored resumes. Reload to try again.</p>}

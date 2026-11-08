@@ -55,12 +55,9 @@ struct ResumeView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            if let model, model.phase == .ready {
-                improveButton(model).clearsFloatingBar()
-            }
-        }
         .refreshable { await model?.load() }
+        // something said to Ask Skillit may have landed in the profile, which fills the resume's blanks
+        .onChange(of: app.updatesApplied) { Task { await model?.load() } }
         .sheet(item: $editing, onDismiss: finishEditing) { area in
             if let model {
                 @Bindable var model = model
@@ -113,6 +110,8 @@ struct ResumeView: View {
                 beforeEditing = model.resume
                 editing = area
             }
+            // inline, not pinned: a pinned button sat against the floating tab bar
+            improveButton(model)
             if model.saveFailed {
                 Label("Your last change didn't save. Pull to refresh or edit again.", systemImage: "exclamationmark.triangle")
                     .font(.footnote)
@@ -137,7 +136,6 @@ struct ResumeView: View {
         }
         .buttonStyle(.raised(Theme.agent, foreground: Theme.onAction))
         .disabled(model.isImproving)
-        .padding(.horizontal, 20)
         .padding(.top, 8)
         .background(Theme.ground.opacity(0.92))
         .animation(.spring(duration: 0.3), value: model.isImproving)

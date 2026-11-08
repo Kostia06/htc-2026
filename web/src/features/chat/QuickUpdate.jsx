@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../../app/context'
 import { postingsApi, sendUpdate } from '../../lib/client'
-import { useStickToBottom } from '../../lib/hooks'
+import { announceUpdatesApplied, useStickToBottom } from '../../lib/hooks'
 import { AppliedCard, Bubble, Composer, TypingIndicator } from '../../ui/Chat'
 import { Sheet } from '../../ui/Sheet'
 import { detectPosting, postingChanges, postingReply } from './posting'
@@ -57,6 +57,7 @@ export default function QuickUpdate({ focusTitle, focusStepId, onApplied, onClos
         setApplied((a) => ({ ...a, [said.id]: reply.applied }))
         onApplied?.(reply.applied)
         if (reply.applied.some((c) => PROFILE_CHANGES.includes(c.type))) app.refreshProfile().catch(() => {})
+        announceUpdatesApplied(reply.applied)
       }
     } catch (e) {
       setError(e.message)

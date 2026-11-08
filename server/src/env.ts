@@ -1,3 +1,4 @@
+import type { Account } from "./auth/account";
 export type Env = {
   DB: D1Database;
   VECTORS: VectorizeIndex;
@@ -49,4 +50,4 @@ export type Env = {
   COMPOSIO_GITHUB_AUTH_CONFIG_ID?: string;
 };
 
-export type AppContext = { Bindings: Env; Variables: { sessionId: string } };
+export type AppContext = { Bindings: Env; Variables: { sessionId: string; account?: Account } };

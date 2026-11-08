@@ -57,7 +57,8 @@ struct ResumePreview: View {
                         .font(.title3.bold())
                         .tracking(0.6)
                         .foregroundStyle(Paper.navy)
-                    let line = ([resume.contact.phone, resume.contact.email] + resume.contact.links).filter { !$0.isEmpty }
+                    let contact = resume.contact
+                    let line = ([contact.location, contact.phone, contact.email] + contact.links).filter { !$0.isEmpty }
                     if line.isEmpty {
                         AddLine(prompt: ResumeArea.contact.emptyPrompt)
                     } else {

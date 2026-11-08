@@ -64,7 +64,7 @@ function SkillRows({ skills }) {
 export default function ResumePaper({ resume, template = 'skillit', onEdit }) {
   const plain = template === 'plain'
   const { contact } = resume
-  const contactLine = (plain ? [contact.email, contact.phone, ...contact.links] : [contact.phone, contact.email, ...contact.links])
+  const contactLine = (plain ? [contact.location, contact.email, contact.phone, ...contact.links] : [contact.location, contact.phone, contact.email, ...contact.links])
     .filter(Boolean)
     .join(plain ? '  ·  ' : ' | ')
 

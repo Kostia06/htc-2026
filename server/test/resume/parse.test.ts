@@ -24,7 +24,7 @@ describe("parseResume", () => {
       extra: "ignored",
     });
     expect(parsed).toEqual({
-      contact: { name: "", email: "", phone: "", links: [] },
+      contact: { name: "", email: "", phone: "", location: "", links: [] },
       summary: "Student",
       experience: [{ role: "Dev", org: "", start: "", end: "", bullets: ["a", "b"] }],
       education: [{ school: "UCalgary", program: "", year: "" }],
@@ -56,6 +56,6 @@ describe("seedFromProfile", () => {
       experience: [{ role: "Co-op", org: "ATB", start: "May 2026", end: "", bullets: ["Built an API"] }],
       projects: [{ name: "Tracker", bullets: ["A budgeting app"], link: "" }],
     });
-    expect(seeded.contact).toEqual({ name: "", email: "", phone: "", links: [] });
+    expect(seeded.contact).toEqual({ name: "", email: "", phone: "", location: "", links: [] });
   });
 });

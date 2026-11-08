@@ -78,6 +78,8 @@ struct ResumeSectionEditor: View {
             TextField("Phone", text: $resume.contact.phone)
                 .textContentType(.telephoneNumber)
                 .keyboardType(.phonePad)
+            TextField("Location", text: $resume.contact.location, prompt: Text("City, province"))
+                .textContentType(.addressCityAndState)
         }
         CommaListField(title: "Links", prompt: "github.com/you, linkedin.com/in/you", items: $resume.contact.links)
     }

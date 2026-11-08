@@ -15,6 +15,7 @@ const supabaseEnv = { ...env, SUPABASE_URL: PROJECT_URL };
 const app = new Hono<AppContext>();
 app.use("*", requireSession);
 app.get("/me", (c) => c.json({ id: c.var.sessionId }));
+app.get("/account", (c) => c.json(c.var.account ?? null));
 
 let signingKey: CryptoKey;
 let otherKey: CryptoKey;
@@ -35,8 +36,8 @@ afterAll(() => {
   deps.keysFor = realKeys;
 });
 
-function token(over: { aud?: string; iss?: string; exp?: string; key?: CryptoKey } = {}) {
-  return new SignJWT({ role: "authenticated" })
+function token(over: { aud?: string; iss?: string; exp?: string; key?: CryptoKey; claims?: Record<string, unknown> } = {}) {
+  return new SignJWT({ role: "authenticated", ...over.claims })
     .setProtectedHeader({ alg: "ES256", kid: "k1" })
     .setSubject(USER_ID)
     .setIssuer(over.iss ?? ISSUER)
@@ -72,6 +73,17 @@ describe("Supabase sign-in", () => {
     const customEnv = { ...supabaseEnv, SUPABASE_JWT_AUDIENCE: "raven" };
     expect((await me(await token({ aud: "raven" }), customEnv)).status).toBe(200);
     expect((await me(await token(), customEnv)).status).toBe(401);
+  });
+
+  it("carries the account's name, email and phone from the token, for prefilling the resume", async () => {
+    const claims = { email: "kostia@example.com", phone: "", user_metadata: { full_name: "  Kostia Ilnytskyi " } };
+    const res = await app.request("/account", { headers: { Authorization: `Bearer ${await token({ claims })}` } }, supabaseEnv);
+    expect(await res.json()).toEqual({ name: "Kostia Ilnytskyi", email: "kostia@example.com" });
+  });
+
+  it("has no account for the server's own tokens", async () => {
+    const res = await app.request("/account", { headers: { Authorization: `Bearer ${await issueSession(env.SESSION_SECRET)}` } }, supabaseEnv);
+    expect(await res.json()).toBeNull();
   });
 
   it("still accepts the server's own tokens, which paired headsets use", async () => {

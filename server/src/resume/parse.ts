@@ -47,7 +47,13 @@ export function parseResume(input: unknown): Resume | null {
   if (!isFields(input)) return null;
   const contact = isFields(input.contact) ? input.contact : {};
   return {
-    contact: { name: text(contact.name), email: text(contact.email), phone: text(contact.phone), links: textList(contact.links, LIMITS.links) },
+    contact: {
+      name: text(contact.name),
+      email: text(contact.email),
+      phone: text(contact.phone),
+      location: text(contact.location),
+      links: textList(contact.links, LIMITS.links),
+    },
     summary: text(input.summary, MAX_SUMMARY),
     experience: list(input.experience, parseExperience, LIMITS.experience),
     education: list(input.education, parseEducation, LIMITS.education),

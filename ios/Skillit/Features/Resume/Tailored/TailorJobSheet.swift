@@ -27,8 +27,6 @@ struct TailorJobSheet: View {
                     }
                 }
         }
-        // a sheet covers the floating tab bar, so the Export bar inside needs no lifting
-        .environment(\.floatingBarClearance, 0)
         .presentationBackground(Theme.ground)
         .task {
             if let startingPostingId {

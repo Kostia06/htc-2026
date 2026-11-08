@@ -46,7 +46,7 @@ export function skillitDoc(resume: Resume): ResumeDoc {
   ];
   return {
     name: resume.contact.name || "Resume",
-    contact: [resume.contact.phone, resume.contact.email, ...resume.contact.links].filter(Boolean),
+    contact: [resume.contact.location, resume.contact.phone, resume.contact.email, ...resume.contact.links].filter(Boolean),
     headline: resume.summary,
     sections: sections.filter((s) => s.entries?.length || s.rows?.length),
   };
@@ -66,7 +66,7 @@ export function plainDoc(resume: Resume): ResumeDoc {
   ];
   return {
     name: resume.contact.name || "Resume",
-    contact: [resume.contact.email, resume.contact.phone, ...resume.contact.links].filter(Boolean),
+    contact: [resume.contact.location, resume.contact.email, resume.contact.phone, ...resume.contact.links].filter(Boolean),
     headline: "",
     sections: sections.filter((s) => s.text || s.entries?.length),
   };

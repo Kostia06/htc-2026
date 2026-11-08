@@ -74,7 +74,7 @@ export function tailoredRouter(makeDeps: MakeDeps, options: Options = {}) {
 
     const deps = makeDeps(c.env, (work) => c.executionCtx.waitUntil(work));
     try {
-      const tailored = await tailorResume(deps, { userId, postingId, text });
+      const tailored = await tailorResume(deps, { userId, postingId, text, account: c.var.account });
       notifyAfterWrite(c.env, userId, (work) => c.executionCtx.waitUntil(work));
       return c.json(tailored, 201);
     } catch (e) {

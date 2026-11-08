@@ -19,7 +19,7 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         ProfileHeader(profile: app.profile) { headlineEditor.apply(.setHeadline($0), to: app) }
                         if let road = overview.road, road.total > 0 {
-                            RoadProgressLine(progress: road)
+                            RoadProgressLine(progress: road, fromResume: overview.roadFromResume)
                         }
                     }
                     if let move = overview.nextMove(for: app.profile) {
@@ -51,6 +51,8 @@ struct ProfileView: View {
                 TailorJobSheet(service: app.tailoredResumeService, postingId: request.postingId, onSaved: reload)
             }
             .task { await overview.load(from: app) }
+            // Ask Skillit may have just added a skill, a job or a step: the doors' counts follow
+            .onChange(of: app.updatesApplied) { reload() }
             // coming back from a door may have changed what it shows: a new tailored copy, a paired headset
             .onChange(of: path) { _, newPath in
                 if newPath.isEmpty { reload() }

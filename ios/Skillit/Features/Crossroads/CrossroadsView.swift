@@ -25,6 +25,8 @@ struct CrossroadsView: View {
                 }
             }
             .task { await start() }
+            // a quick update may have saved a note or a step; it shows here without leaving
+            .onChange(of: app.updatesApplied) { Task { await model?.load() } }
             .sheet(item: $sharing) { memory in
                 ShareMemorySheet(memory: memory, service: app.memoryService)
             }
@@ -99,7 +101,7 @@ struct CrossroadsView: View {
 
     private func matchesSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         Section {
-            row { SectionTitle("Where you match", detail: "What people on your road said that lines up with your notes") }
+            row { SectionTitle("Where you match") }
             if model.matches.isEmpty {
                 row {
                     TeachingEmpty(
@@ -118,9 +120,7 @@ struct CrossroadsView: View {
 
     private func roadSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         Section {
-            row {
-                SectionTitle("More from your road", detail: "Anonymous. \u{201C}Example\u{201D} means Skillit wrote it until people share")
-            }
+            row { SectionTitle("More from your road") }
             if model.unlinkedLines.isEmpty, model.unlinkedFacts.isEmpty {
                 row {
                     TeachingEmpty(
@@ -141,7 +141,7 @@ struct CrossroadsView: View {
     @ViewBuilder private func yoursSection(_ model: CrossroadsModel) -> some View {
         if !model.unlinkedYours.isEmpty || model.matches.isEmpty {
             Section {
-                row { SectionTitle("Only you can see these", detail: "Not matched yet. Swipe to delete or share") }
+                row { SectionTitle("Only you can see these") }
                 if model.unlinkedYours.isEmpty {
                     row {
                         TeachingEmpty(

@@ -5,6 +5,8 @@ import { normalizeProfile, useApp } from '../../app/context'
 import { headsetApi, postingsApi, profileApi, roadmapApi, tailoredApi } from '../../lib/client'
 import { applyEdit } from './edits'
 import { weakestTailored } from './nextMove'
+import { useOnUpdatesApplied } from '../../lib/hooks'
+import { resumeSteps, trailProgress } from '../roadmap/page'
 
 /** Every edit shows at once and saves in the background; a refused save puts the server's copy back. */
 export function useProfileEdit() {
@@ -48,6 +50,9 @@ export function useProfileEdit() {
 /** Each fact loads on its own, so one slow or failing call leaves the others on screen. */
 export function useProfileOverview() {
   const [state, setState] = useState({ tailored: [], postings: [], road: null, headsets: null, missingTopic: null, loaded: false })
+  // a quick update can finish a step or add a posting; the facts load again so the counts follow
+  const [version, setVersion] = useState(0)
+  useOnUpdatesApplied(() => setVersion((v) => v + 1))
 
   useEffect(() => {
     let live = true
@@ -61,7 +66,8 @@ export function useProfileOverview() {
     })
     roadmapApi
       .page()
-      .then((page) => set({ road: page.progress }))
+      // the Road's own count, so both pages always agree
+      .then((page) => set({ road: { ...trailProgress(page), fromResume: resumeSteps(page).length } }))
       .catch(() => {})
     headsetApi
       .status()
@@ -70,7 +76,7 @@ export function useProfileOverview() {
     return () => {
       live = false
     }
-  }, [])
+  }, [version])
 
   return state
 }

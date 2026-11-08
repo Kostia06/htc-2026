@@ -45,13 +45,26 @@ public extension Resume {
         public var name: String
         public var email: String
         public var phone: String
+        /// City or region, like "Calgary, AB"; the server fills it from onboarding until the person types one.
+        public var location: String
         public var links: [String]
 
-        public init(name: String = "", email: String = "", phone: String = "", links: [String] = []) {
+        public init(name: String = "", email: String = "", phone: String = "", location: String = "", links: [String] = []) {
             self.name = name
             self.email = email
             self.phone = phone
+            self.location = location
             self.links = links
+        }
+
+        // tailored copies and older servers send no location
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+            email = try container.decodeIfPresent(String.self, forKey: .email) ?? ""
+            phone = try container.decodeIfPresent(String.self, forKey: .phone) ?? ""
+            location = try container.decodeIfPresent(String.self, forKey: .location) ?? ""
+            links = try container.decodeIfPresent([String].self, forKey: .links) ?? []
         }
     }
 

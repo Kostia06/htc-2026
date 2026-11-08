@@ -25,7 +25,7 @@ export function resumeRouter(makeDeps: MakeDeps) {
   const router = new Hono<AppContext>();
 
   // saved: false means this is the profile laid out as a resume, not something the person has saved yet
-  router.get("/", async (c) => c.json(await loadResume(c.env, c.var.sessionId)));
+  router.get("/", async (c) => c.json(await loadResume(c.env, c.var.sessionId, c.var.account)));
 
   // the whole resume comes back each time; the app edits locally and saves the result
   router.put("/", async (c) => {
@@ -41,7 +41,7 @@ export function resumeRouter(makeDeps: MakeDeps) {
     const sent = body?.resume === undefined ? null : parseResume(body.resume);
     if (body?.resume !== undefined && !sent) return c.json({ error: "send the resume as an object" }, 400);
     const userId = c.var.sessionId;
-    const [resume, profile] = await Promise.all([sent ?? loadResume(c.env, userId).then((r) => r.resume), getProfile(c.env, userId)]);
+    const [resume, profile] = await Promise.all([sent ?? loadResume(c.env, userId, c.var.account).then((r) => r.resume), getProfile(c.env, userId)]);
     const input = { resume, targetRole: profile.targetRoles[0], section: asSection(body?.section), company: asSlug(body?.company) };
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
     const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "resume-coach", platform: "app", userId, input });
@@ -103,7 +103,7 @@ export function resumeRouter(makeDeps: MakeDeps) {
   // ?template=plain swaps the Skillit layout for the bare ATS one
   router.get("/:format{pdf|docx}", async (c) => {
     const format = asFormat(c.req.param("format")) ?? "pdf";
-    const { resume } = await loadResume(c.env, c.var.sessionId);
+    const { resume } = await loadResume(c.env, c.var.sessionId, c.var.account);
     const file = resumeFile(resume, format, asTemplate(c.req.query("template")));
     return c.body(file.bytes.buffer as ArrayBuffer, 200, resumeFileHeaders(file, "Resume", format));
   });

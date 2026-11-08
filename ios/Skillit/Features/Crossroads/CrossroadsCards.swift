@@ -69,22 +69,17 @@ struct ReasonLine: View {
 
 struct SectionTitle: View {
     let title: String
-    let detail: String
 
-    init(_ title: String, detail: String) {
+    init(_ title: String) {
         self.title = title
-        self.detail = detail
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.title3.bold()).foregroundStyle(.primary)
-            Text(detail).font(.subheadline).foregroundStyle(.secondary)
-        }
-        .textCase(nil)
-        .padding(.top, 12)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isHeader)
+        Text(title)
+            .font(.title3.bold())
+            .foregroundStyle(.primary)
+            .padding(.top, 12)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 

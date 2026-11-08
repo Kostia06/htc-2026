@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Lock, Signpost } from 'lucide-react'
 import { crossroadsApi, memoriesApi } from '../../lib/client'
+import { useOnUpdatesApplied } from '../../lib/hooks'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { Page, PageHeader } from '../../ui/Layout'
 import { AskBar } from './AskBar'
@@ -27,6 +28,7 @@ function useCrossroads() {
   useEffect(() => {
     load()
   }, [load])
+  useOnUpdatesApplied(load)
   const update = (fn) => setState((s) => ({ ...s, data: s.data && fn(s.data) }))
   return { ...state, load, update }
 }

@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import type { AppContext } from "../env";
-import { verifySupabaseToken } from "./supabase";
+import { verifySupabaseAccount } from "./supabase";
 
 const enc = new TextEncoder();
 
@@ -55,8 +55,11 @@ export async function verifySession(token: string, secret: string, now = new Dat
 export const requireSession: MiddlewareHandler<AppContext> = async (c, next) => {
   const token = c.req.header("Authorization")?.replace(/^Bearer /, "") ?? "";
   // people sign in with Supabase; paired headsets carry the server's own token for the same account
-  const id = (await verifySupabaseToken(c.env, token)) ?? (await verifySession(token, c.env.SESSION_SECRET));
+  const supabase = await verifySupabaseAccount(c.env, token);
+  const id = supabase?.id ?? (await verifySession(token, c.env.SESSION_SECRET));
   if (!id) return c.json({ error: "unauthorized" }, 401);
   c.set("sessionId", id);
+  // only a person's own sign-in carries an account; a headset token never does
+  if (supabase) c.set("account", supabase.account);
   await next();
 };

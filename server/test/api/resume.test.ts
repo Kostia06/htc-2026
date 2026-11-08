@@ -14,13 +14,19 @@ function testApp(deps: AgentDeps = fakeDeps().deps) {
   const app = new Hono<AppContext>()
     .use(async (c, next) => {
       c.set("sessionId", c.req.header("x-test-user") ?? "u1");
+      const account = c.req.header("x-test-account");
+      if (account) c.set("account", JSON.parse(account));
       await next();
     })
     .route("/", resumeRouter(() => deps));
-  return (user: string, method: string, path = "/", body?: unknown) =>
+  return (user: string, method: string, path = "/", body?: unknown, account?: object) =>
     app.request(
       path,
-      { method, headers: { "x-test-user": user, "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) },
+      {
+        method,
+        headers: { "x-test-user": user, "Content-Type": "application/json", ...(account && { "x-test-account": JSON.stringify(account) }) },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      },
       env,
       executionCtx,
     );
@@ -58,6 +64,36 @@ describe("/api/resume", () => {
     expect(await put.json()).toMatchObject({ saved: true, resume: { ...sampleResume, updatedAt: expect.any(String) } });
     expect(await (await request(me, "GET")).json()).toMatchObject({ saved: true, resume: { contact: { name: "Jordan Lee" } } });
     expect(await (await request(user(), "GET")).json()).toMatchObject({ saved: false, resume: { contact: { name: "" } } });
+  });
+
+  it("fills the name, email and location from the account and onboarding answers", async () => {
+    const me = user();
+    await updateProfile(env, me, { goals: ["Looking in: Calgary"], headline: "Third-year student" });
+    const account = { name: "Kostia Ilnytskyi", email: "kostia@example.com" };
+    const res = await testApp()(me, "GET", "/", undefined, account);
+    expect(await res.json()).toMatchObject({
+      saved: false,
+      resume: { contact: { name: "Kostia Ilnytskyi", email: "kostia@example.com", location: "Calgary" }, summary: "Third-year student" },
+    });
+  });
+
+  it("fills only the blanks of a saved resume and keeps what the person typed", async () => {
+    const request = testApp();
+    const me = user();
+    await updateProfile(env, me, { goals: ["Looking in: Calgary"] });
+    await request(me, "PUT", "/", { ...sampleResume, contact: { ...sampleResume.contact, email: "", location: "" } });
+    const res = await request(me, "GET", "/", undefined, { name: "Account Name", email: "kostia@example.com" });
+    expect(await res.json()).toMatchObject({
+      saved: true,
+      resume: { contact: { name: "Jordan Lee", email: "kostia@example.com", phone: sampleResume.contact.phone, location: "Calgary" } },
+    });
+  });
+
+  it("keeps a typed location through a save", async () => {
+    const request = testApp();
+    const me = user();
+    const put = await request(me, "PUT", "/", { ...sampleResume, contact: { ...sampleResume.contact, location: "Edmonton, AB" } });
+    expect(await put.json()).toMatchObject({ resume: { contact: { location: "Edmonton, AB" } } });
   });
 
   it("rejects a body that is not a resume", async () => {
