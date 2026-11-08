@@ -74,6 +74,10 @@ struct ProfileView: View {
             )
         }
         .listRowBackground(Theme.raised)
+        Section("Skills") {
+            SkillsSummary(skills: app.profile.skills.map(\.name)) { apply(.removeSkill($0)) }
+        }
+        .listRowBackground(Theme.raised)
         Section("Experience") {
             ForEach(app.profile.experience, id: \.self) { row in
                 ExperienceRow(row: row) { experienceSheet = RowSheet(row: row) }
