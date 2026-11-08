@@ -43,6 +43,26 @@ extension StubbedNetworkTests {
             #expect(sent["focusStepId"] == nil)
         }
 
+        @Test func `uploads a document as one multipart file and reads what it changed`() async throws {
+            StubProtocol.routes.withLock {
+                $0["POST /api/updates/file"] = (200, """
+                {"reply":"Added your degree and 3 courses.",
+                 "applied":[{"type":"add_education","summary":"Added BSc at University of Calgary"},
+                            {"type":"add_course","summary":"Noted 3 courses you've taken"},
+                            {"type":"add_certification","summary":"Added certification AWS"}]}
+                """)
+            }
+            let reply = try await client.uploadUpdateFile(ResumeFile(name: "transcript.pdf", data: Data("%PDF-1.7".utf8)))
+
+            #expect(reply.reply == "Added your degree and 3 courses.")
+            #expect(!reply.needsAnswer)
+            #expect(reply.applied.map(\.touchesProfile) == [true, false, true])
+            let body = try #require(StubProtocol.bodies.withLock { $0["POST /api/updates/file"] })
+            let text = try #require(String(bytes: body, encoding: .utf8))
+            #expect(text.contains("name=\"file\"; filename=\"transcript.pdf\""))
+            #expect(text.contains("%PDF-1.7"))
+        }
+
         @Test func `names the step a Mark done chat is about`() async throws {
             StubProtocol.routes.withLock {
                 $0["POST /api/updates"] = (200, #"{"reply":"Done.","needsAnswer":false,"applied":[]}"#)

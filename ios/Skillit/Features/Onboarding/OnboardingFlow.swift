@@ -124,6 +124,7 @@ struct OnboardingFlow: View {
         })
     }
 
-    private static let resumeTypes: [UTType] = [.pdf, .rtf, .plainText, .html, .image, .heic]
+    /// Every format the server can read; the plus menu's File picker offers the same list.
+    static let resumeTypes: [UTType] = [.pdf, .rtf, .plainText, .html, .image, .heic]
         + ["docx", "odt", "pptx", "md"].compactMap { UTType(filenameExtension: $0) }
 }

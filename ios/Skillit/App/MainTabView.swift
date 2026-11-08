@@ -6,6 +6,7 @@ struct MainTabView: View {
     @Environment(AppModel.self) private var model
     @State private var selection: Section
     @State private var isAsking = false
+    @State private var isMenuOpen = false
     @State private var openedPosting: JobPosting?
 
     init(selection: Section = .roadmap) {
@@ -54,15 +55,18 @@ struct MainTabView: View {
             }
         }
         .overlay {
-            // a tap anywhere outside the bar puts the tabs back
-            if isAsking {
+            // a tap anywhere outside the bar or the plus menu puts the tabs back
+            if isAsking || isMenuOpen {
                 Color.clear
                     .contentShape(.rect)
-                    .onTapGesture { isAsking = false }
+                    .onTapGesture {
+                        isAsking = false
+                        isMenuOpen = false
+                    }
             }
         }
         .overlay(alignment: .bottom) {
-            AskSkillitBar(selection: $selection, isAsking: $isAsking, onOpenPosting: { openedPosting = $0 })
+            AskSkillitBar(selection: $selection, isAsking: $isAsking, isMenuOpen: $isMenuOpen, onOpenPosting: { openedPosting = $0 })
         }
         .sheet(item: $openedPosting) { posting in
             PostingView(posting: posting)

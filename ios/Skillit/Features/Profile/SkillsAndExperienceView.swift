@@ -34,7 +34,7 @@ struct SkillsAndExperienceView: View {
             experienceSection
             educationSection
             Section {
-                BringYourWorkList(model: work) { await reloadProfile() }
+                BringYourWorkList(model: work) { await app.noteWorkChanged() }
             } header: {
                 Text("Bring your work")
             } footer: {
@@ -93,12 +93,6 @@ struct SkillsAndExperienceView: View {
 
     private var hasFailure: Binding<Bool> {
         Binding(get: { editor.failure != nil }, set: { if !$0 { editor.dismissFailure() } })
-    }
-
-    /// imported projects land in the profile on the server; this brings them onto the screen
-    private func reloadProfile() async {
-        guard let client = app.client, let profile = try? await client.profile() else { return }
-        app.profile = profile
     }
 
     private func apply(_ edit: ProfileEdit) {

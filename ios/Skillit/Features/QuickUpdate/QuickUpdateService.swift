@@ -5,6 +5,7 @@ import SkillitKit
 protocol QuickUpdateService {
     func quickUpdate(_ request: QuickUpdateRequest) async throws(SkillitError) -> QuickUpdateReply
     func importPosting(_ request: PostingImportRequest) async throws(SkillitError) -> JobPosting
+    func uploadUpdateFile(_ file: ResumeFile) async throws(SkillitError) -> QuickUpdateReply
 }
 
 extension SkillitClient: QuickUpdateService {}
@@ -26,6 +27,18 @@ struct OfflineQuickUpdateService: QuickUpdateService {
     func importPosting(_: PostingImportRequest) async throws(SkillitError) -> JobPosting {
         try? await Task.sleep(for: .milliseconds(900))
         return .sample
+    }
+
+    func uploadUpdateFile(_: ResumeFile) async throws(SkillitError) -> QuickUpdateReply {
+        try? await Task.sleep(for: .milliseconds(1200))
+        return QuickUpdateReply(
+            reply: "Added your Computer Science degree and 3 courses.",
+            needsAnswer: false,
+            applied: [
+                AppliedChange(type: "add_education", summary: "Added BSc Computer Science at University of Calgary"),
+                AppliedChange(type: "add_course", summary: "Noted 3 courses you've taken"),
+            ]
+        )
     }
 }
 

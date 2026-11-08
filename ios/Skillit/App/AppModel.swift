@@ -80,6 +80,14 @@ final class AppModel {
         Task { await LocalNotifier.requestPermission() }
     }
 
+    /// A connected service imported (or a disconnect took back) projects and skills on the server: the profile is
+    /// reloaded and every screen that follows `updatesApplied` (Road, Resume, Profile) refreshes.
+    func noteWorkChanged() async {
+        updatesApplied += 1
+        guard let client, let profile = try? await client.profile() else { return }
+        self.profile = profile
+    }
+
     /// Everything Skillit changed is on the server already; this refreshes what the app holds in memory.
     func noteApplied(_ changes: [AppliedChange]) {
         updatesApplied += 1

@@ -51,7 +51,8 @@ public struct AppliedChange: Decodable, Equatable, Sendable, Identifiable {
 
     /// True when the change touched the profile rather than the roadmap or private notes, so the app knows what to reload.
     public var touchesProfile: Bool {
-        ["add_project", "add_experience", "add_skill", "remove_skill", "add_target_role"].contains(type)
+        ["add_project", "add_experience", "add_skill", "remove_skill", "add_target_role", "add_education", "add_certification"]
+            .contains(type)
     }
 }
 

@@ -85,6 +85,21 @@ final class QuickUpdateModel: ChatDraftModel {
         }
     }
 
+    /// A document the person picked: Skillit reads it and applies what it states, then the file is forgotten.
+    /// Its line in the chat is the file name, so the reply reads as an answer to it.
+    func sendFile(_ file: ResumeFile) async {
+        guard !isThinking else { return }
+        messages.append(Message(role: .user, text: "Sent \(file.name)"))
+        error = nil
+        isThinking = true
+        defer { isThinking = false }
+        do {
+            try await handle(service.uploadUpdateFile(file))
+        } catch {
+            self.error = error.message
+        }
+    }
+
     /// Listens until `stopListening`; the words land in the draft as they're heard and go out as one update when the mic stops.
     func startListening() {
         guard listening == nil, !isThinking else { return }

@@ -2,7 +2,7 @@ import SkillitKit
 import SwiftUI
 
 /// The Profile tab, kept short on purpose: who you are and how far along the road you are, the one thing worth
-/// doing next, then four doors. Every editor lives one tap behind a door; settings sit behind the gear.
+/// doing next, then five doors. Every editor lives one tap behind a door; settings sit behind the gear.
 struct ProfileView: View {
     @Environment(AppModel.self) private var app
     @State private var overview = ProfileOverviewModel()
@@ -104,6 +104,10 @@ struct ProfileView: View {
                 destination: .skillsAndExperience, title: "Skills & experience", symbol: "list.bullet.rectangle",
                 fact: "\(counted(profile.skills.count, "skill")) · \(counted(profile.experience.count, "job"))",
             ),
+            ProfileDoor(
+                destination: .connectedApps, title: "Connected apps", symbol: "link",
+                fact: "GitHub, Notion, Drive and more",
+            ),
             ProfileDoor(destination: .crossroads, title: "Crossroads", symbol: "signpost.right.and.left", fact: "What Skillit remembers"),
             ProfileDoor(destination: .headsets, title: "Headsets", symbol: "visionpro", fact: headsetFact),
         ]
@@ -121,6 +125,7 @@ struct ProfileView: View {
         switch destination {
         case .resume: ResumeView()
         case .skillsAndExperience: SkillsAndExperienceView()
+        case .connectedApps: ConnectedAppsView()
         case .crossroads: MemoryView()
         case .headsets: PairHeadsetView()
         case .settings: SettingsView()

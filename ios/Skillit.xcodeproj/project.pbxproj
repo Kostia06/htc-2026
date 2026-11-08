@@ -143,6 +143,7 @@
 		BA723CD2CE2496F93F6D8FA5 /* RecordingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99456384A8CADDBDC52010 /* RecordingsSection.swift */; };
 		BC49FB80D38BF17C783D2CD5 /* TailoredResumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823BA15A5174DDD005D9C410 /* TailoredResumeView.swift */; };
 		BED7D3AEBC69BA058A129D7B /* DifficultyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73EF5C5C4713C513A414ECE /* DifficultyPicker.swift */; };
+		BFE50E28EF67C49032FEE0A0 /* ConnectedAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D635091CF5A09DD591FAE1 /* ConnectedAppsView.swift */; };
 		C0529CC57946BB9DEAFB4786 /* RecapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7D58A0FCA1EFF69AB41D74 /* RecapService.swift */; };
 		C19B196CE2745FD14ECFCF9F /* BringYourWorkList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2294383E7F8960B702E80275 /* BringYourWorkList.swift */; };
 		C2FBD0718397A44193B0D841 /* RoadmapStep+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089B0D464E2E3A6B695ADA5E /* RoadmapStep+Display.swift */; };
@@ -180,6 +181,7 @@
 		F01F6A9C6FBC9250FA594E91 /* FeedCard+When.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2488386CDFECC621FB315 /* FeedCard+When.swift */; };
 		F0579AF46F7421DF76C4F9BB /* HeadsetPairingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5928CA0E14E5BE5C45041A /* HeadsetPairingModel.swift */; };
 		F2BE48627AE19C246E02B80D /* SampleTailoredResumes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1FF73BC7EBD9DE06FB6C57 /* SampleTailoredResumes.swift */; };
+		F347DBF717A463CFCD93A455 /* AskSkillitMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0BA3094EC88A6B14456E5C5 /* AskSkillitMenu.swift */; };
 		F4C20E153D37847BAB35301B /* PostingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9D0AFB591B9E2E3381C73 /* PostingsModel.swift */; };
 		F5CEF857171B81295B01CA64 /* CompanySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37049C8188EB035058A8222E /* CompanySheet.swift */; };
 		F6F07BFF7876BA91421F518F /* WorkConnectionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE7F2C0D4763EEE75AA0941 /* WorkConnectionRow.swift */; };
@@ -209,6 +211,7 @@
 		1334CFB0374673E3BB22CBD4 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		16B1176230A3A7B62060707C /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		19C11AED1F2863DBAF137AB7 /* RecapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapView.swift; sourceTree = "<group>"; };
+		19D635091CF5A09DD591FAE1 /* ConnectedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedAppsView.swift; sourceTree = "<group>"; };
 		1A5DA2F721D37B6E0021460B /* ForYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForYouView.swift; sourceTree = "<group>"; };
 		1C0047196ACDF6BBE8D8E29F /* Skillit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Skillit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C56221DD75277308DBA2873 /* SampleResume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleResume.swift; sourceTree = "<group>"; };
@@ -368,6 +371,7 @@
 		E4B7FCD37242F645AB6ADC14 /* InterviewProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewProgress.swift; sourceTree = "<group>"; };
 		EC68B0ED66432B610FABFF34 /* PracticeHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHistoryView.swift; sourceTree = "<group>"; };
 		ED6148A49BBD6F7C60870578 /* SkillitKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SkillitKit; path = SkillitKit; sourceTree = SOURCE_ROOT; };
+		F0BA3094EC88A6B14456E5C5 /* AskSkillitMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskSkillitMenu.swift; sourceTree = "<group>"; };
 		F0FE8200FE9CC7F3DA887004 /* ResumeExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeExportView.swift; sourceTree = "<group>"; };
 		F10593F16D018A8CD81FD92E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F17E4C6938194B6047574446 /* OnboardingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingHeader.swift; sourceTree = "<group>"; };
@@ -735,6 +739,7 @@
 			isa = PBXGroup;
 			children = (
 				2294383E7F8960B702E80275 /* BringYourWorkList.swift */,
+				19D635091CF5A09DD591FAE1 /* ConnectedAppsView.swift */,
 				B1AAD26C15FC711EE090093C /* LinkedinReviewView.swift */,
 				55EFA915D10C331240F5AF79 /* ServiceLogo.swift */,
 				3AE7F2C0D4763EEE75AA0941 /* WorkConnectionRow.swift */,
@@ -764,6 +769,7 @@
 			isa = PBXGroup;
 			children = (
 				DD517E4271FD64BF495E1F45 /* AskSkillitBar.swift */,
+				F0BA3094EC88A6B14456E5C5 /* AskSkillitMenu.swift */,
 				FD7FE5FDA5FF4D7F00054DF2 /* AskSkillitReplyCard.swift */,
 			);
 			path = AskSkillit;
@@ -883,6 +889,7 @@
 				6C65D012AE98AFF2066343F6 /* AppModel.swift in Sources */,
 				0E17DE1CB3B5F6E0B238F0FA /* AppliedCard.swift in Sources */,
 				CC3C6001A923B5BDB51AC160 /* AskSkillitBar.swift in Sources */,
+				F347DBF717A463CFCD93A455 /* AskSkillitMenu.swift in Sources */,
 				6390C1B9A2DDEDC85019641F /* AskSkillitReplyCard.swift in Sources */,
 				8777A7785DC7341C3BAAD86B /* Authenticator.swift in Sources */,
 				C19B196CE2745FD14ECFCF9F /* BringYourWorkList.swift in Sources */,
@@ -896,6 +903,7 @@
 				E6EF46B763C20D34284B43C7 /* CompanyService.swift in Sources */,
 				F5CEF857171B81295B01CA64 /* CompanySheet.swift in Sources */,
 				4D20812EF3D804E92A78E1AD /* CompanyView.swift in Sources */,
+				BFE50E28EF67C49032FEE0A0 /* ConnectedAppsView.swift in Sources */,
 				A570EF72CD717663A4E1BB3A /* Crossroads+Display.swift in Sources */,
 				4006F5C4C552B9443B5A8FD7 /* CrossroadsAskBar.swift in Sources */,
 				03C3CF5D2BB9AEA4D6C51CB6 /* CrossroadsAskModel.swift in Sources */,

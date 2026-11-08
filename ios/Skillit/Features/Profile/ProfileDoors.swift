@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Where each of the Profile tab's doors leads.
 enum ProfileDestination: Hashable {
-    case resume, skillsAndExperience, crossroads, headsets, settings
+    case resume, skillsAndExperience, connectedApps, crossroads, headsets, settings
 }
 
 /// One big door: what's behind it, and one live fact about it so the page says something without opening anything.
