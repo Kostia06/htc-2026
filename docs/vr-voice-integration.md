@@ -22,7 +22,8 @@ Returns (201):
   "provider": "elevenlabs",
   "credentials": {
     "kind": "elevenlabs",
-    "signedUrl": "wss://…",            // short-lived, one conversation
+    "signedUrl": "wss://…",            // short-lived, one conversation (browser SDK)
+    "conversationToken": "…",          // same session for the Swift SDK's WebRTC path (the phone); VR can ignore it
     "overrides": { "agent": { "prompt": { "prompt": "…" }, "firstMessage": "…" } }
   },
   "opening": "Hi, thanks for coming in…",
@@ -66,7 +67,9 @@ Fast (no LLM wait). Show `tip` as a small panel; don't read it aloud mid-intervi
 ## 4. Finish and debrief
 
 ```
-POST /api/voice/sessions/:id/finish   → { summary, prepList: [{ step, why }] }
+POST /api/voice/sessions/:id/finish
+→ { overall: 0-100, verdict, strengths: [{ quote, why }], improvements: [{ moment, said, better, example }],
+    perQuestion: [{ question, score, oneLineFeedback }], nextSteps: [string] }
 GET  /api/voice/sessions/:id          → session + turns, for replay
 ```
 
