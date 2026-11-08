@@ -22,6 +22,9 @@
 .logo--googledrive svg { width: 22px; }
 .logo--youtube { background: #f00; }
 .logo--other { background: var(--inset); }
+/* catalog logos come in any colour, so they sit on white like Notion's */
+.logo--app { background: #fff; overflow: hidden; }
+.logo--app img { width: 24px; height: 24px; object-fit: contain; }
 
 .li { gap: 12px; }
 .li__list { gap: 12px; }

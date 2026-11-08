@@ -6,6 +6,7 @@ import { useApp } from '../../app/context'
 import { announceUpdatesApplied } from '../../lib/hooks'
 import { Group, GroupRow, Page, PageHeader } from '../../ui/Layout'
 import BringYourWork from './BringYourWork'
+import OtherApps from './OtherApps'
 
 export default function ConnectedApps() {
   const app = useApp()
@@ -21,6 +22,11 @@ export default function ConnectedApps() {
         <Group footer="Each one is optional. Skillit adds your projects and their main languages; disconnecting removes only what that service added.">
           <GroupRow>
             <BringYourWork onChange={changed} />
+          </GroupRow>
+        </Group>
+        <Group header="More apps" footer="Connected through Composio. Nothing is imported; Skillit's assistant can only look things up in them when you ask, and never posts or changes anything. Disconnecting revokes access.">
+          <GroupRow>
+            <OtherApps />
           </GroupRow>
         </Group>
       </div>

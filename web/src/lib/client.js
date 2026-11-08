@@ -214,6 +214,24 @@ export const connectionsApi = {
   disconnect: (id) => request(providerPath(id), { method: 'DELETE' }).then((r) => r.connection),
 }
 
+const appPath = (slug) => {
+  if (!/^[a-z0-9_-]{1,60}$/.test(slug)) throw new Error('Unknown app')
+  return `/api/connections/apps/${slug}`
+}
+
+/**
+ * Any other app in Composio's catalog: connected and disconnected only, nothing is imported. A search result is
+ * { slug, name, logo?, category?, connectable, curated }; a connected app is { slug, name, logo?, status }.
+ */
+export const appsApi = {
+  list: () => request('/api/connections').then((r) => r.apps ?? []),
+  /** one page of the catalog: { apps, next? }, where next asks for the page after it */
+  search: (query, cursor) =>
+    request(`/api/connections/catalog?q=${encodeURIComponent(query)}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`).then((r) => ({ apps: r.apps ?? [], next: r.next })),
+  connect: (slug, returnTo) => post(appPath(slug), { returnTo }).then((r) => r.url),
+  disconnect: (slug) => request(appPath(slug), { method: 'DELETE' }).then((r) => r.apps ?? []),
+}
+
 async function fileBlob(path) {
   const res = await send(path)
   if (res.status === 401) {
