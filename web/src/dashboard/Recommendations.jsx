@@ -52,8 +52,9 @@ function Item({ item }) {
  * One recommendation panel. `field` is the skill's single text input (query or interest), prefilled from the profile.
  */
 export default function Recommendations({ userId, stamp, skill, field, label, placeholder, initial, intro, empty }) {
-  const [state, run] = useSkill({ userId, stamp, key: skill, skill, auto: initial ? { [field]: initial } : true })
-  const [text, setText] = useState(state.input?.[field] ?? initial ?? '')
+  const start = initial?.trim().slice(0, 200)
+  const [state, run] = useSkill({ userId, stamp, key: skill, skill, auto: start ? { [field]: start } : true })
+  const [text, setText] = useState(state.input?.[field] ?? start ?? '')
   const busy = state.status === 'loading'
   const search = (e) => {
     e?.preventDefault()
