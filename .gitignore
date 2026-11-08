@@ -47,8 +47,8 @@ docs/design/
 
 # iOS build output
 ios/build/
-ios/RavenKit/.build/
-ios/RavenKit/.swiftpm/
+ios/SkillitKit/.build/
+ios/SkillitKit/.swiftpm/
 *.xcuserstate
 xcuserdata/
 

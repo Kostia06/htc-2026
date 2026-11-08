@@ -1,12 +1,12 @@
-name: Raven
+name: Skillit
 options:
   bundleIdPrefix: com.raven
   deploymentTarget:
     iOS: "26.0"
   createIntermediateGroups: true
 packages:
-  RavenKit:
-    path: RavenKit
+  SkillitKit:
+    path: SkillitKit
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.55.6
@@ -21,19 +21,19 @@ settings:
     # set to your Apple team before archiving for TestFlight
     DEVELOPMENT_TEAM: 5J5P965Q99
 targets:
-  Raven:
+  Skillit:
     type: application
     platform: iOS
-    sources: [Raven]
+    sources: [Skillit]
     dependencies:
-      - package: RavenKit
+      - package: SkillitKit
       # Auth alone: the app never talks to Postgres, Storage or Realtime directly
       - package: Supabase
         product: Auth
       # the same ElevenLabs agents the headset talks to; voice runs over WebRTC with a server-issued token
       - package: ElevenLabs
     entitlements:
-      path: Raven/Resources/Raven.entitlements
+      path: Skillit/Resources/Skillit.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
     settings:
@@ -53,7 +53,7 @@ targets:
         Release:
           RAVEN_API_URL: "https://htc-mentor.ilnkostia-dev.workers.dev"
     info:
-      path: Raven/Resources/Info.plist
+      path: Skillit/Resources/Info.plist
       properties:
         CFBundleDisplayName: Skillit
         CFBundleShortVersionString: $(MARKETING_VERSION)
@@ -63,8 +63,8 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so the interviewer can respond to what you said.
-        NSSpeechRecognitionUsageDescription: Raven turns what you say into text so a quick update can be applied to your roadmap and profile.
+        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said.
+        NSSpeechRecognitionUsageDescription: Skillit turns what you say into text so a quick update can be applied to your roadmap and profile.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false
