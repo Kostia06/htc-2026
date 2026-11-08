@@ -77,7 +77,8 @@ final class QuickUpdateModel: ChatDraftModel {
             if let posting = PostingDetection.detect(text) {
                 try await handle(service.importPosting(posting))
             } else {
-                try await handle(service.quickUpdate(QuickUpdateRequest(message: text, conversation: conversation, focusStepID: focusStepID)))
+                let request = QuickUpdateRequest(message: text, conversation: conversation, focusStepID: focusStepID)
+                try await handle(service.quickUpdate(request))
             }
         } catch {
             self.error = error.message
