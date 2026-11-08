@@ -2,14 +2,14 @@
 // Finished steps come first (the last three, unless expanded), then where you are, then what's next, then the goal.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
-import { Check, FileText, Flag, Flame, MessageSquarePlus, Route } from 'lucide-react'
+import { Check, Flag, MessageSquarePlus, Route } from 'lucide-react'
 import { roadmapApi } from '../../lib/client'
 import { weekday } from '../../lib/format'
 import { RaisedButton } from '../../ui/Button'
-import { ContentUnavailable, SkeletonCard, SkeletonLines, ThinProgressBar } from '../../ui/Feedback'
+import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
 import { appendPage, completeStep, doneSteps, kindOf, replaceStep, restoreStep, resumeSteps, trailProgress } from './page'
-import { ResumeStepsCard } from './ResumeSteps'
+import { ProgressCard, ResumeStepsCard, RoadmapSkeleton } from './RoadmapCards'
 import './roadmap.css'
 
 const RECENT_DONE = 3
@@ -186,34 +186,6 @@ function RoadmapPath({ page, more, onMore, onOpen }) {
   )
 }
 
-function ProgressCard({ goal, progress, fromResume }) {
-  const fraction = progress.total ? progress.done / progress.total : 0
-  return (
-    <section className="card progress-card">
-      <p className="t-subhead c-2 clamp-1">On the way to {goal}</p>
-      <p className="progress-card__count">
-        <span className="rounded-num bold progress-card__done">{progress.done}</span>
-        <span className="t-title3 medium c-2">/ {progress.total} steps</span>
-      </p>
-      <ThinProgressBar value={fraction} label="Steps done" />
-      {(progress.streakDays > 0 || fromResume > 0) && (
-        <div className="row progress-card__extras">
-          {progress.streakDays > 0 && (
-            <p className="t-footnote semibold c-action row progress-card__streak">
-              <Flame size={14} strokeWidth={2.4} fill="currentColor" aria-hidden /> {progress.streakDays}-day streak
-            </p>
-          )}
-          {fromResume > 0 && (
-            <p className="t-footnote semibold c-2 row progress-card__streak">
-              <FileText size={14} strokeWidth={2.4} aria-hidden /> +{fromResume} from your resume
-            </p>
-          )}
-        </div>
-      )}
-    </section>
-  )
-}
-
 /**
  * One stop on the trail, laid out like PathRow.swift: the tile sits `sway` off centre, its label on the far side,
  * and a dotted S-curve runs up to the previous tile.
@@ -270,24 +242,6 @@ function StopLabel({ step, state }) {
     <div className="stop-label">
       <span className={`t-caption semibold ${state === 'current' ? 'c-action' : 'c-2'}`}>{meta}</span>
       <span className={`t-subhead semibold clamp-2 ${state === 'upcoming' ? 'c-2' : ''}`}>{step.title}</span>
-    </div>
-  )
-}
-
-function RoadmapSkeleton() {
-  return (
-    <div className="roadmap__body">
-      <SkeletonCard widths={[0.5, 0.35, 0.9]} highlighted={1} />
-      <div className="stack roadmap__skeleton">
-        <span className="roadmap__skeleton-head shimmering" />
-        <SkeletonCard widths={[0.7, 0.4, 0.9, 0.6]} highlighted={2} />
-        <div className="card">
-          <SkeletonLines widths={[0.7, 0.4, 0.9, 0.6]} highlighted={-1} />
-        </div>
-        <div className="card">
-          <SkeletonLines widths={[0.7, 0.4, 0.9, 0.6]} highlighted={-1} />
-        </div>
-      </div>
     </div>
   )
 }
