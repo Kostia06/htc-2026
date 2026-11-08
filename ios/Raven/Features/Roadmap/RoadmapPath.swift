@@ -1,8 +1,8 @@
 import RavenKit
 import SwiftUI
 
-/// The roadmap as one line to the goal job, like a transit map: what's done, where you are, what's next,
-/// and the job at the end. Every stop carries its own card so the line explains itself. Tap a stop for details.
+/// The roadmap as a winding trail of tiles: what's done, where you are, what's next, and the goal job at the end.
+/// Each tile is labelled beside it and joined to the next by a dotted trail. Tap a tile for its details.
 struct RoadmapPath: View {
     let model: RoadmapModel
     let page: RoadmapPage
@@ -12,42 +12,33 @@ struct RoadmapPath: View {
     /// Run after the detail sheet is fully gone; iOS drops a full-screen cover presented while a sheet is closing.
     @State private var afterDismiss: (() -> Void)?
     @State private var showsAllDone = false
+    @State private var width: CGFloat = 0
 
-    private static let recentDoneCount = 2
+    private static let recentDoneCount = 3
 
     var body: some View {
         @Bindable var model = model
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                ProgressCard(goal: page.goal, progress: page.progress)
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    doneStops
-                    if let current = page.next.first {
-                        StopHeader(title: "You're here")
-                        TimelineStop(step: current, state: .current, isFirst: done.isEmpty, onTap: { selected = current })
-                    }
-                    if page.next.count > 1 {
-                        StopHeader(title: "Coming up")
-                        ForEach(page.next.dropFirst()) { step in
-                            TimelineStop(step: step, state: .upcoming) { selected = step }
-                                .onAppear {
-                                    if step.id == page.next.last?.id {
-                                        Task { await model.loadMore() }
-                                    }
-                                }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 20) {
+                    ProgressCard(goal: page.goal, progress: page.progress)
+                        .padding(.horizontal, 20)
+                    if done.count > Self.recentDoneCount {
+                        Button(showsAllDone ? "Hide earlier steps" : "Show \(done.count - Self.recentDoneCount) earlier steps") {
+                            withAnimation(.snappy) { showsAllDone.toggle() }
                         }
+                        .font(.subheadline.weight(.semibold))
+                        .tint(.secondary)
                     }
-                    if page.nextCursor != nil {
-                        MoreStepsSkeleton(failed: model.loadMoreFailed) { Task { await model.loadMore() } }
-                            .padding(.leading, TimelineStop.railWidth)
-                            .padding(.vertical, 8)
-                    } else {
-                        GoalStop(goal: page.goal)
-                    }
+                    trail
                 }
+                .padding(.vertical, 16)
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
+            .task(id: page.next.first?.id) {
+                guard let current = page.next.first else { return }
+                proxy.scrollTo(current.id, anchor: .center)
+            }
         }
         .refreshable { await model.load() }
         .sensoryFeedback(.success, trigger: page.progress.done) { old, new in new > old }
@@ -65,32 +56,54 @@ struct RoadmapPath: View {
         }
     }
 
-    @ViewBuilder private var doneStops: some View {
-        if !done.isEmpty {
-            HStack {
-                StopHeader(title: "Done")
-                Spacer()
-                if done.count > Self.recentDoneCount {
-                    Button(showsAllDone ? "Show less" : "Show all \(done.count)") {
-                        withAnimation(.snappy) { showsAllDone.toggle() }
+    private var trail: some View {
+        LazyVStack(spacing: 0) {
+            ForEach(stops.enumerated(), id: \.element.id) { index, step in
+                PathRow(width: width, sway: sway(index), previousSway: index == 0 ? nil : sway(index - 1)) {
+                    PathNode(step: step, state: state(of: step)) { selected = step }
+                } label: {
+                    StopLabel(step: step, state: state(of: step))
+                }
+                .id(step.id)
+                .onAppear {
+                    if step.id == page.next.last?.id {
+                        Task { await model.loadMore() }
                     }
-                    .font(.subheadline.weight(.semibold))
-                    .tint(Theme.action)
                 }
             }
-            ForEach(visibleDone.enumerated(), id: \.element.id) { index, step in
-                TimelineStop(step: step, state: .done, isFirst: index == 0) { selected = step }
+            if page.nextCursor != nil {
+                MoreStepsSkeleton(failed: model.loadMoreFailed) { Task { await model.loadMore() } }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+            } else {
+                PathRow(width: width, sway: sway(stops.count), previousSway: stops.isEmpty ? nil : sway(stops.count - 1)) {
+                    GoalTile()
+                } label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Goal").font(.caption.weight(.semibold)).foregroundStyle(Theme.agent)
+                        Text(page.goal).font(.subheadline.weight(.semibold)).lineLimit(2)
+                    }
+                }
             }
         }
     }
 
-    /// Oldest first, so the line reads top to bottom as the journey so far.
+    /// Oldest finished step first, so the trail reads top to bottom as the journey so far.
     private var done: [RoadmapStep] {
         page.completed.reversed().flatMap { $0.steps.reversed() }
     }
 
-    private var visibleDone: [RoadmapStep] {
-        showsAllDone ? done : Array(done.suffix(Self.recentDoneCount))
+    private var stops: [RoadmapStep] {
+        (showsAllDone ? done : Array(done.suffix(Self.recentDoneCount))) + page.next
+    }
+
+    private func state(of step: RoadmapStep) -> PathNode.State {
+        if step.status == .done { return .done }
+        return step.id == page.next.first?.id ? .current : .upcoming
+    }
+
+    private func sway(_ index: Int) -> CGFloat {
+        sin(Double(index) * 0.9) * width * 0.18
     }
 
     private func close(then action: @escaping () -> Void) {
@@ -104,41 +117,39 @@ struct RoadmapPath: View {
     }
 }
 
-private struct StopHeader: View {
-    let title: String
+/// What a tile is, written beside it so the trail explains itself without tapping.
+private struct StopLabel: View {
+    let step: RoadmapStep
+    let state: PathNode.State
 
     var body: some View {
-        Text(title.uppercased())
-            .font(.caption.weight(.bold))
-            .tracking(1.1)
-            .foregroundStyle(.secondary)
-            .padding(.leading, TimelineStop.railWidth)
-            .padding(.top, 18)
-            .padding(.bottom, 10)
+        VStack(alignment: .leading, spacing: 3) {
+            Text(meta)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(state == .current ? Theme.action : .secondary)
+            Text(step.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(state == .upcoming ? .secondary : .primary)
+                .lineLimit(2)
+        }
+    }
+
+    private var meta: String {
+        if state == .done, let stamp = step.completedAt, let date = try? Date(stamp, strategy: .iso8601) {
+            return "Done \(date.formatted(.dateTime.weekday(.abbreviated)))"
+        }
+        return step.estimate.isEmpty ? step.kind.name : "\(step.kind.name) · \(step.estimate)"
     }
 }
 
-/// The end of the line: the job all of this is for.
-private struct GoalStop: View {
-    let goal: String
-
+private struct GoalTile: View {
     var body: some View {
-        HStack(alignment: .center, spacing: 0) {
-            Image(systemName: "flag.checkered")
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Theme.onAction)
-                .frame(width: 34, height: 34)
-                .background(Theme.action, in: .circle)
-                .frame(width: TimelineStop.railWidth, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Goal")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text(goal)
-                    .font(.headline)
-            }
-        }
-        .padding(.top, 8)
-        .accessibilityElement(children: .combine)
+        Image(systemName: "flag.checkered")
+            .font(.system(size: 24, weight: .bold))
+            .foregroundStyle(Theme.onAction)
+            .frame(width: PathNode.size, height: PathNode.size)
+            .background(Theme.agent, in: .rect(cornerRadius: 22))
+            .padding(.bottom, 6)
+            .accessibilityLabel("Goal")
     }
 }
