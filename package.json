@@ -1,0 +1,7 @@
+{
+  "name": "htc-2026",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs"
+  }
+}

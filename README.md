@@ -34,8 +34,17 @@ See `docs/ai-usage.md`.
 
 ## Running the web app
 
+From the repo root:
+
 ```bash
-cd web
-npm install
 npm run dev
 ```
+
+Then open http://localhost:5180. Everything is on that one address:
+
+- `/`: the landing page (`landing/`)
+- `/app/`: the web app (`web/`): sign up, sign in, dashboard
+
+Under the hood the web app's own dev server runs on 5173 and the landing server forwards `/app` and `/api` to it. Dependencies are installed on first run; Ctrl-C stops both. `/api` goes to the Worker set by `API_PROXY_TARGET` in `web/.env.local`, or a local `server/` on 8787 if unset.
+
+Sign-up confirmation and magic-link emails return to `/app/`, so `http://localhost:5180/app/` must be in Supabase's redirect URLs (Authentication > URL Configuration).
