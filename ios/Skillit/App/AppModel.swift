@@ -68,6 +68,8 @@ final class AppModel {
         client = nil
         feed.forget()
         notifications.forget()
+        // delete-my-data finishes by signing out, so this covers both
+        PracticeHistoryCache().clear()
         profile = .empty
         phase = .signedOut
     }

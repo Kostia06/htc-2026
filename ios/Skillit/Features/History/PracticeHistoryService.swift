@@ -42,6 +42,11 @@ struct PracticeHistoryCache: Sendable {
         guard let data = try? JSONEncoder().encode(page) else { return }
         try? data.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
+
+    /// On sign-out and delete-my-data, so the next person on this phone never sees these sessions.
+    func clear() {
+        try? FileManager.default.removeItem(at: file)
+    }
 }
 
 #if DEBUG
