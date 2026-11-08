@@ -10,7 +10,7 @@ final class QuickUpdateModel {
 
     static let opening = "What's new? One line is enough, I'll update your roadmap and profile."
 
-    private(set) var messages: [Message] = [Message(role: .raven, text: QuickUpdateModel.opening)]
+    private(set) var messages: [Message]
     /// What each of Raven's replies changed, by message id; only replies that applied something have an entry.
     private(set) var appliedAfter: [UUID: [AppliedChange]] = [:]
     private(set) var isThinking = false
@@ -25,10 +25,21 @@ final class QuickUpdateModel {
     private var turnStart = 1
     private var listening: Task<Void, Never>?
 
-    init(service: any QuickUpdateService, dictation: any Dictation, onApplied: @escaping ([AppliedChange]) -> Void) {
+    /// With a `focusTitle` the chat is about one roadmap step: Raven opens by asking what they did for it, and that
+    /// question goes to the server with the first answer, so it knows which step is meant without asking.
+    init(
+        service: any QuickUpdateService, dictation: any Dictation, focusTitle: String? = nil,
+        onApplied: @escaping ([AppliedChange]) -> Void,
+    ) {
         self.service = service
         self.dictation = dictation
         self.onApplied = onApplied
+        if let focusTitle {
+            messages = [Message(role: .raven, text: "What did you do for \u{201C}\(focusTitle)\u{201D}? Type it or tap the mic.")]
+            turnStart = 0
+        } else {
+            messages = [Message(role: .raven, text: Self.opening)]
+        }
     }
 
     var canSend: Bool {

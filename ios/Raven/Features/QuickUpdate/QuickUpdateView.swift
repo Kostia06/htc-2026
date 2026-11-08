@@ -9,6 +9,8 @@ struct QuickUpdateView: View {
     @State private var model: QuickUpdateModel?
     @FocusState private var isTyping: Bool
 
+    /// Set when marking one roadmap step done, so the chat starts by asking about that step.
+    var focusTitle: String?
     /// Called after every reply that changed something, so the parent can reload what it shows.
     let onApplied: ([AppliedChange]) -> Void
 
@@ -22,7 +24,7 @@ struct QuickUpdateView: View {
                 }
             }
             .background(Theme.ground)
-            .navigationTitle("Update")
+            .navigationTitle(focusTitle == nil ? "Update" : "Mark done")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -37,9 +39,11 @@ struct QuickUpdateView: View {
             guard model == nil else { return }
             // screenshots and previews run without a signed-in client; they get the offline service and a scripted mic
             if let client = app.client {
-                model = QuickUpdateModel(service: client, dictation: SpeechDictation(), onApplied: applied)
+                model = QuickUpdateModel(service: client, dictation: SpeechDictation(), focusTitle: focusTitle, onApplied: applied)
             } else {
-                model = QuickUpdateModel(service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), onApplied: applied)
+                model = QuickUpdateModel(
+                    service: OfflineQuickUpdateService(), dictation: ScriptedDictation(), focusTitle: focusTitle, onApplied: applied,
+                )
             }
             isTyping = true
         }
@@ -150,10 +154,12 @@ private struct QuickUpdateConversation: View {
     }
 }
 
-#Preview {
-    Color.clear
-        .sheet(isPresented: .constant(true)) {
-            QuickUpdateView(onApplied: { _ in })
-        }
-        .environment(AppModel.preview(profile: .empty))
-}
+#if DEBUG
+    #Preview {
+        Color.clear
+            .sheet(isPresented: .constant(true)) {
+                QuickUpdateView(onApplied: { _ in })
+            }
+            .environment(AppModel.preview(profile: .empty))
+    }
+#endif
