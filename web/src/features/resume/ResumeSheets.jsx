@@ -1,4 +1,4 @@
-// ResumeSectionEditor.swift at /profile/resume/edit/:section, and ResumePDFViewer.swift at …/pdf.
+// ResumeSectionEditor.swift at /resume/edit/:section, and ResumePDFViewer.swift at /resume/pdf.
 import { useEffect, useState } from 'react'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
 import { Download, FileWarning, Plus } from 'lucide-react'
@@ -26,10 +26,10 @@ export function SectionEditor() {
   const { resume, update } = useOutletContext()
   const [draft, setDraft] = useState(() => (resume ? structuredClone(resume) : null))
   const [lists, setLists] = useState(() => ({ links: resume?.contact.links.join(', ') ?? '', skills: resume?.skills.join(', ') ?? '' }))
-  const back = () => navigate('/profile/resume')
+  const back = () => navigate('/resume')
 
   useEffect(() => {
-    if (!SECTIONS.includes(section)) navigate('/profile/resume', { replace: true })
+    if (!SECTIONS.includes(section)) navigate('/resume', { replace: true })
   }, [section, navigate])
 
   if (!draft) return null
