@@ -4,7 +4,7 @@ import { decryptFor, encryptFor } from "../memory/private/crypto";
 import type { TurnScore } from "./score";
 import type { VoiceMode, VoicePlan } from "./types";
 
-const KEEP_DAYS = 30;
+export const KEEP_DAYS = 30;
 
 export type VoiceSession = { id: string; mode: VoiceMode; companySlug: string | null; plan: VoicePlan; status: "active" | "finished"; createdAt: string };
 export type StoredTurn = { idx: number; question: string; answer: string } & TurnScore;

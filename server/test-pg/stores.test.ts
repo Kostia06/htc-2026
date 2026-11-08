@@ -180,7 +180,7 @@ describe("garbage collection", () => {
     await db.pg.exec("INSERT INTO company_facts (id, company_id, kind, text, source_url, fetched_at, content_hash) VALUES ('old', 'c1', 'about', 'x', 'u', '2020-01-01', 'h')");
     await db.pg.exec("INSERT INTO cache (key, value, expires_at) VALUES ('k', 'v', '2020-01-01')");
     const deleteVectors = vi.spyOn(gcDeps, "deleteVectors").mockResolvedValue();
-    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 0, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, voiceSessionsDeleted: 0 });
+    expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 0, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, recordingsDeleted: 0, voiceSessionsDeleted: 0 });
     expect(deleteVectors).toHaveBeenCalledWith(env, ["fact:old"]);
   });
 });

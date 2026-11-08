@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { AppContext } from "../env";
 import { claimCooldown } from "../memory/cooldowns";
+import { saveReport } from "../replay/store";
 import { buildDebrief } from "../voice/debrief";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
@@ -95,6 +96,7 @@ export function voiceRouter() {
     // one model call over the stored turns; the same debrief on the phone and in the headset
     const debrief = await buildDebrief(c.env, session.plan, turns);
     await finishSession(c.env, userId, session.id, debrief.overall);
+    await saveReport(c.env, userId, session.id, debrief);
     return c.json(debrief);
   });
 
