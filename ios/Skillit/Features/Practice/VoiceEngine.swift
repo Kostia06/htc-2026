@@ -13,6 +13,8 @@ enum VoiceEvent: Equatable {
     case level(Float)
     /// A finished line from either side, as the provider transcribed it.
     case transcript(Speaker, String)
+    /// The provider's id for this call, so the server can find the recording later.
+    case conversationStarted(String)
     case failed(String)
 }
 

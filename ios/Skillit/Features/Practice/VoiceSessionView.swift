@@ -7,6 +7,8 @@ struct VoiceSessionView: View {
     let onPracticeAgain: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppModel.self) private var app
+    @State private var isReplaying = false
 
     var body: some View {
         ZStack {
@@ -17,7 +19,10 @@ struct VoiceSessionView: View {
             case .wrappingUp:
                 SessionSummaryView(debrief: nil, onPracticeAgain: onPracticeAgain, onDone: { dismiss() })
             case let .finished(debrief):
-                SessionSummaryView(debrief: debrief, onPracticeAgain: onPracticeAgain, onDone: { dismiss() })
+                SessionSummaryView(
+                    debrief: debrief, onPracticeAgain: onPracticeAgain, onDone: { dismiss() },
+                    onReplay: model.sessionId == nil ? nil : { isReplaying = true },
+                )
             case .closed:
                 Color.clear.onAppear { dismiss() }
             case let .failed(message):
@@ -25,6 +30,12 @@ struct VoiceSessionView: View {
             }
         }
         .animation(.smooth, value: model.phase)
+        .sheet(isPresented: $isReplaying) {
+            if let sessionId = model.sessionId {
+                NavigationStack { ReplayView(sessionId: sessionId, service: app.replayService) }
+                    .presentationDragIndicator(.visible)
+            }
+        }
         .task { await model.run() }
         .sensoryFeedback(.impact(weight: .light), trigger: model.voiceState)
     }

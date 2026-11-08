@@ -63,7 +63,7 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said.
+        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said, and keeps a recording you can replay.
         NSSpeechRecognitionUsageDescription: Skillit turns what you say into text so a quick update can be applied to your roadmap and profile.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true

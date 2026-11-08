@@ -22,6 +22,11 @@ struct PracticeView: View {
                         PracticeProgressCard(model: history) { isShowingHistory = true }
                     }
                     interviewChoice
+                    // said before the call starts, so nobody is surprised that ElevenLabs keeps the audio
+                    Label("Recorded so you can replay it", systemImage: "waveform")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 4)
                     yourPostings
                     vrLink.padding(.top, 8)
                     row("Tell Skillit about a real interview", systemImage: "bubble.left.and.text.bubble.right") { isRecapping = true }

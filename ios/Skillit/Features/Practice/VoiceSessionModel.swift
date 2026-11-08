@@ -42,6 +42,11 @@ final class VoiceSessionModel: Identifiable {
         session != nil
     }
 
+    /// The server's id for this session once it exists; the replay is looked up by it.
+    var sessionId: String? {
+        session?.id
+    }
+
     /// How many questions the server planned for this interview.
     var questionCount: Int {
         session?.questions.count ?? 0
@@ -101,6 +106,9 @@ final class VoiceSessionModel: Identifiable {
             if let turn = transcript.add(speaker == .agent ? .agent : .person, text) {
                 submit(turn, in: session)
             }
+        case let .conversationStarted(conversationId):
+            // without this link there is no replay, but the interview itself carries on regardless
+            Task { try? await service.attachConversation(conversationId, to: session.id) }
         case let .failed(message):
             phase = .failed(message)
             engine.stop()

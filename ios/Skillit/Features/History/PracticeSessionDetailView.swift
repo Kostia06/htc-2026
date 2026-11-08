@@ -13,6 +13,7 @@ struct PracticeSessionDetailView: View {
 
     let session: PracticeSessionSummary
     let service: any PracticeHistoryService
+    let replayService: any ReplayService
 
     var body: some View {
         ScrollView {
@@ -32,6 +33,14 @@ struct PracticeSessionDetailView: View {
                             .frame(maxWidth: 220)
                     }
                 case let .ready(detail):
+                    if !detail.turns.isEmpty {
+                        NavigationLink {
+                            ReplayView(sessionId: session.id, service: replayService)
+                        } label: {
+                            ReplayEntryLabel()
+                        }
+                        .buttonStyle(.plain)
+                    }
                     if detail.turns.isEmpty {
                         Text("Nothing was said in this session.").foregroundStyle(.secondary).skillitCard()
                     }
