@@ -36,6 +36,7 @@ struct TailoredResumeView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .background(Theme.ground.opacity(0.92))
+                .clearsFloatingBar()
         }
         // the layout is remembered per job: some postings want the plain page
         .sheet(isPresented: $isExporting) {

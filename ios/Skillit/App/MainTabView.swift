@@ -76,7 +76,9 @@ private extension View {
     /// Safe-area insets and padding get swallowed by the system tab container, but
     /// content margins travel down the environment to every List and ScrollView in
     /// the tab, pushed screens included.
+    /// Screens with a bottom bar of their own lift it by `floatingBarClearance` so it never hides under the tabs.
     func clearsAskBar() -> some View {
         contentMargins(.bottom, AskSkillitBar.reservedHeight, for: .scrollContent)
+            .environment(\.floatingBarClearance, AskSkillitBar.reservedHeight)
     }
 }

@@ -10,6 +10,7 @@ struct CrossroadsView: View {
     @State private var model: CrossroadsModel?
     @State private var ask: CrossroadsAskModel?
     @State private var sharing: PrivateMemory?
+    @State private var detail: CrossroadsDetail?
     @State private var deletions = 0
 
     var body: some View {
@@ -26,6 +27,11 @@ struct CrossroadsView: View {
             .task { await start() }
             .sheet(item: $sharing) { memory in
                 ShareMemorySheet(memory: memory, service: app.memoryService)
+            }
+            .sheet(item: $detail) { detail in
+                if let model {
+                    CrossroadsDetailSheet(detail: detail, model: model, goal: model.view?.road.goal ?? "")
+                }
             }
             .sensoryFeedback(.impact(weight: .medium), trigger: deletions)
     }
@@ -53,12 +59,19 @@ struct CrossroadsView: View {
         ScrollViewReader { proxy in
             sections(model, view)
                 .task { await Self.scrollForScreenshot(proxy) }
+                // the answer is the list's first row; asking from far down brings it into view
+                .onChange(of: ask?.isThinking) { _, thinking in
+                    if thinking == true { withAnimation(.spring(duration: 0.35)) { proxy.scrollTo("answer", anchor: .top) } }
+                }
         }
     }
 
     private func sections(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         List {
             row { RoadHeader(goal: view.road.goal, minPeople: view.minPeople) }
+            if let ask {
+                row { CrossroadsAnswerCard(model: ask) }.id("answer")
+            }
             if !explainerSeen {
                 row {
                     CrossroadsExplainer(goal: view.road.goal) { withAnimation(.spring(duration: 0.35)) { explainerSeen = true } }
@@ -86,6 +99,7 @@ struct CrossroadsView: View {
 
     private func matchesSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         Section {
+            row { SectionTitle("Where you match", detail: "What people on your road said that lines up with your notes") }
             if model.matches.isEmpty {
                 row {
                     TeachingEmpty(
@@ -99,13 +113,14 @@ struct CrossroadsView: View {
                 row { card(match.other, matching: match.you, model, view) }
                     .swipeActions(edge: .trailing) { deleteButton(match.you, model, title: "Delete your note") }
             }
-        } header: {
-            SectionTitle("Where you match", detail: "What people on your road said that lines up with your notes")
         }
     }
 
     private func roadSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         Section {
+            row {
+                SectionTitle("More from your road", detail: "Anonymous. \u{201C}Example\u{201D} means Skillit wrote it until people share")
+            }
             if model.unlinkedLines.isEmpty, model.unlinkedFacts.isEmpty {
                 row {
                     TeachingEmpty(
@@ -120,14 +135,13 @@ struct CrossroadsView: View {
             ForEach(model.unlinkedFacts) { fact in
                 row { card(.fact(fact), matching: nil, model, view) }
             }
-        } header: {
-            SectionTitle("More from your road", detail: "Anonymous. \u{201C}Example\u{201D} means Skillit wrote it until people share")
         }
     }
 
     @ViewBuilder private func yoursSection(_ model: CrossroadsModel) -> some View {
         if !model.unlinkedYours.isEmpty || model.matches.isEmpty {
             Section {
+                row { SectionTitle("Only you can see these", detail: "Not matched yet. Swipe to delete or share") }
                 if model.unlinkedYours.isEmpty {
                     row {
                         TeachingEmpty(
@@ -140,14 +154,20 @@ struct CrossroadsView: View {
                         .swipeActions(edge: .trailing) { deleteButton(item, model, title: "Delete") }
                         .swipeActions(edge: .leading) { shareButton(item) }
                 }
-            } header: {
-                SectionTitle("Only you can see these", detail: "Not matched yet. Swipe to delete or share")
             }
         }
     }
 
-    @ViewBuilder
+    /// The card's own button still takes its tap; anywhere else on the card opens the detail sheet.
     private func card(_ other: Match.Other, matching item: YourItem?, _ model: CrossroadsModel, _ view: Crossroads) -> some View {
+        cardFace(other, matching: item, model, view)
+            .contentShape(.rect)
+            .onTapGesture { detail = CrossroadsDetail(other: other, match: item) }
+            .accessibilityAction(named: "Show details") { detail = CrossroadsDetail(other: other, match: item) }
+    }
+
+    @ViewBuilder
+    private func cardFace(_ other: Match.Other, matching item: YourItem?, _ model: CrossroadsModel, _ view: Crossroads) -> some View {
         switch other {
         case let .line(line):
             LineCard(

@@ -7,9 +7,6 @@ import { Bubble, Composer, TypingIndicator } from '../../ui/Chat'
 import { useDictation } from '../chat/useDictation'
 import '../chat/chat.css'
 
-// three to tap, so nobody faces a blank field
-const SUGGESTIONS = ['What should I do next?', 'Is my struggle common?', 'What do interviews ask?']
-
 let nextId = 0
 const line = (role, text) => ({ id: ++nextId, role, text })
 
@@ -55,15 +52,6 @@ export function AskBar({ onCited }) {
           ))}
           {thinking && <TypingIndicator />}
           <div ref={end} />
-        </div>
-      )}
-      {messages.length === 0 && !draft && (
-        <div className="xr-suggest" role="group" aria-label="Suggested questions">
-          {SUGGESTIONS.map((q) => (
-            <button key={q} type="button" className="xr-suggest__chip glass-strong" onClick={() => send(q)} disabled={thinking}>
-              {q}
-            </button>
-          ))}
         </div>
       )}
       <Composer

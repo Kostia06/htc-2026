@@ -312,19 +312,31 @@
 .xr-ask .composer {
   border-radius: 28px;
 }
-.xr-suggest {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
+
+/* ---------- card detail ---------- */
+.xr-card.is-openable {
+  cursor: pointer;
 }
-.xr-suggest__chip {
-  flex: none;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  color: var(--text);
-  font: var(--subhead);
+.xr-card.is-openable:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+.xr-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.xr-detail__facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.xr-detail__why ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 @media (min-width: 900px) {
   .xr-ask {

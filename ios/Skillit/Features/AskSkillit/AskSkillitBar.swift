@@ -104,3 +104,24 @@ struct AskSkillitBar: View {
         model = nil
     }
 }
+
+extension EnvironmentValues {
+    /// How far the floating bar reaches up from the bottom safe area; zero outside the tabs (sheets, covers, previews).
+    @Entry var floatingBarClearance: CGFloat = 0
+}
+
+/// A screen's own bottom bar (a composer, an Export button) sits above the floating tab bar instead of under it.
+/// Without this it lands behind the tab capsule, reading as a second plate with a stray button poking out.
+private struct ClearsFloatingBar: ViewModifier {
+    @Environment(\.floatingBarClearance) private var clearance
+
+    func body(content: Content) -> some View {
+        content.padding(.bottom, clearance)
+    }
+}
+
+extension View {
+    func clearsFloatingBar() -> some View {
+        modifier(ClearsFloatingBar())
+    }
+}

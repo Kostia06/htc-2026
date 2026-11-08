@@ -57,7 +57,7 @@ struct ResumeView: View {
         }
         .safeAreaInset(edge: .bottom) {
             if let model, model.phase == .ready {
-                improveButton(model)
+                improveButton(model).clearsFloatingBar()
             }
         }
         .refreshable { await model?.load() }

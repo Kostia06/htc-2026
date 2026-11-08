@@ -54,6 +54,12 @@ final class CrossroadsAskModel: ChatDraftModel {
         }
     }
 
+    /// Closing the answer card; the thread stays so a follow-up still has its context.
+    func clearReply() {
+        reply = nil
+        error = nil
+    }
+
     func toggleListening() {
         if isListening {
             dictation.stop()

@@ -25,6 +25,7 @@
 		1A38FE47D71D46CE0EBF73E8 /* ProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7011C11EF0CD2188D3C06275 /* ProfileHeader.swift */; };
 		1B1E4D1D540D6510275C7672 /* ReplayScrubBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47E2F12911DD29FFA168B3 /* ReplayScrubBar.swift */; };
 		1C99D71CB673BE926744D80F /* CrossroadsCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6EACB3D7D6953845EE1FC6 /* CrossroadsCards.swift */; };
+		1D2884E8508A402D71A190C7 /* CrossroadsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B161768E4169322691F9BE /* CrossroadsDetailSheet.swift */; };
 		1F959117078F05F118E7E6F1 /* EducationForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DD49EDDB15983E44263739 /* EducationForm.swift */; };
 		20E65F5E5BAEC4D89097B7B6 /* DetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8B87B9E981A0F9A781246B /* DetailSheet.swift */; };
 		252578054CB30D1ACCFE4D49 /* OnboardingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17E4C6938194B6047574446 /* OnboardingHeader.swift */; };
@@ -217,6 +218,7 @@
 		1F8E1FBF7FDC3E08F31A3060 /* SkillsAndExperienceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsAndExperienceView.swift; sourceTree = "<group>"; };
 		2241155FCAD6ED7AEB6D727C /* FinishingUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishingUpView.swift; sourceTree = "<group>"; };
 		2294383E7F8960B702E80275 /* BringYourWorkList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BringYourWorkList.swift; sourceTree = "<group>"; };
+		22B161768E4169322691F9BE /* CrossroadsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossroadsDetailSheet.swift; sourceTree = "<group>"; };
 		22EB3068483522774E09FC5E /* ElevenLabsRecapVoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevenLabsRecapVoice.swift; sourceTree = "<group>"; };
 		2555D6EE7012E6831C6A814F /* NotificationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRow.swift; sourceTree = "<group>"; };
 		25AB3A58F3679CF461303E38 /* RoadProgressLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadProgressLine.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				7589915EEE8B52466D53E369 /* CrossroadsAskBar.swift */,
 				3354E42023BF3F591557FC1A /* CrossroadsAskModel.swift */,
 				0A6EACB3D7D6953845EE1FC6 /* CrossroadsCards.swift */,
+				22B161768E4169322691F9BE /* CrossroadsDetailSheet.swift */,
 				C10E77141C584D40DD72008D /* CrossroadsHeader.swift */,
 				4E44C7ED4FB9596046C710A2 /* CrossroadsModel.swift */,
 				A7F0CE4D83B5B3E4F9ADD243 /* CrossroadsService.swift */,
@@ -897,6 +900,7 @@
 				4006F5C4C552B9443B5A8FD7 /* CrossroadsAskBar.swift in Sources */,
 				03C3CF5D2BB9AEA4D6C51CB6 /* CrossroadsAskModel.swift in Sources */,
 				1C99D71CB673BE926744D80F /* CrossroadsCards.swift in Sources */,
+				1D2884E8508A402D71A190C7 /* CrossroadsDetailSheet.swift in Sources */,
 				33FB9761A1D1FAACE4FABD97 /* CrossroadsHeader.swift in Sources */,
 				380BEEFD0E1C7564DC08C657 /* CrossroadsModel.swift in Sources */,
 				B20A167FDE5F6B712F46E98E /* CrossroadsService.swift in Sources */,

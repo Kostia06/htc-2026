@@ -6,6 +6,7 @@ import { crossroadsApi, memoriesApi } from '../../lib/client'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { Page, PageHeader } from '../../ui/Layout'
 import { AskBar } from './AskBar'
+import { CrossroadsDetail } from './Detail'
 import { FactCard, LineCard, TeachingEmpty, YourCard } from './Cards'
 import { Explainer, PathInsight } from './Insight'
 import { matchesOf, pathInsight, unlinked } from './links'
@@ -66,6 +67,7 @@ export default function Crossroads() {
   const [seen, dismiss] = useExplainerSeen()
   const [cited, setCited] = useState(new Set())
   const [actionError, setActionError] = useState(null)
+  const [detail, setDetail] = useState(null)
   const matches = useMemo(() => (data ? matchesOf(data) : []), [data])
   const rest = useMemo(() => (data ? unlinked(data) : null), [data])
 
@@ -131,8 +133,22 @@ export default function Crossroads() {
   const insight = pathInsight(data)
   const onRoad = new Set(data.yourRoad?.added ?? [])
   const lineCard = (line, match, key) => (
-    <LineCard key={key} line={line} match={match} cited={cited.has(line.id)} onRoad={onRoad.has(line.id)} onMeToo={meToo} onAdd={addToRoad} />
+    <LineCard
+      key={key}
+      line={line}
+      match={match}
+      cited={cited.has(line.id)}
+      onRoad={onRoad.has(line.id)}
+      onMeToo={meToo}
+      onAdd={addToRoad}
+      onOpen={() => setDetail({ type: 'line', id: line.id, match })}
+    />
   )
+  const factCard = (fact, match, key) => (
+    <FactCard key={key} fact={fact} match={match} cited={cited.has(fact.id)} onOpen={() => setDetail({ type: 'fact', id: fact.id, match })} />
+  )
+  // read live from the data so "Me too" and "Add" show their new state while the sheet is open
+  const opened = detail && (detail.type === 'line' ? data.everyone : data.research).find((x) => x.id === detail.id)
 
   return (
     <Page wide className="crossroads">
@@ -154,7 +170,7 @@ export default function Crossroads() {
             )}
             <ul className="xr-list">
               {matches.map((m) =>
-                m.type === 'line' ? lineCard(m.other, m.you, m.id) : <FactCard key={m.id} fact={m.other} match={m.you} cited={cited.has(m.other.id)} />,
+                m.type === 'line' ? lineCard(m.other, m.you, m.id) : factCard(m.other, m.you, m.id),
               )}
             </ul>
           </Section>
@@ -164,9 +180,7 @@ export default function Crossroads() {
             )}
             <ul className="xr-list">
               {rest.lines.map((line) => lineCard(line, null, line.id))}
-              {rest.facts.map((fact) => (
-                <FactCard key={fact.id} fact={fact} cited={cited.has(fact.id)} />
-              ))}
+              {rest.facts.map((fact) => factCard(fact, null, fact.id))}
             </ul>
           </Section>
         </div>
@@ -183,6 +197,17 @@ export default function Crossroads() {
           </aside>
         )}
       </div>
+      {opened && (
+        <CrossroadsDetail
+          detail={{ type: detail.type, other: opened, match: detail.match }}
+          goal={data.road.goal}
+          minPeople={data.minPeople}
+          onRoad={onRoad.has(opened.id)}
+          onMeToo={meToo}
+          onAdd={addToRoad}
+          onClose={() => setDetail(null)}
+        />
+      )}
       <AskBar onCited={(cites) => setCited(new Set(cites.map((c) => c.id)))} />
     </Page>
   )

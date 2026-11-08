@@ -20,6 +20,26 @@ function Reason({ text, isMatch }) {
   )
 }
 
+// the whole card opens its detail; its own button or link still does only its own thing
+function openable(onOpen, label) {
+  if (!onOpen) return {}
+  const open = (e) => {
+    if (!e.target.closest('button, a')) onOpen()
+  }
+  return {
+    onClick: open,
+    onKeyDown: (e) => {
+      if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault()
+        onOpen()
+      }
+    },
+    tabIndex: 0,
+    'aria-label': `${label}. Open details`,
+    className: ' is-openable',
+  }
+}
+
 function Action({ on, onClick, label, onLabel, icon: Icon, disabled }) {
   return (
     <button type="button" className={`xr-action${on ? ' is-on' : ''}`} aria-pressed={on} onClick={onClick} disabled={disabled}>
@@ -29,9 +49,10 @@ function Action({ on, onClick, label, onLabel, icon: Icon, disabled }) {
   )
 }
 
-export function LineCard({ line, match, cited, onRoad, onMeToo, onAdd }) {
+export function LineCard({ line, match, cited, onRoad, onMeToo, onAdd, onOpen }) {
+  const { className: openClass = '', ...open } = openable(onOpen, line.text)
   return (
-    <li className={`xr-card${cited ? ' is-cited' : ''}`}>
+    <li className={`xr-card${cited ? ' is-cited' : ''}${openClass}`} {...open}>
       <p className={`t-caption semibold xr-card__kind xr-kind--${line.kind}`}>
         {KIND_LABELS[line.kind] ?? line.kind}
         {line.example && <ExampleTag />}
@@ -47,10 +68,11 @@ export function LineCard({ line, match, cited, onRoad, onMeToo, onAdd }) {
   )
 }
 
-export function FactCard({ fact, match, cited }) {
+export function FactCard({ fact, match, cited, onOpen }) {
   const url = safeUrl(fact.sourceUrl)
+  const { className: openClass = '', ...open } = openable(onOpen, fact.text)
   return (
-    <li className={`xr-card${cited ? ' is-cited' : ''}`}>
+    <li className={`xr-card${cited ? ' is-cited' : ''}${openClass}`} {...open}>
       <p className="t-caption semibold c-2 xr-card__kind">{fact.company}</p>
       <p className="t-body">{fact.text}</p>
       <Reason text={factReason(fact, match)} isMatch={Boolean(match)} />
