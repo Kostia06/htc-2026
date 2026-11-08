@@ -25,6 +25,8 @@ struct VoiceSessionView: View {
                 )
             case .closed:
                 Color.clear.onAppear { dismiss() }
+            case let .unsaved(message):
+                unsaved(message)
             case let .failed(message):
                 failure(message)
             }
@@ -131,6 +133,19 @@ struct VoiceSessionView: View {
         } actions: {
             Button("Close") { dismiss() }
                 .buttonStyle(.glassProminent)
+        }
+    }
+
+    private func unsaved(_ message: String) -> some View {
+        ContentUnavailableView {
+            Label("No report yet", systemImage: "arrow.clockwise.circle")
+        } description: {
+            Text(message)
+        } actions: {
+            Button("Try again") { Task { await model.retryWrapUp() } }
+                .buttonStyle(.glassProminent)
+            Button("Close") { dismiss() }
+                .buttonStyle(.glass)
         }
     }
 

@@ -12,6 +12,8 @@ final class VoiceSessionModel: Identifiable {
         case finished(SessionDebrief)
         /// Ended before any answer, so there is nothing to sum up.
         case closed
+        /// The person answered but no report came back; `retryWrapUp` tries again without redoing the interview.
+        case unsaved(String)
         case failed(String)
     }
 
@@ -33,6 +35,8 @@ final class VoiceSessionModel: Identifiable {
     private var session: VoiceSession?
     private var transcript = TranscriptTurns()
     private var scoring: [Task<Void, Never>] = []
+    /// Answers the server never scored, kept so a retry can send them again.
+    private var unscored: [VoiceTurn] = []
     /// The interviewer said goodbye after the last question; the call ends once it stops speaking.
     private var isSigningOff = false
 
@@ -144,7 +148,10 @@ final class VoiceSessionModel: Identifiable {
     private func submit(_ turn: VoiceTurn, in session: VoiceSession) {
         scoring.append(Task {
             // a turn that fails to score only loses its tip; the conversation carries on
-            guard let feedback = try? await service.submitTurn(turn, in: session.id) else { return }
+            guard let feedback = try? await service.submitTurn(turn, in: session.id) else {
+                unscored.append(turn)
+                return
+            }
             answersScored += 1
             tip = feedback.tip
         })
@@ -159,11 +166,27 @@ final class VoiceSessionModel: Identifiable {
         for task in scoring {
             await task.value
         }
+        // the server refuses to finish a session it holds no answers for, so asking would only lose the report
+        guard answersScored > 0 else {
+            phase = .unsaved("Your answers didn't reach Skillit, so there's no report yet.")
+            return
+        }
         do {
             let debrief = try await service.finishVoiceSession(session.id)
             phase = .finished(debrief)
         } catch {
-            phase = .failed(error.message)
+            phase = .unsaved(error.message)
         }
+    }
+
+    /// Sends the answers that weren't scored again, then asks for the report once more.
+    func retryWrapUp() async {
+        guard let session, case .unsaved = phase else { return }
+        let pending = unscored
+        unscored = []
+        for turn in pending {
+            submit(turn, in: session)
+        }
+        await wrapUp(session)
     }
 }
