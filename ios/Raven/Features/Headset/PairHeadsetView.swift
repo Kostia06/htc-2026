@@ -7,17 +7,27 @@ struct PairHeadsetView: View {
     @State private var model = HeadsetPairingModel()
     /// bumped to pair one more headset; restarts the task below
     @State private var attempt = 0
+    @State private var link = HeadsetLinkModel()
     private let issuer: (any HeadsetCodeIssuer)?
+    private let linkService: (any HeadsetLinkService)?
 
-    /// `issuer` stands in for the server in screenshots; the signed-in client is used otherwise.
-    init(issuer: (any HeadsetCodeIssuer)? = nil) {
+    /// `issuer` and `link` stand in for the server in screenshots; the signed-in client is used otherwise.
+    init(issuer: (any HeadsetCodeIssuer)? = nil, link: (any HeadsetLinkService)? = nil) {
         self.issuer = issuer
+        linkService = link
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
                 content
+                if !link.devices.isEmpty {
+                    HeadsetDevicesList(devices: link.devices) { device in
+                        guard let service = linkService ?? app.client else { return }
+                        Task { await link.revoke(device, using: service) }
+                    }
+                    .padding(.top, 8)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(24)
@@ -28,6 +38,10 @@ struct PairHeadsetView: View {
         .task(id: attempt) {
             guard let issuer = issuer ?? app.client else { return }
             await model.run(using: issuer)
+        }
+        .task {
+            guard let service = linkService ?? app.client else { return }
+            await link.watch(using: service)
         }
         .sensoryFeedback(.success, trigger: model.state == .connected) { _, isConnected in isConnected }
         .animation(.spring(duration: 0.35), value: model.state)
@@ -77,7 +91,7 @@ struct PairHeadsetView: View {
                 .symbolEffect(.bounce, value: model.state)
             Text("Headset connected")
                 .font(.title.bold())
-            Text("Put it on to start practicing. It stays signed in for 12 hours.")
+            Text("Put it on to start practicing. It stays signed in until you remove it here.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Button("Pair another headset") { attempt += 1 }

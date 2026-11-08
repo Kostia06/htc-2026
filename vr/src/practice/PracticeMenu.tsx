@@ -8,7 +8,7 @@ export function PracticeMenu({ token, onSignOut }: { token: string; onSignOut: (
       <header className="practice-header">
         <p className="wordmark">Raven</p>
         <button className="button quiet" onClick={onSignOut}>
-          Sign out
+          Sign out of this headset
         </button>
       </header>
       <ProfileSummary state={profile} />

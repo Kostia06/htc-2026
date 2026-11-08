@@ -70,6 +70,36 @@ POST /api/voice/sessions/:id/finish   → { summary, prepList: [{ step, why }] }
 GET  /api/voice/sessions/:id          → session + turns, for replay
 ```
 
+## Staying signed in, and launches from the phone
+
+Pairing (`POST /api/pairing/claim { code }`) now answers with more than a token:
+
+```jsonc
+{ "token": "…", "expiresAt": "…",            // access token, 1 hour
+  "refreshToken": "…", "refreshExpiresAt": "…", // 60 days, rotates on every use
+  "deviceId": "…", "deviceName": "Quest 3" }
+```
+
+The page keeps all of it in `localStorage` (`vr/src/headset/storage.ts`) and `useHeadsetSession` refreshes silently on load
+and five minutes before `expiresAt` with `POST /api/headset/refresh { refreshToken }` (no bearer needed; same shape back).
+A `401` there means the phone removed this headset (or the credential was already used): the keypad comes back. A network
+failure keeps the credential and retries.
+
+Once signed in, `useLaunchPolling` long-polls `GET /api/headset/launch?wait=20&device=<deviceId>` (the server answers early
+with `{ "launch": { "mode", "companySlug?", "role?", "stepId?" } }` when the phone's Start button sent one, else `{ "launch": null }`;
+polling more than once a second gets a 429). The `device` query marks the headset as *connected* for the phone
+(`GET /api/headset/status` → `connected` when it polled in the last 30 s).
+
+**For the scene:** register once and start the session from the launch; its fields go straight into `POST /api/voice/sessions`:
+
+```ts
+import { onLaunch } from "./headset";
+useEffect(() => onLaunch((launch) => startPractice(launch)), []);
+```
+
+Until a listener is registered, `HeadsetShell` shows "Starting your interview with ATB…" for a moment and returns to the menu.
+Phone side: `GET /api/headset/devices`, `DELETE /api/headset/devices/:id` (sign a headset out), `POST /api/headset/launch`.
+
 ## Coming next (being built now)
 
 - `POST /api/voice/sessions/:id/next` — returns the interviewer's next short line (a follow-up or the next
