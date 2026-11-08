@@ -13,7 +13,7 @@ export function memoryFor(env: Env, userId: string): PrivateMemoryPort {
     updateProfile: (patch) => updateProfile(env, userId, patch),
     githubProjects: async () => {
       const connection = await getConnection(env, userId, "github");
-      return connection?.status === "active" ? (connection.derived?.repos ?? []) : [];
+      return connection?.status === "active" ? (connection.derived?.items ?? []) : [];
     },
   };
 }

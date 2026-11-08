@@ -86,7 +86,7 @@ describe("DELETE /api/me", () => {
     const res = await erase(a);
     expect(res.status).toBe(200);
     // without a Composio key the GitHub grant can't be revoked there, so it is reported; everything here still goes
-    expect(await res.json()).toEqual({ deleted: Object.fromEntries(TABLES.map((t) => [t, 1])), githubLeft: true });
+    expect(await res.json()).toEqual({ deleted: Object.fromEntries(TABLES.map((t) => [t, 1])), connectionsLeft: ["github"], githubLeft: true });
 
     expect(await rowsFor(idA)).toEqual(TABLES.map((t) => [t, 0]));
     expect(await rowsFor(idB)).toEqual(TABLES.map((t) => [t, 1]));

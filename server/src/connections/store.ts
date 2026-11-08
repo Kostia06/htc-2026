@@ -1,19 +1,26 @@
 import { db } from "../db";
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
+import type { ProviderId, WorkItem } from "./types";
 
-export type Provider = "github";
+export type Provider = ProviderId;
 export type ConnectionStatus = "pending" | "active" | "revoking";
 
-// one imported repo as Skillit keeps it: allowlisted facts and a summary grounded in the repo's own text
-export type RepoSummary = { name: string; summary?: string; language?: string; topics: string[]; stars: number; updatedAt?: string };
+// a GitHub repo as the github_profile tool sees it: the same shape every connector imports
+export type RepoSummary = WorkItem;
 
-// what the import added to the person's private data, so disconnecting can take exactly that back out
-export type GithubDerived = { repos: RepoSummary[]; addedProjects: string[]; noteIds: string[]; suggestions: string[] };
+// what one provider's import added to the person's private data, so disconnecting can take exactly that back out
+export type Derived = { items: WorkItem[]; addedProjects: string[]; noteIds: string[]; suggestions: string[] };
 
-export type Connection = { accountId: string; status: ConnectionStatus; importedAt?: string; derived?: GithubDerived };
+export type Connection = { accountId: string; status: ConnectionStatus; importedAt?: string; derived?: Derived };
 
 type Row = { account_id: string; status: ConnectionStatus; ciphertext: string | null; iv: string | null; imported_at: string | null };
+
+// imports sealed before connectors were generalised called their items "repos"
+function derivedFrom(json: string): Derived {
+  const raw = JSON.parse(json) as Partial<Derived> & { repos?: WorkItem[] };
+  return { items: raw.items ?? raw.repos ?? [], addedProjects: raw.addedProjects ?? [], noteIds: raw.noteIds ?? [], suggestions: raw.suggestions ?? [] };
+}
 
 export async function getConnection(env: Env, userId: string, provider: Provider): Promise<Connection | null> {
   const row = await db(env)
@@ -21,7 +28,7 @@ export async function getConnection(env: Env, userId: string, provider: Provider
     .bind(userId, provider)
     .first<Row>();
   if (!row) return null;
-  const derived = row.ciphertext && row.iv ? (JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, { ciphertext: row.ciphertext, iv: row.iv })) as GithubDerived) : undefined;
+  const derived = row.ciphertext && row.iv ? derivedFrom(await decryptFor(env.MEMORY_SECRET, userId, { ciphertext: row.ciphertext, iv: row.iv })) : undefined;
   return { accountId: row.account_id, status: row.status, importedAt: row.imported_at ?? undefined, derived };
 }
 
@@ -45,15 +52,21 @@ export async function setStatus(env: Env, userId: string, provider: Provider, st
     .run();
 }
 
-export async function saveDerived(env: Env, userId: string, derived: GithubDerived | null) {
+export async function saveDerived(env: Env, userId: string, provider: Provider, derived: Derived | null) {
   const now = new Date().toISOString();
   const sealed = derived ? await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(derived)) : null;
   await db(env)
-    .prepare("UPDATE user_connections SET ciphertext = ?, iv = ?, imported_at = ?, updated_at = ? WHERE user_id = ? AND provider = 'github'")
-    .bind(sealed?.ciphertext ?? null, sealed?.iv ?? null, derived ? now : null, now, userId)
+    .prepare("UPDATE user_connections SET ciphertext = ?, iv = ?, imported_at = ?, updated_at = ? WHERE user_id = ? AND provider = ?")
+    .bind(sealed?.ciphertext ?? null, sealed?.iv ?? null, derived ? now : null, now, userId, provider)
     .run();
 }
 
 export async function deleteConnectionRow(env: Env, userId: string, provider: Provider) {
   await db(env).prepare("DELETE FROM user_connections WHERE user_id = ? AND provider = ?").bind(userId, provider).run();
+}
+
+/** Every provider this person has a row for, in any state: what deleting their account must disconnect. */
+export async function connectedProviders(env: Env, userId: string): Promise<Provider[]> {
+  const { results } = await db(env).prepare("SELECT provider FROM user_connections WHERE user_id = ?").bind(userId).all<{ provider: Provider }>();
+  return results.map((r) => r.provider);
 }

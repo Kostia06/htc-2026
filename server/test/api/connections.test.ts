@@ -1,34 +1,17 @@
 import { env } from "cloudflare:workers";
-import { Hono } from "hono";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AgentDeps } from "../../src/agents/core/types";
-import { connectionsRouter } from "../../src/api/connections";
 import { getConnection } from "../../src/connections/store";
-import type { AppContext } from "../../src/env";
 import { listMemories } from "../../src/memory/private/store";
 import { getProfile, updateProfile } from "../../src/memory/profile/store";
 import { call, fakeDeps } from "../agents/fakes";
 import { fakeComposio, keyed } from "../connections/fixtures";
+import { testApp } from "./connections-app";
 
 afterEach(() => vi.restoreAllMocks());
 
 const summary = call("finish", {
   projects: [{ name: "budget-bot", summary: "Telegram bot in Python that tracks shared expenses", evidence: "A Telegram bot that tracks shared expenses for roommates" }],
 });
-
-function testApp(deps: AgentDeps, bindings: typeof env = keyed) {
-  const pending: Promise<unknown>[] = [];
-  const executionCtx = { waitUntil: (p: Promise<unknown>) => pending.push(p), passThroughOnException: () => {}, props: {} } as unknown as ExecutionContext;
-  const app = new Hono<AppContext>()
-    .use(async (c, next) => {
-      c.set("sessionId", c.req.header("x-test-user") ?? "u1");
-      await next();
-    })
-    .route("/", connectionsRouter(() => deps));
-  const request = (user: string, method: string, path = "/", body?: unknown) =>
-    app.request(path, { method, headers: { "x-test-user": user, "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) }, bindings, executionCtx);
-  return { request, settle: () => Promise.all(pending.splice(0)) };
-}
 
 const user = () => `gh-${crypto.randomUUID()}`;
 
@@ -45,7 +28,7 @@ describe("/api/connections", () => {
   it("reports not configured cleanly without a Composio key", async () => {
     const { calls } = fakeComposio();
     const { request } = testApp(fakeDeps().deps, env);
-    expect(await (await request(user(), "GET")).json()).toEqual({ github: { configured: false, status: "not_connected", projects: [], suggestions: [], importing: false } });
+    expect(await (await request(user(), "GET")).json()).toMatchObject({ github: { configured: false, status: "not_connected", projects: [], suggestions: [], importing: false } });
     const post = await request(user(), "POST", "/github", {});
     expect(post.status).toBe(503);
     expect(await post.json()).toMatchObject({ configured: false });

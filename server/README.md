@@ -47,15 +47,22 @@ robots.txt (cached 6 h) that allows the page for us and for `*`, and the site's 
 shows up as short search snippets labelled `anecdote` and is never saved as a fact. Job listings come only from the Adzuna
 API (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`), each one labelled "Jobs by Adzuna".
 
-GitHub (`connections/`, `integrations/composio.ts`, `api/connections.ts`) is read-only through Composio's REST API.
-`POST /api/connections/github` returns a hosted sign-in link, `GET /api/connections` reports the state (and starts the
-import once the sign-in finished), `POST /api/connections/github/import` re-imports, `DELETE /api/connections/github`
-deletes the connection at Composio (revoking the token at GitHub) and everything the import added. Only the tools in
-`connections/github/read-only.ts` can run; anything else is refused before a request is made. The OAuth token never
-leaves Composio, Composio only sees a pseudonym for the person, repo fields are allowlisted, READMEs are stripped of
-secrets, links and contact details before the `github-projects` skill writes grounded one-line summaries, and only those
-derived summaries are kept (sealed in `user_connections`). Agents read them through the `github_profile` tool, which needs
-private access. Secrets: `COMPOSIO_API_KEY` (missing: "not configured"), optionally `COMPOSIO_GITHUB_AUTH_CONFIG_ID`.
+"Bring your work" (`connections/`, `integrations/composio.ts`, `api/connections.ts`) is read-only through Composio's
+REST API, for GitHub, GitLab, Bitbucket, Dribbble, Notion, Google Drive and YouTube (`connections/registry.ts`; one
+connector each under `connections/github/` and `connections/providers/`). `GET /api/connections` lists every provider
+`{id, name, category, reads, configured, status, projects, suggestions}` (and starts an import once a sign-in finished),
+`POST /api/connections/:provider` returns a hosted sign-in link, `POST /api/connections/:provider/import` re-imports,
+`DELETE /api/connections/:provider` deletes the connection at Composio (revoking the token at the service) and only what
+that provider's import added. A provider is `configured` only when the Composio project has an enabled auth config for
+its toolkit; otherwise the apps show it as "coming soon". Each connector lists the only tools that may run on its
+connections (`readTools`); anything else, including another connector's tools, is refused before a request is made. The
+OAuth token never leaves Composio, Composio only sees one pseudonym per person, fields are allowlisted per connector,
+text is stripped of secrets, links and contact details, and titles that address a model are dropped. Only GitHub asks a
+model anything (the `github-projects` skill, over untrusted-wrapped READMEs, checked in code); every other summary is
+the item's own first sentence or its type and date. Only derived items are kept (sealed in `user_connections`, one row
+per provider) and imported projects land in the person's private profile, never shared memory. Agents read GitHub's
+through the `github_profile` tool, which needs private access. Secrets: `COMPOSIO_API_KEY` (missing: "not configured"),
+optionally `COMPOSIO_GITHUB_AUTH_CONFIG_ID`.
 
 `POST /api/resume/linkedin` takes LinkedIn's "Save to PDF" export, keeps nothing, masks emails, phones and links, and
 returns `linkedin-review` suggestions that each quote the PDF.

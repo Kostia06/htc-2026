@@ -25,7 +25,7 @@ describe("github_profile", () => {
   it("reads only an active connection, only for the bound person", async () => {
     const me = `gp-${crypto.randomUUID()}`;
     await startConnection(env, me, "github", "ca_1");
-    await saveDerived(env, me, { repos, addedProjects: [], noteIds: [], suggestions: [] });
+    await saveDerived(env, me, "github", { items: repos, addedProjects: [], noteIds: [], suggestions: [] });
     expect(await memoryFor(env, me).githubProjects()).toEqual([]);
     await setStatus(env, me, "github", "active");
     expect(await memoryFor(env, me).githubProjects()).toEqual(repos);

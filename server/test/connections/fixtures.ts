@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { vi } from "vitest";
+import { listResponses } from "./provider-fixtures";
 
 export const keyed = { ...env, COMPOSIO_API_KEY: "test-composio-key", COMPOSIO_GITHUB_AUTH_CONFIG_ID: "ac_test" };
 
@@ -47,7 +48,23 @@ export function fakeComposio(over: { status?: string; deleteStatus?: number } = 
     const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : undefined;
     calls.push({ url, method, body });
     const path = new URL(url).pathname;
-    if (path.endsWith("/connected_accounts/link")) return Response.json({ redirect_url: "https://connect.composio.dev/link/ln_1", connected_account_id: "ca_1", link_token: "lt", expires_at: "x" }, { status: 201 });
+    if (path.endsWith("/connected_accounts/link")) {
+      // GitHub's sign-in is ca_1; any other toolkit's is named after its auth config, so tests can tell them apart
+      const accountId = body?.auth_config_id === "ac_test" ? "ca_1" : `ca_${String(body?.auth_config_id).replace(/^ac_/, "")}`;
+      return Response.json({ redirect_url: "https://connect.composio.dev/link/ln_1", connected_account_id: accountId, link_token: "lt", expires_at: "x" }, { status: 201 });
+    }
+    // GitLab and Notion are set up in the Composio project; Dribbble's config exists but is disabled; the rest don't exist
+    if (path.endsWith("/auth_configs")) {
+      return Response.json({
+        items: [
+          { id: "ac_gitlab", status: "ENABLED", toolkit: { slug: "gitlab" } },
+          { id: "ac_notion", status: "ENABLED", toolkit: { slug: "notion" } },
+          { id: "ac_dribbble", status: "DISABLED", toolkit: { slug: "dribbble" } },
+        ],
+      });
+    }
+    const slug = path.split("/").pop() ?? "";
+    if (listResponses[slug]) return Response.json({ successful: true, error: null, ...(listResponses[slug] as object) });
     if (method === "DELETE") return over.deleteStatus ? new Response("{}", { status: over.deleteStatus }) : Response.json({ success: true });
     if (path.includes("/connected_accounts/")) return Response.json({ id: "ca_1", status: over.status ?? "ACTIVE", state: { val: { access_token: "gho_leak" } } });
     if (path.endsWith("GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER")) return Response.json({ successful: true, error: null, data: { repositories: rawRepos } });

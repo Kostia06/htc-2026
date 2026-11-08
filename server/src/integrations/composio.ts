@@ -1,10 +1,9 @@
-import { assertReadOnlyTool } from "../connections/github/read-only";
+import { assertReadOnlyTool } from "../connections/read-only";
+import type { Connector } from "../connections/types";
 import type { Env } from "../env";
 
 // REST v3.1 (https://docs.composio.dev/reference): plain fetch, so nothing but the Workers runtime is needed
 const API = "https://backend.composio.dev/api/v3.1";
-// pinned so a tool's response shape can't change under the import; the GitHub toolkit's version on 2026-11-03
-export const GITHUB_TOOLKIT_VERSION = "20261103_00";
 
 export class ComposioNotConfigured extends Error {}
 
@@ -23,7 +22,7 @@ type Request = { method: "GET" | "POST" | "DELETE"; path: string; what: string; 
 
 async function composio<T>(env: Env, { method, path, what, body }: Request): Promise<T> {
   const key = env.COMPOSIO_API_KEY;
-  if (!key) throw new ComposioNotConfigured("GitHub isn't set up on this server yet");
+  if (!key) throw new ComposioNotConfigured("connecting accounts isn't set up on this server yet");
   const res = await fetch(`${API}${path}`, {
     method,
     headers: { "x-api-key": key, "Content-Type": "application/json" },
@@ -33,20 +32,45 @@ async function composio<T>(env: Env, { method, path, what, body }: Request): Pro
   return (await res.json()) as T;
 }
 
-type AuthConfig = { id?: unknown; status?: unknown; is_disabled?: unknown };
+type AuthConfig = { id?: unknown; status?: unknown; is_disabled?: unknown; toolkit?: { slug?: unknown } };
 
-// the owner may pin one; otherwise the project's first enabled GitHub auth config
-async function githubAuthConfigId(env: Env): Promise<string> {
-  if (env.COMPOSIO_GITHUB_AUTH_CONFIG_ID) return env.COMPOSIO_GITHUB_AUTH_CONFIG_ID;
-  const { items = [] } = await composio<{ items?: AuthConfig[] }>(env, { method: "GET", path: "/auth_configs?toolkit_slug=github", what: "auth config lookup" });
-  const config = items.find((c) => typeof c.id === "string" && c.status !== "DISABLED" && c.is_disabled !== true);
-  if (!config) throw new ComposioNotConfigured("no GitHub auth config exists in the Composio project yet");
-  return config.id as string;
+// the auth configs barely change, and the app polls the status route while someone signs in: one lookup a minute is plenty
+const AUTH_CONFIG_TTL_MS = 60_000;
+let cached: { key: string; at: number; ids: Map<string, string> } | undefined;
+
+async function lookUpAuthConfigs(env: Env, toolkits: string[]): Promise<Map<string, string>> {
+  const query = `toolkit_slug=${encodeURIComponent(toolkits.join(","))}&limit=200`;
+  const key = `${env.COMPOSIO_API_KEY}|${query}`;
+  if (cached?.key === key && Date.now() - cached.at < AUTH_CONFIG_TTL_MS) return cached.ids;
+  const { items = [] } = await composio<{ items?: AuthConfig[] }>(env, { method: "GET", path: `/auth_configs?${query}`, what: "auth config lookup" });
+  const ids = new Map<string, string>();
+  for (const config of items) {
+    const toolkit = typeof config.toolkit?.slug === "string" ? config.toolkit.slug.toLowerCase() : undefined;
+    // the project's first enabled config for a toolkit is the one used
+    if (toolkit && typeof config.id === "string" && config.status !== "DISABLED" && config.is_disabled !== true && !ids.has(toolkit)) ids.set(toolkit, config.id);
+  }
+  cached = { key, at: Date.now(), ids };
+  return ids;
 }
 
-/** Starts a hosted GitHub sign-in for one person. Composio keeps the OAuth token; we get its connection id. */
-export async function createGithubLink(env: Env, composioUserId: string, callbackUrl?: string) {
-  const body = { auth_config_id: await githubAuthConfigId(env), user_id: composioUserId, ...(callbackUrl ? { callback_url: callbackUrl } : {}) };
+/**
+ * Which toolkits can be connected: those with an enabled auth config in the Composio project (GitHub's may be pinned by
+ * COMPOSIO_GITHUB_AUTH_CONFIG_ID). No key means none; a failed lookup means none but the pinned one, never an error.
+ */
+export async function authConfigIds(env: Env, toolkits: string[]): Promise<Map<string, string>> {
+  if (!composioConfigured(env)) return new Map();
+  const pinned = new Map(env.COMPOSIO_GITHUB_AUTH_CONFIG_ID ? [["github", env.COMPOSIO_GITHUB_AUTH_CONFIG_ID]] : []);
+  const unpinned = toolkits.filter((t) => !pinned.has(t));
+  if (unpinned.length === 0) return pinned;
+  const found = await lookUpAuthConfigs(env, unpinned).catch(() => new Map<string, string>());
+  return new Map([...found, ...pinned]);
+}
+
+/** Starts a hosted sign-in for one person. Composio keeps the OAuth token; we get its connection id. */
+export async function createLink(env: Env, toolkit: string, composioUserId: string, callbackUrl?: string) {
+  const authConfigId = (await authConfigIds(env, [toolkit])).get(toolkit);
+  if (!authConfigId) throw new ComposioNotConfigured(`no ${toolkit} auth config exists in the Composio project yet`);
+  const body = { auth_config_id: authConfigId, user_id: composioUserId, ...(callbackUrl ? { callback_url: callbackUrl } : {}) };
   const link = await composio<{ redirect_url?: unknown; connected_account_id?: unknown }>(env, { method: "POST", path: "/connected_accounts/link", what: "link", body });
   if (typeof link.redirect_url !== "string" || typeof link.connected_account_id !== "string") throw new ComposioError("link", 502);
   return { url: link.redirect_url, accountId: link.connected_account_id };
@@ -58,7 +82,7 @@ export async function connectionStatus(env: Env, accountId: string): Promise<str
   return typeof account.status === "string" ? account.status : "UNKNOWN";
 }
 
-/** Deletes the connection and asks Composio to revoke the token at GitHub. A connection that's already gone counts as done. */
+/** Deletes the connection and asks Composio to revoke the token at the service. A connection that's already gone counts as done. */
 export async function deleteConnection(env: Env, accountId: string): Promise<void> {
   try {
     await composio(env, { method: "DELETE", path: `/connected_accounts/${encodeURIComponent(accountId)}?revoke_on_delete=true`, what: "delete" });
@@ -70,10 +94,10 @@ export async function deleteConnection(env: Env, accountId: string): Promise<voi
 
 type Execution = { data?: unknown; successful?: unknown };
 
-/** Runs one allowlisted read for one person's connection; anything else is refused before a request is made. */
-export async function executeReadTool(env: Env, slug: string, call: { userId: string; accountId: string; args: Record<string, unknown> }) {
-  assertReadOnlyTool(slug);
-  const body = { user_id: call.userId, connected_account_id: call.accountId, version: GITHUB_TOOLKIT_VERSION, arguments: call.args };
+/** Runs one of the connector's allowlisted reads for one person's connection; anything else is refused before a request is made. */
+export async function executeReadTool(env: Env, connector: Connector, slug: string, call: { userId: string; accountId: string; args: Record<string, unknown> }) {
+  assertReadOnlyTool(connector, slug);
+  const body = { user_id: call.userId, connected_account_id: call.accountId, version: connector.toolkitVersion, arguments: call.args };
   const result = await composio<Execution>(env, { method: "POST", path: `/tools/execute/${slug}`, what: slug, body });
   if (result.successful !== true) throw new ComposioError(slug, 502);
   return result.data;
