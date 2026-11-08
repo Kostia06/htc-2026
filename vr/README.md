@@ -16,6 +16,27 @@ npm run dev          # http://localhost:5173
 Desktop: `Enter` begins and advances, hold `Space` while answering, `M` mutes the
 interviewer, drag to orbit. In VR: trigger to begin/advance, hold it to answer.
 
+## Signing in and the API
+
+The room opens on a 4-digit keypad. On the phone, Skillit → Practice → Practice
+in VR shows a code; typing it claims the pairing (`POST /api/pairing/claim`). The
+session is kept in `localStorage` under `raven.headset` (the old 2D page's key, so
+signed-in headsets stay signed in) and refreshed before it expires
+(`POST /api/headset/refresh`). While signed in and idle, the headset long-polls
+`GET /api/headset/launch`, so starting a VR session on the phone starts the
+interview here. "Try with example data instead" skips sign-in and runs on the
+stub, badged as sample scores.
+
+The API is `VITE_RAVEN_API_URL`, default `https://api.skillit.study`. For a local
+Worker, put `VITE_RAVEN_API_URL=http://localhost:8799` in `.env.local` and add the
+page's origin to `ALLOWED_ORIGINS` in `server/.dev.vars`.
+
+## Deploy
+
+`npm run deploy` builds and runs `wrangler deploy` with `wrangler.jsonc` (Worker
+`raven-vr`, static assets on https://vr.skillit.study). `.env.production` is
+gitignored; without it the build already points at `https://api.skillit.study`.
+
 ## The avatar
 
 Any rigged humanoid GLB at `public/avatars/interviewer.glb`:
@@ -78,14 +99,12 @@ src/
 
 ## `src/interview/session.js` is the only integration point
 
-**The whole scene currently runs on stub example data.** `createStubSession()`
-returns canned questions and scores, so the demo works whether or not the API is
-up. Wiring in the real backend means replacing the bodies of `start()`,
-`nextQuestion()`, `submitAnswer()`, `finish()` and the `isStub` flag in that one
-file, and changing nothing under `src/scene/`. The exact return shapes are in the
-header comment of `session.js` — keep the signatures. All are async, and the
-scene already handles latency and rejections, so real network calls need no
-changes elsewhere.
+Signed in, `createApiSession()` runs the interview on the Skillit voice API with
+the headset's token: `POST /api/voice/sessions`, then `/turns` (scores) and
+`/next` (the interviewer's next line) per answer, then `/finish` for the
+debrief. When the server offers a realtime voice agent, `useInterview` hands the
+conversation to it and only scores turns. Scores are shown out of 100. Not
+signed in, `createStubSession()` returns canned questions and scores.
 
 Everything the stub returns is flagged `isSeeded: true` and the UI shows an
 **Example data** badge. That badge is a requirement, not decoration: example rows
