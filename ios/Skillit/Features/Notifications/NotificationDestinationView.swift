@@ -42,7 +42,9 @@ struct NotificationDestinationView: View {
             StepDestination(step: step)
         case let .report(session):
             NavigationStack {
-                PracticeSessionDetailView(session: session, service: app.practiceHistoryService)
+                PracticeSessionDetailView(
+                    session: session, service: app.practiceHistoryService, replayService: app.replayService
+                )
             }
             .presentationBackground(Theme.ground)
         case let .resume(tailored, client):
