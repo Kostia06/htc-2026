@@ -78,6 +78,11 @@ describe("Supabase sign-in", () => {
     expect((await me(await issueSession(env.SESSION_SECRET))).status).toBe(200);
   });
 
+  it("tolerates a project URL saved with Windows line endings or spaces", async () => {
+    const windowsEnv = { ...supabaseEnv, SUPABASE_URL: ` ${PROJECT_URL}\r` };
+    expect((await me(await token(), windowsEnv)).status).toBe(200);
+  });
+
   it("ignores Supabase tokens when Supabase is not configured", async () => {
     expect((await me(await token(), env)).status).toBe(401);
   });
