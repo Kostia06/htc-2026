@@ -1,35 +1,172 @@
-/* Crossroads: two lanes that meet at a spine. Sage marks what you can act on and overlaps, sand marks what the
-   AI cited, teal is a real count of people. */
+/* Crossroads: one insight on top, then cards that each say why they're shown. Sage is what you can act on,
+   sand is what Skillit linked or cited, teal is done. */
 .xr-intro {
   max-width: 640px;
+  margin-top: 6px;
+  padding-right: 16px;
+  font-weight: 600;
+}
+.xr-privacy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 6px;
 }
 .xr-error {
   margin: 8px 0;
 }
-
-.xr-lanes {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 8px 0 28px;
+.xr-block {
+  display: block;
 }
-.xr-lane {
+.xr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- explainer + insight ---------- */
+.xr-explainer,
+.xr-insight {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-width: 0;
+  padding: 18px;
+  margin-top: 16px;
+  max-width: 720px;
+  border-radius: var(--radius-card);
+  background: rgb(28 33 29 / 0.82);
+  border: 1px solid var(--hairline);
 }
-.xr-lane__head {
+.xr-explainer {
+  border-color: rgb(227 209 173 / 0.35);
+}
+.xr-explainer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.xr-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px -10px 0;
+  border-radius: 999px;
+  color: var(--text-2);
+}
+.xr-close:hover {
+  color: var(--text);
+}
+.xr-explainer__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
-.xr-sub {
-  margin-top: 12px;
+.xr-explainer__steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
 }
-.xr-empty {
-  padding: 16px 0;
+.xr-explainer__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--action);
+  color: var(--on-action, #140d29);
+}
+.xr-gotit {
+  align-self: stretch;
+}
+@media (min-width: 700px) {
+  .xr-explainer__steps {
+    flex-direction: row;
+  }
+  .xr-explainer__steps li {
+    flex: 1;
+  }
+  .xr-gotit {
+    align-self: flex-start;
+    min-width: 160px;
+  }
+}
+
+.xr-insight__lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.xr-path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.xr-path__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--chip);
+  font: var(--footnote);
+  font-weight: 600;
+}
+.xr-path__step.is-done {
+  background: var(--positive);
+  color: #140d29;
+}
+.xr-next {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- sections ---------- */
+.xr-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 24px 0 28px;
+}
+.xr-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+.xr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.xr-section > header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+@media (min-width: 1024px) {
+  .xr-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 0 32px;
+    align-items: start;
+  }
+  .xr-aside {
+    position: sticky;
+    top: 96px;
+  }
 }
 .xr-list {
   list-style: none;
@@ -39,151 +176,113 @@
   flex-direction: column;
   gap: 10px;
 }
-
-/* the spine is the crossroads itself; on phones it is just a quiet divider with the overlap count */
-.xr-spine {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-3);
-  font: var(--caption);
-}
-.xr-spine::before,
-.xr-spine::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--hairline);
+.xr-teach {
+  padding: 14px 16px;
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--hairline);
 }
 
-@media (min-width: 1024px) {
-  .xr-lanes {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.25fr);
-    gap: 0 20px;
-    align-items: start;
-  }
-  .xr-spine {
-    position: sticky;
-    top: 96px;
-    flex-direction: column;
-    height: calc(100vh - 220px);
-    min-height: 240px;
-  }
-  .xr-spine span {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-  }
-  .xr-spine::before,
-  .xr-spine::after {
-    width: 2px;
-    height: auto;
-    border-radius: 2px;
-    background: linear-gradient(var(--hairline), rgb(168 199 163 / 0.35), var(--hairline));
-  }
-  /* an overlapping item reaches toward the spine, so the link reads across the gap */
-  .xr-lane--you .xr-item.is-lit {
-    transform: translateX(8px);
-  }
-  .xr-lane--road .xr-item.is-lit {
-    transform: translateX(-8px);
-  }
-}
-
-.xr-item {
-  position: relative;
+/* ---------- cards ---------- */
+.xr-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
   padding: 14px 16px;
   border-radius: var(--radius-card);
   background: rgb(28 33 29 / 0.82);
   border: 1px solid var(--hairline);
-  transition: transform 0.25s var(--smooth), opacity 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.xr-item--you {
+.xr-card--you {
   background: var(--inset);
 }
-.xr-item:focus-visible {
-  outline: 2px solid var(--action);
-  outline-offset: 2px;
-}
-.xr-item.is-lit {
-  border-color: rgb(168 199 163 / 0.6);
-  box-shadow: 0 0 0 1px rgb(168 199 163 / 0.25), 0 8px 24px rgb(0 0 0 / 0.25);
-}
-.xr-item.is-dim {
-  opacity: 0.45;
-}
-.xr-item.is-cited,
-.xr-trail.is-cited {
+.xr-card.is-cited,
+.xr-insight.is-cited {
   border-color: rgb(227 209 173 / 0.7);
   box-shadow: 0 0 0 1px rgb(227 209 173 / 0.3);
 }
-.xr-item__kind {
+.xr-card__kind {
   display: flex;
   align-items: center;
   gap: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.xr-item__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
-  min-height: 28px;
-}
-
-.xr-tag {
-  padding: 1px 7px;
-  border-radius: 999px;
-  border: 1px solid var(--grey-30);
+  width: 100%;
   color: var(--text-2);
-  font: var(--caption2);
-  text-transform: none;
-  letter-spacing: 0;
 }
-.xr-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-height: 28px;
-  padding: 0 10px;
+.xr-kind--struggle {
+  color: var(--negative);
+}
+.xr-kind--win {
+  color: var(--positive);
+}
+.xr-tag {
+  margin-left: auto;
+  padding: 1px 8px;
   border-radius: 999px;
   background: var(--chip);
   color: var(--text-2);
-  font: var(--caption);
+  font: var(--caption2);
+  font-weight: 600;
+}
+.xr-insight__lead .xr-tag {
+  margin-left: 0;
+}
+.xr-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.xr-reason svg {
+  flex: none;
+  margin-top: 2px;
+}
+.xr-reason.is-match svg {
+  color: var(--agent);
+}
+.xr-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--text);
+  font: var(--subhead);
   font-weight: 600;
   transition: background 0.15s, color 0.15s;
 }
-.xr-chip:hover {
-  color: var(--text);
+.xr-action:hover:not(:disabled) {
+  background: var(--grey-30);
 }
-.xr-chip--link {
-  color: var(--action);
+.xr-action.is-on {
+  background: var(--action);
+  color: #140d29;
 }
-.xr-metoo.is-on {
-  background: rgb(168 199 163 / 0.18);
-  color: var(--action);
+.xr-action:disabled {
+  cursor: default;
 }
-.xr-icon-btn {
-  margin-left: auto;
-  display: inline-grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+.xr-action:focus-visible,
+.xr-forget:focus-visible,
+.xr-close:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+.xr-forget {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
   color: var(--text-3);
+  font: var(--footnote);
 }
-.xr-icon-btn:hover {
+.xr-forget:hover {
   color: var(--negative);
-  background: rgb(255 158 148 / 0.1);
 }
 .xr-source {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   text-decoration: none;
 }
 .xr-source:hover {
@@ -213,6 +312,20 @@
 .xr-ask .composer {
   border-radius: 28px;
 }
+.xr-suggest {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.xr-suggest__chip {
+  flex: none;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: var(--text);
+  font: var(--subhead);
+}
 @media (min-width: 900px) {
   .xr-ask {
     bottom: 16px;
@@ -220,11 +333,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .xr-item {
+  .xr-card,
+  .xr-action {
     transition: none;
-  }
-  .xr-lane--you .xr-item.is-lit,
-  .xr-lane--road .xr-item.is-lit {
-    transform: none;
   }
 }

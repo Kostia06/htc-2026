@@ -1,4 +1,4 @@
-// Ask Crossroads: the chat composer pinned under the lanes. Answers come only from the two lanes, and what they
+// Ask Crossroads: the chat composer pinned under the page. Answers come only from what the page shows, and what they
 // cite lights up on the page; the server allows one clarifying question per conversation.
 import { useEffect, useRef, useState } from 'react'
 import { crossroadsApi } from '../../lib/client'
@@ -6,6 +6,9 @@ import { useStickToBottom } from '../../lib/hooks'
 import { Bubble, Composer, TypingIndicator } from '../../ui/Chat'
 import { useDictation } from '../chat/useDictation'
 import '../chat/chat.css'
+
+// three to tap, so nobody faces a blank field
+const SUGGESTIONS = ['What should I do next?', 'Is my struggle common?', 'What do interviews ask?']
 
 let nextId = 0
 const line = (role, text) => ({ id: ++nextId, role, text })
@@ -54,11 +57,20 @@ export function AskBar({ onCited }) {
           <div ref={end} />
         </div>
       )}
+      {messages.length === 0 && !draft && (
+        <div className="xr-suggest" role="group" aria-label="Suggested questions">
+          {SUGGESTIONS.map((q) => (
+            <button key={q} type="button" className="xr-suggest__chip glass-strong" onClick={() => send(q)} disabled={thinking}>
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
       <Composer
         value={draft}
         onChange={setDraft}
         onSend={() => send(draft.trim())}
-        placeholder="Ask where your road meets theirs"
+        placeholder="Ask about your road"
         disabled={thinking || Boolean(mic?.listening)}
         mic={mic}
         error={error}

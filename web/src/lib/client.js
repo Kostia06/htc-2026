@@ -149,6 +149,8 @@ export const crossroadsApi = {
   ask: (message, conversation) => post('/api/crossroads/ask', { message, conversation }, { timeout: 30000 }),
   /** { meToo, line }; line stays null while fewer than three people stand behind a real one */
   meToo: (id, on) => request(`/api/crossroads/lines/${id}/me-too`, { method: on ? 'POST' : 'DELETE' }),
+  /** a tip or interview question becomes a step on the person's road; adding one twice is fine */
+  addToRoad: (id) => post(`/api/crossroads/lines/${id}/add-to-road`, {}),
 }
 
 export const resumeApi = {
