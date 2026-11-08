@@ -277,7 +277,8 @@ export function useInterview(auth = {}) {
     try {
       await speaker.unlock()
       // A click or key event lands here too; only a phone launch carries a mode.
-      const started = await session.start(launch?.mode ? launch : undefined)
+      // The Quick button passes only a length.
+      const started = await session.start(launch?.mode || launch?.length ? launch : undefined)
       if (!alive.current) return
       setMeta(started)
 
@@ -298,6 +299,11 @@ export function useInterview(auth = {}) {
       }
     }
   }, [beginWithAgent, say, sayThenListen, session, speaker])
+
+  // only from the idle room, so Q mid-interview can't start a second one
+  const beginQuick = useCallback(() => {
+    if (phaseRef.current === 'idle') begin({ length: 'quick' })
+  }, [begin])
 
   const restart = useCallback(() => {
     running.current = false
@@ -345,8 +351,8 @@ export function useInterview(auth = {}) {
   }, [begin, endTurn, restart])
 
   const actions = useMemo(
-    () => ({ begin, advance, startAnswer: listen, stopAnswer: endTurn, restart, toggleMute }),
-    [begin, advance, listen, endTurn, restart, toggleMute],
+    () => ({ begin, beginQuick, advance, startAnswer: listen, stopAnswer: endTurn, restart, toggleMute }),
+    [begin, beginQuick, advance, listen, endTurn, restart, toggleMute],
   )
 
   return {

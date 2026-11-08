@@ -32,7 +32,7 @@ export function Overlay({ interview, headset, onEnterVR, vrSupported }) {
 
       <div className="bottom">
         <div className="hints">
-        <kbd>Enter</kbd> begin · then just talk · <kbd>Space</kbd> finish early · <kbd>M</kbd> mute
+        <kbd>Enter</kbd> begin · <kbd>Q</kbd> quick 1-min interview · then just talk · <kbd>Space</kbd> finish early · <kbd>M</kbd> mute
           {!sttSupported && <span className="chip"> speech-to-text unavailable in this browser</span>}
         </div>
 

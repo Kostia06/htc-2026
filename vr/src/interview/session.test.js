@@ -260,6 +260,13 @@ describe('createApiSession', () => {
     for (const call of voice) expect(call.headers.authorization).toBe(`Bearer ${TOKEN}`)
   })
 
+  it('asks for a quick interview only when one was picked', async () => {
+    await session().start({ length: 'quick' })
+    expect(api.calls[0].body).toEqual({ mode: 'interview', companySlug: 'acme', role: 'Designer', length: 'quick' })
+    await session().start()
+    expect(api.calls.at(-1).body).not.toHaveProperty('length')
+  })
+
   // /turns scores and /next advances. They are fired together so the feedback
   // lands while the next line is still being spoken — both must go out per turn.
   it('scores and advances in the same turn', async () => {

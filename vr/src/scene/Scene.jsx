@@ -23,6 +23,9 @@ const PAIRING_PANEL = { position: [0, 1.22, -0.92], rotation: [-0.14, 0, 0] }
 const GREETING_MS = 1800
 const REVIEW_PANEL = { position: [-0.56, 1.22, -0.98], rotation: [-0.1, 0.47, 0] }
 const BUTTON = { position: [0, 0.9, -0.56], rotation: [-0.8, 0, 0] }
+// before the interview, Begin moves right so the one-minute Quick option can sit beside it
+const BEGIN_BUTTON = { position: [0.155, 0.9, -0.56] }
+const QUICK_BUTTON = { position: [-0.155, 0.9, -0.56] }
 const CAPTIONS = { position: [0, 0.94, -1.16], rotation: [-0.22, 0, 0] }
 
 const REVIEW_VISIBLE_MS = 6000
@@ -211,7 +214,18 @@ export function Scene({ interview, headset, review }) {
       {!showPairing && buttonProps && (
         <ActionButton
           {...buttonProps}
-          position={BUTTON.position}
+          position={phase === 'idle' ? BEGIN_BUTTON.position : BUTTON.position}
+          rotation={BUTTON.rotation}
+          reducedMotion={reducedMotion}
+        />
+      )}
+
+      {!showPairing && phase === 'idle' && (
+        <ActionButton
+          label="Quick · 1 min"
+          hint="Two questions · press Q"
+          onClick={actions.beginQuick}
+          position={QUICK_BUTTON.position}
           rotation={BUTTON.rotation}
           reducedMotion={reducedMotion}
         />
@@ -338,6 +352,7 @@ function useKeyboard({ actions }, enabled = true) {
       if (e.code === 'Enter') {
         a.advance()
       }
+      if (e.code === 'KeyQ') a.beginQuick()
       if (e.code === 'KeyM') a.toggleMute()
       if (e.code === 'Escape') a.restart()
     }
