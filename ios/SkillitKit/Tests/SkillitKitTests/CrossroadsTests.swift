@@ -54,6 +54,11 @@ extension StubbedNetworkTests {
             #expect(sent["message"] as? String == "Is this common?")
         }
 
+        @Test func `adds a line to the road`() async throws {
+            StubProtocol.routes.withLock { $0["POST /api/crossroads/lines/ex_tip/add-to-road"] = (201, #"{"added":true}"#) }
+            try await client.addToRoad(lineID: "ex_tip")
+        }
+
         @Test func `me too returns nil while the line is still hidden`() async throws {
             StubProtocol.routes.withLock { $0["POST /api/crossroads/lines/r9/me-too"] = (200, #"{"meToo":true,"line":null}"#) }
             #expect(try await client.standBehind(lineID: "r9", true) == nil)

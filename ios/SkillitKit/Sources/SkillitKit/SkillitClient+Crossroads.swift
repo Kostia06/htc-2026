@@ -16,6 +16,15 @@ public extension SkillitClient {
         let response: MeTooResponse = try await send(authorized(behind ? "POST" : "DELETE", "api/crossroads/lines/\(lineID)/me-too"))
         return response.line
     }
+
+    /// "Add to my road": a tip or interview question becomes a step. Adding one that is already there is fine.
+    func addToRoad(lineID: String) async throws(SkillitError) {
+        let _: AddedResponse = try await send(authorized("POST", "api/crossroads/lines/\(lineID)/add-to-road"))
+    }
+}
+
+private struct AddedResponse: Decodable {
+    let added: Bool
 }
 
 private struct MeTooResponse: Decodable {

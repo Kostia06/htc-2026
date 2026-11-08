@@ -20,12 +20,14 @@ public struct Crossroads: Decodable, Equatable, Sendable {
     public var research: [ResearchFact]
     public var links: [CrossroadsLink]
     public var trails: [Trail]
+    /// Nil from a server that predates it.
+    public var yourRoad: YourRoad?
     /// The smallest group a real count is ever shown for.
     public var minPeople: Int
 
     public init(
         road: Road, you: [YourItem], everyone: [RoadLine], research: [ResearchFact] = [], links: [CrossroadsLink] = [],
-        trails: [Trail] = [], minPeople: Int = 3
+        trails: [Trail] = [], yourRoad: YourRoad? = nil, minPeople: Int = 3
     ) {
         self.road = road
         self.you = you
@@ -33,8 +35,28 @@ public struct Crossroads: Decodable, Equatable, Sendable {
         self.research = research
         self.links = links
         self.trails = trails
+        self.yourRoad = yourRoad
         self.minPeople = minPeople
     }
+}
+
+/// The person's own road as Crossroads needs it: step kinds they finished, and road lines they already added.
+public struct YourRoad: Decodable, Equatable, Sendable {
+    public var done: [RoadmapStep.Kind]
+    public var added: [String]
+
+    public init(done: [RoadmapStep.Kind] = [], added: [String] = []) {
+        self.done = done
+        self.added = added
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        done = try container.decode([String].self, forKey: .done).compactMap(RoadmapStep.Kind.init(rawValue:))
+        added = try container.decode([String].self, forKey: .added)
+    }
+
+    private enum CodingKeys: String, CodingKey { case done, added }
 }
 
 /// One thing the person knows about themselves. Only `memory` items can be deleted here; `profile` ones live in Profile.
