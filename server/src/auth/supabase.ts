@@ -21,17 +21,22 @@ const issuerOf = (projectUrl: string) => `${projectUrl.replace(/\/+$/, "")}/auth
 
 /** The Supabase user id behind an access token, or null when it isn't a valid token for this project. */
 export async function verifySupabaseToken(env: Env, token: string): Promise<string | null> {
-  if (!env.SUPABASE_URL) return null;
-  const issuer = issuerOf(env.SUPABASE_URL);
+  // trimmed: a .dev.vars saved on Windows ends every value in "\r", and then no issuer ever matches
+  const projectUrl = env.SUPABASE_URL?.trim();
+  if (!projectUrl) return null;
+  const issuer = issuerOf(projectUrl);
   try {
     const { payload } = await jwtVerify(token, deps.keysFor(`${issuer}/.well-known/jwks.json`), {
       issuer,
-      audience: env.SUPABASE_JWT_AUDIENCE || "authenticated",
+      audience: env.SUPABASE_JWT_AUDIENCE?.trim() || "authenticated",
       // asymmetric signing keys only: the legacy shared HS256 secret never reaches this server
       algorithms: ["ES256", "RS256"],
     });
     return payload.sub ?? null;
-  } catch {
+  } catch (e) {
+    // the reason only, never the token: a silent 401 is impossible to debug from a local setup
+    const reason = (e as { code?: string }).code ?? (e as Error).name;
+    console.warn(`supabase token rejected: ${reason}`);
     return null;
   }
 }
