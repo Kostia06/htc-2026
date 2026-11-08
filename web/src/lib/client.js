@@ -75,6 +75,10 @@ export const profileApi = {
   eraseAll: () => request('/api/me', { method: 'DELETE' }),
 }
 
+/** the files the server can read a resume from (5 MB at most) */
+export const RESUME_ACCEPT = '.pdf,.doc,.docx,.odt,.rtf,.txt,.md,.html,.pptx,image/*'
+export const RESUME_MAX_BYTES = 5 * 1024 * 1024
+
 export const onboardingApi = {
   /** { documentId, summary, draft, missing, droppedClaims }; nothing is saved yet */
   uploadResume: (file) => upload('/api/onboarding/resume', file),
@@ -120,7 +124,11 @@ export const resumeApi = {
   /** { resume, saved } */
   load: () => request('/api/resume'),
   save: (resume) => request('/api/resume', { method: 'PUT', body: resume }).then((r) => r.resume),
-  improve: (section) => post('/api/resume/improve', { section: section || undefined }).then((r) => r.suggestions ?? []),
+  /** coach rewrites for `resume` as it is on screen (saved or not), optionally one section and tuned to a company */
+  improve: ({ resume, section, company } = {}) =>
+    post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
+  /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
+  upload: (file) => upload('/api/resume/upload', file),
   pdf: async () => {
     const res = await send('/api/resume/pdf')
     if (res.status === 401) {
