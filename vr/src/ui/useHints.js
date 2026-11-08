@@ -11,7 +11,7 @@ export const HEADSET_HINTS = [
   'Press B to end the interview',
 ]
 
-export const DESKTOP_HINTS = ['Drag to look around', 'Click to press, or Enter to begin', 'Allow the microphone and just talk', 'Esc to leave']
+export const DESKTOP_HINTS = ['Drag to look around', 'Click to press: Enter begins, Q is one minute', 'Allow the microphone and just talk', 'Esc to leave']
 
 function seen(key) {
   try {

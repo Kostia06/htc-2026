@@ -128,6 +128,7 @@ export function Scene({ interview, headset, review, captions }) {
               captionsOn={Boolean(captions?.on)}
               onCaptions={captions?.toggle}
               onBegin={() => actions.begin()}
+              onQuick={actions.beginQuick}
               inXR={inXR}
               reducedMotion={reducedMotion}
               position={MENU_PANEL.position}
