@@ -10,7 +10,8 @@
     "test": "vitest run",
     "avatar": "node scripts/fetch-avatar.mjs",
     "speech": "node scripts/render-speech.mjs",
-    "tts": "node scripts/tts-server.mjs"
+    "tts": "node scripts/tts-server.mjs",
+    "headset": "node scripts/headset.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

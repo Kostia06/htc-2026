@@ -63,19 +63,24 @@ working. This is the only path that gives you all three.
 
 ### Every session
 
+Three terminals:
+
 ```bash
-adb devices                      # expect:  <serial>   device
-npm run dev                      # vite --host, port 5173
-adb reverse tcp:5173 tcp:5173
+npm run dev        # the scene, port 5173
+npm run tts        # speech for the headset, port 8788
+npm run headset    # checks everything, forwards both ports, opens the browser
 ```
 
-Then in the headset, open **Meta Quest Browser** and go to:
+`npm run headset` is the one to remember. It checks the headset is connected and
+awake, that both servers are up, forwards **both** ports, and opens the scene in
+the Quest browser. If something is missing it says which and how to fix it.
 
-```
-http://localhost:5173
-```
+Then put the headset on and press **Enter VR**. If you cannot see the window,
+hold the **Meta button** for two seconds to recentre.
 
-Press **Enter VR**.
+**Why port 8788 matters:** Quest Browser ships no speech-synthesis voices, so the
+interviewer is silent without it. `npm run tts` serves his lines as audio from the
+laptop. Forget it and the demo is mute.
 
 ### When it does not work
 
