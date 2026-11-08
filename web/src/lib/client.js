@@ -132,15 +132,34 @@ export const resumeApi = {
     post('/api/resume/improve', { resume, section: section || undefined, company: company || undefined }).then((r) => r.suggestions ?? []),
   /** reads a file into a resume that is not saved yet: { resume, saved: false, droppedClaims } */
   upload: (file) => upload('/api/resume/upload', file),
-  pdf: async () => {
-    const res = await send('/api/resume/pdf')
-    if (res.status === 401) {
-      unauthorized()
-      throw new ApiError(401, SIGNED_OUT)
-    }
-    if (!res.ok) throw new ApiError(res.status, "The PDF couldn't be made. Try again.")
-    return res.blob()
-  },
+  pdf: () => pdfBlob('/api/resume/pdf'),
+}
+
+async function pdfBlob(path) {
+  const res = await send(path)
+  if (res.status === 401) {
+    unauthorized()
+    throw new ApiError(401, SIGNED_OUT)
+  }
+  if (!res.ok) throw new ApiError(res.status, "The PDF couldn't be made. Try again.")
+  return res.blob()
+}
+
+export const postingsApi = {
+  list: () => request('/api/postings').then((r) => r.postings ?? []),
+}
+
+/** copies of the resume adapted to one job each; the base resume is never changed by them */
+export const tailoredApi = {
+  /** [{ id, postingId, title, company, covered, total, updatedAt }] */
+  list: () => request('/api/resume/tailored').then((r) => r.tailored ?? []),
+  /** from a saved posting ({ postingId }) or pasted text ({ text }); one model call, two for pasted text */
+  create: ({ postingId, text }) => post('/api/resume/tailored', postingId ? { postingId } : { text }),
+  get: (id) => request(`/api/resume/tailored/${id}`),
+  /** the server rebuilds the copy from the base resume, so a revert is exact; 409 once it was edited by hand */
+  setChange: (id, changeId, accepted) => request(`/api/resume/tailored/${id}`, { method: 'PUT', body: { changes: [{ id: changeId, accepted }] } }),
+  remove: (id) => request(`/api/resume/tailored/${id}`, { method: 'DELETE' }),
+  pdf: (id) => pdfBlob(`/api/resume/tailored/${id}/pdf`),
 }
 
 /** { reply, needsAnswer, applied: [{ type, summary }] } */

@@ -39,6 +39,8 @@ const Resume = lazy(() => import('../features/resume/Resume'))
 const resumeSheets = () => import('../features/resume/ResumeSheets')
 const SectionEditor = named(resumeSheets, 'SectionEditor')
 const PdfSheet = named(resumeSheets, 'PdfSheet')
+const TailorSheet = named(() => import('../features/resume/tailored/TailorSheet'), 'TailorSheet')
+const TailoredSheet = named(() => import('../features/resume/tailored/TailoredSheet'), 'TailoredSheet')
 const settings = () => import('../features/settings/Settings')
 const Settings = named(settings, 'Settings')
 const Privacy = named(settings, 'Privacy')
@@ -165,6 +167,8 @@ export default function App() {
             <Route path="resume" element={<Resume />}>
               <Route path="edit/:section" element={<SectionEditor />} />
               <Route path="pdf" element={<PdfSheet back="/resume" />} />
+              <Route path="tailor" element={<TailorSheet />} />
+              <Route path="tailored/:id" element={<TailoredSheet />} />
             </Route>
 
             <Route path="settings" element={<Settings />} />
