@@ -15,9 +15,23 @@ const realLive = liveToken.fetch;
 const realJev = jev.fetch;
 const realFollowUp = followUpModel.fetch;
 let tokenRequests: string[] = [];
+let background: Promise<unknown>[] = [];
+let modelCalls = 0;
+
+// the draft report is rebuilt in waitUntil; tests collect that work so none of it outlives its test
+const executionCtx = { waitUntil: (work: Promise<unknown>) => background.push(work), passThroughOnException: () => {}, props: {} } as unknown as ExecutionContext;
+const settle = async () => {
+  while (background.length) await Promise.all(background.splice(0));
+};
 
 beforeEach(() => {
   tokenRequests = [];
+  background = [];
+  modelCalls = 0;
+  vi.stubGlobal("fetch", async () => {
+    modelCalls += 1;
+    return Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify(debriefReply) }] } }] });
+  });
   liveToken.fetch = (async (_url: RequestInfo, init?: RequestInit) => {
     tokenRequests.push(String(init?.body));
     return Response.json({ name: "auth_tokens/test" });
@@ -25,7 +39,8 @@ beforeEach(() => {
   jev.fetch = (async () =>
     Response.json({ answers: { structure: { type: "score", score: 2, confidence: 0.9 }, relevance: { type: "score", score: 3, confidence: 0.9 } } })) as typeof fetch;
 });
-afterEach(() => {
+afterEach(async () => {
+  await settle();
   liveToken.fetch = realLive;
   jev.fetch = realJev;
   followUpModel.fetch = realFollowUp;
@@ -60,7 +75,7 @@ const send = (app: Hono<AppContext>, token: string, method: string, path: string
     method,
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
-  }, env);
+  }, env, executionCtx);
 
 type Started = { sessionId: string; mode: string; provider: string; credentials: { kind: string; token?: string; model?: string }; opening: string; questions?: { text: string; source: string }[] };
 
@@ -95,8 +110,25 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), stranger.token, "GET", `/sessions/${sessionId}`)).status).toBe(404);
   });
 
+  it("hands back the report built during the interview, with no model call left at finish", async () => {
+    const me = await person();
+    const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    expect((await send(voiceApp(), me.token, "GET", `/sessions/${sessionId}/report`)).status).toBe(404);
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API that 2,000 staff used every day.", durationMs: 3000 });
+    await settle();
+    expect(modelCalls).toBe(1);
+
+    const preview = await send(voiceApp(), me.token, "GET", `/sessions/${sessionId}/report`);
+    expect(await preview.json()).toEqual({ coversTurns: 1, totalTurns: 1, report: debriefReply });
+    const stranger = await person();
+    expect((await send(voiceApp(), stranger.token, "GET", `/sessions/${sessionId}/report`)).status).toBe(404);
+
+    const finished = await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {});
+    expect(await finished.json()).toEqual(debriefReply);
+    expect(modelCalls).toBe(1);
+  });
+
   it("finishes with a debrief and refuses more turns afterwards", async () => {
-    vi.stubGlobal("fetch", async () => Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify(debriefReply) }] } }] }));
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
     await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "I built an API that 2,000 staff used every day.", durationMs: 3000 });
