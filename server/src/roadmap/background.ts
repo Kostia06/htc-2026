@@ -7,6 +7,10 @@ export function goalOf(profile: Profile): string {
   return profile.targetRoles[0] ?? profile.goals[0] ?? NO_GOAL;
 }
 
+export function skillsOf(profile: Profile): string[] {
+  return profile.skills.map((s) => s.name).filter(Boolean);
+}
+
 // plain lines the model can quote from; the same text checks its quotes when labels are decided
 export function backgroundOf(profile: Profile): string {
   const lines = [
