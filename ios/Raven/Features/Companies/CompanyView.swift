@@ -3,10 +3,20 @@ import SwiftUI
 
 /// What Raven knows about one company, the questions people were asked there, and the way into a practice interview.
 struct CompanyView: View {
+    private enum Tab: String, CaseIterable, Identifiable {
+        case facts = "Facts"
+        case questions = "Questions"
+
+        var id: Self {
+            self
+        }
+    }
+
     @Environment(AppModel.self) private var app
     @State private var model: CompanyModel?
     @State private var isSharing = false
     @State private var researchFinished = 0
+    @State private var tab = Tab.facts
 
     let slug: String
     private let injectedService: (any CompanyService)?
@@ -26,6 +36,14 @@ struct CompanyView: View {
             .navigationTitle(model?.insights?.company.name ?? "")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Theme.ground, for: .navigationBar)
+            .toolbar {
+                if let model, model.insights != nil {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Refresh research", systemImage: "arrow.clockwise") { Task { await model.refreshResearch() } }
+                            .disabled(model.research == .running)
+                    }
+                }
+            }
             .task {
                 guard model == nil else { return }
                 let model = CompanyModel(slug: slug, service: injectedService ?? app.companyService)
@@ -66,135 +84,131 @@ struct CompanyView: View {
             }
         case let .ready(insights):
             if let model {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        CompanyHeader(company: insights.company)
-                        actions(model)
-                        if insights.facts.isEmpty {
-                            noFactsYet
-                        }
-                        ForEach(model.factGroups, id: \.kind) { group in
-                            FactsSection(kind: group.kind, facts: group.facts)
-                        }
-                        ReportedQuestionsSection(questions: insights.questions, reportCount: insights.reportCount)
-                        shareInvite
+                ready(insights, model)
+            }
+        }
+    }
+
+    private func ready(_ insights: CompanyInsights, _ model: CompanyModel) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                CompanyHeader(company: insights.company, research: model.research)
+                Button {
+                    onPractice(slug)
+                } label: {
+                    Label("Practice an interview", systemImage: "mic.fill")
+                }
+                .buttonStyle(.raised)
+                shareButton
+                if insights.facts.isEmpty, insights.questions.isEmpty {
+                    nothingYet(model)
+                } else {
+                    Picker("Section", selection: $tab) {
+                        ForEach(Tab.allCases) { Text($0.rawValue).tag($0) }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 32)
-                    .animation(.spring(duration: 0.4), value: insights.facts)
+                    .pickerStyle(.segmented)
+                    switch tab {
+                    case .facts: facts(model)
+                    case .questions: ReportedQuestionsSection(questions: insights.questions, reportCount: insights.reportCount)
+                    }
                 }
-                .refreshable { await model.load() }
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 32)
+            .animation(.spring(duration: 0.4), value: insights.facts)
+            .animation(.spring(duration: 0.35), value: model.research)
+        }
+        .refreshable { await model.load() }
+    }
+
+    @ViewBuilder private func facts(_ model: CompanyModel) -> some View {
+        if model.factGroups.isEmpty {
+            Text("No facts yet. Refresh to research.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        ForEach(model.factGroups, id: \.kind) { group in
+            FactsSection(kind: group.kind, facts: group.facts)
         }
     }
 
-    private func actions(_ model: CompanyModel) -> some View {
-        VStack(spacing: 12) {
-            Button {
-                onPractice(slug)
-            } label: {
-                Label("Practice an interview here", systemImage: "mic.fill")
-            }
-            .buttonStyle(.raised)
-
-            ResearchButton(state: model.research) { Task { await model.refreshResearch() } }
-        }
-    }
-
-    private var noFactsYet: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Nothing here yet").font(.headline)
-            Text("Refresh the research and Raven will read the careers site, recent news and interview reports.")
-                .font(.subheadline).foregroundStyle(.secondary)
-        }
-        .ravenCard()
-    }
-
-    private var shareInvite: some View {
+    private var shareButton: some View {
         Button { isSharing = true } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "hand.wave").font(.title3).foregroundStyle(Theme.action)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("I interviewed here").font(.headline)
-                    Text("Tell Raven how it went. Shared anonymously.").font(.subheadline).foregroundStyle(.secondary)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.right").font(.footnote.bold()).foregroundStyle(.tertiary)
-            }
-            .ravenCard()
-            .contentShape(.rect)
+            Label("I interviewed here, tell Raven", systemImage: "hand.wave")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .foregroundStyle(.secondary)
+    }
+
+    private func nothingYet(_ model: CompanyModel) -> some View {
+        ContentUnavailableView {
+            Label("Nothing here yet", systemImage: "building.2")
+        } description: {
+            Text("Raven will read the careers site, recent news and interview reports.")
+        } actions: {
+            if model.research != .running {
+                Button("Refresh research") { Task { await model.refreshResearch() } }
+                    .buttonStyle(.raised)
+                    .frame(maxWidth: 220)
+            }
+        }
     }
 }
 
 private struct CompanyHeader: View {
     let company: CompanyDetails
+    let research: CompanyModel.Research
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(company.name).font(.largeTitle.bold())
-            HStack(spacing: 10) {
-                if let researched = RelativeTime.phrase(for: company.lastResearchedAt) {
-                    Label("Researched \(researched)", systemImage: "clock")
-                } else {
-                    Label("Not researched yet", systemImage: "clock")
-                }
+        VStack(alignment: .leading, spacing: 6) {
+            Text(company.name).font(.title2.bold())
+            HStack(spacing: 6) {
+                Text(RelativeTime.phrase(for: company.lastResearchedAt).map { "Researched \($0)" } ?? "Not researched yet")
                 if let website = company.website, let url = URL(string: website), let host = url.host() {
-                    Link(destination: url) {
-                        Label(host.replacingOccurrences(of: "www.", with: ""), systemImage: "safari")
-                    }
-                    .foregroundStyle(Theme.action)
+                    Text("·")
+                    Link(host.replacingOccurrences(of: "www.", with: ""), destination: url)
+                        .underline()
                 }
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
+            .tint(.secondary)
+            ResearchStatus(state: research)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 8)
     }
 }
 
-/// Refresh research, or the agent's purple working state, or the cooldown message when the server said not yet.
-private struct ResearchButton: View {
+/// One line under the header: the agent working, what it found, or why the server said not yet.
+private struct ResearchStatus: View {
     let state: CompanyModel.Research
-    let action: () -> Void
 
     var body: some View {
-        VStack(spacing: 8) {
+        Group {
             switch state {
+            case .idle:
+                EmptyView()
             case .running:
-                HStack(spacing: 10) {
-                    ProgressView().tint(Theme.agent)
-                    Text("Raven is researching…").font(.headline).foregroundStyle(Theme.agent)
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small).tint(Theme.agent)
+                    Text("Raven is researching…")
                 }
-                .frame(maxWidth: .infinity, minHeight: 52)
-                .background(Theme.agent.opacity(0.14), in: .rect(cornerRadius: 16))
+                .foregroundStyle(Theme.agent)
             case let .done(added):
                 Label(added > 0 ? "Found \(added) new fact\(added == 1 ? "" : "s")" : "Up to date", systemImage: "checkmark.circle.fill")
-                    .font(.headline)
-                    .foregroundStyle(Theme.agent)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Theme.agent.opacity(0.14), in: .rect(cornerRadius: 16))
-            case .idle, .refused:
-                Button(action: action) {
-                    Label("Refresh research", systemImage: "arrow.clockwise")
-                        .font(.headline)
-                        .foregroundStyle(Theme.agent)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(Theme.agent.opacity(0.14), in: .rect(cornerRadius: 16))
-                }
-                .buttonStyle(.plain)
-            }
-            if case let .refused(message) = state {
-                Text(message)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .foregroundStyle(Theme.positive)
+            case let .refused(message):
+                Label(message, systemImage: "clock.badge.exclamationmark")
+                    .foregroundStyle(Theme.negative)
             }
         }
-        .animation(.spring(duration: 0.35), value: state)
+        .font(.subheadline.weight(.medium))
+        .padding(.top, 4)
+        .transition(.move(edge: .top).combined(with: .opacity))
         .sensoryFeedback(.warning, trigger: state) { _, new in
             if case .refused = new {
                 true

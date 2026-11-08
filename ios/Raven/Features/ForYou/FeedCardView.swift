@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// One feed item: what it is, who runs it, and the one reason it's here. Tapping opens its details.
+/// One feed item in four lines: what, who and where, the one reason it's here, and when. Tapping opens its details.
 struct FeedCardView: View {
     let card: FeedCard
     var onSave: () -> Void = {}
@@ -31,51 +31,54 @@ struct FeedCardView: View {
                     Text(card.title)
                         .font(.headline)
                         .lineLimit(2)
-                    Text(card.org)
+                    Text(orgLine)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 4)
-                actions
+                bookmark
             }
             Text(card.why)
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.agent)
                 .lineLimit(1)
-                .padding(.top, 2)
             HStack(spacing: 6) {
                 chips
             }
-            .padding(.top, 4)
-            if let attribution = card.attribution {
-                AttributionLink(attribution: attribution)
-            }
+            .padding(.top, 2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var orgLine: String {
+        [card.org, card.where].compactMap(\.self).joined(separator: " · ")
     }
 
     @ViewBuilder private var chips: some View {
         if let when = whenText {
             FeedChip(text: when, systemImage: card.date == nil ? "clock" : "calendar")
         }
-        if let place = card.where {
-            FeedChip(text: place, systemImage: place == "Online" ? "wifi" : "mappin")
+        if let salary = card.salary {
+            FeedChip(text: salary, systemImage: "dollarsign")
         }
     }
 
-    // just the bookmark on the card; dismissing lives in the swipe and the long-press menu
-    private var actions: some View {
+    /// Just the bookmark on the card; dismissing lives in the swipe and the long-press menu.
+    private var bookmark: some View {
         Button(action: onSave) {
             Image(systemName: card.isSaved ? "bookmark.fill" : "bookmark")
                 .font(.body.weight(.medium))
-                .foregroundStyle(card.isSaved ? Theme.action : Color(white: 0.5))
-                .frame(width: 32, height: 32)
+                .foregroundStyle(card.isSaved ? Theme.action : .secondary)
+                .frame(width: 44, height: 44)
                 .contentShape(.rect)
                 .contentTransition(.symbolEffect(.replace))
         }
         // borderless keeps the bookmark its own tap target inside a List row
         .buttonStyle(.borderless)
+        // the 44pt target overhangs the text so the card's own padding doesn't grow around it
+        .padding(.vertical, -8)
+        .padding(.trailing, -8)
         .symbolEffect(.bounce, value: card.isSaved)
         .sensoryFeedback(.success, trigger: card.isSaved) { _, saved in saved }
         .accessibilityLabel(card.isSaved ? "Saved" : "Save")
@@ -104,22 +107,6 @@ private struct FeedChip: View {
             .lineLimit(1)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(Color(white: 0.14), in: .capsule)
-    }
-}
-
-/// Adzuna's terms ask for this credit, linked to their site, on every listing we show.
-private struct AttributionLink: View {
-    let attribution: FeedCard.Attribution
-
-    var body: some View {
-        Link(destination: attribution.url) {
-            Text(attribution.label)
-                .font(.caption)
-                .underline()
-        }
-        .tint(.secondary)
-        .foregroundStyle(.secondary)
-        .padding(.top, 4)
+            .background(Theme.chip, in: .capsule)
     }
 }

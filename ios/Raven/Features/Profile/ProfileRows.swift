@@ -1,16 +1,19 @@
 import RavenKit
 import SwiftUI
 
-/// One job in the Experience card. Tapping opens the editor.
+/// One job in the Experience list: role, then the place, then when. Tapping opens the editor.
 struct ExperienceRow: View {
     let row: Profile.Experience
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(row.role).font(.headline)
-                Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+                Text(row.org).font(.subheadline).foregroundStyle(.secondary)
+                if let dates {
+                    Text(dates).font(.caption).foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
@@ -19,20 +22,20 @@ struct ExperienceRow: View {
         .accessibilityHint("Edit")
     }
 
-    private var subtitle: String {
-        let dates = [row.start, row.end].compactMap(\.self).joined(separator: " to ")
-        return dates.isEmpty ? row.org : "\(row.org) · \(dates)"
+    private var dates: String? {
+        guard let start = row.start else { return row.end }
+        return "\(start) – \(row.end ?? "Present")"
     }
 }
 
-/// One school in the Education card. Tapping opens the editor.
+/// One school in the Education list. Tapping opens the editor.
 struct EducationRow: View {
     let row: Profile.Education
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(row.school).font(.headline)
                 if !subtitle.isEmpty {
                     Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
@@ -50,7 +53,7 @@ struct EducationRow: View {
     }
 }
 
-/// The last row of a card: a quiet orange "Add".
+/// The last row of a list: a quiet "Add" in the accent.
 struct AddRowButton: View {
     let title: String
     let action: () -> Void
@@ -74,6 +77,7 @@ struct SavedFlash: View {
             if isShowing {
                 Label("Saved", systemImage: "checkmark.circle.fill")
                     .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.positive)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(Theme.raised, in: .capsule)

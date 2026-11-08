@@ -6,24 +6,22 @@ struct ProfileView: View {
     @State private var editor = ProfileEditor()
     @State private var isRefreshing = false
     @State private var isShowingSettings = false
-    @State private var isEditingHeadline = false
-    @State private var headlineDraft = ""
     @State private var experienceSheet: RowSheet<Profile.Experience>?
     @State private var educationSheet: RowSheet<Profile.Education>?
 
     var body: some View {
         NavigationStack {
             List {
+                // the header sits on the ground; everything under it is one inset-grouped list
                 Section {
-                    ProfileHeader(profile: app.profile, onEditHeadline: startEditingHeadline)
+                    ProfileHeader(profile: app.profile) { apply(.setHeadline($0)) }
                         .listRowBackground(Color.clear)
                         .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
                 }
                 Section {
                     ResumeCard(service: resumeService)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
                 }
+                .listRowBackground(Theme.raised)
                 if isRefreshing, app.profile.isEmpty {
                     loadingSections
                 } else {
@@ -48,13 +46,6 @@ struct ProfileView: View {
             }
             .sheet(item: $educationSheet) { sheet in
                 EducationForm(editing: sheet.row) { apply(.saveEducation($0, replacing: sheet.row)) }
-            }
-            .alert("Headline", isPresented: $isEditingHeadline) {
-                TextField("One line about you", text: $headlineDraft)
-                Button("Save") { apply(.setHeadline(headlineDraft)) }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Shown under your target role, and to the interviewer in practice.")
             }
             .alert("Couldn't save", isPresented: hasFailure) {
                 Button("OK") { editor.dismissFailure() }
@@ -113,11 +104,6 @@ struct ProfileView: View {
 
     private func apply(_ edit: ProfileEdit) {
         editor.apply(edit, to: app)
-    }
-
-    private func startEditingHeadline() {
-        headlineDraft = app.profile.headline ?? ""
-        isEditingHeadline = true
     }
 
     private func refresh() async {

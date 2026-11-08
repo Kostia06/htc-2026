@@ -1,11 +1,11 @@
 import RavenKit
 import SwiftUI
 
-/// Each kind of card gets its own colour and symbol, so a scroll of the feed reads at a glance.
+/// Each kind of card gets its own symbol and a quiet glyph colour, so a scroll of the feed reads at a glance.
 extension FeedCard.Kind {
     var tint: Color {
         switch self {
-        // pastels to sit beside the lavender and mint, never louder than them
+        // pastels to sit beside the action and agent tints, never louder than them
         case .job: Color(red: 0.66, green: 0.80, blue: 1.0)
         case .event: Color(red: 1.0, green: 0.80, blue: 0.68)
         case .hackathon: Color(red: 1.0, green: 0.73, blue: 0.86)
@@ -32,16 +32,17 @@ extension FeedCard.Kind {
     }
 }
 
+/// A neutral disc with the kind's glyph; the tint lives only in the glyph so the card itself stays grey.
 struct KindBadge: View {
     let kind: FeedCard.Kind
-    var size: CGFloat = 44
+    @ScaledMetric(relativeTo: .headline) private var size: CGFloat = 44
 
     var body: some View {
         Image(systemName: kind.symbol)
-            .font(.system(size: size * 0.4, weight: .semibold))
+            .font(.headline.weight(.semibold))
             .foregroundStyle(kind.tint)
             .frame(width: size, height: size)
-            .background(kind.tint.opacity(0.16), in: .circle)
+            .background(Theme.chip, in: .circle)
             .accessibilityLabel(kind.name)
     }
 }

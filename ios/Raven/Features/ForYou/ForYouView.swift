@@ -22,6 +22,8 @@ struct ForYouView: View {
                 } header: {
                     SectionChips(selection: model.section) { model.show($0) }
                         .listRowInsets(EdgeInsets())
+                } footer: {
+                    attributions
                 }
             }
             .listStyle(.plain)
@@ -68,6 +70,27 @@ struct ForYouView: View {
             }
         } else if !model.isBuilding {
             EmptyFeed(section: model.section, message: model.errorMessage).feedRow()
+        }
+    }
+
+    /// Adzuna's terms ask for their credit, linked to their site, wherever we show their listings: once, under the list.
+    @ViewBuilder private var attributions: some View {
+        let credits = model.cards.compactMap(\.attribution).reduce(into: [FeedCard.Attribution]()) { unique, credit in
+            if !unique.contains(credit) {
+                unique.append(credit)
+            }
+        }
+        if !credits.isEmpty {
+            HStack(spacing: 12) {
+                ForEach(credits, id: \.url) { credit in
+                    Link(credit.label, destination: credit.url)
+                        .font(.caption)
+                        .underline()
+                        .tint(.secondary)
+                        .frame(minHeight: 44)
+                }
+            }
+            .padding(.horizontal, 16)
         }
     }
 

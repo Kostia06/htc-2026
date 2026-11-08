@@ -1,7 +1,7 @@
 import RavenKit
 import SwiftUI
 
-/// Slides up from the bottom when a node is tapped: what the step is, and either what you did or how to start it.
+/// Slides up from the bottom when a node is tapped: what the step is, in a glance, and the one way to start it.
 struct StepDetailSheet: View {
     let step: RoadmapStep
     let onPractice: () -> Void
@@ -12,82 +12,50 @@ struct StepDetailSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    header
-                    facts
-                    if isDone, let note = step.note, !note.isEmpty {
-                        block("What you did", text: note, systemImage: "checkmark.seal.fill", tint: Theme.action)
-                    }
-                    if !step.why.isEmpty {
-                        block("Why this step", text: step.why, systemImage: "target", tint: Theme.agent)
-                    }
-                    if !step.detail.isEmpty {
-                        block("How to do it", text: step.detail, systemImage: "list.bullet", tint: .secondary)
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 28)
-                .padding(.bottom, 16)
+        DetailSheet {
+            Text(step.title)
+                .font(.title2.bold())
+                .fixedSize(horizontal: false, vertical: true)
+            if !step.why.isEmpty {
+                Label(step.why, systemImage: "target")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.agent)
+                    .lineLimit(2)
             }
+            FactGrid(facts: facts)
+            if isDone, let note = step.note, !note.isEmpty {
+                labelled("What you did", text: note)
+            }
+            if !step.detail.isEmpty {
+                labelled("How", text: step.detail)
+            }
+        } footer: {
             if !isDone {
                 actions
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 12)
-            }
-        }
-        .presentationDetents([.fraction(0.75), .large])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Theme.ground)
-    }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            KindIcon(kind: step.kind, highlighted: true, size: 64)
-            Text(step.kind.name.uppercased())
-                .font(.caption.weight(.bold))
-                .tracking(1.2)
-                .foregroundStyle(Theme.action)
-            Text(step.title)
-                .font(.largeTitle.bold())
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private var facts: some View {
-        HStack(spacing: 10) {
-            if isDone {
-                fact(doneLine, systemImage: "checkmark.circle.fill", tint: Theme.action)
-            } else {
-                LabelChip(label: step.label)
-                    .scaleEffect(1.15, anchor: .leading)
-                    .padding(.trailing, 6)
-            }
-            if !step.estimate.isEmpty {
-                fact(step.estimate, systemImage: "clock", tint: .secondary)
             }
         }
     }
 
-    private func fact(_ text: String, systemImage: String, tint: Color) -> some View {
-        Label(text, systemImage: systemImage)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(tint)
+    private var facts: [FactGrid.Fact] {
+        var facts = [FactGrid.Fact(label: "Kind", value: step.kind.name)]
+        if isDone {
+            facts.append(.init(label: "Status", value: doneLine, tint: Theme.positive))
+        } else {
+            facts.append(.init(label: "Status", value: step.label.text))
+        }
+        if !step.estimate.isEmpty {
+            facts.append(.init(label: "Time", value: step.estimate))
+        }
+        return facts
     }
 
-    private func block(_ title: String, text: String, systemImage: String, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemImage)
-                .font(.headline)
-                .foregroundStyle(tint)
-            Text(text)
-                .font(.body)
-                .lineSpacing(3)
-                .fixedSize(horizontal: false, vertical: true)
+    private func labelled(_ title: String, text: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ExpandableText(text: text)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .ravenCard()
     }
 
     @ViewBuilder private var actions: some View {
