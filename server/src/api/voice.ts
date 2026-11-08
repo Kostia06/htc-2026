@@ -6,6 +6,8 @@ import { notePatterns } from "../voice/coach/patterns";
 import { finalReport, latestDraft, refreshDraft } from "../voice/draft";
 import { saveReport } from "../replay/store";
 import { setStepStatus } from "../roadmap/store";
+import { answerHint } from "../voice/hint";
+import { getProfile } from "../memory/profile/store";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
@@ -95,6 +97,27 @@ export function voiceRouter() {
     // a weak answer gets a researched rewrite pinned to its timestamp, also while the call goes on
     c.executionCtx.waitUntil(coachTurn(c.env, c.var.sessionId, session, idx, turn));
     return c.json(score);
+  });
+
+  // VR's Hints panel: talking points for the question on the table, from the candidate's own profile; never spoken
+  router.post("/sessions/:id/hint", async (c) => {
+    const session = await findSession(c.env, c.var.sessionId, c.req.param("id"));
+    if (!session) return c.json({ error: "unknown session" }, 404);
+    const body = await c.req.json<{ question?: unknown }>().catch(() => null);
+    if (!body || !isText(body.question, 1000)) return c.json({ error: "send the question" }, 400);
+    const question = body.question.trim();
+    try {
+      const hint = await answerHint(c.env, `${session.id}:${question}`, {
+        role: session.plan.role,
+        company: session.plan.company,
+        question,
+        profile: await getProfile(c.env, c.var.sessionId),
+      });
+      return c.json(hint);
+    } catch (e) {
+      console.warn("voice hint failed", e);
+      return c.json({ error: "no hint right now" }, 502);
+    }
   });
 
   // what the interviewer says next: a quick follow-up or the next planned question, decided in about a second

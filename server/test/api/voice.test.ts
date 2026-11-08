@@ -122,6 +122,29 @@ describe("/api/voice", () => {
     expect((await send(voiceApp(), stranger.token, "GET", `/sessions/${sessionId}`)).status).toBe(404);
   });
 
+  it("gives the owner short talking points for a question, once per session and question", async () => {
+    const me = await person();
+    const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    const prompts: string[] = [];
+    vi.stubGlobal("fetch", async (_url: RequestInfo, init?: RequestInit) => {
+      prompts.push(String(init?.body));
+      const points = ["Situation: the reporting backlog", "Action: built the dashboard", "Result: [number] hours saved", "a fourth one"];
+      return Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ points }) }] } }] });
+    });
+    const ask = () => send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/hint`, { question: "Tell me about a time you fixed a process." });
+    const first = await ask();
+    expect(first.status).toBe(200);
+    const hint = await first.json<{ points: string[] }>();
+    expect(hint.points).toEqual(["Situation: the reporting backlog", "Action: built the dashboard", "Result: [number] hours saved"]);
+    expect(await (await ask()).json()).toEqual(hint);
+    expect(prompts).toHaveLength(1);
+    expect(prompts[0]).toContain("Tell me about a time you fixed a process.");
+
+    const stranger = await person();
+    expect((await send(voiceApp(), stranger.token, "POST", `/sessions/${sessionId}/hint`, { question: "Q" })).status).toBe(404);
+    expect((await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/hint`, {})).status).toBe(400);
+  });
+
   it("keeps the client's live timestamps per turn and drops ones that can't be right", async () => {
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
