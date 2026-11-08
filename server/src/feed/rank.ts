@@ -1,3 +1,5 @@
+import { learningReasons, type RoleDemand, roleDemand } from "./learning";
+import { matchingRole, mentions } from "./match";
 import { reasonsFor } from "./reasons";
 import type { Candidate, FeedCard, FeedCriteria, FeedField, FeedKind } from "./types";
 
@@ -9,21 +11,6 @@ const UPCOMING_DAYS = 45;
 const WEIGHT = { role: 3, skill: 1, field: 2, general: 1, location: 2, soon: 1, upcoming: 0.5, week: 1, month: 0.5, avoided: -2 };
 
 const FALLBACK_WHY: Record<FeedKind, string> = { job: "Open to apply", course: "Free, start any time", event: "Open to everyone", hackathon: "Open to everyone" };
-
-const wordsOf = (text: string) => text.toLowerCase().match(/[a-z0-9+#]+/g) ?? [];
-const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-// every meaningful word of the role appears in the title: "Junior developer" fits "Junior Software Developer"
-function matchingRole(title: string, roles: string[]) {
-  const titleWords = new Set(wordsOf(title));
-  return roles.find((role) => {
-    const words = wordsOf(role).filter((w) => w.length > 2);
-    return words.length > 0 && words.every((w) => titleWords.has(w));
-  });
-}
-
-// whole words only, so "Java" doesn't match "JavaScript"; "+" and "#" count as word characters for C++ and C#
-const mentions = (text: string, skill: string) => new RegExp(`(^|[^a-z0-9+#])${escape(skill.toLowerCase())}($|[^a-z0-9+#])`).test(text.toLowerCase());
 
 // the person's own field wins; an item open to any field counts a little for everyone
 function matchingField(candidate: Candidate, criteria: FeedCriteria): FeedField | undefined {
@@ -37,7 +24,7 @@ function daysFrom(now: Date, iso: string | undefined) {
   return Number.isNaN(time) ? undefined : (time - now.getTime()) / DAY_MS;
 }
 
-function score(candidate: Candidate, criteria: FeedCriteria, now: Date) {
+function score(candidate: Candidate, criteria: FeedCriteria, demand: RoleDemand, now: Date) {
   const role = matchingRole(candidate.card.title, criteria.roles);
   const skills = criteria.skills.filter((s) => mentions(candidate.text, s)).slice(0, MAX_SKILLS_COUNTED);
   const field = matchingField(candidate, criteria);
@@ -56,18 +43,20 @@ function score(candidate: Candidate, criteria: FeedCriteria, now: Date) {
   if (age <= 7) points += WEIGHT.week;
   else if (age <= 30) points += WEIGHT.month;
 
-  const reasons = reasonsFor(candidate, criteria, { role, skills, field, near, daysUntil: until, upcomingDays: UPCOMING_DAYS });
-  // with nothing personal to say, the line says something true about the item instead
-  const why = reasons[0] ?? (age <= 7 ? "Posted this week" : FALLBACK_WHY[candidate.card.kind]);
+  const learning = learningReasons(candidate, criteria, demand, field);
+  const personal = reasonsFor(candidate, criteria, { role, skills, learning, field, near, daysUntil: until, upcomingDays: UPCOMING_DAYS });
+  // with nothing personal to say, the card still says something true about the item, so "Why it fits you" is never empty
+  const reasons = personal.length > 0 ? personal : [age <= 7 ? "Posted this week" : FALLBACK_WHY[candidate.card.kind]];
   // ties go to whatever is soonest or freshest
-  return { points, why, reasons, order: until ?? age };
+  return { points, why: reasons[0], reasons, order: until ?? age };
 }
 
 export function rankCandidates(candidates: Candidate[], criteria: FeedCriteria, now: Date): FeedCard[] {
   const seen = new Set<string>();
   const unique = candidates.filter((c) => !seen.has(c.card.url) && seen.add(c.card.url));
+  const demand = roleDemand(unique, criteria);
   return unique
-    .map((candidate) => ({ candidate, ...score(candidate, criteria, now) }))
+    .map((candidate) => ({ candidate, ...score(candidate, criteria, demand, now) }))
     .sort((a, b) => b.points - a.points || a.order - b.order || 0)
     .map(({ candidate, why, reasons }) => ({ ...candidate.card, why, reasons }));
 }

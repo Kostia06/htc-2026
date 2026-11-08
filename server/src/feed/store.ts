@@ -2,7 +2,11 @@ import { db } from "../db";
 import type { Env } from "../env";
 import type { FeedCard, FeedSection, RankedSection } from "./types";
 
-const STALE_MS = 6 * 60 * 60 * 1000;
+// the cron's full rebuild; a person opening the app rebuilds sooner, so the jobs they see stay fresh
+const FULL_REBUILD_MS = 6 * 60 * 60 * 1000;
+const JOBS_STALE_MS = 60 * 60 * 1000;
+// pull to refresh rebuilds, but not again and again while someone keeps pulling
+const PULL_REBUILD_MS = 5 * 60 * 1000;
 // a build that hasn't finished in this long has died with its request; another may take over
 const CLAIM_TIMEOUT_MS = 2 * 60 * 1000;
 // D1 allows 100 bound values per statement; four per row
@@ -41,11 +45,14 @@ export async function readFeed(env: Env, userId: string, section: FeedSection, o
   };
 }
 
+const olderThan = (state: FeedState, now: Date, ms: number) => !state.builtAt || now.getTime() - Date.parse(state.builtAt) > ms;
+
 export function isStale(state: FeedState, now: Date) {
-  if (!state.builtAt) return true;
-  if (state.profileUpdatedAt && state.profileUpdatedAt > state.builtAt) return true;
-  return now.getTime() - Date.parse(state.builtAt) > STALE_MS;
+  if (state.profileUpdatedAt && state.builtAt && state.profileUpdatedAt > state.builtAt) return true;
+  return olderThan(state, now, JOBS_STALE_MS);
 }
+
+export const canPullRebuild = (state: FeedState, now: Date) => olderThan(state, now, PULL_REBUILD_MS);
 
 export function isBuilding(state: FeedState, now: Date) {
   return state.buildingSince !== null && now.getTime() - Date.parse(state.buildingSince) < CLAIM_TIMEOUT_MS;
@@ -91,7 +98,7 @@ export async function saveFeed(env: Env, userId: string, sections: Record<Ranked
 // the cron rebuilds feeds people already have, oldest first, a bounded number per run
 export async function staleFeedOwners(env: Env, now: Date, limit: number) {
   const { results } = await db(env).prepare("SELECT user_id FROM feed_state WHERE built_at IS NULL OR built_at < ? ORDER BY built_at LIMIT ?")
-    .bind(new Date(now.getTime() - STALE_MS).toISOString(), limit)
+    .bind(new Date(now.getTime() - FULL_REBUILD_MS).toISOString(), limit)
     .all<{ user_id: string }>();
   return results.map((r) => r.user_id);
 }

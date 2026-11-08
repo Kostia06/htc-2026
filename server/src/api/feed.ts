@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import type { AppContext, Env } from "../env";
-import { applyAction, findCard } from "../feed/actions";
+import { applyAction, findCard, removeSave } from "../feed/actions";
 import { type FeedSources, liveFeedSources, rebuildClaimed } from "../feed/build";
-import { claimRebuild, isBuilding, isStale, readFeed } from "../feed/store";
+import { canPullRebuild, claimRebuild, isBuilding, isStale, readFeed } from "../feed/store";
 import { FEED_ACTIONS, FEED_SECTIONS, type FeedAction, type FeedPage, type FeedSection } from "../feed/types";
 
 const PAGE_SIZE = 20;
@@ -28,8 +28,10 @@ export function feedRouter(makeSources: (env: Env) => FeedSources) {
     const now = new Date();
     const { cards, hasMore, state } = await readFeed(c.env, userId, section, offset, PAGE_SIZE);
 
+    // pull to refresh sends refresh=1 so new postings are searched for now rather than at the next stale check
+    const wantsRebuild = isStale(state, now) || (c.req.query("refresh") === "1" && canPullRebuild(state, now));
     let building = isBuilding(state, now);
-    if (!building && isStale(state, now) && (await claimRebuild(c.env, userId, now))) {
+    if (!building && wantsRebuild && (await claimRebuild(c.env, userId, now))) {
       c.executionCtx.waitUntil(rebuildClaimed(c.env, userId, makeSources(c.env)));
       building = true;
     }
@@ -40,9 +42,14 @@ export function feedRouter(makeSources: (env: Env) => FeedSources) {
 
   router.post("/items/:id", async (c) => {
     const action = actionFrom(await c.req.json().catch(() => null));
-    if (action === null) return c.json({ error: "action must be save or dismiss" }, 400);
+    if (action === null) return c.json({ error: `action must be one of ${FEED_ACTIONS.join(", ")}` }, 400);
 
     const id = c.req.param("id");
+    // needs no card: there is nothing to look up for a save that is already gone
+    if (action === "unsave") {
+      await removeSave(c.env, c.var.sessionId, id);
+      return c.json({ id, action });
+    }
     const card = await findCard(c.env, c.var.sessionId, id);
     if (!card) return c.json({ error: "that card isn't in your feed" }, 404);
 

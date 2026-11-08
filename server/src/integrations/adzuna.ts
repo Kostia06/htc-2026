@@ -3,6 +3,8 @@ import { USER_AGENT } from "../lib/user-agent";
 
 const API = "https://api.adzuna.com/v1/api/jobs/ca/search/1";
 const RESULTS_PER_PAGE = 10;
+// older postings are mostly filled already; leaving them out spends no result slot on them
+const MAX_DAYS_OLD = 30;
 
 // Adzuna's terms require this label, linked to the local site, on every listing we show
 export const ADZUNA_ATTRIBUTION = { attribution: "Jobs by Adzuna", attribution_url: "https://www.adzuna.ca" } as const;
@@ -71,6 +73,7 @@ export async function adzunaSearch(env: Env, query: JobQuery): Promise<JobPostin
     app_key: env.ADZUNA_APP_KEY,
     what: query.what,
     results_per_page: String(RESULTS_PER_PAGE),
+    max_days_old: String(MAX_DAYS_OLD),
     "content-type": "application/json",
   });
   if (query.where) params.set("where", query.where);

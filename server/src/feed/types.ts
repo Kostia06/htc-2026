@@ -9,7 +9,8 @@ export type RankedSection = Exclude<FeedSection, "saved">;
 export const FEED_FIELDS = ["cs", "business", "design", "health", "general"] as const;
 export type FeedField = (typeof FEED_FIELDS)[number];
 
-export const FEED_ACTIONS = ["save", "dismiss"] as const;
+// unsave only takes a card back out of Saved; it is not a dismissal and steers nothing
+export const FEED_ACTIONS = ["save", "dismiss", "unsave"] as const;
 export type FeedAction = (typeof FEED_ACTIONS)[number];
 
 export type Attribution = { label: string; url: string };

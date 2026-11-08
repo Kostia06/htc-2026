@@ -24,7 +24,7 @@ export const liveFeedSources = (env: Env): FeedSources => ({
 export async function buildFeed(env: Env, userId: string, sources: FeedSources, now = new Date()) {
   const [profile, history, enrichments] = await Promise.all([getProfile(env, userId), actionHistory(env, userId), cachedEnrichments(env, now)]);
   const criteria = criteriaFrom(profile, history.avoidTags);
-  const jobs = await jobCandidates(sources.searchJobs, jobQueries(criteria));
+  const jobs = await jobCandidates(sources.searchJobs, jobQueries(criteria), now);
   const candidates = [...jobs, ...curatedCandidates(now, enrichments)].filter((c) => !history.dismissed.has(c.card.id));
   const sections = sectionsFrom(rankCandidates(candidates, criteria, now));
   await saveFeed(env, userId, sections, now);
