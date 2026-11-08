@@ -6,6 +6,7 @@ protocol CrossroadsService: Sendable {
     func crossroads() async throws(SkillitError) -> Crossroads
     func askCrossroads(_ request: QuickUpdateRequest) async throws(SkillitError) -> CrossroadsAnswer
     func standBehind(lineID: String, _ behind: Bool) async throws(SkillitError) -> RoadLine?
+    func addToRoad(lineID: String) async throws(SkillitError)
     func forgetMemory(id: String) async throws(SkillitError)
 }
 
@@ -21,6 +22,10 @@ struct UnavailableCrossroads: CrossroadsService {
     }
 
     func standBehind(lineID _: String, _: Bool) async throws(SkillitError) -> RoadLine? {
+        throw .offline
+    }
+
+    func addToRoad(lineID _: String) async throws(SkillitError) {
         throw .offline
     }
 

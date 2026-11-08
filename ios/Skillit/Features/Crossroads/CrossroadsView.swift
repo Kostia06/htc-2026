@@ -1,11 +1,12 @@
 import SkillitKit
 import SwiftUI
 
-/// Crossroads: where the person's road meets everyone's. Crossings first (their item linked to what others said),
-/// then the trails that ended in a job, the rest of the road, fresh research, and what is only theirs.
-/// Pushed inside an existing navigation stack, so it brings none of its own.
+/// Crossroads: what people on the person's road learned, and where it matches their own notes. One insight on top
+/// (the path most people took and how much of it they've done), then matches, the rest of the road, and what is
+/// only theirs. Pushed inside an existing navigation stack, so it brings none of its own.
 struct CrossroadsView: View {
     @Environment(AppModel.self) private var app
+    @AppStorage("crossroadsExplainerSeen") private var explainerSeen = false
     @State private var model: CrossroadsModel?
     @State private var ask: CrossroadsAskModel?
     @State private var sharing: PrivateMemory?
@@ -49,46 +50,31 @@ struct CrossroadsView: View {
     }
 
     private func list(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
+        ScrollViewReader { proxy in
+            sections(model, view)
+                .task { await Self.scrollForScreenshot(proxy) }
+        }
+    }
+
+    private func sections(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         List {
-            row { RoadHeader(road: view.road, minPeople: view.minPeople) }
-            if !model.junctions.isEmpty {
-                Section {
-                    row { LaneCaptions() }
-                    ForEach(model.junctions) { junction in
-                        row { JunctionRow(junction: junction, cited: model.cited) }
-                            .swipeActions(edge: .trailing) { deleteButton(junction.you, model) }
-                    }
-                } header: {
-                    SectionTitle("Where you cross", detail: "Your notes, linked to what others on the road went through")
+            row { RoadHeader(goal: view.road.goal, minPeople: view.minPeople) }
+            if !explainerSeen {
+                row {
+                    CrossroadsExplainer(goal: view.road.goal) { withAnimation(.spring(duration: 0.35)) { explainerSeen = true } }
                 }
             }
-            if !view.trails.isEmpty {
-                Section {
-                    TrailStrip(trails: view.trails, cited: model.cited)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                } header: {
-                    SectionTitle("Paths that worked", detail: "Roads that ended in a job")
+            if let insight = view.pathInsight {
+                row {
+                    PathInsightCard(
+                        insight: insight, otherRoles: otherRoles(view),
+                        isCited: view.trails.first.map { model.cited.contains($0.id) } ?? false,
+                    )
                 }
             }
-            if !model.unlinkedLines.isEmpty {
-                Section {
-                    ForEach(model.unlinkedLines) { line in
-                        row { RoadLineRow(line: line, isCited: model.cited.contains(line.id)) { Task { await model.toggleMeToo(line) } } }
-                    }
-                } header: {
-                    SectionTitle("Everyone on your road", detail: "Anonymous. Tap \u{201C}That's me too\u{201D} if it's yours as well")
-                }
-            }
-            if !view.research.isEmpty {
-                Section {
-                    ForEach(view.research) { fact in row { ResearchRow(fact: fact, isCited: model.cited.contains(fact.id)) } }
-                } header: {
-                    SectionTitle("Fresh from research", detail: "Employers on your road, with sources")
-                }
-            }
-            yoursSection(model)
+            matchesSection(model, view).id("matches")
+            roadSection(model, view).id("road")
+            yoursSection(model).id("yours")
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -98,34 +84,101 @@ struct CrossroadsView: View {
         .overlay(alignment: .top) { notice(model.notice) }
     }
 
-    private func yoursSection(_ model: CrossroadsModel) -> some View {
+    private func matchesSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
         Section {
-            if model.unlinkedYours.isEmpty, model.junctions.isEmpty {
-                row { Text("Nothing of yours yet. Skillit remembers as you practise and finish steps.").foregroundStyle(.secondary) }
+            if model.matches.isEmpty {
+                row {
+                    TeachingEmpty(
+                        symbol: "link",
+                        text: "No matches yet. Practise an interview or finish a step: "
+                            + "Skillit remembers what you're working on and matches it here.",
+                    )
+                }
             }
-            ForEach(model.unlinkedYours) { item in
-                row { YourFace(item: item, isCited: model.cited.contains(item.id)) }
-                    .swipeActions(edge: .trailing) { deleteButton(item, model) }
-                    .swipeActions(edge: .leading) {
-                        if item.kind == .note, item.source == .memory {
-                            Button { sharing = item.asMemory } label: { Label("Share", systemImage: "square.and.arrow.up") }
-                                .tint(Theme.agent)
-                        }
-                    }
+            ForEach(model.matches) { match in
+                row { card(match.other, matching: match.you, model, view) }
+                    .swipeActions(edge: .trailing) { deleteButton(match.you, model, title: "Delete your note") }
             }
         } header: {
-            SectionTitle("Only yours so far", detail: "Private, encrypted. Swipe left to delete")
+            SectionTitle("Where you match", detail: "What people on your road said that lines up with your notes")
         }
     }
 
-    @ViewBuilder private func deleteButton(_ item: YourItem, _ model: CrossroadsModel) -> some View {
+    private func roadSection(_ model: CrossroadsModel, _ view: Crossroads) -> some View {
+        Section {
+            if model.unlinkedLines.isEmpty, model.unlinkedFacts.isEmpty {
+                row {
+                    TeachingEmpty(
+                        symbol: "person.3.fill",
+                        text: "Nobody has shared from this road yet. When people land a job, what helped them shows up here.",
+                    )
+                }
+            }
+            ForEach(model.unlinkedLines) { line in
+                row { card(.line(line), matching: nil, model, view) }
+            }
+            ForEach(model.unlinkedFacts) { fact in
+                row { card(.fact(fact), matching: nil, model, view) }
+            }
+        } header: {
+            SectionTitle("More from your road", detail: "Anonymous. \u{201C}Example\u{201D} means Skillit wrote it until people share")
+        }
+    }
+
+    @ViewBuilder private func yoursSection(_ model: CrossroadsModel) -> some View {
+        if !model.unlinkedYours.isEmpty || model.matches.isEmpty {
+            Section {
+                if model.unlinkedYours.isEmpty {
+                    row {
+                        TeachingEmpty(
+                            symbol: "lock.fill", text: "Nothing saved yet. What you practise and finish lands here, private to you.",
+                        )
+                    }
+                }
+                ForEach(model.unlinkedYours) { item in
+                    row { YourFace(item: item, isCited: model.cited.contains(item.id)) }
+                        .swipeActions(edge: .trailing) { deleteButton(item, model, title: "Delete") }
+                        .swipeActions(edge: .leading) { shareButton(item) }
+                }
+            } header: {
+                SectionTitle("Only you can see these", detail: "Not matched yet. Swipe to delete or share")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func card(_ other: Match.Other, matching item: YourItem?, _ model: CrossroadsModel, _ view: Crossroads) -> some View {
+        switch other {
+        case let .line(line):
+            LineCard(
+                line: line, match: item, isCited: model.cited.contains(line.id), isOnRoad: view.isOnRoad(line),
+                onMeToo: { Task { await model.toggleMeToo(line) } },
+                onAdd: { Task { await model.addToRoad(line) } },
+            )
+        case let .fact(fact):
+            FactCard(fact: fact, match: item, isCited: model.cited.contains(fact.id))
+        }
+    }
+
+    private func otherRoles(_ view: Crossroads) -> [String] {
+        view.trails.dropFirst().map { $0.example ? "\($0.role) (example)" : $0.role }
+    }
+
+    @ViewBuilder private func deleteButton(_ item: YourItem, _ model: CrossroadsModel, title: String) -> some View {
         if item.source == .memory {
             Button(role: .destructive) {
                 deletions += 1
                 Task { await model.forget(item) }
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label(title, systemImage: "trash")
             }
+        }
+    }
+
+    @ViewBuilder private func shareButton(_ item: YourItem) -> some View {
+        if item.kind == .note, item.source == .memory {
+            Button { sharing = item.asMemory } label: { Label("Share", systemImage: "square.and.arrow.up") }
+                .tint(Theme.agent)
         }
     }
 
@@ -147,6 +200,15 @@ struct CrossroadsView: View {
                 .padding(.top, 8)
                 .transition(.move(edge: .top).combined(with: .opacity))
         }
+    }
+
+    /// Debug builds launched with `-CrossroadsScrollTo matches|road|yours` open scrolled there, since screenshots can't scroll.
+    private static func scrollForScreenshot(_ proxy: ScrollViewProxy) async {
+        #if DEBUG
+            guard let target = UserDefaults.standard.string(forKey: "CrossroadsScrollTo") else { return }
+            try? await Task.sleep(for: .milliseconds(500))
+            proxy.scrollTo(target, anchor: .top)
+        #endif
     }
 
     private func start() async {

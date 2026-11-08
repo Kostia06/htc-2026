@@ -2,7 +2,8 @@
     import Foundation
     import SkillitKit
 
-    /// A data-analyst road for previews and screenshots: two overlaps, real and example lines, a fact and two trails.
+    /// A data-analyst road for previews and screenshots: two overlaps, real and example lines, a fact,
+    /// two trails, and a road with two of the first trail's five steps done.
     struct SampleCrossroads: CrossroadsService {
         static let view = Crossroads(
             road: .init(goal: "Junior data analyst", lane: "data", laneName: "data"),
@@ -48,7 +49,8 @@
                     id: "t2", role: "Business Intelligence Analyst", example: true,
                     steps: [.course, .project, .networkingPractice, .application],
                 ),
-            ]
+            ],
+            yourRoad: YourRoad(done: [.course, .project]),
         )
 
         func crossroads() async throws(SkillitError) -> Crossroads {
@@ -72,6 +74,8 @@
             line.people = line.people.map { $0 + (behind ? 1 : -1) }
             return line
         }
+
+        func addToRoad(lineID _: String) async throws(SkillitError) {}
 
         func forgetMemory(id _: String) async throws(SkillitError) {}
     }

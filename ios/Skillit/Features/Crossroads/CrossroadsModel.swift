@@ -2,9 +2,9 @@ import Foundation
 import Observation
 import SkillitKit
 
-/// One place the person's road meets everyone's: their item and the lines or facts it lines up with.
-struct Junction: Identifiable, Equatable {
-    enum Other: Equatable, Identifiable {
+/// One place the person's road meets everyone's: one item of theirs and one line or fact it lines up with.
+struct Match: Identifiable, Equatable {
+    enum Other: Equatable {
         case line(RoadLine)
         case fact(ResearchFact)
 
@@ -17,14 +17,14 @@ struct Junction: Identifiable, Equatable {
     }
 
     let you: YourItem
-    var others: [Other]
+    let other: Other
 
     var id: String {
-        you.id
+        "\(you.id)>\(other.id)"
     }
 }
 
-/// The Crossroads screen's state: the payload, which items an answer lit up, and optimistic "me too" and delete.
+/// The Crossroads screen's state: the payload, which items an answer lit up, and optimistic "me too", add and delete.
 @Observable
 final class CrossroadsModel {
     enum Phase: Equatable {
@@ -49,33 +49,22 @@ final class CrossroadsModel {
         return view
     }
 
-    /// One junction per item of theirs, strongest link first; links arrive sorted, so order of first sight is rank.
-    var junctions: [Junction] {
+    /// Every link to a line or fact still on screen, strongest first: links arrive sorted.
+    var matches: [Match] {
         guard let view else { return [] }
         let yours = Dictionary(uniqueKeysWithValues: view.you.map { ($0.id, $0) })
         let lines = Dictionary(uniqueKeysWithValues: view.everyone.map { ($0.id, $0) })
         let facts = Dictionary(uniqueKeysWithValues: view.research.map { ($0.id, $0) })
-        var junctions: [Junction] = []
-        for link in view.links {
-            guard let you = yours[link.you] else { continue }
-            let other: Junction.Other
+        return view.links.compactMap { link in
+            guard let you = yours[link.you] else { return nil }
             if let line = lines[link.everyone] {
-                other = .line(line)
-            } else if let fact = facts[link.everyone] {
-                other = .fact(fact)
-            } else {
-                continue
+                return Match(you: you, other: .line(line))
             }
-            if let index = junctions.firstIndex(where: { $0.you.id == you.id }) {
-                junctions[index].others.append(other)
-            } else {
-                junctions.append(Junction(you: you, others: [other]))
-            }
+            return facts[link.everyone].map { Match(you: you, other: .fact($0)) }
         }
-        return junctions
     }
 
-    /// Their items that cross nothing yet, so the "You" lane doesn't repeat what the junctions already show.
+    /// Their items that match nothing yet, so "Only you" doesn't repeat what the matches already show.
     var unlinkedYours: [YourItem] {
         guard let view else { return [] }
         let linked = Set(view.links.map(\.you))
@@ -86,6 +75,12 @@ final class CrossroadsModel {
         guard let view else { return [] }
         let linked = Set(view.links.map(\.everyone))
         return view.everyone.filter { !linked.contains($0.id) }
+    }
+
+    var unlinkedFacts: [ResearchFact] {
+        guard let view else { return [] }
+        let linked = Set(view.links.map(\.everyone))
+        return view.research.filter { !linked.contains($0.id) }
     }
 
     func load() async {
@@ -119,6 +114,23 @@ final class CrossroadsModel {
         } catch {
             guard var current = self.view else { return }
             update(&current, line.id) { $0.meToo = line.meToo }
+            phase = .ready(current)
+            await flash(error.message)
+        }
+    }
+
+    func addToRoad(_ line: RoadLine) async {
+        guard var view, !view.isOnRoad(line) else { return }
+        var road = view.yourRoad ?? YourRoad()
+        road.added.append(line.id)
+        view.yourRoad = road
+        phase = .ready(view)
+        do {
+            try await service.addToRoad(lineID: line.id)
+            await flash("Added to your road")
+        } catch {
+            guard var current = self.view else { return }
+            current.yourRoad?.added.removeAll { $0 == line.id }
             phase = .ready(current)
             await flash(error.message)
         }

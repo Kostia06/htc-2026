@@ -1,73 +1,70 @@
 import SkillitKit
 import SwiftUI
 
-/// The one idea of the screen, then the privacy promise in small print.
+/// What this screen is, in one sentence, then the privacy promise in small print.
 struct RoadHeader: View {
-    let road: Crossroads.Road
+    let goal: String
     let minPeople: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("On the road to")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text(road.goal)
-                .font(.title2.bold())
+        VStack(alignment: .leading, spacing: 8) {
+            Text("What people on the road to \(Text(goal).foregroundStyle(Theme.action)) learned, and where you match.")
+                .font(.title3.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
-            Label {
-                Text(
-                    "Your notes stay encrypted and yours. Everyone else is anonymous, "
-                        + "and a count only appears once \(minPeople) people share it.",
-                )
-            } icon: {
-                Image(systemName: "lock.shield.fill").foregroundStyle(Theme.agent)
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Image(systemName: "lock.fill").accessibilityHidden(true)
+                Text("Only you see your notes. Counts show once \(minPeople) people share something.")
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 4)
         .accessibilityElement(children: .combine)
     }
 }
 
-struct SectionTitle: View {
-    let title: String
-    let detail: String
-
-    init(_ title: String, detail: String) {
-        self.title = title
-        self.detail = detail
-    }
+/// Three short steps on a first visit, then gone for good once dismissed.
+struct CrossroadsExplainer: View {
+    let goal: String
+    let onDismiss: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.headline).foregroundStyle(.primary)
-            Text(detail).font(.caption).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("How Crossroads works").font(.headline)
+                Spacer()
+                Button("Dismiss", systemImage: "xmark", action: onDismiss)
+                    .labelStyle(.iconOnly)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
+            }
+            step(1, "lock.fill", "Your notes stay private", "What you practise and finish is saved for you only.")
+            step(2, "person.3.fill", "We match them to people like you", "Others heading to \(goal) shared what happened.")
+            step(3, "hand.tap.fill", "Act on what fits", "Say \u{201C}That's me too\u{201D}, add a tip to your road, or ask below.")
+            Button("Got it", action: onDismiss)
+                .buttonStyle(.raised)
         }
-        .textCase(nil)
-        .padding(.top, 8)
-        .accessibilityAddTraits(.isHeader)
+        .padding(16)
+        .background(Theme.raised, in: .rect(cornerRadius: 20))
+        .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(Theme.agent.opacity(0.35)))
     }
-}
 
-/// Names the two lanes once, above the crossings; hidden from VoiceOver since each crossing reads both sides out.
-struct LaneCaptions: View {
-    var body: some View {
-        HStack {
-            Text("You").frame(maxWidth: .infinity, alignment: .leading)
-            Text("Everyone on your road").frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 18)
+    private func step(_ number: Int, _ symbol: String, _ title: String, _ detail: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: symbol)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.onAction)
+                .frame(width: 32, height: 32)
+                .background(Theme.action, in: .circle)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(detail).font(.footnote).foregroundStyle(.secondary)
+            }
         }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .textCase(.uppercase)
-        .accessibilityHidden(true)
-    }
-}
-
-extension YourItem {
-    /// The share sheet takes a stored memory; only `memory` items are ever shared.
-    var asMemory: PrivateMemory {
-        PrivateMemory(id: id, kind: kind, text: text, createdAt: "")
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Step \(number): \(title). \(detail)")
     }
 }
