@@ -26,14 +26,14 @@ export default function OtherApps() {
   useEffect(() => {
     const needle = query.trim()
     latestQuery.current = needle
-    if (!needle) return undefined
+    // no query lists the whole catalog, most used first, so every app is there to browse
     const timer = setTimeout(() => {
       appsApi.search(needle).then(
         // an older, slower answer must not replace the one for what's typed now
         (page) => latestQuery.current === needle && setResults(page),
         (e) => latestQuery.current === needle && setError(e.message),
       )
-    }, DEBOUNCE_MS)
+    }, needle ? DEBOUNCE_MS : 0)
     return () => clearTimeout(timer)
   }, [query])
 
@@ -84,8 +84,10 @@ export default function OtherApps() {
   }, [pending, waitFor])
 
   const statusOf = new Map(connected.map((a) => [a.slug, a]))
-  const showing = query.trim() ? results : null
-  const rows = showing ? showing.apps.filter((a) => !a.curated).map((r) => ({ ...r, ...statusOf.get(r.slug) })) : connected
+  const showing = results
+  const listed = showing ? showing.apps.filter((a) => !a.curated).map((r) => ({ ...r, ...statusOf.get(r.slug) })) : []
+  // with no query, apps already connected come first even when they aren't on the catalog's first page
+  const rows = query.trim() ? listed : [...connected, ...listed.filter((r) => !statusOf.has(r.slug))]
 
   const showMore = async () => {
     const needle = latestQuery.current

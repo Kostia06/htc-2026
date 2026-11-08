@@ -19,15 +19,17 @@ final class OtherAppsModel {
     private static let pollAttempts = 30
     private static let debounce = Duration.milliseconds(300)
 
-    /// search results with each one's own status filled in, or the connected apps when nothing is typed
+    /// the catalog with each app's own status filled in; with nothing typed, connected apps first, then every other app
     var rows: [ConnectedApp] {
-        guard isSearching, let results else { return connected }
+        guard let results else { return connected }
         let statuses = Dictionary(connected.map { ($0.slug, $0.status) }, uniquingKeysWith: { first, _ in first })
-        return results.apps.filter { !$0.isCurated }.map { app in
+        let listed = results.apps.filter { !$0.isCurated }.map { app in
             var app = app
             app.status = statuses[app.slug] ?? .notConnected
             return app
         }
+        if isSearching { return listed }
+        return connected + listed.filter { statuses[$0.slug] == nil }
     }
 
     var isSearching: Bool {
@@ -35,7 +37,7 @@ final class OtherAppsModel {
     }
 
     var hasMore: Bool {
-        isSearching && results?.next != nil
+        results?.next != nil
     }
 
     private var trimmedQuery: String {
@@ -49,9 +51,9 @@ final class OtherAppsModel {
     /// Called from `.task(id: query)`, so a newer keystroke cancels this one during the pause.
     func search(using client: SkillitClient) async {
         let needle = trimmedQuery
-        guard !needle.isEmpty else { return }
+        // nothing typed lists the whole catalog at once; typing waits for a pause first
         // cancelled during the pause: a newer search is already on its way
-        guard (try? await Task.sleep(for: Self.debounce)) != nil else { return }
+        if !needle.isEmpty, (try? await Task.sleep(for: Self.debounce)) == nil { return }
         do {
             let page = try await client.searchApps(needle)
             guard needle == trimmedQuery else { return }
