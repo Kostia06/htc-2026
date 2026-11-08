@@ -675,6 +675,23 @@ describe('reconnect', () => {
     expect(voice.turns).toEqual([{ question: 'Q1', answer: 'A1' }])
   })
 
+  it('names the reconnect conversation, so the server can delete it with the session', async () => {
+    const onConversation = vi.fn()
+    const factory = socketTracker()
+    const { ws } = await connected({ onConversation, socketFactory: factory })
+    expect(onConversation).toHaveBeenCalledWith('conv_1', { reconnect: false })
+
+    vi.useFakeTimers()
+    ws.drop(1006)
+    await vi.advanceTimersByTimeAsync(600)
+    const next = factory.last()
+    next.open()
+    next.emit(metadata({ conversation_id: 'conv_2' }))
+
+    expect(onConversation).toHaveBeenLastCalledWith('conv_2', { reconnect: true })
+    expect(onConversation).toHaveBeenCalledTimes(2)
+  })
+
   it('keeps the half-finished pair across a drop and emits it once', async () => {
     const onTurn = vi.fn()
     const factory = socketTracker()

@@ -9,19 +9,25 @@ import { Overlay } from './ui/Overlay.jsx'
 import { useInterview } from './interview/useInterview.js'
 import { useHeadsetSession } from './headset/useHeadsetSession.js'
 import { useLaunchPolling } from './headset/useLaunchPolling.js'
+import { useInterviewReview } from './review/useInterviewReview.js'
 
 export default function App() {
   const store = useMemo(() => createXRStore({ foveation: 0.6, emulate: false }), [])
   const headset = useHeadsetSession()
   const interview = useInterview({ token: headset.token, onSignedOut: headset.signOut })
   const vrSupported = useVRSupport()
+  const review = useInterviewReview(interview, headset)
 
   // "Practice in VR" on the phone queues a launch; pick it up while the room is
   // idle and start that interview. Paused during one so a second tap cannot
-  // restart it.
+  // restart it. A launch naming a past session opens its review instead.
   useLaunchPolling(headset.session, {
     enabled: headset.phase === 'signedIn' && interview.phase === 'idle',
-    onLaunch: (launch) => interview.actions.begin(launch),
+    onLaunch: (launch) => {
+      if (!launch.reviewSessionId) return interview.actions.begin(launch)
+      review.open(launch.reviewSessionId)
+      return true
+    },
     onSignedOut: headset.signOut,
   })
 
@@ -49,7 +55,7 @@ export default function App() {
         }}
       >
         <XR store={store}>
-          <Scene interview={interview} headset={headset} />
+          <Scene interview={interview} headset={headset} review={review} />
           <Preload all />
         </XR>
         {/* Desktop preview only: inside XR the headset drives the camera and

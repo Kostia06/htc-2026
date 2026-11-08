@@ -21,8 +21,9 @@ export function useLaunchPolling(session, { enabled, onLaunch, onSignedOut }) {
         const launch = await pollLaunch(session, controller.signal)
         if (controller.signal.aborted) return
         if (launch) {
-          handlers.current.onLaunch(launch)
-          return // the caller flips `enabled` off; polling resumes when it is back on
+          // true means the room stays idle (a review opened), so keep listening for the next tap
+          if (handlers.current.onLaunch(launch) === true) void poll()
+          return // otherwise the caller flips `enabled` off; polling resumes when it is back on
         }
         void poll()
       } catch (error) {

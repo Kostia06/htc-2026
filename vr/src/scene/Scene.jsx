@@ -6,6 +6,8 @@ import { Room } from './Room.jsx'
 import { Interviewer } from './Interviewer.jsx'
 import { ActionButton, Captions, QuestionPanel, ReviewPanel } from './Panels.jsx'
 import { PairingPanel } from './PairingPanel.jsx'
+import { RecordingBadge } from './RecordingBadge.jsx'
+import { ReviewMoments } from './ReviewMoments.jsx'
 import { useReducedMotion } from '../ui/useReducedMotion.js'
 import { INTERVIEWER_EYE_Y, INTERVIEWER_Z } from './seating.js'
 import { toPanelScore, toPanelSummary } from '../interview/scores.js'
@@ -14,6 +16,8 @@ import { toPanelScore, toPanelSummary } from '../interview/scores.js'
 // These are the values you actually tune while wearing the headset.
 const INTERVIEWER = { position: [0, 0, INTERVIEWER_Z], rotation: [0, 0, 0] }
 const QUESTION_PANEL = { position: [0.54, 1.2, -1.02], rotation: [-0.1, -0.45, 0] }
+// just above the question panel's top edge, where a glance finds it without it competing with the question
+const RECORDING_BADGE = { position: [0.5, 1.5, -1.0] }
 // Dead ahead and a touch closer than the panels: the keypad is pressed, not read.
 const PAIRING_PANEL = { position: [0, 1.22, -0.92], rotation: [-0.14, 0, 0] }
 const GREETING_MS = 1800
@@ -109,8 +113,8 @@ function useHeightOffset(inXR) {
 // `headset` comes from useHeadsetSession: { phase, profile, signedInAt, claim }.
 // Until it is signedIn the room shows the keypad instead of the question panel,
 // unless the candidate chose to carry on with example data.
-export function Scene({ interview, headset }) {
-  const { phase, question, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, heard, micDenied, getAmplitude, actions, isStub } = interview
+export function Scene({ interview, headset, review }) {
+  const { phase, question, meta, result, resultAt, summary, transcript, caption, error, speaking, speechMs, heard, micDenied, getAmplitude, actions, isStub, recording } = interview
   const reducedMotion = useReducedMotion()
   const inXR = useXR((state) => state.session != null)
   const { offset: heightOffset, measured, calibrated } = useHeightOffset(inXR)
@@ -171,7 +175,16 @@ export function Scene({ interview, headset }) {
         />
       )}
 
-      {!showPairing && (
+      {!showPairing && recording && phase !== 'done' && phase !== 'idle' && (
+        <RecordingBadge position={RECORDING_BADGE.position} rotation={QUESTION_PANEL.rotation} reducedMotion={reducedMotion} />
+      )}
+
+      {/* the review takes the question panel's place: after an interview, or a past one opened from the phone */}
+      {!showPairing && review?.sessionId && (
+        <ReviewMoments review={review} position={QUESTION_PANEL.position} rotation={QUESTION_PANEL.rotation} reducedMotion={reducedMotion} />
+      )}
+
+      {!showPairing && !review?.sessionId && (
         <QuestionPanel
           phase={phase}
           question={question}
