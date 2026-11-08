@@ -42,6 +42,8 @@ export type Env = {
   APNS_ENV?: string;
   // set: people can connect GitHub (read-only) through Composio; missing: /api/connections reports "not configured"
   COMPOSIO_API_KEY?: string;
+  // optional: raises GitHub's public API rate limit for the project recommender
+  GITHUB_TOKEN?: string;
   // the Composio auth config for the GitHub toolkit; missing: the project's first enabled GitHub auth config is used
   COMPOSIO_GITHUB_AUTH_CONFIG_ID?: string;
 };

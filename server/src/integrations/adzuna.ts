@@ -4,6 +4,10 @@ import { USER_AGENT } from "../lib/user-agent";
 const API_BASE = "https://api.adzuna.com/v1/api/jobs/ca/search";
 const DEFAULT_RESULTS_PER_PAGE = 10;
 const MAX_RESULTS_PER_PAGE = 50;
+export const MAX_PAGE = 50;
+export const MAX_PER_PAGE = MAX_RESULTS_PER_PAGE;
+// older postings are mostly filled already; leaving them out spends no result slot on them
+const MAX_DAYS_OLD = 30;
 
 // Adzuna's terms require this attribution wherever listings are displayed.
 export const ADZUNA_ATTRIBUTION = {
@@ -81,8 +85,8 @@ function salaryOf(raw: RawPosting): JobPosting["salary"] {
 
 function toPosting(raw: RawPosting): AdzunaAnalysisJob {
   const id = String(raw.id);
-  const redirectUrl =
-      raw.redirect_url || `https://www.adzuna.ca/details/${encodeURIComponent(id)}`;
+  // built from the id: the API's redirect_url carries our app id in its query string
+  const redirectUrl = `https://www.adzuna.ca/details/${encodeURIComponent(id)}`;
   const salary = salaryOf(raw);
 
   return {
@@ -136,6 +140,7 @@ export async function searchAdzunaJobs(
     app_key: env.ADZUNA_APP_KEY,
     what: query,
     results_per_page: String(resultsPerPage),
+    max_days_old: String(MAX_DAYS_OLD),
     "content-type": "application/json",
   });
   if (location) params.set("where", location);

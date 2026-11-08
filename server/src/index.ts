@@ -19,6 +19,7 @@ import { onboarding } from "./api/onboarding";
 import { outcome } from "./api/outcome";
 import { pairing } from "./api/pairing";
 import { postings } from "./api/postings";
+import { jobs } from "./api/jobs";
 import { voice } from "./api/voice";
 import { voiceHistory } from "./api/voice-history";
 import { profile } from "./api/profile";
@@ -79,6 +80,7 @@ app.route("/api/recap", recap);
 app.route("/api/updates", updates);
 app.route("/api/crossroads", crossroads);
 app.route("/api/postings", postings);
+app.route("/api/jobs", jobs);
 app.route("/api/notifications", notifications);
 // outside the /api CORS and session middleware: the card is public, /a2a checks its own session, /admin its secret
 app.route("/admin", admin);
