@@ -15,6 +15,11 @@ export default defineConfig({
           KEENABLE_API_KEY: "test-keenable-key",
           ELEVENLABS_API_KEY: "",
           ELEVENLABS_AGENT_ID: "",
+          // the real push key would make tests try to reach Apple
+          APNS_KEY_ID: "",
+          APNS_TEAM_ID: "",
+          APNS_PRIVATE_KEY: "",
+          APNS_ENV: "",
           VOICE_PROVIDER: "gemini",
           // production runs on Supabase; this suite runs on D1, and test-pg/ covers Postgres
           DB_BACKEND: "d1",
