@@ -35,6 +35,7 @@ export const PRIMARY_KEYS: Record<string, string[]> = {
   pairing_offers: ["user_id"],
   user_postings: ["id"],
   memory_vectors: ["id"],
+  user_connections: ["user_id", "provider"],
 };
 
 // SQLite functions and clauses Postgres lacks; the message tells the author what to do instead

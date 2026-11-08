@@ -4,19 +4,20 @@ import { PLATFORMS } from "../../../src/agents/core/types";
 import { companyFacts } from "../../../src/agents/shared-tools/company-facts";
 import { companyInsights } from "../../../src/agents/shared-tools/company-insights";
 import { fetchPage } from "../../../src/agents/shared-tools/fetch-page";
+import { githubProfile } from "../../../src/agents/shared-tools/github-profile";
 import { readProfile, updateProfileTool } from "../../../src/agents/shared-tools/profile";
 import { recall } from "../../../src/agents/shared-tools/recall";
 import { saveFact } from "../../../src/agents/shared-tools/save-fact";
 import { webSearch } from "../../../src/agents/shared-tools/web-search";
 
-const SHARED = new Set([companyFacts, companyInsights, fetchPage, readProfile, updateProfileTool, recall, saveFact, webSearch].map((t) => t.name));
+const SHARED = new Set([companyFacts, companyInsights, fetchPage, githubProfile, readProfile, updateProfileTool, recall, saveFact, webSearch].map((t) => t.name));
 const allSkills = () => agents.flatMap((a) => Object.values(a.skills));
 
 describe("agent registry", () => {
   it("has every skill exactly once, across four agents", () => {
     expect(agents.map((a) => a.card.name)).toEqual(["resume", "research", "interview", "career"]);
     expect(allSkills().map((s) => s.name).sort()).toEqual([
-      "career-snapshot", "crossroads-ask", "import-posting", "interview-debrief", "interview-intel", "interview-prep", "interview-recap",
+      "career-snapshot", "crossroads-ask", "github-projects", "import-posting", "interview-debrief", "interview-intel", "interview-prep", "interview-recap",
       "onboarding-prefill", "profile-intake", "quick-update", "recommend-courses", "recommend-jobs", "recommend-research", "research-company", "resume-coach", "resume-tailor", "roadmap-steps",
     ]);
   });

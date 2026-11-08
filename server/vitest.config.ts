@@ -20,6 +20,9 @@ export default defineConfig({
           APNS_TEAM_ID: "",
           APNS_PRIVATE_KEY: "",
           APNS_ENV: "",
+          // GitHub through Composio stays off unless a test turns it on with a fake key and a stubbed fetch
+          COMPOSIO_API_KEY: "",
+          COMPOSIO_GITHUB_AUTH_CONFIG_ID: "",
           VOICE_PROVIDER: "gemini",
           // production runs on Supabase; this suite runs on D1, and test-pg/ covers Postgres
           DB_BACKEND: "d1",

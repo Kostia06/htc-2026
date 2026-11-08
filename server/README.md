@@ -47,6 +47,16 @@ robots.txt (cached 6 h) that allows the page for us and for `*`, and the site's 
 shows up as short search snippets labelled `anecdote` and is never saved as a fact. Job listings come only from the Adzuna
 API (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`), each one labelled "Jobs by Adzuna".
 
+GitHub (`connections/`, `integrations/composio.ts`, `api/connections.ts`) is read-only through Composio's REST API.
+`POST /api/connections/github` returns a hosted sign-in link, `GET /api/connections` reports the state (and starts the
+import once the sign-in finished), `POST /api/connections/github/import` re-imports, `DELETE /api/connections/github`
+deletes the connection at Composio (revoking the token at GitHub) and everything the import added. Only the tools in
+`connections/github/read-only.ts` can run; anything else is refused before a request is made. The OAuth token never
+leaves Composio, Composio only sees a pseudonym for the person, repo fields are allowlisted, READMEs are stripped of
+secrets, links and contact details before the `github-projects` skill writes grounded one-line summaries, and only those
+derived summaries are kept (sealed in `user_connections`). Agents read them through the `github_profile` tool, which needs
+private access. Secrets: `COMPOSIO_API_KEY` (missing: "not configured"), optionally `COMPOSIO_GITHUB_AUTH_CONFIG_ID`.
+
 Routes in `api/agent.ts`: `POST /:skill` with `{ platform, input }`, `GET /runs/:id` for the run's owner, and
 `GET /cards` listing every agent's card.
 
