@@ -110,6 +110,11 @@ export default function Profile() {
               <GroupRow>
                 <Skills skills={profile.skills} onRemove={(name) => edit({ type: 'removeSkill', name })} />
               </GroupRow>
+              <GroupRow to="/profile/skills" chevron={false}>
+                <span className="row t-subhead semibold c-action profile__add">
+                  <Pencil size={15} strokeWidth={2.4} aria-hidden /> Edit skills
+                </span>
+              </GroupRow>
             </Group>
 
             <Group header="Experience">
@@ -254,7 +259,7 @@ function ChipsEditor({ items, placeholder, onAdd, onRemove }) {
 
 function Skills({ skills, onRemove }) {
   const [all, setAll] = useState(false)
-  if (!skills.length) return <p className="t-subhead c-2">Skillit picks these up from your resume and practice.</p>
+  if (!skills.length) return <p className="t-subhead c-2">Skillit picks these up from your resume and practice, or add your own.</p>
   const shown = all ? skills : skills.slice(0, SKILLS_SHOWN)
   return (
     <div className="stack chips-editor">

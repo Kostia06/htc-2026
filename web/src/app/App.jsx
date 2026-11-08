@@ -35,6 +35,7 @@ const Profile = lazy(() => import('../features/profile/Profile'))
 const profileForms = () => import('../features/profile/ProfileForms')
 const ExperienceForm = named(profileForms, 'ExperienceForm')
 const EducationForm = named(profileForms, 'EducationForm')
+const SkillsEditor = named(() => import('../features/profile/SkillsEditor'), 'SkillsEditor')
 const Resume = lazy(() => import('../features/resume/Resume'))
 const resumeSheets = () => import('../features/resume/ResumeSheets')
 const SectionEditor = named(resumeSheets, 'SectionEditor')
@@ -158,6 +159,7 @@ export default function App() {
             <Route path="profile" element={<Profile />}>
               <Route path="experience/:index" element={<ExperienceForm />} />
               <Route path="education/:index" element={<EducationForm />} />
+              <Route path="skills" element={<SkillsEditor />} />
               <Route path="pdf" element={<PdfSheet back="/profile" />} />
             </Route>
             <Route path="profile/resume/*" element={<Moved to="/resume" />} />

@@ -127,6 +127,42 @@
   min-height: 32px;
 }
 
+/* ---------- skills editor sheet ---------- */
+.skills-editor__add {
+  padding: 6px 16px;
+}
+.skills-editor__suggestions {
+  padding: 4px 0 10px;
+}
+.skills-editor__suggestion {
+  gap: 4px;
+  padding: 6px 12px 6px 10px;
+  min-height: 32px;
+}
+.skills-editor__row {
+  gap: 8px;
+  min-height: 56px;
+  padding: 6px 16px 6px 8px;
+}
+.skills-editor__row + .skills-editor__row {
+  border-top: 1px solid var(--hairline);
+}
+.skills-editor__remove {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  color: var(--negative);
+}
+.skills-editor__name {
+  min-height: 28px;
+  width: 100%;
+}
+.skills-editor__problem {
+  color: var(--negative);
+}
+
 /* ---------- form sheets (iOS Form) ---------- */
 .sheet-text-btn {
   min-height: 38px;
