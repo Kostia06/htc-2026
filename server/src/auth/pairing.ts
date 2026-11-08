@@ -1,68 +1,68 @@
 import type { Env } from "../env";
-import { sha256 } from "../lib/hash";
-import { issueSessionFor } from "./session";
+import { issueExpiringSessionFor } from "./session";
 
-const LIFETIME_MS = 5 * 60 * 1000;
-// no 0/O, 1/I/L: the code may be typed by hand when a camera can't read the QR
-const ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
-const CODE_LENGTH = 8;
+const OFFER_LIFETIME_MS = 2 * 60 * 1000;
+const HEADSET_SESSION_MS = 12 * 60 * 60 * 1000;
+const CODE_SPACE = 10_000;
+// with a few hundred live codes at most, ten random draws in a row all colliding means something is wrong
+const MAX_DRAWS = 10;
 
-export type NewPairing = { code: string; pollToken: string; expiresAt: string; link: string };
-export type ApproveResult = "approved" | "not_found" | "expired" | "already_used";
-export type PollResult = { status: "pending" } | { status: "approved"; token: string } | { status: "expired" } | null;
+export type Offer = { code: string; expiresAt: string };
+export type OfferStatus = "waiting" | "claimed" | "expired";
+export type HeadsetSession = { token: string; expiresAt: string };
 
-type PairingRow = { poll_hash: string; user_id: string | null; status: "pending" | "approved" | "claimed"; expires_at: string };
+export const isPairingCode = (code: unknown): code is string => typeof code === "string" && /^\d{4}$/.test(code);
 
 function randomCode() {
-  const bytes = crypto.getRandomValues(new Uint8Array(CODE_LENGTH));
-  return Array.from(bytes, (b) => ALPHABET[b % ALPHABET.length]).join("");
+  // rejection sampling keeps every code equally likely
+  const limit = 65_536 - (65_536 % CODE_SPACE);
+  for (;;) {
+    const [value] = crypto.getRandomValues(new Uint16Array(1));
+    if (value < limit) return String(value % CODE_SPACE).padStart(4, "0");
+  }
 }
 
-function randomSecret() {
-  return btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))).replace(/[+/=]/g, "");
+// a new code replaces the person's previous one, so an old code shown on a forgotten screen stops working
+export async function offerCode(env: Env, userId: string, now = new Date()): Promise<Offer> {
+  const expiresAt = new Date(now.getTime() + OFFER_LIFETIME_MS).toISOString();
+  await deleteExpiredPairings(env, now);
+  for (let draw = 0; draw < MAX_DRAWS; draw++) {
+    const code = randomCode();
+    const [, inserted] = await env.DB.batch([
+      env.DB.prepare("DELETE FROM pairing_offers WHERE user_id = ?").bind(userId),
+      env.DB.prepare("INSERT INTO pairing_offers (user_id, code, status, created_at, expires_at) VALUES (?, ?, 'waiting', ?, ?) ON CONFLICT DO NOTHING").bind(
+        userId,
+        code,
+        now.toISOString(),
+        expiresAt,
+      ),
+    ]);
+    if (inserted.meta.changes === 1) return { code, expiresAt };
+  }
+  throw new Error("no free pairing code");
 }
 
-export const normalizeCode = (code: string) => code.toUpperCase().replace(/[^0-9A-Z]/g, "");
-
-async function findPairing(env: Env, code: string) {
-  return env.DB.prepare("SELECT poll_hash, user_id, status, expires_at FROM device_pairings WHERE code = ?").bind(normalizeCode(code)).first<PairingRow>();
+// conditional update: two headsets typing the same code can't both win
+export async function claimCode(env: Env, code: string, secret: string, now = new Date()): Promise<HeadsetSession | null> {
+  const row = await env.DB.prepare("UPDATE pairing_offers SET status = 'claimed' WHERE code = ? AND status = 'waiting' AND expires_at > ? RETURNING user_id")
+    .bind(code, now.toISOString())
+    .first<{ user_id: string }>();
+  if (!row) return null;
+  const expiresAt = new Date(now.getTime() + HEADSET_SESSION_MS);
+  return { token: await issueExpiringSessionFor(secret, row.user_id, expiresAt), expiresAt: expiresAt.toISOString() };
 }
 
-const isExpired = (row: PairingRow, now: Date) => row.expires_at <= now.toISOString();
-
-export async function createPairing(env: Env, now = new Date()): Promise<NewPairing> {
-  const code = randomCode();
-  const pollToken = randomSecret();
-  const expiresAt = new Date(now.getTime() + LIFETIME_MS).toISOString();
-  await env.DB.prepare("INSERT INTO device_pairings (code, poll_hash, status, created_at, expires_at) VALUES (?, ?, 'pending', ?, ?)")
-    .bind(code, await sha256(pollToken), now.toISOString(), expiresAt)
-    .run();
-  return { code, pollToken, expiresAt, link: `raven://pair?code=${code}` };
-}
-
-export async function approvePairing(env: Env, code: string, userId: string, now = new Date()): Promise<ApproveResult> {
-  const row = await findPairing(env, code);
-  if (!row) return "not_found";
-  if (isExpired(row, now)) return "expired";
-  // conditional update: two phones scanning the same code can't both win
-  const result = await env.DB.prepare("UPDATE device_pairings SET user_id = ?, status = 'approved' WHERE code = ? AND status = 'pending'")
-    .bind(userId, normalizeCode(code))
-    .run();
-  return result.meta.changes === 1 ? "approved" : "already_used";
-}
-
-export async function pollPairing(env: Env, code: string, pollToken: string, now = new Date()): Promise<PollResult> {
-  const row = await findPairing(env, code);
-  if (!row || row.poll_hash !== (await sha256(pollToken))) return null;
-  if (row.status === "claimed" || isExpired(row, now)) return { status: "expired" };
-  if (row.status === "pending" || !row.user_id) return { status: "pending" };
-
-  const claimed = await env.DB.prepare("UPDATE device_pairings SET status = 'claimed' WHERE code = ? AND status = 'approved'").bind(normalizeCode(code)).run();
-  if (claimed.meta.changes !== 1) return { status: "expired" };
-  return { status: "approved", token: await issueSessionFor(env.SESSION_SECRET, row.user_id) };
+// someone else's code reads as expired, so the endpoint can't be used to find live codes
+export async function offerStatus(env: Env, userId: string, code: string, now = new Date()): Promise<OfferStatus> {
+  const row = await env.DB.prepare("SELECT status, expires_at FROM pairing_offers WHERE user_id = ? AND code = ?")
+    .bind(userId, code)
+    .first<{ status: "waiting" | "claimed"; expires_at: string }>();
+  if (!row) return "expired";
+  if (row.status === "claimed") return "claimed";
+  return row.expires_at > now.toISOString() ? "waiting" : "expired";
 }
 
 export async function deleteExpiredPairings(env: Env, now = new Date()) {
-  const result = await env.DB.prepare("DELETE FROM device_pairings WHERE expires_at <= ?").bind(now.toISOString()).run();
+  const result = await env.DB.prepare("DELETE FROM pairing_offers WHERE expires_at <= ?").bind(now.toISOString()).run();
   return result.meta.changes;
 }
