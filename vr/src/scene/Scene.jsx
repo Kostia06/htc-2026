@@ -153,8 +153,6 @@ export function Scene({ interview, headset, review, captions }) {
               onPosture={comfort.setPosture}
               onRecenter={comfort.recenter}
               onHowTo={hints.show}
-              captionsOn={Boolean(captions?.on)}
-              onCaptions={captions?.toggle}
               hintsOn={answerHints.on}
               onHints={answerHints.toggle}
               onBegin={() => actions.begin(picker.available ? picker.launch : undefined)}
@@ -181,10 +179,10 @@ export function Scene({ interview, headset, review, captions }) {
 
         {stage === 'interview' && (
           <>
-            {inXR && captions?.on && (
+            {inXR && error && (
               <Caption
-                text={error ?? liveCaption}
-                tone={error ? 'negative' : 'text'}
+                text={error}
+                tone="negative"
                 position={CAPTION.position}
                 rotation={CAPTION.rotation}
               />

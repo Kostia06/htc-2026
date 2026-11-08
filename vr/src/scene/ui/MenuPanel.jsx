@@ -6,7 +6,7 @@ const WIDTH = 0.66
  * Before the interview: a greeting and Begin. Seated / standing, recenter,
  * captions and the how-to only appear in the headset, where they mean something.
  */
-export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, captionsOn, onCaptions, hintsOn, onHints, onBegin, onQuick, error, inXR, reducedMotion, ...props }) {
+export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, hintsOn, onHints, onBegin, onQuick, error, inXR, reducedMotion, ...props }) {
   const height = inXR ? 0.53 : 0.34
   const left = -WIDTH / 2 + space.xl
   const top = height / 2 - space.xl
@@ -37,18 +37,6 @@ export function MenuPanel({ name, posture, onPosture, onRecenter, onHowTo, capti
             <Segment label="Seated" selected={posture === 'seated'} onPress={() => onPosture('seated')} x={0.065} reducedMotion={reducedMotion} />
             <Segment label="Standing" selected={posture === 'standing'} onPress={() => onPosture('standing')} x={0.21} reducedMotion={reducedMotion} />
             <RaisedButton label="Recenter" tone="secondary" variant="subhead" width={0.14} height={0.056} onPress={onRecenter} reducedMotion={reducedMotion} position={[inner - 0.07, 0, 0]} />
-            {/* opt-in: off, nothing sits under the interviewer */}
-            <RaisedButton
-              label={captionsOn ? 'Captions on' : 'Captions off'}
-              tone={captionsOn ? 'action' : 'chip'}
-              variant="subhead"
-              width={0.2}
-              height={0.056}
-              radius={0.028}
-              onPress={onCaptions}
-              reducedMotion={reducedMotion}
-              position={[0.1, -0.072, 0]}
-            />
             {/* talking points beside the desk during the interview; off by default */}
             <RaisedButton
               label={hintsOn ? 'Hints on' : 'Hints off'}

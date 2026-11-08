@@ -15,9 +15,6 @@ export function Overlay({ interview, headset, captions, onEnterVR, vrSupported }
           scores are labelled on the score panel itself. */}
       <header className="bar">
         <div className="bar-actions">
-          <button type="button" className="ghost" aria-pressed={captions.on} onClick={captions.toggle}>
-            {captions.on ? 'Captions on' : 'Captions off'}
-          </button>
           {signedIn && (
             <>
               <span className="chip">Signed in{headset.session?.deviceName ? ` · ${headset.session.deviceName}` : ''}</span>
@@ -47,7 +44,7 @@ export function Overlay({ interview, headset, captions, onEnterVR, vrSupported }
 
         {/* Captions are opt-in (the Captions button); off, the lines stay in the
             accessibility tree so a screen reader still announces each question. */}
-        <div className={captions.on ? 'captions' : 'captions sr-only'} role="status" aria-live="polite">
+        <div className="captions sr-only" role="status" aria-live="polite">
           {caption && (
             <p className="caption-line">
               <strong>Interviewer:</strong> {caption}
