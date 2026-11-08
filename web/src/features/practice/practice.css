@@ -132,6 +132,11 @@
 .interview-card__text {
   gap: 4px;
 }
+/* the one-minute taster leads, so it wears the accent */
+.card.interview-card--quick {
+  background: var(--action);
+  color: var(--on-action);
+}
 .practice__links {
   display: flex;
   flex-direction: column;

@@ -2,7 +2,7 @@
 // ways in to VR, telling Skillit about a real interview, and past sessions.
 import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router'
-import { ChartLine, Glasses, MessagesSquare, UserRoundSearch } from 'lucide-react'
+import { ChartLine, Glasses, MessagesSquare, UserRoundSearch, Zap } from 'lucide-react'
 import { useApp } from '../../app/context'
 import { readPref, writePref } from '../../lib/cache'
 import { Segmented } from '../../ui/Controls'
@@ -23,8 +23,10 @@ export default function PracticeHome() {
     writePref('practiceDifficulty', id)
   }
 
-  const start = () => {
+  const start = ({ quick = false } = {}) => {
     const params = new URLSearchParams({ difficulty })
+    if (quick) params.set('length', 'quick')
+    // nothing picked: the server opens with the profile's first target role
     if (role.trim()) params.set('role', role.trim())
     navigate(`/practice/session?${params}`)
   }
@@ -69,7 +71,15 @@ export default function PracticeHome() {
           </p>
         </div>
 
-        <button type="button" className="card interview-card" onClick={start}>
+        <button type="button" className="card interview-card interview-card--quick" onClick={() => start({ quick: true })}>
+          <Zap size={30} strokeWidth={2} className="interview-card__icon" aria-hidden />
+          <span className="stack interview-card__text">
+            <span className="t-title2">Quick interview · 1 min</span>
+            <span className="t-subhead">Two questions, no follow-ups. A taste of the real thing.</span>
+          </span>
+        </button>
+
+        <button type="button" className="card interview-card" onClick={() => start()}>
           <UserRoundSearch size={30} strokeWidth={2} className="c-action interview-card__icon" aria-hidden />
           <span className="stack interview-card__text">
             <span className="t-title2">Interview</span>
