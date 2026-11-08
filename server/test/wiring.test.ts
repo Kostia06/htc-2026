@@ -33,7 +33,7 @@ describe("wiring", () => {
     const res = await app.request("/.well-known/agent-card.json", {}, env);
     expect(res.status).toBe(200);
     const card = await res.json<{ name: string; skills: { id: string }[] }>();
-    expect(card.name).toBe("Raven");
+    expect(card.name).toBe("Skillit");
     expect(card.skills.map((s) => s.id)).toContain("career-snapshot");
     expect((await app.request("/a2a", { method: "POST", body: "{}" }, env)).status).toBe(401);
   });

@@ -7,7 +7,7 @@ import { deps } from "../../src/auth/supabase";
 import type { AppContext, Env } from "../../src/env";
 import worker from "../../src/index";
 
-const PROJECT_URL = "https://raventest.supabase.co";
+const PROJECT_URL = "https://skillittest.supabase.co";
 const ISSUER = `${PROJECT_URL}/auth/v1`;
 const USER_ID = "8f9c2b8e-4a1d-4c3e-9b7a-2d5e6f708192";
 const supabaseEnv = { ...env, SUPABASE_URL: PROJECT_URL };

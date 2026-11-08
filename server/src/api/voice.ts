@@ -5,7 +5,7 @@ import { buildDebrief } from "../voice/debrief";
 import { nextLine, SPEAKERS, type TranscriptLine } from "../voice/next";
 import { ProviderNotConfigured } from "../voice/providers";
 import { scoreTurn } from "../voice/score";
-import { startVoiceSession, UnknownCompany } from "../voice/session";
+import { startVoiceSession, UnknownCompany, UnknownPosting } from "../voice/session";
 import { addTurn, countSessionsSince, findSession, finishSession, listTurns } from "../voice/store";
 import { DIFFICULTIES, type Difficulty, VOICE_MODES, type VoiceMode } from "../voice/types";
 
@@ -30,7 +30,7 @@ export function voiceRouter() {
   const router = new Hono<AppContext>();
 
   router.post("/sessions", async (c) => {
-    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown }>().catch(() => null);
+    const body = await c.req.json<{ mode?: unknown; companySlug?: unknown; role?: unknown; difficulty?: unknown; postingId?: unknown }>().catch(() => null);
     if (!body || !VOICE_MODES.includes(body.mode as VoiceMode)) return c.json({ error: "mode must be interview" }, 400);
     if (body.difficulty !== undefined && !DIFFICULTIES.includes(body.difficulty as Difficulty)) {
       return c.json({ error: "difficulty must be easy, standard or hard" }, 400);
@@ -40,10 +40,17 @@ export function voiceRouter() {
       return c.json({ error: "that's a lot of practice for one hour, take a break and try again soon" }, 429);
     }
     try {
-      const started = await startVoiceSession(c.env, userId, { mode: body.mode as VoiceMode, companySlug: optionalText(body.companySlug), role: optionalText(body.role), difficulty: body.difficulty as Difficulty | undefined });
+      const started = await startVoiceSession(c.env, userId, {
+        mode: body.mode as VoiceMode,
+        companySlug: optionalText(body.companySlug),
+        role: optionalText(body.role),
+        difficulty: body.difficulty as Difficulty | undefined,
+        postingId: optionalText(body.postingId),
+      });
       return c.json(started, 201);
     } catch (e) {
       if (e instanceof UnknownCompany) return c.json({ error: "unknown company" }, 404);
+      if (e instanceof UnknownPosting) return c.json({ error: "unknown posting" }, 404);
       if (e instanceof ProviderNotConfigured) return c.json({ error: "voice practice isn't set up on this server yet" }, 503);
       throw e;
     }

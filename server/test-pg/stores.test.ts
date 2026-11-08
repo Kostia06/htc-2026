@@ -14,6 +14,7 @@ import { getCompanyInsights } from "../src/memory/insights";
 import { forget, listMemories, recall, remember } from "../src/memory/private/store";
 import { deleteProfile, getProfile, updateProfile } from "../src/memory/profile/store";
 import { countSteps, insertSteps, loadCompleted, loadOpen, setStepStatus } from "../src/roadmap/store";
+import { findPosting, listPostings, newPostingId, savePosting } from "../src/postings/store";
 import { addTurn, countSessionsSince, createSession, deleteOldSessions, findSession, finishSession, listTurns } from "../src/voice/store";
 import { openTestDatabase } from "./pglite";
 
@@ -27,7 +28,7 @@ beforeAll(async () => {
 });
 afterAll(() => db.pg.close());
 beforeEach(async () => {
-  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "feed_items", "feed_state", "memory_vectors"];
+  const tables = ["cache", "company_facts", "experiences", "companies", "cooldowns", "host_fetches", "user_memories", "user_profiles", "agent_runs", "pairing_offers", "user_documents", "voice_turns", "voice_sessions", "roadmap_steps", "feed_items", "feed_state", "user_postings", "memory_vectors"];
   await db.pg.exec(tables.map((t) => `DELETE FROM ${t}`).join("; "));
 });
 
@@ -180,5 +181,21 @@ describe("garbage collection", () => {
     const deleteVectors = vi.spyOn(gcDeps, "deleteVectors").mockResolvedValue();
     expect(await collectGarbage(env, NOW)).toEqual({ privateDeleted: 0, factsDeleted: 1, cacheDeleted: 1, documentsDeleted: 0, pairingsDeleted: 0, headsetsDeleted: 0, launchesDeleted: 0, voiceSessionsDeleted: 0 });
     expect(deleteVectors).toHaveBeenCalledWith(env, ["fact:old"]);
+  });
+});
+
+describe("job postings (encrypted rows)", () => {
+  it("saves, finds and lists per user, and keeps the company slug readable", async () => {
+    const content = {
+      title: "Junior Data Analyst", company: "Acme", companySlug: "acme", location: null, seniority: null,
+      requirements: [{ text: "SQL", topic: "SQL", required: true, have: true }], responsibilities: [], skills: ["SQL"], sourceUrl: null,
+      prefilled: { targetRole: "Junior Data Analyst", company: null, steps: [] },
+    };
+    const saved = await savePosting(env, "alice", newPostingId(), content, NOW);
+    expect(await findPosting(env, "alice", saved.id)).toEqual({ ...content, id: saved.id, createdAt: NOW.toISOString() });
+    expect(await findPosting(env, "bob", saved.id)).toBeNull();
+    expect((await listPostings(env, "alice")).map((p) => p.id)).toEqual([saved.id]);
+    const { rows } = await db.pg.query<{ company_slug: string }>("SELECT company_slug FROM user_postings");
+    expect(rows).toEqual([{ company_slug: "acme" }]);
   });
 });

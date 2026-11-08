@@ -1,6 +1,6 @@
-# Raven iOS — UI/UX audit
+# Skillit iOS — UI/UX audit
 
-Read-only audit of `ios/Raven` (SwiftUI, iOS 26), 2026-11-07. Scope: the five tabs plus the
+Read-only audit of `ios/Skillit` (SwiftUI, iOS 26), 2026-11-07. Scope: the five tabs plus the
 sheets and pushes they open. Every claim below comes from reading the view files; nothing was
 run on device, so line-wrap estimates are arithmetic on a 390pt iPhone 16e width, not screenshots.
 
@@ -22,7 +22,7 @@ chat bubble (`RecapBubble`), and the streak flame. When it turns lavender, laven
 
 Fix, in `DesignSystem/Theme.swift` and the call sites named above:
 - `Theme.action` for primary buttons and selected states only.
-- `Theme.agent` for AI only (why-lines, "Raven suggests", research state). Make sure the two
+- `Theme.agent` for AI only (why-lines, "Skillit suggests", research state). Make sure the two
   lavenders are visibly different or merge them and differentiate AI with the sparkle glyph.
 - Done / positive = `.green` or a `Theme.positive`; errors = `.red`/`Theme.negative`; low score =
   `.secondary` plus a glyph, never the accent.
@@ -35,11 +35,11 @@ features (chips, inset fields, secondary buttons, node faces). Surfaces therefor
 `Theme.chip` (~0.16), `Theme.secondaryButton` (~0.22) and replace every literal.
 
 ### 0.3 Everything is a card
-`ravenCard()` is applied 41 times: to single rows, to text paragraphs, to skeletons, to buttons,
+`skillitCard()` is applied 41 times: to single rows, to text paragraphs, to skeletons, to buttons,
 and to cards inside cards (`StepDetailSheet.block`, `FactsSection`, `SessionSummaryView`). The
 Wealthsimple screens ([home](https://mobbin.com/screens/3451c08b-cf3c-4a71-8064-14580f02ab59),
 [account](https://mobbin.com/screens/4b25c7c2-8215-47f8-9ceb-e22ba07e5a9f)) use a card only to
-group rows; headline numbers and body text sit directly on the ground. Rule for Raven: a card
+group rows; headline numbers and body text sit directly on the ground. Rule for Skillit: a card
 groups ≥2 rows or is tappable as one unit; prose and single values never get a card.
 
 ### 0.4 Two button languages
@@ -232,7 +232,7 @@ Files: `Features/Practice/PracticeView.swift`, `VoiceSessionView.swift`, `VoiceB
 1. **Lead the hub with a number** (`PracticeView.swift`): reuse `TrendCard` (last score, delta,
    sparkline) at the top, then a segmented control `Interview | Networking`, the optional target
    field *under* it with a label ("At a company or for a role"), one primary "Start" button.
-   Collapse VR / Tell Raven / Past sessions into one grouped list of three rows. Borrow:
+   Collapse VR / Tell Skillit / Past sessions into one grouped list of three rows. Borrow:
    Wealthsimple [account](https://mobbin.com/screens/4b25c7c2-8215-47f8-9ceb-e22ba07e5a9f)
    (number, two pills, then rows).
 2. **Debrief: score + three tiles + one change** (`SessionSummaryView.swift`): ring + verdict,
@@ -308,9 +308,9 @@ Files: `Features/Profile/ProfileView.swift`, `ProfileHeader.swift`, `ProfileRows
 
 ### Problems
 1. **Two row systems on one screen**: header and `ResumeCard` are clear-background rows with
-   `ravenCard()` (20pt radius, 16pt padding, 20pt insets), then `insetGrouped` sections with
+   `skillitCard()` (20pt radius, 16pt padding, 20pt insets), then `insetGrouped` sections with
    `Theme.raised` rows (system radius ≈10pt, system insets). The radii and gutters do not match.
-2. **ResumeCard copy** is marketing: "Built from your profile. Raven can make it sharper for the
+2. **ResumeCard copy** is marketing: "Built from your profile. Skillit can make it sharper for the
    roles you want." plus two full-width buttons. It also never says whether a resume exists or
    when it was updated.
 3. **Headline editing through `.alert`** with a text field and a two-line explanatory message.
@@ -330,7 +330,7 @@ Files: `Features/Profile/ProfileView.swift`, `ProfileHeader.swift`, `ProfileRows
   dashed placeholder row with a one-line benefit and a single button — the right empty state.
 
 ### Ranked fixes
-1. **One list system** (`ProfileView.swift`): drop `ravenCard()` here; render the header and the
+1. **One list system** (`ProfileView.swift`): drop `skillitCard()` here; render the header and the
    resume as `insetGrouped` sections too (or set `listRowInsets` and corner radius to match
    system). Borrow: LinkedIn experience list.
 2. **Resume row, not card** (`ResumeCard.swift`): a single tappable row "Resume · Updated 2d ago
@@ -339,7 +339,7 @@ Files: `Features/Profile/ProfileView.swift`, `ProfileHeader.swift`, `ProfileRows
 3. **Headline inline**: tap the headline text → a `TextField` appears in place (or a
    `.presentationDetents([.height(180)])` sheet). Delete the alert message copy.
 4. **Resume suggestions as a bottom sheet** (`ResumeView.swift`): keep the paper preview stable
-   and present `SuggestionDeck` in a medium detent sheet triggered by "Improve with Raven".
+   and present `SuggestionDeck` in a medium detent sheet triggered by "Improve with Skillit".
    Remove the web-builder paragraph; keep one `Link`.
 5. `MemoryView`: replace `PrivacyExplainer` with one line under the title ("Private, encrypted,
    delete any time") and drop the section footer; share is discoverable from the context menu.

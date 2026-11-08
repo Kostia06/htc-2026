@@ -1,5 +1,5 @@
-included: [Raven, RavenKit]
-excluded: [RavenKit/.build]
+included: [Skillit, SkillitKit]
+excluded: [SkillitKit/.build]
 disabled_rules:
   # swiftformat adds trailing commas; the two tools would fight over them
   - trailing_comma

@@ -12,6 +12,19 @@ describe("interview plan", () => {
     expect(plan.questions.length).toBeLessThanOrEqual(MAX_QUESTIONS);
   });
 
+  it("asks about the posting after the resume: what they'd do, what they bring, then the gap", () => {
+    const posting = {
+      requirements: [{ text: "Kubernetes", have: false }, { text: "SQL", have: true }],
+      responsibilities: ["Build dashboards for the lending team.", "Clean and load data"],
+    };
+    const plan = buildInterviewPlan(inputs({ posting }));
+    expect(plan.questions.map((q) => q.source)).toEqual(["resume", "resume", "posting", "posting", "reported"]);
+    expect(plan.questions[2].text).toBe("Here you'd build dashboards for the lending team. When have you done something like that?");
+    expect(plan.questions[3].text).toBe("Here you'd clean and load data. When have you done something like that?");
+    const gaps = buildInterviewPlan(inputs({ posting: { ...posting, responsibilities: [] } })).questions.filter((q) => q.source === "posting");
+    expect(gaps.map((q) => q.text)).toEqual(["SQL is on the posting. Where have you used it?", "Kubernetes is on the posting. How would you get up to speed?"]);
+  });
+
   it("keeps every question short and conversational", () => {
     for (const question of buildInterviewPlan(inputs()).questions) expect(words(question.text)).toBeLessThanOrEqual(MAX_WORDS);
   });

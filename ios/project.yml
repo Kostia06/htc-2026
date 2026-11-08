@@ -1,12 +1,12 @@
-name: Raven
+name: Skillit
 options:
-  bundleIdPrefix: com.raven
+  bundleIdPrefix: com.kostiailn
   deploymentTarget:
     iOS: "26.0"
   createIntermediateGroups: true
 packages:
-  RavenKit:
-    path: RavenKit
+  SkillitKit:
+    path: SkillitKit
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.55.6
@@ -21,19 +21,19 @@ settings:
     # set to your Apple team before archiving for TestFlight
     DEVELOPMENT_TEAM: 5J5P965Q99
 targets:
-  Raven:
+  Skillit:
     type: application
     platform: iOS
-    sources: [Raven]
+    sources: [Skillit]
     dependencies:
-      - package: RavenKit
+      - package: SkillitKit
       # Auth alone: the app never talks to Postgres, Storage or Realtime directly
       - package: Supabase
         product: Auth
       # the same ElevenLabs agents the headset talks to; voice runs over WebRTC with a server-issued token
       - package: ElevenLabs
     entitlements:
-      path: Raven/Resources/Raven.entitlements
+      path: Skillit/Resources/Skillit.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
     settings:
@@ -41,7 +41,7 @@ targets:
         # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
         SUPABASE_URL: "https://pgltmzicvpvcyhbrwqxz.supabase.co"
         SUPABASE_PUBLISHABLE_KEY: "sb_publishable_18neZMPxpE8pXm7waePiNQ_4sUdiJS1"
-        PRODUCT_BUNDLE_IDENTIFIER: com.kostiailn.raven
+        PRODUCT_BUNDLE_IDENTIFIER: com.kostiailn.skillit
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "6"
         TARGETED_DEVICE_FAMILY: "1"
@@ -53,9 +53,9 @@ targets:
         Release:
           RAVEN_API_URL: "https://htc-mentor.ilnkostia-dev.workers.dev"
     info:
-      path: Raven/Resources/Info.plist
+      path: Skillit/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Raven
+        CFBundleDisplayName: Skillit
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         RavenAPIURL: $(RAVEN_API_URL)
@@ -63,8 +63,8 @@ targets:
         SupabasePublishableKey: $(SUPABASE_PUBLISHABLE_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        NSMicrophoneUsageDescription: Raven listens while you answer practice questions so the interviewer can respond to what you said.
-        NSSpeechRecognitionUsageDescription: Raven turns what you say into text so a quick update can be applied to your roadmap and profile.
+        NSMicrophoneUsageDescription: Skillit listens while you answer practice questions so the interviewer can respond to what you said.
+        NSSpeechRecognitionUsageDescription: Skillit turns what you say into text so a quick update can be applied to your roadmap and profile.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false

@@ -43,12 +43,12 @@ export const capWords = (reply: string, max = MAX_REPLY_WORDS) => reply.trim().s
 
 export const quickUpdate: Skill<QuickUpdateInput> = {
   name: "quick-update",
-  description: "Turn one plain-words update from the person into structured changes to their roadmap, profile and notes.",
+  description: "Turn one plain-words update from the person into structured changes to their road, profile and notes.",
   platforms: ["app"],
   personal: false,
   tools: [],
   maxSteps: 2,
-  instructions: `The person just told you, in plain words, something that changed: they finished or started a step, built something, went somewhere, learned a tool, got an interview. Read the conversation and call finish once with the actions that apply it.
+  instructions: `The person just told you, in plain words, something that changed: they finished or started a step, built something, went somewhere, learned a tool, got an interview. Read the conversation and call finish once with the actions that apply it. In your reply, the app calls their plan their "road": say road, never roadmap.
 Actions (use the fewest that cover what they said; up to ${MAX_ACTIONS}):
 - complete_step / start_step: stepId from "Open steps" only, when what they did clearly is that step.
 - add_project {name, summary?}, add_experience {role, org, when?}, add_skill {name}, remove_skill {name}, add_target_role {name}.
@@ -108,7 +108,7 @@ Reply is one warm sentence under ${MAX_REPLY_WORDS} words confirming what you di
   buildGoal: (input) => {
     const steps = input.steps.length ? input.steps.map((s) => `- ${s.id} [${s.kind}] ${s.title}`).join("\n") : "- none";
     const budget = input.canAsk ? "You may ask one clarifying question if the update cannot be applied without it." : "You have no questions left: apply your best reading now.";
-    const lines = input.messages.map((m) => `${m.role === "user" ? "Them" : "Raven"}: ${m.text}`).join("\n");
+    const lines = input.messages.map((m) => `${m.role === "user" ? "Them" : "Skillit"}: ${m.text}`).join("\n");
     return [
       budget,
       `Open steps:\n${steps}`,

@@ -41,7 +41,7 @@ export function resumeRouter(makeDeps: MakeDeps) {
     const input = { resume, targetRole: profile.targetRoles[0], section: asSection(body?.section), company: asSlug(body?.company) };
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
     const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "resume-coach", platform: "app", userId, input });
-    if (run.status === "failed") return c.json({ runId: run.runId, error: "Raven couldn't review the resume just now, try again" }, 502);
+    if (run.status === "failed") return c.json({ runId: run.runId, error: "Skillit couldn't review the resume just now, try again" }, 502);
     return c.json({ runId: run.runId, suggestions: run.output.suggestions ?? [] });
   });
 
@@ -64,7 +64,7 @@ export function resumeRouter(makeDeps: MakeDeps) {
     const userId = c.var.sessionId;
     const waitUntil = (work: Promise<unknown>) => c.executionCtx.waitUntil(work);
     const run = await orchestrate(makeDeps(c.env, waitUntil), { skillId: "onboarding-prefill", platform: "app", userId, input: { text } });
-    if (run.status === "failed") return c.json({ error: "the file was read but Raven couldn't lay it out, try again or fill it in by hand" }, 502);
+    if (run.status === "failed") return c.json({ error: "the file was read but Skillit couldn't lay it out, try again or fill it in by hand" }, 502);
     const draft = (run.output.draft ?? {}) as ProfilePatch;
     const resume = seedFromProfile({ ...emptyProfile(), ...draft });
     return c.json({ resume, saved: false, droppedClaims: run.output.droppedClaims ?? 0 });

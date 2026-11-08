@@ -1,0 +1,23 @@
+{
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/OnboardingAnswers.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingAnswers.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingAnswers.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingAnswers.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingAnswers.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingAnswers.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/OnboardingQuestion.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingQuestion.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingQuestion.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingQuestion.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingQuestion.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/OnboardingQuestion.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Sources/RavenKit/PracticeHistory.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/PracticeHistory.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/PracticeHistory.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/PracticeHistory.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/PracticeHistory.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKit-t.build/Objects-normal/arm64/PracticeHistory.swiftdeps"
+  }
+}

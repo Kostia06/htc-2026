@@ -1,0 +1,23 @@
+{
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Tests/RavenKitTests/FeedActionsTests.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedActionsTests.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedActionsTests.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedActionsTests.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedActionsTests.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedActionsTests.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Tests/RavenKitTests/FeedTests.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTests.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTests.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTests.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTests.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTests.swiftdeps"
+  },
+  "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/Tests/RavenKitTests/FeedTimelineTests.swift" : {
+    "const-values" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTimelineTests.swiftconstvalues",
+    "dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTimelineTests.d",
+    "diagnostics" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTimelineTests.dia",
+    "object" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTimelineTests.o",
+    "swift-dependencies" : "/Users/kostiailn/Projects/htc-2026/ios/RavenKit/.build/out/Intermediates.noindex/RavenKit.build/Debug/RavenKitTests-p.build/Objects-normal/arm64/FeedTimelineTests.swiftdeps"
+  }
+}

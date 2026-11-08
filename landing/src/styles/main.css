@@ -26,5 +26,5 @@
 @import './sections/footer.css';
 @import './sections/cookies.css';
 
-/* Raven: product mock-ups, wordmark and copy tweaks layered on the shared layout */
-@import './components/raven.css';
+/* Skillit: product mock-ups, wordmark and copy tweaks layered on the shared layout */
+@import './components/skillit.css';

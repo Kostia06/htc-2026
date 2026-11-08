@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Skillit">
+  <rect width="1024" height="1024" rx="224" fill="#0F1311"/>
+  <path d="M 668 318 C 590 250, 350 250, 350 410 C 350 540, 674 500, 674 640 C 674 800, 430 820, 340 726"
+        fill="none" stroke="#A8C7A3" stroke-width="112" stroke-linecap="round"/>
+  <circle cx="704" cy="286" r="70" fill="#E3D1AD"/>
+</svg>

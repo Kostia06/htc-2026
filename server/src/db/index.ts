@@ -14,7 +14,7 @@ export function backend(env: Env): Backend {
   return value;
 }
 
-const SCOPE = Symbol.for("raven.db.scope");
+const SCOPE = Symbol.for("skillit.db.scope");
 type Scoped = { [SCOPE]?: Database };
 
 function connectionString(env: Env) {
