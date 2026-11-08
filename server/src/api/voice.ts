@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { AppContext } from "../env";
 import { claimCooldown } from "../memory/cooldowns";
 import { coachTurn } from "../voice/coach/live";
+import { endedForConduct, noteConductEnding } from "../voice/conduct";
 import { notePatterns } from "../voice/coach/patterns";
 import { finalReport, latestDraft, refreshDraft } from "../voice/draft";
 import { saveReport } from "../replay/store";
@@ -141,9 +142,13 @@ export function voiceRouter() {
     if (!session) return c.json({ error: "unknown session" }, 404);
     const turns = await listTurns(c.env, userId, session.id);
     if (turns.length === 0) return c.json({ error: "nothing was said in this session yet" }, 400);
+    // the agent's goodbye has no answer after it, so it never became a turn; the client sends it along
+    const body = await c.req.json<{ closingLine?: unknown }>().catch(() => null);
+    const closingLine = typeof body?.closingLine === "string" ? body.closingLine.slice(0, 1000) : undefined;
 
     // the same debrief on the phone and in the headset; usually the live draft, so no model call is left to wait on
-    const debrief = await finalReport(c.env, userId, session, turns);
+    const report = await finalReport(c.env, userId, session, turns);
+    const debrief = endedForConduct(turns, closingLine) ? noteConductEnding(report) : report;
     await finishSession(c.env, userId, session.id, debrief.overall);
     await saveReport(c.env, userId, session.id, debrief);
     // scoped by user, so a step id from someone else's road is simply not found

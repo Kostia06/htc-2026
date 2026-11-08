@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { liveInstructions, openingLine } from "../../src/voice/instructions";
+import { CONDUCT_CLOSE, liveInstructions, openingLine } from "../../src/voice/instructions";
 import { buildInterviewPlan } from "../../src/voice/plan";
 import { inputs } from "./fixtures";
 
@@ -63,6 +63,41 @@ describe("live instructions", () => {
     expect(hard).toMatch(/push back/i);
     expect(hard).toMatch(/up to two follow-ups/i);
     expect(interview()).toMatch(/standard first-round/i);
+  });
+
+  it("meets rudeness with one calm boundary, then ends the call politely with the fixed sentence", () => {
+    for (const text of [interview(), liveInstructions(buildInterviewPlan(inputs({ length: "quick" })))]) {
+      expect(text).toMatch(/rude, insulting or hostile/i);
+      expect(text).toMatch(/calm and set a firm boundary/i);
+      expect(text).toContain(`Say "${CONDUCT_CLOSE}`);
+      expect(text).toMatch(/happens again[^\n]*end_call tool/i);
+      expect(text).toMatch(/never use the conduct sentence/i);
+    }
+  });
+
+  it("gets curious about strong answers: tools, why, trade-offs, impact, what they'd change", () => {
+    const text = interview();
+    expect(text).toMatch(/interesting or strong/i);
+    expect(text).toMatch(/which tools or methods/i);
+    expect(text).toMatch(/why that choice/i);
+    expect(text).toMatch(/trade-offs/i);
+    expect(text).toMatch(/numbers or impact/i);
+    expect(text).toMatch(/do differently/i);
+  });
+
+  it("tailors probes to the role's field", () => {
+    const text = liveInstructions(buildInterviewPlan(inputs({ role: "Product Designer" })));
+    expect(text).toContain("field of the Product Designer role");
+    expect(text).toMatch(/stack and tools, architecture/i);
+    expect(text).toMatch(/metrics they moved, the stakeholders/i);
+    expect(text).toMatch(/process, user research/i);
+    expect(text).toMatch(/healthcare, trades/i);
+  });
+
+  it("sounds human: varied acknowledgements and no empty praise", () => {
+    const text = interview();
+    expect(text).toMatch(/vary how you acknowledge/i);
+    expect(text).toMatch(/no empty praise/i);
   });
 
   it("runs a quick interview with no follow-ups and a one-sentence warm goodbye", () => {

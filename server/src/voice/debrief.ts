@@ -13,6 +13,8 @@ export type Debrief = {
   nextSteps: string[];
   /** Rewrites written during the call; "researched" ones cite the page they rest on. */
   liveTips?: ReportTip[];
+  /** Set when the interviewer hung up because of the candidate's conduct (voice/conduct.ts). */
+  endedEarly?: "conduct";
 };
 
 const text = { type: "string" };

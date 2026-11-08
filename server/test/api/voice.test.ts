@@ -178,6 +178,19 @@ describe("/api/voice", () => {
     expect(modelCalls).toBe(1);
   });
 
+  it("notes in the report when the interviewer ended the call over the candidate's conduct", async () => {
+    const me = await person();
+    const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
+    await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/turns`, { question: "Q1", answer: "This is a stupid question.", durationMs: 3000 });
+    const finished = await send(voiceApp(), me.token, "POST", `/sessions/${sessionId}/finish`, {
+      closingLine: "I'm going to end the interview here. Thank you for your time. Goodbye.",
+    });
+    expect(finished.status).toBe(200);
+    const report = await finished.json<typeof debriefReply & { endedEarly?: string }>();
+    expect(report.endedEarly).toBe("conduct");
+    expect(report.verdict).toMatch(/ended this interview early/);
+  });
+
   it("finishes with a debrief and refuses more turns afterwards", async () => {
     const me = await person();
     const { sessionId } = await (await send(voiceApp(), me.token, "POST", "/sessions", { mode: "interview" })).json<Started>();
