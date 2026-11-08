@@ -112,6 +112,20 @@ describe("/api/resume", () => {
     const text = new TextDecoder("latin1").decode(await res.arrayBuffer());
     expect(text.startsWith("%PDF-1.4")).toBe(true);
     expect(text).toContain("(Jordan Lee) Tj");
+    expect(text).toContain("rg");
+  });
+
+  it("serves the plain layout and a Word file on request", async () => {
+    const request = testApp();
+    const me = user();
+    await request(me, "PUT", "/", sampleResume);
+    const plain = new TextDecoder("latin1").decode(await (await request(me, "GET", "/pdf?template=plain")).arrayBuffer());
+    expect(plain).not.toContain(" rg ");
+    const docx = await request(me, "GET", "/docx?template=plain");
+    expect(docx.status).toBe(200);
+    expect(docx.headers.get("Content-Type")).toContain("wordprocessingml");
+    expect(docx.headers.get("Content-Disposition")).toContain("Resume.docx");
+    expect(new Uint8Array(await docx.arrayBuffer()).slice(0, 2)).toEqual(new Uint8Array([0x50, 0x4b]));
   });
 
   it("lays an uploaded resume out for the builder without saving it", async () => {

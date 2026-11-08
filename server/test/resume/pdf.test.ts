@@ -33,8 +33,8 @@ describe("pdf writer", () => {
 });
 
 describe("resume pdf", () => {
-  it("lays the resume out top to bottom within the page", () => {
-    const { ops, truncated } = layoutResume(sampleResume);
+  it("lays the plain resume out top to bottom within the page", () => {
+    const { ops, truncated } = layoutResume(sampleResume, "plain");
     const texts = ops.filter((op) => op.kind === "text").map((op) => op.text);
     expect(texts[0]).toBe("Jordan Lee");
     expect(texts).toContain("EXPERIENCE");
@@ -45,11 +45,38 @@ describe("resume pdf", () => {
     expect(ops.every((op) => op.y < PAGE.height)).toBe(true);
   });
 
+  it("defaults to the Skillit layout: centred navy header, template section order, italic subtitles", () => {
+    const { ops, truncated } = layoutResume(sampleResume);
+    const texts = ops.filter((op) => op.kind === "text").map((op) => op.text);
+    const name = ops.find((op) => op.kind === "text" && op.text === "Jordan Lee");
+    expect(name?.x).toBeGreaterThan(200);
+    expect(name?.gray).toEqual([30 / 255, 58 / 255, 95 / 255]);
+    expect(texts.indexOf("EDUCATION")).toBeLessThan(texts.indexOf("EXPERIENCE"));
+    expect(texts.indexOf("EXPERIENCE")).toBeLessThan(texts.indexOf("SKILLS"));
+    expect(texts).toContain("Software Developer Co-op");
+    const org = ops.find((op) => op.kind === "text" && op.text === "ATB Financial");
+    expect(org?.kind === "text" && org.font).toBe("F3");
+    expect(texts).toContain("Third-year computer science student");
+    expect(truncated).toBe(false);
+    expect(ops.every((op) => op.y > 0 && op.y < PAGE.height)).toBe(true);
+  });
+
+  it("gives labelled skills a bold label row", () => {
+    const { ops } = layoutResume({ ...sampleResume, skills: ["Languages: Python, SQL", "Docker"] });
+    const label = ops.find((op) => op.kind === "text" && op.text === "Languages: ");
+    expect(label?.kind === "text" && label.font).toBe("F2");
+    const texts = ops.filter((op) => op.kind === "text").map((op) => op.text);
+    expect(texts).toContain("Python, SQL");
+    expect(texts).toContain("Docker");
+  });
+
   it("stops at the bottom of the page instead of spilling onto a second one", () => {
     const bullets = Array.from({ length: 40 }, (_, i) => `Did a thing number ${i} that took a whole line of text to describe properly`);
     const long = { ...sampleResume, experience: Array.from({ length: 6 }, () => ({ ...sampleResume.experience[0], bullets })) };
-    const { bytes, truncated } = renderResumePDF(long);
-    expect(truncated).toBe(true);
+    for (const template of ["skillit", "plain"] as const) {
+      expect(renderResumePDF(long, template).truncated).toBe(true);
+    }
+    const { bytes } = renderResumePDF(long);
     expect(decoder.decode(bytes)).toContain("/Count 1");
     checkCrossReferences(bytes);
   });
@@ -59,6 +86,8 @@ describe("resume pdf", () => {
     const text = decoder.decode(bytes);
     expect(text).toContain("(Jordan Lee) Tj");
     expect(text).toContain("/Helvetica-Bold");
+    expect(text).toContain("/Helvetica-Oblique");
+    expect(text).toContain("0.118 0.227 0.373 rg");
     checkCrossReferences(bytes);
   });
 });

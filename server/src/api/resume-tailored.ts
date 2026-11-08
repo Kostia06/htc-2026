@@ -7,7 +7,8 @@ import { db } from "../db";
 import type { AppContext, Env } from "../env";
 import { ImportFailed } from "../postings/import";
 import { parseResume } from "../resume/parse";
-import { renderResumePDF } from "../resume/pdf";
+import { resumeFile, resumeFileHeaders } from "../resume/download";
+import { asFormat, asTemplate } from "../resume/template";
 import { applyChanges, matchSummary } from "../resume/tailor/apply";
 import { notifyAfterWrite } from "../notifications/generate";
 import { NothingToTailor, PostingNotFound, TailorFailed, tailorResume } from "../resume/tailor/create";
@@ -107,17 +108,15 @@ export function tailoredRouter(makeDeps: MakeDeps, options: Options = {}) {
     return deleted ? c.json({ deleted: true }) : c.json({ error: "unknown tailored resume" }, 404);
   });
 
-  router.get("/:id/pdf", async (c) => {
+  // the layout is picked per job at download time: ?template=plain for postings that want a bare page
+  router.get("/:id/:format{pdf|docx}", async (c) => {
+    const format = asFormat(c.req.param("format")) ?? "pdf";
     const found = await findTailored(c.env, c.var.sessionId, c.req.param("id"));
     if (!found) return c.json({ error: "unknown tailored resume" }, 404);
-    const { bytes, truncated } = renderResumePDF(found.resume);
+    const file = resumeFile(found.resume, format, asTemplate(c.req.query("template")));
     // header values must be ASCII, and a company name may not be
     const company = found.company.replace(/[^A-Za-z0-9 ]+/g, "").trim().replace(/\s+/g, "-") || "Job";
-    return c.body(bytes.buffer as ArrayBuffer, 200, {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="Resume-${company}.pdf"`,
-      "X-Resume-Truncated": truncated ? "1" : "0",
-    });
+    return c.body(file.bytes.buffer as ArrayBuffer, 200, resumeFileHeaders(file, `Resume-${company}`, format));
   });
 
   return router;

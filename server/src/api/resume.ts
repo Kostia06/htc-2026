@@ -10,8 +10,9 @@ import { getProfile } from "../memory/profile/store";
 import type { ProfilePatch } from "../memory/profile/types";
 import { maskLinkedinText } from "../resume/linkedin";
 import { parseResume, seedFromProfile } from "../resume/parse";
-import { renderResumePDF } from "../resume/pdf";
+import { resumeFile, resumeFileHeaders } from "../resume/download";
 import { loadResume, putResume } from "../resume/store";
+import { asFormat, asTemplate } from "../resume/template";
 import { RESUME_SECTIONS, type ResumeSection } from "../resume/types";
 import { buildResumeIntelligence } from "../agents/tools/resume-builder";
 
@@ -99,14 +100,12 @@ export function resumeRouter(makeDeps: MakeDeps) {
     return c.json({ targetRole: targetRole ?? null, suggestions: run.output.suggestions ?? [], droppedClaims: run.output.droppedClaims ?? 0 });
   });
 
-  router.get("/pdf", async (c) => {
+  // ?template=plain swaps the Skillit layout for the bare ATS one
+  router.get("/:format{pdf|docx}", async (c) => {
+    const format = asFormat(c.req.param("format")) ?? "pdf";
     const { resume } = await loadResume(c.env, c.var.sessionId);
-    const { bytes, truncated } = renderResumePDF(resume);
-    return c.body(bytes.buffer as ArrayBuffer, 200, {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="Resume.pdf"',
-      "X-Resume-Truncated": truncated ? "1" : "0",
-    });
+    const file = resumeFile(resume, format, asTemplate(c.req.query("template")));
+    return c.body(file.bytes.buffer as ArrayBuffer, 200, resumeFileHeaders(file, "Resume", format));
   });
 
   // AI-powered career and resume analysis
