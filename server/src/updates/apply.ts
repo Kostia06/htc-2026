@@ -55,6 +55,19 @@ async function applyOne(ctx: ApplyContext, action: ProposedAction): Promise<Appl
       await ctx.memory.updateProfile({ experience: [{ role, org, start: clean(action.when, 60) || undefined }] });
       return { type: action.type, summary: `Added ${role} at ${org}` };
     }
+    case "add_education": {
+      const school = clean(action.school);
+      if (!school) return null;
+      const program = clean(action.program) || undefined;
+      await ctx.memory.updateProfile({ education: [{ school, program, year: clean(action.when, 60) || undefined }] });
+      return { type: action.type, summary: program ? `Added ${program} at ${school}` : `Added ${school}` };
+    }
+    case "add_certification": {
+      const name = clean(action.name);
+      if (!name) return null;
+      await ctx.memory.updateProfile({ certifications: [name] });
+      return { type: action.type, summary: `Added certification ${name}` };
+    }
     case "add_skill": {
       const name = clean(action.name);
       if (!name) return null;

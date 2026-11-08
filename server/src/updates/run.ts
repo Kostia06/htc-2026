@@ -24,7 +24,7 @@ export const canStillAsk = (messages: UpdateMessage[]) => {
 
 const lastSaid = (messages: UpdateMessage[]) => [...messages].reverse().find((m) => m.role === "user")?.text.trim() ?? "";
 
-function withTimeout<T>(work: Promise<T>, ms: number, keepAlive?: (work: Promise<unknown>) => void): Promise<T> {
+export function withTimeout<T>(work: Promise<T>, ms: number, keepAlive?: (work: Promise<unknown>) => void): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
       // the run goes on recording itself after the reply has gone out; nobody waits for it
@@ -35,7 +35,7 @@ function withTimeout<T>(work: Promise<T>, ms: number, keepAlive?: (work: Promise
   });
 }
 
-function confirmation(applied: Applied[]) {
+export function confirmation(applied: Applied[]) {
   if (applied.length === 0) return "I couldn't match that to anything of yours yet. Tell me a bit more?";
   const [first, ...rest] = applied;
   return capWords(`${first.summary}${rest.length ? ` and ${rest.length} more` : ""}.`);

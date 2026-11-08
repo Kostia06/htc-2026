@@ -92,6 +92,20 @@ describe("/api/connections", () => {
     expect(await getConnection(env, me, "github")).toBeNull();
   });
 
+  it("adds each repo's main language as a skill, never touching one the person already had, and takes back only its own", async () => {
+    fakeComposio();
+    const me = user();
+    await updateProfile(env, me, { skills: [{ name: "python", source: "resume", evidence: "Python" }] });
+    const { request } = await connected(me);
+    expect((await getProfile(env, me)).skills).toEqual([
+      { name: "python", source: "resume", evidence: "Python" },
+      { name: "Shell", source: "self-reported", evidence: "Main language of dotfiles on GitHub" },
+    ]);
+
+    await request(me, "DELETE", "/github");
+    expect((await getProfile(env, me)).skills).toEqual([{ name: "python", source: "resume", evidence: "Python" }]);
+  });
+
   it("still deletes the derived data when Composio can't be reached, and keeps the row to retry the revoke", async () => {
     fakeComposio({ deleteStatus: 500 });
     const me = user();

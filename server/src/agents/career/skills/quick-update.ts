@@ -18,16 +18,20 @@ export const UPDATE_ACTIONS = [
   "note",
 ] as const;
 export type UpdateActionType = (typeof UPDATE_ACTIONS)[number];
+/** actions only an uploaded document can propose: a transcript or certificate states them, a chat line rarely does */
+export type DocumentOnlyActionType = "add_education" | "add_course" | "add_certification";
 
 /** What the model proposes; nothing here is trusted until `applyActions` has checked it against the person's own data. */
 export type ProposedAction = {
-  type: UpdateActionType;
+  type: UpdateActionType | DocumentOnlyActionType;
   stepId?: string;
   name?: string;
   summary?: string;
   role?: string;
   org?: string;
   when?: string;
+  school?: string;
+  program?: string;
 };
 
 export type QuickUpdateOutput = { reply: string; needsAnswer: boolean; actions: ProposedAction[] };

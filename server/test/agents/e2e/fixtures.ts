@@ -40,6 +40,10 @@ export const fixtures: Record<string, SkillFixture> = {
     input: { messages: chat, steps: [], skills: [], targetRoles: [], projects: [], canAsk: true },
     output: { reply: "Nice work.", needsAnswer: false, actions: [] },
   },
+  "document-update": {
+    input: { fileName: "transcript.pdf", text: "BSc Computer Science", steps: [], skills: [], education: [], experience: [], certifications: [], projects: [] },
+    output: { reply: "Added your degree.", actions: [] },
+  },
   "import-posting": {
     input: { text: "Junior Developer at Acme. Requires React." },
     output: { title: "Junior Developer", company: "Acme", requirements: [], responsibilities: [], skills: [] },

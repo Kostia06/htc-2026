@@ -10,7 +10,8 @@ export type ConnectionStatus = "pending" | "active" | "revoking";
 export type RepoSummary = WorkItem;
 
 // what one provider's import added to the person's private data, so disconnecting can take exactly that back out
-export type Derived = { items: WorkItem[]; addedProjects: string[]; noteIds: string[]; suggestions: string[] };
+// addedSkills is optional: imports sealed before skills were filled in have none to take back
+export type Derived = { items: WorkItem[]; addedProjects: string[]; addedSkills?: string[]; noteIds: string[]; suggestions: string[] };
 
 export type Connection = { accountId: string; status: ConnectionStatus; importedAt?: string; derived?: Derived };
 
@@ -19,7 +20,7 @@ type Row = { account_id: string; status: ConnectionStatus; ciphertext: string | 
 // imports sealed before connectors were generalised called their items "repos"
 function derivedFrom(json: string): Derived {
   const raw = JSON.parse(json) as Partial<Derived> & { repos?: WorkItem[] };
-  return { items: raw.items ?? raw.repos ?? [], addedProjects: raw.addedProjects ?? [], noteIds: raw.noteIds ?? [], suggestions: raw.suggestions ?? [] };
+  return { items: raw.items ?? raw.repos ?? [], addedProjects: raw.addedProjects ?? [], addedSkills: raw.addedSkills ?? [], noteIds: raw.noteIds ?? [], suggestions: raw.suggestions ?? [] };
 }
 
 export async function getConnection(env: Env, userId: string, provider: Provider): Promise<Connection | null> {
