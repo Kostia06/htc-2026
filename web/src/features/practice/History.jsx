@@ -10,6 +10,7 @@ import { RaisedButton } from '../../ui/Button'
 import { ContentUnavailable, SkeletonCard } from '../../ui/Feedback'
 import { Page, PageHeader } from '../../ui/Layout'
 import ReplayPanel from '../replay/ReplayPanel'
+import ReviewInHeadsetButton from '../replay/ReviewInHeadset'
 import './practice.css'
 
 const CACHE = 'history'
@@ -234,6 +235,7 @@ export function SessionDetail() {
           </header>
           {!turns.length && <p className="card t-body c-2">Nothing was said in this session.</p>}
           {turns.length > 0 && <ReplayPanel sessionId={id} />}
+          {turns.length > 0 && <ReviewInHeadsetButton sessionId={id} />}
           {turns.map((t) => (
             <article key={t.idx} className="card turn-card">
               <div className="row turn-card__head">

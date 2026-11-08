@@ -2,9 +2,10 @@
 // doing next, then four doors. Every editor lives one click behind a door; settings sit behind the gear.
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { CircleCheck, CornerDownRight, FileText, Glasses, ListChecks, Pencil, Settings, Signpost } from 'lucide-react'
+import { CircleCheck, CornerDownRight, FileText, Flag, Glasses, ListChecks, Pencil, Settings, Signpost } from 'lucide-react'
 import { Flash, ThinProgressBar } from '../../ui/Feedback'
 import { BarButton, Page, PageHeader } from '../../ui/Layout'
+import GotTheJobSheet from './GotTheJob'
 import { describeMove, pickNextMove } from './nextMove'
 import { useProfileEdit, useProfileOverview } from './useProfile'
 import './profile.css'
@@ -16,6 +17,7 @@ export default function Profile() {
   const navigate = useNavigate()
   const { profile, edit, flash, clearFlash } = useProfileEdit()
   const overview = useProfileOverview()
+  const [reportingJob, setReportingJob] = useState(false)
   // until the resumes are in, only "choose a role" is certain; anything else might flip a second later
   const move = overview.loaded || !profile.targetRoles.length ? pickNextMove({ profile, ...overview }) : null
   const doors = [
@@ -45,7 +47,15 @@ export default function Profile() {
             </Link>
           ))}
         </nav>
+        <button type="button" className="card you__got-job" onClick={() => setReportingJob(true)}>
+          <Flag size={24} strokeWidth={2} className="c-positive" aria-hidden />
+          <span className="stack">
+            <span className="t-headline">I got the job</span>
+            <span className="t-subhead c-2">Close your road and help the next person</span>
+          </span>
+        </button>
       </div>
+      {reportingJob && <GotTheJobSheet initialRole={profile.targetRoles[0]} onClose={() => setReportingJob(false)} />}
       <Flash message={flash?.message} tone={flash?.tone} icon={flash?.tone === 'positive' ? CircleCheck : undefined} duration={flash?.tone === 'negative' ? 3000 : 1400} onDone={clearFlash} />
     </Page>
   )

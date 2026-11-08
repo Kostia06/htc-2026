@@ -208,6 +208,11 @@ export const postingsApi = {
   list: () => request('/api/postings').then((r) => r.postings ?? []),
 }
 
+export const outcomeApi = {
+  /** "I got the job": { role, company?, share } → { shared, steps, skills } */
+  record: ({ role, company, share }) => post('/api/me/outcome', { role, company, share }),
+}
+
 /** copies of the resume adapted to one job each; the base resume is never changed by them */
 export const tailoredApi = {
   /** [{ id, postingId, title, company, covered, total, updatedAt }] */
@@ -243,7 +248,9 @@ export const recapApi = {
 export const headsetApi = {
   /** { connected, devices: [{ id, name, createdAt, lastSeenAt, connected }] } */
   status: () => request('/api/headset/status'),
-  launch: ({ companySlug, role, stepId }) => post('/api/headset/launch', { mode: 'interview', companySlug, role, stepId }),
+  /** the same fields a voice session takes plus the road step; `reviewSessionId` opens that session's review instead */
+  launch: ({ companySlug, role, stepId, postingId, difficulty, length, reviewSessionId }) =>
+    post('/api/headset/launch', { mode: 'interview', companySlug, role, stepId, postingId, difficulty, length, reviewSessionId }),
   revoke: (id) => request(`/api/headset/devices/${id}`, { method: 'DELETE' }),
 }
 

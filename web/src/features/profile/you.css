@@ -32,6 +32,28 @@
   }
 }
 
+/* GotTheJobSheet.swift */
+.you__got-job {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  text-align: left;
+}
+.got-job__field {
+  gap: 6px;
+}
+.got-job__share {
+  gap: 10px;
+}
+.got-job__done {
+  align-items: center;
+  gap: 14px;
+  padding: 24px 8px;
+  text-align: center;
+}
+
 /* ProfileDoors.swift: two by two, one column on narrow phones at large text */
 .you__doors {
   display: grid;
