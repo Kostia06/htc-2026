@@ -20,7 +20,7 @@ export const composioConfigured = (env: Env) => Boolean(env.COMPOSIO_API_KEY);
 
 type Request = { method: "GET" | "POST" | "DELETE"; path: string; what: string; body?: unknown };
 
-async function composio<T>(env: Env, { method, path, what, body }: Request): Promise<T> {
+export async function composio<T>(env: Env, { method, path, what, body }: Request): Promise<T> {
   const key = env.COMPOSIO_API_KEY;
   if (!key) throw new ComposioNotConfigured("connecting accounts isn't set up on this server yet");
   const res = await fetch(`${API}${path}`, {
@@ -36,12 +36,15 @@ type AuthConfig = { id?: unknown; status?: unknown; is_disabled?: unknown; toolk
 
 // the auth configs barely change, and the app polls the status route while someone signs in: one lookup a minute is plenty
 const AUTH_CONFIG_TTL_MS = 60_000;
-let cached: { key: string; at: number; ids: Map<string, string> } | undefined;
+// keyed by query, so the catalog's lookups don't evict the one the connections list polls with
+const cache = new Map<string, { at: number; ids: Map<string, string> }>();
+const CACHE_ENTRIES = 50;
 
 async function lookUpAuthConfigs(env: Env, toolkits: string[]): Promise<Map<string, string>> {
   const query = `toolkit_slug=${encodeURIComponent(toolkits.join(","))}&limit=200`;
   const key = `${env.COMPOSIO_API_KEY}|${query}`;
-  if (cached?.key === key && Date.now() - cached.at < AUTH_CONFIG_TTL_MS) return cached.ids;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < AUTH_CONFIG_TTL_MS) return hit.ids;
   const { items = [] } = await composio<{ items?: AuthConfig[] }>(env, { method: "GET", path: `/auth_configs?${query}`, what: "auth config lookup" });
   const ids = new Map<string, string>();
   for (const config of items) {
@@ -49,9 +52,13 @@ async function lookUpAuthConfigs(env: Env, toolkits: string[]): Promise<Map<stri
     // the project's first enabled config for a toolkit is the one used
     if (toolkit && typeof config.id === "string" && config.status !== "DISABLED" && config.is_disabled !== true && !ids.has(toolkit)) ids.set(toolkit, config.id);
   }
-  cached = { key, at: Date.now(), ids };
+  if (cache.size >= CACHE_ENTRIES) cache.clear();
+  cache.set(key, { at: Date.now(), ids });
   return ids;
 }
+
+/** After this server adds an auth config, the next lookup must see it rather than a cached "none". */
+export const forgetAuthConfigs = () => cache.clear();
 
 /**
  * Which toolkits can be connected: those with an enabled auth config in the Composio project (GitHub's may be pinned by
@@ -70,6 +77,11 @@ export async function authConfigIds(env: Env, toolkits: string[]): Promise<Map<s
 export async function createLink(env: Env, toolkit: string, composioUserId: string, callbackUrl?: string) {
   const authConfigId = (await authConfigIds(env, [toolkit])).get(toolkit);
   if (!authConfigId) throw new ComposioNotConfigured(`no ${toolkit} auth config exists in the Composio project yet`);
+  return linkWith(env, authConfigId, composioUserId, callbackUrl);
+}
+
+/** The same hosted sign-in, for an auth config already in hand. */
+export async function linkWith(env: Env, authConfigId: string, composioUserId: string, callbackUrl?: string) {
   const body = { auth_config_id: authConfigId, user_id: composioUserId, ...(callbackUrl ? { callback_url: callbackUrl } : {}) };
   const link = await composio<{ redirect_url?: unknown; connected_account_id?: unknown }>(env, { method: "POST", path: "/connected_accounts/link", what: "link", body });
   if (typeof link.redirect_url !== "string" || typeof link.connected_account_id !== "string") throw new ComposioError("link", 502);

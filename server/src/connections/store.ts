@@ -3,7 +3,9 @@ import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
 import type { ProviderId, WorkItem } from "./types";
 
-export type Provider = ProviderId;
+// a curated connector's id, or "app:<toolkit slug>" for any other Composio app (connected, never imported from)
+export type AppProvider = `app:${string}`;
+export type Provider = ProviderId | AppProvider;
 export type ConnectionStatus = "pending" | "active" | "revoking";
 
 // a GitHub repo as the github_profile tool sees it: the same shape every connector imports

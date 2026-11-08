@@ -1,12 +1,13 @@
 import { Hono, type Context } from "hono";
 import type { AgentDeps } from "../agents/core/types";
 import { liveDeps } from "../agents/live";
+import { AppNotConnectable, appViewFor, connectApp, disconnectAppSlug, isCurated, listApps, searchCatalog, validAppSlug } from "../connections/apps";
 import { disconnect, isConfigured, listConnections, startConnect, viewFor } from "../connections/connection";
 import { importConnection, NotConnected } from "../connections/import";
 import { connectorFor } from "../connections/registry";
 import type { Connector } from "../connections/types";
 import type { AppContext, Env } from "../env";
-import { ComposioError, ComposioNotConfigured } from "../integrations/composio";
+import { ComposioError, composioConfigured, ComposioNotConfigured } from "../integrations/composio";
 
 type MakeDeps = (env: Env, waitUntil: (work: Promise<unknown>) => void) => AgentDeps;
 
@@ -33,9 +34,58 @@ export function connectionsRouter(makeDeps: MakeDeps) {
       for (const connector of justConnected) {
         c.executionCtx.waitUntil(importConnection(depsOf(c), c.var.sessionId, connector).catch((e) => console.error(`${connector.id} import failed`, (e as Error).message)));
       }
-      return c.json({ connections: views, github: views.find((v) => v.id === "github") });
+      // a hiccup checking the other apps must not hide the curated rows
+      const apps = await listApps(c.env, c.var.sessionId).catch((e) => {
+        console.error("connected apps check failed", (e as Error).message);
+        return [];
+      });
+      return c.json({ connections: views, apps, github: views.find((v) => v.id === "github") });
     } catch (e) {
       if (e instanceof ComposioError) return c.json({ error: "Your connected accounts couldn't be checked just now, try again" }, 502);
+      throw e;
+    }
+  });
+
+  // Composio's whole app catalog, for the search box. Registered before the /:provider guard below, which only knows connectors
+  router.get("/catalog", async (c) => {
+    if (!composioConfigured(c.env)) return c.json({ apps: [], configured: false });
+    try {
+      return c.json({ apps: await searchCatalog(c.env, c.req.query("q") ?? ""), configured: true });
+    } catch (e) {
+      if (e instanceof ComposioError) return c.json({ error: "The app catalog couldn't be reached just now, try again" }, 502);
+      throw e;
+    }
+  });
+
+  // any other app: connect and disconnect only. Nothing is imported and no tool ever runs on these connections
+  router.use("/apps/:slug", async (c, next) => {
+    const slug = c.req.param("slug");
+    if (!validAppSlug(slug)) return c.json({ error: "That isn't an app name" }, 400);
+    if (isCurated(slug)) return c.json({ error: "Connect that one from its own row", curated: true }, 409);
+    return next();
+  });
+
+  router.post("/apps/:slug", async (c) => {
+    const slug = c.req.param("slug");
+    if (!composioConfigured(c.env)) return c.json({ error: "Connecting apps isn't set up on this server yet", configured: false }, 503);
+    const body = await c.req.json<{ returnTo?: unknown }>().catch(() => ({}) as { returnTo?: unknown });
+    try {
+      if ((await appViewFor(c.env, c.var.sessionId, slug))?.status === "connected") return c.json({ error: "That app is already connected" }, 409);
+      return c.json(await connectApp(c.env, c.var.sessionId, slug, body.returnTo));
+    } catch (e) {
+      if (e instanceof AppNotConnectable) return c.json({ error: "That app can't be connected from Skillit yet" }, 422);
+      if (e instanceof ComposioNotConfigured) return c.json({ error: "Connecting apps isn't set up on this server yet", configured: false }, 503);
+      if (e instanceof ComposioError) return c.json({ error: "That app couldn't be reached just now, try again" }, 502);
+      throw e;
+    }
+  });
+
+  router.delete("/apps/:slug", async (c) => {
+    try {
+      await disconnectAppSlug(c.env, c.var.sessionId, c.req.param("slug"));
+      return c.json({ apps: await listApps(c.env, c.var.sessionId) });
+    } catch (e) {
+      if (e instanceof ComposioNotConfigured || e instanceof ComposioError) return c.json({ error: "That app couldn't be disconnected just now, try again" }, 502);
       throw e;
     }
   });

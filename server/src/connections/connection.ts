@@ -1,9 +1,10 @@
 import type { Env } from "../env";
 import { authConfigIds, connectionStatus, createLink, deleteConnection } from "../integrations/composio";
-import { allowedOrigins } from "../lib/cors";
+import { disconnectApp, isAppProvider } from "./apps";
 import { composioUserId } from "./identity";
 import { removeImported } from "./import";
 import { CONNECTORS } from "./registry";
+import { ENDED, safeReturnUrl } from "./sign-in";
 import { connectedProviders, deleteConnectionRow, getConnection, saveDerived, setStatus, startConnection, type Connection } from "./store";
 import type { Category, Connector, ProviderId, WorkItem } from "./types";
 
@@ -20,21 +21,6 @@ export type ConnectionView = {
   projects: Pick<WorkItem, "name" | "summary" | "language" | "kind">[];
   suggestions: string[];
 };
-
-const APP_SCHEME = "skillit://";
-// Composio's terminal states for a sign-in that will never finish
-const ENDED = new Set(["FAILED", "EXPIRED", "INACTIVE", "REVOKED", "DELETED"]);
-
-// only back into our own app or one of our own web origins, so the link can't be used to bounce someone elsewhere
-function safeReturnUrl(env: Env, returnTo: unknown): string | undefined {
-  if (typeof returnTo !== "string" || returnTo.length > 300) return undefined;
-  if (returnTo.startsWith(APP_SCHEME)) return returnTo;
-  try {
-    return allowedOrigins(env.ALLOWED_ORIGINS).includes(new URL(returnTo).origin) ? returnTo : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 function viewOf(connector: Connector, configured: boolean, connection: Connection | null, importing = false): ConnectionView {
   const base = { id: connector.id, name: connector.name, category: connector.category, reads: connector.reads, configured, importing };
@@ -114,10 +100,14 @@ export async function disconnect(env: Env, userId: string, connector: Connector)
   await deleteConnectionRow(env, userId, connector.id);
 }
 
-/** For deleting an account: tries every provider the person has, and names the ones Composio couldn't revoke. */
-export async function disconnectAll(env: Env, userId: string): Promise<ProviderId[]> {
-  const left: ProviderId[] = [];
+/** For deleting an account: tries every provider and app the person has, and names the ones Composio couldn't revoke. */
+export async function disconnectAll(env: Env, userId: string): Promise<string[]> {
+  const left: string[] = [];
   for (const provider of await connectedProviders(env, userId)) {
+    if (isAppProvider(provider)) {
+      await disconnectApp(env, userId, provider).catch(() => left.push(provider));
+      continue;
+    }
     const connector = CONNECTORS.find((c) => c.id === provider);
     if (!connector) continue;
     await disconnect(env, userId, connector).catch(() => left.push(provider));
