@@ -4,6 +4,8 @@
 // playback side so the avatar's lip sync can read real speech energy instead of
 // the procedural envelope.
 
+import { connectToSpeakers } from './spatialAudio.js'
+
 export const MIC_SAMPLE_RATE = 16000
 export const PLAYBACK_SAMPLE_RATE = 24000
 
@@ -334,7 +336,7 @@ export function createPlaybackQueue({
     analyser.smoothingTimeConstant = 0.6
     output = ctx.createGain()
     analyser.connect(output)
-    output.connect(ctx.destination)
+    connectToSpeakers(ctx, output)
     return ctx
   }
 
