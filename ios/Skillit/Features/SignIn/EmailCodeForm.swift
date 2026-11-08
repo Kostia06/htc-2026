@@ -37,7 +37,9 @@ struct EmailEntry: View {
                 .focused($focus, equals: .password)
                 .onSubmit(submit)
                 .skillitField()
-            PrimaryButton(title: model.passwordMode.rawValue, isWorking: model.isWorking, isEnabled: model.canSubmitPassword, action: submit)
+            PrimaryButton(
+                title: model.passwordMode.rawValue, isWorking: model.isWorking, isEnabled: model.canSubmitPassword, action: submit
+            )
             Button("Email me a code instead", action: sendCode)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .disabled(!model.canSendCode)
