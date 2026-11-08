@@ -1,53 +1,66 @@
 import type { Env } from "../env";
 import { decryptFor, encryptFor } from "../memory/private/crypto";
-import type { RoadmapPage, StepStatus, Unit, UnitContent } from "./types";
+import type { Step, StepContent, StepSource, StepStatus } from "./types";
 
-const DAY_MS = 86_400_000;
-const ALL_UNITS = 10_000;
+type Row = { id: string; position: number; source: StepSource; ciphertext: string; iv: string; status: StepStatus; completed_at: string | null };
 
-type UnitRow = { idx: number; ciphertext: string; iv: string };
-type StatusRow = { id: string; status: StepStatus };
+const COLUMNS = "id, position, source, ciphertext, iv, status, completed_at";
 
-export async function countUnits(env: Env, userId: string): Promise<number> {
-  const row = await env.DB.prepare("SELECT count(*) AS n FROM roadmap_units WHERE user_id = ?").bind(userId).first<{ n: number }>();
+export type Counts = { total: number; done: number; open: number };
+
+export async function countSteps(env: Env, userId: string): Promise<Counts> {
+  const row = await env.DB.prepare(
+    `SELECT count(*) AS total,
+            coalesce(sum(status = 'done'), 0) AS done,
+            coalesce(sum(status IN ('todo', 'started')), 0) AS open
+     FROM roadmap_steps WHERE user_id = ?`,
+  )
+    .bind(userId)
+    .first<Counts>();
+  return { total: row?.total ?? 0, done: row?.done ?? 0, open: row?.open ?? 0 };
+}
+
+// the person's open steps in path order, skipping the first `from` of them
+export async function loadOpen(env: Env, userId: string, from: number, limit: number): Promise<Step[]> {
+  const { results } = await env.DB.prepare(
+    `SELECT ${COLUMNS} FROM roadmap_steps WHERE user_id = ? AND status IN ('todo', 'started') ORDER BY position LIMIT ? OFFSET ?`,
+  )
+    .bind(userId, limit, from)
+    .all<Row>();
+  return decodeAll(env, userId, results);
+}
+
+export async function loadCompleted(env: Env, userId: string): Promise<Step[]> {
+  const { results } = await env.DB.prepare(`SELECT ${COLUMNS} FROM roadmap_steps WHERE user_id = ? AND status = 'done' ORDER BY completed_at DESC`)
+    .bind(userId)
+    .all<Row>();
+  return decodeAll(env, userId, results);
+}
+
+export async function loadAll(env: Env, userId: string): Promise<Step[]> {
+  const { results } = await env.DB.prepare(`SELECT ${COLUMNS} FROM roadmap_steps WHERE user_id = ? ORDER BY position`).bind(userId).all<Row>();
+  return decodeAll(env, userId, results);
+}
+
+export async function nextPosition(env: Env, userId: string): Promise<number> {
+  const row = await env.DB.prepare("SELECT coalesce(max(position) + 1, 0) AS n FROM roadmap_steps WHERE user_id = ?").bind(userId).first<{ n: number }>();
   return row?.n ?? 0;
 }
 
-export async function loadUnits(env: Env, userId: string, from: number, count: number): Promise<Unit[]> {
-  const { results: rows } = await env.DB.prepare("SELECT idx, ciphertext, iv FROM roadmap_units WHERE user_id = ? AND idx >= ? AND idx < ? ORDER BY idx")
-    .bind(userId, from, from + count)
-    .all<UnitRow>();
-  if (rows.length === 0) return [];
-  const { results: statuses } = await env.DB.prepare("SELECT id, status FROM roadmap_steps WHERE user_id = ? AND unit_idx >= ? AND unit_idx < ?")
-    .bind(userId, from, from + count)
-    .all<StatusRow>();
-  const statusOf = new Map(statuses.map((s) => [s.id, s.status]));
-
-  return Promise.all(
-    rows.map(async (row) => {
-      const content: UnitContent = JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row));
-      const steps = content.steps.map((step) => ({ ...step, status: statusOf.get(step.id) ?? "todo" }));
-      return { ...content, index: row.idx, steps };
+// false when another request already filled one of these positions; the stored path then wins
+export async function insertSteps(env: Env, userId: string, from: number, contents: StepContent[], source: StepSource): Promise<boolean> {
+  const now = new Date().toISOString();
+  const statements = await Promise.all(
+    contents.map(async (content, i) => {
+      const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(content));
+      return env.DB.prepare(
+        "INSERT INTO roadmap_steps (id, user_id, position, source, ciphertext, iv, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'todo', ?, ?)",
+      ).bind(`st_${crypto.randomUUID()}`, userId, from + i, source, sealed.ciphertext, sealed.iv, now, now);
     }),
   );
-}
-
-// false when a unit at that index already exists, e.g. a background pre-generation got there first
-export async function saveUnit(env: Env, userId: string, index: number, content: UnitContent): Promise<boolean> {
-  const now = new Date().toISOString();
-  const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(content));
-  const insertUnit = env.DB.prepare("INSERT INTO roadmap_units (user_id, idx, ciphertext, iv, created_at) VALUES (?, ?, ?, ?, ?)").bind(
-    userId,
-    index,
-    sealed.ciphertext,
-    sealed.iv,
-    now,
-  );
-  const insertSteps = content.steps.map((step) =>
-    env.DB.prepare("INSERT INTO roadmap_steps (id, user_id, unit_idx, status, updated_at) VALUES (?, ?, ?, 'todo', ?)").bind(step.id, userId, index, now),
-  );
+  if (statements.length === 0) return true;
   try {
-    await env.DB.batch([insertUnit, ...insertSteps]);
+    await env.DB.batch(statements);
     return true;
   } catch (e) {
     if (/UNIQUE|PRIMARY KEY/i.test((e as Error).message)) return false;
@@ -55,28 +68,41 @@ export async function saveUnit(env: Env, userId: string, index: number, content:
   }
 }
 
-export async function stepTitles(env: Env, userId: string): Promise<string[]> {
-  const units = await loadUnits(env, userId, 0, ALL_UNITS);
-  return units.flatMap((u) => u.steps.map((s) => s.title));
-}
-
-export async function progress(env: Env, userId: string, now = new Date()): Promise<RoadmapPage["summary"]> {
-  const weekAgo = new Date(now.getTime() - 7 * DAY_MS).toISOString();
-  const row = await env.DB.prepare(
-    `SELECT count(*) AS total,
-            coalesce(sum(status = 'done'), 0) AS done,
-            coalesce(sum(status = 'done' AND updated_at >= ?), 0) AS thisWeek
-     FROM roadmap_steps WHERE user_id = ?`,
+// only while still untouched, so a step the person finished meanwhile keeps the text they finished
+export async function rewriteStep(env: Env, userId: string, id: string, content: StepContent): Promise<boolean> {
+  const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(content));
+  const result = await env.DB.prepare(
+    "UPDATE roadmap_steps SET ciphertext = ?, iv = ?, source = 'agent', updated_at = ? WHERE id = ? AND user_id = ? AND status = 'todo'",
   )
-    .bind(weekAgo, userId)
-    .first<{ total: number; done: number; thisWeek: number }>();
-  return { done: row?.done ?? 0, total: row?.total ?? 0, thisWeek: row?.thisWeek ?? 0 };
-}
-
-// scoped by user, so one person can never change another's step
-export async function setStepStatus(env: Env, userId: string, stepId: string, status: StepStatus): Promise<boolean> {
-  const result = await env.DB.prepare("UPDATE roadmap_steps SET status = ?, updated_at = ? WHERE id = ? AND user_id = ?")
-    .bind(status, new Date().toISOString(), stepId, userId)
+    .bind(sealed.ciphertext, sealed.iv, new Date().toISOString(), id, userId)
     .run();
   return result.meta.changes > 0;
+}
+
+// scoped by user, so one person can never change another's step; null when the step isn't theirs
+export async function setStepStatus(env: Env, userId: string, id: string, status: StepStatus, note: string | undefined): Promise<Step | null> {
+  const row = await env.DB.prepare(`SELECT ${COLUMNS} FROM roadmap_steps WHERE id = ? AND user_id = ?`).bind(id, userId).first<Row>();
+  if (!row) return null;
+  const content = await decode(env, userId, row);
+  if (note !== undefined) content.note = note || undefined;
+  const now = new Date().toISOString();
+  const completedAt = status === "done" ? (row.completed_at ?? now) : null;
+  const sealed = await encryptFor(env.MEMORY_SECRET, userId, JSON.stringify(content));
+  await env.DB.prepare("UPDATE roadmap_steps SET status = ?, completed_at = ?, ciphertext = ?, iv = ?, updated_at = ? WHERE id = ? AND user_id = ?")
+    .bind(status, completedAt, sealed.ciphertext, sealed.iv, now, id, userId)
+    .run();
+  return toStep({ ...row, status, completed_at: completedAt }, content);
+}
+
+async function decode(env: Env, userId: string, row: Row): Promise<StepContent> {
+  return JSON.parse(await decryptFor(env.MEMORY_SECRET, userId, row)) as StepContent;
+}
+
+function decodeAll(env: Env, userId: string, rows: Row[]): Promise<Step[]> {
+  return Promise.all(rows.map(async (row) => toStep(row, await decode(env, userId, row))));
+}
+
+function toStep(row: Row, content: StepContent): Step {
+  const { note, ...rest } = content;
+  return { ...rest, id: row.id, status: row.status, completedAt: row.completed_at, note: note ?? null, source: row.source };
 }

@@ -1,6 +1,19 @@
-import type { StepContent } from "../types";
+import type { StepKind } from "../types";
 
 export type Field = "tech" | "business" | "creative" | "health" | "general";
 
-export type TemplateStep = Omit<StepContent, "id" | "why"> & { why: (goal: string) => string };
-export type TemplateUnit = { title: string; summary: string; steps: TemplateStep[] };
+// what the templates know about the person: enough to name their goal and lean on a skill they already have
+export type Person = { goal: string; skills: string[]; field: Field };
+
+export type TemplateStep = {
+  kind: StepKind;
+  title: (p: Person) => string;
+  why: (p: Person) => string;
+  detail: (p: Person) => string;
+  estimate: string;
+  // skills the step leans on; the label comes from how many the person already has
+  needs: string[];
+};
+
+// the skill most worth building on: the first one listed, or a field-appropriate stand-in
+export const lead = (p: Person, fallback: string) => p.skills[0] ?? fallback;
