@@ -16,6 +16,7 @@ struct RoadmapView: View {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.ground)
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { NotificationBell(model: app.notifications) } }
         }
         // the cover goes up once the picker is fully gone; iOS drops one presented while a sheet is closing
         .sheet(item: $picking, onDismiss: launchPending) { pick in

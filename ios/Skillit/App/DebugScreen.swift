@@ -4,7 +4,7 @@
 
     /// Opens one screen with sample data: launch with `-SkillitScreen onboarding` (Debug builds only), for screenshots and design review.
     enum DebugScreen: String {
-        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile, pairHeadset, startPractice
+        case signIn, onboarding, roadmap, forYou, forYouBuilding, practice, voice, summary, profile, pairHeadset, startPractice, notifications
 
         static var requested: DebugScreen? {
             UserDefaults.standard.string(forKey: "RavenScreen").flatMap(DebugScreen.init(rawValue:))
@@ -28,6 +28,8 @@
                     .environment(AppModel.preview(profile: .sample))
             case .startPractice:
                 DebugStartPractice().environment(AppModel.preview(profile: .sample))
+            case .notifications:
+                NotificationCenterView(model: .preview(SkillitNotification.samples)).environment(AppModel.preview(profile: .sample))
             }
         }
 

@@ -36,6 +36,8 @@ targets:
       path: Skillit/Resources/Skillit.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
+        # Push Notifications capability; distribution signing swaps in "production" for TestFlight and the App Store
+        aps-environment: development
     settings:
       base:
         # from Supabase > Project Settings > API; the publishable key is safe to ship, never the secret key
@@ -68,3 +70,6 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         ITSAppUsesNonExemptEncryption: false
+        # background app refresh checks for new notifications when APNs isn't set up; must match NotificationRefresh
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.kostiailn.skillit.notifications.refresh]

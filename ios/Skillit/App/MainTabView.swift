@@ -67,6 +67,7 @@ struct MainTabView: View {
         .sheet(item: $openedPosting) { posting in
             PostingView(posting: posting)
         }
+        .handlesNotifications()
     }
 }
 
