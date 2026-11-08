@@ -59,13 +59,15 @@ struct BringYourWorkList: View {
     }
 }
 
-private struct SearchField: View {
+/// The connections screens' search field; "More apps" reuses it with its own prompt.
+struct SearchField: View {
     @Binding var text: String
+    var prompt = "Search, like design or video"
 
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass").foregroundStyle(.secondary).accessibilityHidden(true)
-            TextField("Search, like design or video", text: $text)
+            TextField(prompt, text: $text)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .submitLabel(.search)

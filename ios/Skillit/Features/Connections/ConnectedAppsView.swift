@@ -4,6 +4,7 @@ import SwiftUI
 struct ConnectedAppsView: View {
     @Environment(AppModel.self) private var app
     @State private var work = WorkConnectionsModel()
+    @State private var others = OtherAppsModel()
 
     var body: some View {
         List {
@@ -13,6 +14,17 @@ struct ConnectedAppsView: View {
                 Text(
                     "Each one is optional. Skillit adds your projects and their main languages; "
                         + "disconnecting removes only what that service added.",
+                )
+            }
+            .listRowBackground(Theme.raised)
+            Section {
+                OtherAppsSection(model: others)
+            } header: {
+                Text("More apps")
+            } footer: {
+                Text(
+                    "Connected through Composio. Nothing is imported; Skillit's assistant can only look things up in them, "
+                        + "and never posts or changes anything. Disconnecting revokes access.",
                 )
             }
             .listRowBackground(Theme.raised)
